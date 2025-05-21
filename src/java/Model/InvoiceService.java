@@ -11,7 +11,7 @@ import java.util.Date;
  * @author Dell
  */
 public class InvoiceService {
-    private int id;
+    private String id;
     private Appointment appointment;
     private double totalAmount;
     private String paymentStatus;
@@ -23,7 +23,7 @@ public class InvoiceService {
     public InvoiceService() {
     }
 
-    public InvoiceService(int id, Appointment appointment, double totalAmount, String paymentStatus, String paymentMethod, Date paidAt, Date createDate, Date updateDate) {
+    public InvoiceService(String id, Appointment appointment, double totalAmount, String paymentStatus, String paymentMethod, Date paidAt, Date createDate, Date updateDate) {
         this.id = id;
         this.appointment = appointment;
         this.totalAmount = totalAmount;
@@ -34,14 +34,15 @@ public class InvoiceService {
         this.updateDate = updateDate;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
+    
     public Appointment getAppointment() {
         return appointment;
     }
