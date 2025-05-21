@@ -11,7 +11,7 @@ import java.util.Date;
  * @author Dell
  */
 public class Pet {
-    private int id;
+    private String id;
     private User user;
     private String name;
     private Date birthDate;
@@ -24,7 +24,7 @@ public class Pet {
     public Pet() {
     }
 
-    public Pet(int id, User user, String name, Date birthDate, Specie specie, String gender, String avatar, Date createDate, Date updateDate) {
+    public Pet(String id, User user, String name, Date birthDate, Specie specie, String gender, String avatar, Date createDate, Date updateDate) {
         this.id = id;
         this.user = user;
         this.name = name;
@@ -36,14 +36,15 @@ public class Pet {
         this.updateDate = updateDate;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
+    
     public User getUser() {
         return user;
     }

@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public class Appointment {
 
-    private int id;
+    private String id;
     private User user;
     private Pet pet;
     private Doctor doctor;
@@ -25,7 +25,7 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(int id, User user, Pet pet, Doctor doctor, Date appointmentTime, String status, String notes, Date createDate, Date updateDate) {
+    public Appointment(String id, User user, Pet pet, Doctor doctor, Date appointmentTime, String status, String notes, Date createDate, Date updateDate) {
         this.id = id;
         this.user = user;
         this.pet = pet;
@@ -37,13 +37,15 @@ public class Appointment {
         this.updateDate = updateDate;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
+
+    
 
     public User getUser() {
         return user;

@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public class User {
 
-    private int id;
+    private String id;
     private String userName;
     private String email;
     private String password;
@@ -27,7 +27,7 @@ public class User {
     public User() {
     }
 
-    public User(int id, String userName, String email, String password, String fullName, String phoneNumber, String address, String avatar, Role role, Date createDate, Date updateDate) {
+    public User(String id, String userName, String email, String password, String fullName, String phoneNumber, String address, String avatar, Role role, Date createDate, Date updateDate) {
         this.id = id;
         this.userName = userName;
         this.email = email;
@@ -41,13 +41,15 @@ public class User {
         this.updateDate = updateDate;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
+
+    
 
     public String getUserName() {
         return userName;

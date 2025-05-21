@@ -9,7 +9,7 @@ package Model;
  * @author Dell
  */
 public class Medicine {
-    private int id;
+    private String id;
     private String name;
     private String descripton;
     private double price;
@@ -17,20 +17,22 @@ public class Medicine {
     public Medicine() {
     }
 
-    public Medicine(int id, String name, String descripton, double price) {
+    public Medicine(String id, String name, String descripton, double price) {
         this.id = id;
         this.name = name;
         this.descripton = descripton;
         this.price = price;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
+
+    
 
     public String getName() {
         return name;
