@@ -1,0 +1,41 @@
+﻿CREATE OR ALTER PROCEDURE sp_generate_doctor_schedule
+    @month INT,
+    @doctor_id VARCHAR(50)  -- hoặc kiểu phù hợp với cột doctor_id
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @year INT = YEAR(GETDATE());
+    DECLARE @startDate DATE = DATEFROMPARTS(@year, @month, 1);
+    DECLARE @endDate DATE = EOMONTH(@startDate);
+
+    DECLARE @currentDate DATE = @startDate;
+
+    WHILE @currentDate <= @endDate
+    BEGIN
+        -- Map weekday: SQL Server -> CN = 1, T2 = 2, ..., T7 = 7
+        -- Template dùng: T2 = 2, ..., CN = 8 → cần chuyển CN từ 1 -> 8
+        DECLARE @mappedWeekday INT = CASE 
+                                        WHEN DATEPART(WEEKDAY, @currentDate) = 1 THEN 8 
+                                        ELSE DATEPART(WEEKDAY, @currentDate)
+                                     END;
+
+        -- Thêm lịch làm việc nếu chưa có (tránh trùng), chỉ cho doctor_id truyền vào
+        INSERT INTO doctor_schedule (doctor_id, work_date, shift_id)
+        SELECT doctor_id, @currentDate, shift_id
+        FROM weekly_schedule_template
+        WHERE weekday = @mappedWeekday
+          AND doctor_id = @doctor_id
+          AND NOT EXISTS (
+              SELECT 1
+              FROM doctor_schedule ds
+              WHERE ds.doctor_id = weekly_schedule_template.doctor_id
+                AND ds.work_date = @currentDate
+                AND ds.shift_id = weekly_schedule_template.shift_id
+          );
+
+        SET @currentDate = DATEADD(DAY, 1, @currentDate);
+    END
+END
+
+

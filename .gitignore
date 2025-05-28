@@ -1,0 +1,9 @@
+/build/
+/dist/
+/SWP/nbproject/private/
+/SWP/build/
+**/WEB-INF/web.xml
+SWP/src/java/DAO/DBcontext.java
+
+
+
