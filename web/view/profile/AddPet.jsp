@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <c:if test="${not empty sessionScope.user}">
-        
+       
     </c:if>
 
     <head>
@@ -117,9 +117,7 @@
         <%@include file="../home/layout/Header.jsp" %>
         <!-- Navbar End -->
         <div class="container">
-
             <section class="bg-dashboard">
-
                 <div class="row">
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
@@ -129,7 +127,6 @@
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
                                 <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
-
 
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
@@ -143,111 +140,6 @@
                     </div><!--end col-->
 
                     <div class=" col-9">
-
-                        <!-- Start -->
-                        <div class="canle">
-                            <a href="addpet" class="create-btn">Add New Pet</a>
-                            <form method="post" action="searchpet" class="search-form">
-                                <input type="text" name="search" value="${search}" placeholder="Search by Name">
-                                <button type="submit">Search</button>
-                            </form>
-                        </div>
-                        <table class="table table-striped ">
-                            <thead>
-                                <tr>
-                                    <th>Tên Pet</th>
-                                    <th>Giới Tính</th>
-                                    <th>Ảnh</th>
-                                    <th>Giống</th>
-                                    <th>Trạng Thái</th>
-                                    <th>Hành Động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach items="${listpet}" var="pet">
-                                    <tr>
-                                        <td>${pet.name}</td>
-                                        <td>${pet.gender}</td>
-                                        <td>
-                                            <img src="${pageContext.request.contextPath}${pet.avatar}" alt="pet" width="50px" />
-                                        </td>
-                                        <td>${pet.breed.name}</td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${pet.status == 'active'}">Hoạt động</c:when>
-                                                <c:when test="${pet.status == 'inactive'}">Không hoạt động</c:when>
-                                                <c:when test="${pet.status == 'lost'}">Đã chết</c:when>
-
-                                            </c:choose>
-                                        </td>
-
-                                        <td>
-                                            <a href="updatepet?petID=${pet.id}" class="btn btn-warning">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </a>
-
-                                            <!-- Nút Chi tiết -->
-                                            <button type="button" class="btn btn-info" 
-                                                    data-bs-toggle="modal" data-bs-target="#detailPetModal${pet.id}">
-                                                <i class="fa-solid fa-circle-info"></i>
-                                            </button>
-
-                                            <!-- Nút Xóa -->
-                                            <form action="deletepet" method="post" style="display:inline;" 
-                                                  onsubmit="return confirm('Bạn có chắc muốn xóa pet này không?');">
-                                                <input type="hidden" name="id" value="${pet.id}" />
-                                                <button type="submit" class="btn btn-danger ">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-
-                                    </tr>
-
-
-                                    <!-- Modal Chi tiết -->
-                                <div class="modal fade" id="detailPetModal${pet.id}" tabindex="-1" aria-labelledby="detailPetModalLabel${pet.id}" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="detailPetModalLabel${pet.id}">Thông tin chi tiết Pet</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-4 text-center">
-                                                        <img src="${pageContext.request.contextPath}${pet.avatar}" alt="Pet" class="img-fluid rounded mb-3" />
-                                                    </div>
-                                                    <div class="col-md-8">
-
-                                                        <p><strong>Tên:</strong> ${pet.name}</p>
-                                                        <p><strong>Giới tính:</strong> ${pet.gender}</p>
-                                                        <p><strong>Ngày sinh:</strong> ${pet.birthDate}</p>
-                                                        <p><strong>Giống:</strong> ${pet.breed.name}</p>
-                                                        <p><strong>Loại:</strong> ${pet.breed.specie.name}</p>
-                                                        <p><strong>Trạng thái:</strong>
-                                                            <c:choose>
-                                                                <c:when test="${pet.status == 'active'}">Hoạt động</c:when>
-                                                                <c:when test="${pet.status == 'inactive'}">Không hoạt động</c:when>
-                                                                <c:when test="${pet.status == 'lost'}">Đã chết</c:when>
-                                                            </c:choose>
-                                                        </p>
-
-                                                        <p><strong>Mô tả:</strong> ${pet.description}</p>
-                                                        <p><strong>Ngày tạo:</strong> ${pet.createDate}</p>
-                                                        <p><strong>Ngày cập nhật:</strong> ${pet.updateDate}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                            </tbody>
-                        </table>
                         <c:if test="${not empty sessionScope.SuccessMessage}">
                             <div class="alert alert-success" id="successAlert">${sessionScope.SuccessMessage}</div>
                             <c:remove var="SuccessMessage" scope="session"/>
@@ -256,22 +148,69 @@
                             <div class="alert alert-fail" id="failAlert">${sessionScope.FailMessage}</div>
                             <c:remove var="FailMessage" scope="session"/>
                         </c:if>
+                        <form id="addPetForm" action="addpet" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <input type="hidden" name="id" value="${user.id}"/>
+                                <label for="name">Tên Pet:</label>
+                                <input type="text" id="name" name="name" class="form-control" required >
+                                <span id="nameError" class="text-danger"></span>
+                            </div>
 
+                            <div class="form-group">
+                                <label for="gender">Giới tính:</label>
+                                <select id="gender" name="gender" class="form-select" required>
+                                    <option value="">-- Chọn --</option>
+                                    <option value="Đực">Đực</option>
+                                    <option value="Cái">Cái</option>
+                                </select>
+                            </div>
 
+                            <div class="form-group">
+                                <label for="birthDate">Ngày sinh:</label>
+                                <input type="date" id="birthDate" name="birthDate" class="form-control">
+                            </div>
 
+                            <div class="form-group">
+                                <label for="breed">Giống:</label>
+                                <select class="form-select" id="breed" name="breed_id" required>
+                                    <option value="">Chọn Giống</option>
+                                    <c:forEach items="${breedList}" var="breed">
+                                        <option value="${breed.id}">${breed.name}</option>
+                                    </c:forEach>
+                                    <!--                                    <option value="other">Giống Khác</option>-->
 
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="status">Trạng thái:</label>
+                                <select id="status" name="status" class="form-select" required>
+                                    <option value="">--Chọn--</option>
+                                    <option value="active">Hoạt động</option>
+                                    <option value="inactive">Không hoạt động</option>
+                                    <option value="lost">Đã chết</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Mô tả:</label>
+                                <textarea id="description" name="description" rows="3" class="form-control" required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="avatar">Ảnh Pet:</label>
+                                <input type="file" class="form-control-file" id="avatar" name="avatar" />
+                                <small id="fileName" class="text-muted d-block mt-1"></small>
+                                <small id="fileError" class="text-danger d-block mt-1"></small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Thêm Pet</button>
+                        </form>
                     </div><!--end row-->
                 </div><!-- End -->
             </section><!--end section-->
 
         </div>
-        <!-- Modal Cập Nhật -->
-
-
-
-
-
-
         <!-- Offcanvas Start -->
         <div class="offcanvas bg-white offcanvas-top" tabindex="-1" id="offcanvasTop">
             <div class="offcanvas-body d-flex align-items-center align-items-center">
@@ -343,6 +282,174 @@
 
         <!-- javascript -->
         <script>
+// Hàm kiểm tra email hợp lệ
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+// Hàm kiểm tra username hợp lệ
+            function isValidUsername(username) {
+                return /^[a-zA-Z0-9_]{3,}$/.test(username);
+            }
+            // hàm kiểm tra Name hợp lệ                       
+            function isValidName(name) {
+                return /^[a-zA-Z0-9_]{2,}$/.test(name);
+            }
+
+// Hàm kiểm tra số điện thoại hợp lệ
+            function isValidPhoneNumber(phone) {
+                return /^0\d{9}$/.test(phone); // bắt đầu bằng 0, đủ 10 số
+            }
+
+// Hàm hiển thị lỗi
+            function showError(inputId, message) {
+                const errorElement = document.getElementById(inputId + 'Error');
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = message ? 'block' : 'none';
+                }
+            }
+
+// Hàm kiểm tra username
+            function validateUsername() {
+                const usernameInput = document.getElementById('userName');
+                const username = usernameInput.value.trim();
+                if (!username) {
+                    showError('userName', 'Tên đăng nhập không được để trống!');
+                    return false;
+                } else if (!isValidUsername(username)) {
+                    showError('userName', 'Tên đăng nhập phải có ít nhất 3 ký tự!');
+                    return false;
+                }
+                showError('userName', '');
+                return true;
+            }
+
+// Hàm kiểm tra email
+            function validateEmail() {
+                const emailInput = document.getElementById('email');
+                const email = emailInput.value.trim();
+                if (!email) {
+                    showError('email', 'Email không được để trống!');
+                    return false;
+                } else if (!isValidEmail(email)) {
+                    showError('email', 'Email không hợp lệ!');
+                    return false;
+                }
+                showError('email', '');
+                return true;
+            }
+
+// Hàm kiểm tra  name
+            function validateName() {
+                const fullNameInput = document.getElementById('name');
+                const fullName = fullNameInput.value.trim();
+
+                if (!fullName) {
+                    showError('fullName', 'Tên thú cưng không được để trống!');
+                    return false;
+                } else if (!isValidFullname(fullName)) {
+                    showError('fullName', 'Tên thú cưng phải có ít nhất 2 ký tự!');
+                    return false;
+                }
+
+                showError('fullName', '');
+                return true;
+            }
+
+
+// Hàm kiểm tra phone number
+            function validatePhoneNumber() {
+                const phoneInput = document.getElementById('phoneNumber');
+                const phone = phoneInput.value.trim();
+                if (!phone) {
+                    showError('phoneNumber', 'Số điện thoại không được để trống!');
+                    return false;
+                } else if (!isValidPhoneNumber(phone)) {
+                    showError('phoneNumber', 'Số điện thoại phải bắt đầu bằng 0 và có đúng 10 số!');
+                    return false;
+                }
+                showError('phoneNumber', '');
+                return true;
+            }
+
+// Hàm kiểm tra toàn bộ biểu mẫu khi submit
+            function validateForm() {
+                const isUsernameValid = validateUsername();
+                const isEmailValid = validateEmail();
+                const isFullNameValid = validateFullName();
+                const isPhoneNumberValid = validatePhoneNumber();
+                return isUsernameValid && isEmailValid && isFullNameValid && isPhoneNumberValid;
+            }
+
+// Gắn sự kiện blur khi trang tải
+            document.addEventListener('DOMContentLoaded', function () {
+                const inputs = [
+                    {id: 'userName', validate: validateUsername},
+                    {id: 'email', validate: validateEmail},
+                    {id: 'fullName', validate: validateFullName},
+                    {id: 'phoneNumber', validate: validatePhoneNumber}
+                ];
+
+                inputs.forEach(({ id, validate }) => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.addEventListener('blur', () => {
+                            console.log(`Blur event triggered for ${id}`); // Debugging
+                            validate();
+                        });
+                    } else {
+                        console.error(`Element with ID ${id} not found`);
+                }
+                });
+
+                // Gắn sự kiện change cho role_id (nếu cần)
+                const roleSelect = document.getElementById('role_id');
+                if (roleSelect) {
+                    roleSelect.addEventListener('change', toggleDoctorFields);
+                }
+            });
+
+// Hàm toggleDoctorFields (giữ nguyên nếu vẫn cần)
+            function toggleDoctorFields() {
+                const roleId = document.getElementById('role_id').value;
+                const doctorFields = document.querySelector('.doctor-fields');
+                if (doctorFields) {
+                    doctorFields.style.display = roleId === '3' ? 'block' : 'none';
+                }
+            }
+        </script>
+        <script>
+            document.getElementById("avatar").addEventListener("change", function () {
+                var fileInput = this;
+                var fileNameDisplay = document.getElementById("fileName");
+                var fileErrorDisplay = document.getElementById("fileError");
+
+                // Clear old messages
+                fileNameDisplay.textContent = "";
+                fileErrorDisplay.textContent = "";
+
+                if (fileInput.files.length > 0) {
+                    var file = fileInput.files[0];
+                    fileNameDisplay.textContent = "Đã chọn: " + file.name;
+
+                    if (file.size > 1048576) {
+                        fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
+                    }
+                }
+            });
+
+            document.getElementById("updateUserForm").addEventListener("submit", function (e) {
+                var fileInput = document.getElementById("avatar");
+                var fileErrorDisplay = document.getElementById("fileError");
+
+                // Nếu có file và bị lỗi kích thước thì chặn submit
+                if (fileInput.files.length > 0 && fileInput.files[0].size > 1048576) {
+                    e.preventDefault();
+                    fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
+                }
+            });
+
             // Tự động ẩn thông báo sau 5 giây
             setTimeout(function () {
                 const successAlert = document.getElementById('successAlert');

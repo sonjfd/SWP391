@@ -73,7 +73,7 @@ public class DoctorProfileSetting extends HttpServlet {
         String uuid = u.getId();
         Doctor d = ddao.getDoctorById(uuid);
         ss.setAttribute("doctor", d);
-        
+
         request.getRequestDispatcher("/view/doctor/content/DoctorProfileSetting.jsp").forward(request, response);
     }
 
@@ -109,14 +109,18 @@ public class DoctorProfileSetting extends HttpServlet {
 
         String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
         String filePath = "/assets/images/" + filename;
-
-        String userId = "55D57620-92B4-43AA-AB13-6C4FA6670604";
+        DoctorDAO ddao = new DoctorDAO();
+        HttpSession ss = request.getSession();
+        User u = (User) ss.getAttribute("user");
+        
+        
+        
 
         // Nếu không có ảnh mới, giữ ảnh cũ
         if (filename.isEmpty()) {
             try {
                 UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(userId);
+                User user = userDao.getUserById(u.getId());
                 filePath = user.getAvatar(); // Giữ lại ảnh cũ
             } catch (Exception e) {
                 e.printStackTrace();
@@ -131,8 +135,8 @@ public class DoctorProfileSetting extends HttpServlet {
         UserDAO userDAO = new UserDAO();
         DoctorDAO doctorDAO = new DoctorDAO();
 
-        boolean isUserUpdated = userDAO.updateUser(userId, fullName, address, email, phone, filePath);
-        boolean isDoctorUpdated = doctorDAO.updateDoctor(userId, specialty, certificates, qualifications, yearsOfExperience, biography);
+        boolean isUserUpdated = userDAO.updateUser(u.getId(), fullName, address, email, phone, filePath);
+        boolean isDoctorUpdated = doctorDAO.updateDoctor(u.getId(), specialty, certificates, qualifications, yearsOfExperience, biography);
 
         if (isUserUpdated && isDoctorUpdated) {
             // Nếu thành công, set thông báo thành công vào session

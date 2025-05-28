@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -174,24 +175,26 @@ public class UserDAO {
         return petList;
     }
     
-    public List<Pet> getPetsById(String petId) throws SQLException, ClassNotFoundException {
-        List<Pet> l = new ArrayList<>();
+   public Pet getPetsById(String petId) throws SQLException, ClassNotFoundException {
         Connection conn = DBContext.getConnection();
         if (conn == null) {
             return null;
         }
-        String query = "select * from pets where id =?;";
+
+        String query = "SELECT * FROM pets WHERE id = ?;";
+        Pet pet = null; // khai báo pet ở ngoài để dùng trong finally
+
         try (PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, petId);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+
+            if (rs.next()) {
                 UserDAO userDao = new UserDAO();
                 User user = userDao.getUserById(rs.getString("owner_id"));
 
-                UserDAO breedDao = new UserDAO();
-                Breed breed = breedDao.getBreedById(rs.getInt("breeds_id"));
+                Breed breed = userDao.getBreedById(rs.getInt("breeds_id"));
 
-                Pet pet = new Pet(
+                pet = new Pet(
                         rs.getString("id"),
                         user,
                         rs.getString("name"),
@@ -204,12 +207,12 @@ public class UserDAO {
                         rs.getDate("created_at"),
                         rs.getDate("updated_at")
                 );
-                l.add(pet);
             }
         } finally {
             conn.close();
         }
-        return l;
+
+        return pet;
     }
 
     //UserDAO
@@ -402,6 +405,159 @@ public class UserDAO {
         }
         return null;
     }
+    
+    public List<Breed> getBreeds() {
+        List<Breed> breedList = new ArrayList<Breed>();
+        String sql = "SELECT * FROM breeds";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                UserDAO specieDAO = new UserDAO();
+                Specie specie = specieDAO.getSpecieById(rs.getInt("species_id"));
+                Breed breed = new Breed(
+                        rs.getInt("id"),
+                        specie,
+                        rs.getString("name"));
+                breedList.add(breed);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return breedList;
+    }
+    
+    public boolean addPet(String ownerid, String name, Date birthdate, int breedid, String gender, String avatar, String desc, String status) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        int rowsAffected = 0;
+        try {
+            con = DBContext.getConnection();
+
+            String sql = "INSERT INTO Pets (id, owner_id, name, birth_date, breeds_id, gender, avatar, description, status, created_at, updated_at) "
+                    + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+            ps = con.prepareStatement(sql);
+            ps.setString(1, ownerid);
+            ps.setString(2, name);
+            ps.setDate(3, (java.sql.Date) birthdate);
+            ps.setInt(4, breedid);
+            ps.setString(5, gender);
+            ps.setString(6, avatar);
+            ps.setString(7, desc);
+            ps.setString(8, status);
+
+            rowsAffected = ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return rowsAffected > 0;
+    }
+    
+    public boolean deletePet(String id) {
+        String sql = "Delete pets where id =? ;";
+        try {
+            Connection conn = DAO.DBContext.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, id);
+            int check = stmt.executeUpdate();
+            if (check > 0) {
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public List<Pet> getPetsByName(String keyWord) throws SQLException, ClassNotFoundException {
+        List<Pet> petList = new ArrayList<>();
+        Connection conn = DBContext.getConnection();
+        if (conn == null) {
+            return petList;
+        }
+        String query = "SELECT * FROM Pets WHERE name LIKE ?";
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, "%" + keyWord + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserDAO userDao = new UserDAO();
+                User user = userDao.getUserById(rs.getString("owner_id"));
+
+                UserDAO breedDao = new UserDAO();
+                Breed breed = breedDao.getBreedById(rs.getInt("breeds_id"));
+
+                Pet pet = new Pet(
+                        rs.getString("id"),
+                        user,
+                        rs.getString("name"),
+                        rs.getDate("birth_date"),
+                        breed,
+                        rs.getString("gender"),
+                        rs.getString("avatar"),
+                        rs.getString("description"),
+                        rs.getString("status"),
+                        rs.getDate("created_at"),
+                        rs.getDate("updated_at")
+                );
+                petList.add(pet);
+            }
+        } finally {
+            conn.close();
+        }
+        return petList;
+    }
+    
+    public boolean updatePet(String id, String name, String gender, Date birthDate, int breedId,
+            String status, String description, String avatar) throws SQLException, ClassNotFoundException {
+        Connection conn = DBContext.getConnection();
+        if (conn == null) {
+            return false;
+        }
+
+        String sql = "UPDATE pets SET "
+                + "name = ?, "
+                + "gender = ?, "
+                + "birth_date = ?, "
+                + "breeds_id = ?, "
+                + "status = ?, "
+                + "description = ?, "
+                + "avatar = ?, "
+                + "updated_at = GETDATE() "
+                + "WHERE id = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, gender);
+            ps.setDate(3, (java.sql.Date) birthDate);
+            ps.setInt(4, breedId);
+            ps.setString(5, status);
+            ps.setString(6, description);
+            ps.setString(7, avatar);
+            ps.setString(8, id);
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } finally {
+            conn.close();
+        }
+    }
+    
+    
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         UserDAO d = new UserDAO();

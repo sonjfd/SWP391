@@ -55,6 +55,10 @@ public class User {
         this.address = address;
     }
 
+    public User(String id) {
+        this.id = id;
+    }
+
        
      
 

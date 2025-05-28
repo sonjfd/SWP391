@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -59,11 +60,16 @@ public class ViewUserInformation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        UserDAO ud = new UserDAO();
-        User user = new User();
-        user = ud.getUserById("DAD3BB0C-3ACB-433D-B8A1-BFD22AB73118");
-        request.setAttribute("USER", user);
-       
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("user") == null) {
+
+            response.sendRedirect("login");
+            return;
+        }
+        User user = (User) session.getAttribute("user");
+
+        request.setAttribute("user", user);
         request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
     }
 

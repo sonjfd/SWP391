@@ -54,7 +54,7 @@ public class AppointmentDAO {
                 appointment.setId(rs.getString("id"));
                 
                 appointment.setUser(u.getUserById(rs.getString("customer_id")));
-                appointment.setPet(u.getPetsById(rs.getString("pet_id")).get(0));
+                appointment.setPet(u.getPetsById(rs.getString("pet_id")));
                 appointment.setDoctor(d.getDoctorById(rs.getString("doctor_id")));
                 appointment.setStartTime(rs.getTimestamp("start_time"));
                 appointment.setEndTime(rs.getTimestamp("end_time"));

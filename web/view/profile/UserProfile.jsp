@@ -8,6 +8,9 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
+    <c:if test="${not empty sessionScope.user}">
+        
+    </c:if>
 
     <head>
         <meta charset="utf-8" />
@@ -49,8 +52,8 @@
     </head>
 
     <body>
-        
-        <c:set var="user" value="${requestScope.USER}"/>
+
+
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>
         <!-- Navbar End -->
@@ -72,11 +75,11 @@
                             </div>
 
                             <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Appointment</a></li>
-                                <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i> Schedule Timing</a></li>
-                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> My Pet</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Profile Settings</a></li>
-                                <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat</a></li>
+                                <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
+                                <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                <li class="navbar-item"><a href="viewlistpet?id=${user.id}" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="viewuserinformation?id=${user.id}" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
                             </ul>
                         </div>
                     </div><!--end col-->
@@ -96,39 +99,36 @@
                                 <div class="alert alert-danger" id="failAlert">${sessionScope.FailMessage}</div>
                                 <c:remove var="FailMessage" scope="session"/>
                             </c:if>
-
-
-
-
                             <div class="p-4">
-                                <form  id="updateUserForm" action="updateuserinformation" method="post" enctype="multipart/form-data">
+                                <form id="updateUserForm" action="updateuserinformation" method="post" enctype="multipart/form-data">
                                     <div class="row">
-                                        <!-- Thông tin bên trái -->
-
                                         <div class="col-md-8">
                                             <div class="mb-3">
                                                 <label class="form-label">ID:</label>
-                                                <input name="id" id="id" type="text" class="form-control"  value="${user.id}" readonly >
+                                                <input name="id" id="id" type="text" class="form-control" value="${user.id}" readonly>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Tên:</label>
-                                                <input name="name" id="name" type="text" class="form-control"  value="${user.fullName}">
+                                                <input name="fullName" id="fullName" type="text" class="form-control" value="${user.fullName}">
+                                                <span id="fullNameError" class="text-danger"></span>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">E-mail:</label>
-                                                <input name="email" id="email" type="email" class="form-control" value = "${user.email}">
+                                                <input name="email" id="email" type="email" class="form-control" value="${user.email}">
+                                                <span id="emailError" class="text-danger"></span>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Số điện thoại:</label>
-                                                <input name="number" id="number" type="text" class="form-control" value = "${user.phoneNumber}">
+                                                <input name="phoneNumber" id="phoneNumber" type="text" class="form-control" value="${user.phoneNumber}">
+                                                <span id="phoneNumberError" class="text-danger"></span>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Địa chỉ:</label>
-                                                <input name="address" id="address" type="text" class="form-control" value = "${user.address}">
+                                                <input name="address" id="address" type="text" class="form-control" value="${user.address}">
                                             </div>
 
                                             <div class="mb-3">
@@ -136,42 +136,26 @@
                                             </div>
                                         </div>
 
-                                        <!-- Avatar bên phải -->
+                                        <!-- Avatar -->
                                         <div class="col-md-4 text-center">
                                             <div class="mb-3">
-                                                <img src="${pageContext.request.contextPath}/${user.avatar}" alt="Ảnh đại diện" class="img-thumbnail rounded-circle" style="width:150px; height:150px; object-fit:cover;">
+                                                <img src="${pageContext.request.contextPath}/${user.avatar}" alt="Ảnh đại diện"
+                                                     class="img-thumbnail rounded-circle" style="width:150px; height:150px; object-fit:cover;">
                                             </div>
                                             <div class="mb-3">
-                                                <div class="mb-3">
-                                                    <input type="file" name="avatar" id="avatar" class="form-control">
-                                                    <small id="fileName" class="text-muted d-block mt-1"></small>
-                                                    <small id="fileError" class="text-danger d-block mt-1"></small>
-                                                </div>
-
+                                                <input type="file" name="avatar" id="avatar" class="form-control">
+                                                <small id="fileName" class="text-muted d-block mt-1"></small>
+                                                <small id="fileError" class="text-danger d-block mt-1"></small>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
-
-
-
                             </div>
-
-
                         </div>
 
-                        <!--                      
-                        
-                                                  
-                                        </div><!--end row-->
                     </div><!--end container-->
                     </section><!--end section-->
                     <!-- End -->
-
-
-
-
-
                     <!-- Offcanvas Start -->
                     <div class="offcanvas bg-white offcanvas-top" tabindex="-1" id="offcanvasTop">
                         <div class="offcanvas-body d-flex align-items-center align-items-center">
@@ -242,6 +226,144 @@
                     <!-- Offcanvas End -->
 
                     <!-- javascript -->
+                    <script>
+// Hàm kiểm tra email hợp lệ
+                        function isValidEmail(email) {
+                            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                        }
+
+// Hàm kiểm tra username hợp lệ
+                        function isValidUsername(username) {
+                            return /^[a-zA-Z0-9_]{3,}$/.test(username);
+                        }
+                        // hàm kiểm tra fullName hợp lệ                       
+                        function isValidFullname(fullname) {
+                            return /^[a-zA-Z0-9_]{3,}$/.test(fullname);
+                        }
+
+// Hàm kiểm tra số điện thoại hợp lệ
+                        function isValidPhoneNumber(phone) {
+                            return /^0\d{9}$/.test(phone); // bắt đầu bằng 0, đủ 10 số
+                        }
+
+// Hàm hiển thị lỗi
+                        function showError(inputId, message) {
+                            const errorElement = document.getElementById(inputId + 'Error');
+                            if (errorElement) {
+                                errorElement.textContent = message;
+                                errorElement.style.display = message ? 'block' : 'none';
+                            }
+                        }
+
+// Hàm kiểm tra username
+                        function validateUsername() {
+                            const usernameInput = document.getElementById('userName');
+                            const username = usernameInput.value.trim();
+                            if (!username) {
+                                showError('userName', 'Tên đăng nhập không được để trống!');
+                                return false;
+                            } else if (!isValidUsername(username)) {
+                                showError('userName', 'Tên đăng nhập phải có ít nhất 3 ký tự!');
+                                return false;
+                            }
+                            showError('userName', '');
+                            return true;
+                        }
+
+// Hàm kiểm tra email
+                        function validateEmail() {
+                            const emailInput = document.getElementById('email');
+                            const email = emailInput.value.trim();
+                            if (!email) {
+                                showError('email', 'Email không được để trống!');
+                                return false;
+                            } else if (!isValidEmail(email)) {
+                                showError('email', 'Email không hợp lệ!');
+                                return false;
+                            }
+                            showError('email', '');
+                            return true;
+                        }
+
+// Hàm kiểm tra full name
+                        function validateFullName() {
+                            const fullNameInput = document.getElementById('fullName');
+                            const fullName = fullNameInput.value.trim();
+
+                            if (!fullName) {
+                                showError('fullName', 'Họ và tên không được để trống!');
+                                return false;
+                            } else if (!isValidFullname(fullName)) {
+                                showError('fullName', 'Họ và tên phải có ít nhất 3 ký tự!');
+                                return false;
+                            }
+
+                            showError('fullName', '');
+                            return true;
+                        }
+
+
+// Hàm kiểm tra phone number
+                        function validatePhoneNumber() {
+                            const phoneInput = document.getElementById('phoneNumber');
+                            const phone = phoneInput.value.trim();
+                            if (!phone) {
+                                showError('phoneNumber', 'Số điện thoại không được để trống!');
+                                return false;
+                            } else if (!isValidPhoneNumber(phone)) {
+                                showError('phoneNumber', 'Số điện thoại phải bắt đầu bằng 0 và có đúng 10 số!');
+                                return false;
+                            }
+                            showError('phoneNumber', '');
+                            return true;
+                        }
+
+// Hàm kiểm tra toàn bộ biểu mẫu khi submit
+                        function validateForm() {
+                            const isUsernameValid = validateUsername();
+                            const isEmailValid = validateEmail();
+                            const isFullNameValid = validateFullName();
+                            const isPhoneNumberValid = validatePhoneNumber();
+                            return isUsernameValid && isEmailValid && isFullNameValid && isPhoneNumberValid;
+                        }
+
+// Gắn sự kiện blur khi trang tải
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const inputs = [
+                                {id: 'userName', validate: validateUsername},
+                                {id: 'email', validate: validateEmail},
+                                {id: 'fullName', validate: validateFullName},
+                                {id: 'phoneNumber', validate: validatePhoneNumber}
+                            ];
+
+                            inputs.forEach(({ id, validate }) => {
+                                const input = document.getElementById(id);
+                                if (input) {
+                                    input.addEventListener('blur', () => {
+                                        console.log(`Blur event triggered for ${id}`); // Debugging
+                                        validate();
+                                    });
+                                } else {
+                                    console.error(`Element with ID ${id} not found`);
+                            }
+                            });
+
+                            // Gắn sự kiện change cho role_id (nếu cần)
+                            const roleSelect = document.getElementById('role_id');
+                            if (roleSelect) {
+                                roleSelect.addEventListener('change', toggleDoctorFields);
+                            }
+                        });
+
+// Hàm toggleDoctorFields (giữ nguyên nếu vẫn cần)
+                        function toggleDoctorFields() {
+                            const roleId = document.getElementById('role_id').value;
+                            const doctorFields = document.querySelector('.doctor-fields');
+                            if (doctorFields) {
+                                doctorFields.style.display = roleId === '3' ? 'block' : 'none';
+                            }
+                        }
+                    </script>
                     <script>
                         // Tự động ẩn thông báo sau 5 giây
                         setTimeout(function () {

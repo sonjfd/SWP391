@@ -5,6 +5,8 @@
 package UserController;
 
 import DAO.UserDAO;
+import Model.Breed;
+import Model.Pet;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,14 +19,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "UpdateUserInformation", urlPatterns = {"/updateuserinformation"})
+@WebServlet(name = "UpdatePet", urlPatterns = {"/updatepet"})
 @MultipartConfig
-public class UpdateUserInformation extends HttpServlet {
+public class UpdatePet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,6 +42,23 @@ public class UpdateUserInformation extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet UpdatePet</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet UpdatePet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -47,8 +71,21 @@ public class UpdateUserInformation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
+        String petID = request.getParameter("petID");
+        UserDAO dao = new UserDAO();
 
+        List<Breed> breedList = dao.getBreeds();
+        request.setAttribute("breedList", breedList);
+        Pet pet = null;
+        try {
+            pet = dao.getPetsById(petID);
+        } catch (SQLException ex) {
+            Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        request.setAttribute("pet", pet);
+        request.getRequestDispatcher("view/profile/UpdatePet.jsp").forward(request, response);
     }
 
     /**
@@ -62,34 +99,19 @@ public class UpdateUserInformation extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String id = request.getParameter("id");
-        String name = request.getParameter("fullName");
-        String address = request.getParameter("address");
-        String email = request.getParameter("email");
-        String number = request.getParameter("phoneNumber");
+        String petId = request.getParameter("petId");
+        String name = request.getParameter("name");
+        String gender = request.getParameter("gender");
+        String birthDateStr = request.getParameter("birthDate");
+        Date birthDate = null;
+        if (birthDateStr != null && !birthDateStr.isEmpty()) {
+            birthDate = Date.valueOf(birthDateStr);
+        }
+        int breedId = Integer.parseInt(request.getParameter("breed_id"));
+        String status = request.getParameter("status");
+        String description = request.getParameter("description");
         Part part = request.getPart("avatar");
-        if (name == null || name.trim().isEmpty()
-                || email == null || email.trim().isEmpty()
-                || number == null || number.trim().isEmpty()
-                || address == null || address.trim().isEmpty()) {
-
-            request.getSession().setAttribute("FailMessage", "Vui lòng điền đầy đủ thông tin.");
-            response.sendRedirect("viewuserinformation");
-            return;
-        }
-
-        if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-            request.getSession().setAttribute("FailMessage", "Email không đúng định dạng.");
-            response.sendRedirect("viewuserinformation");
-            return;
-        }
-
-        if (!number.matches("^(0|\\+84)[0-9]{9,10}$")) {
-            request.getSession().setAttribute("FailMessage", "Bạn phải nhập theo định dạng (+84) xxxxxxxxx hoặc 0xxxxxxxxx");
-            response.sendRedirect("viewuserinformation");
-            return;
-        }
-
+        
         String realPath = request.getServletContext().getRealPath("/assets/images");
         File uploads = new File(realPath);
         if (!uploads.exists()) {
@@ -104,8 +126,8 @@ public class UpdateUserInformation extends HttpServlet {
 
             try {
                 UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(id);
-                filePath = user.getAvatar(); // Giữ lại ảnh cũ
+                Pet pet = userDao.getPetsById(petId);
+                filePath = pet.getAvatar(); // Giữ lại ảnh cũ
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -116,21 +138,16 @@ public class UpdateUserInformation extends HttpServlet {
             part.write(file.getAbsolutePath());
         }
         UserDAO ud = new UserDAO();
-        if (ud.updateUser(id, name, address, email, number, filePath)) {
-            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
-
-        } else {
-            request.getSession().setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
+        Breed breed = new Breed(breedId);
+        try {
+            ud.updatePet(petId, name, gender, birthDate, breedId, status, description, filePath);
+        } catch (SQLException ex) {
+            Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Test log ra console (sau này thay bằng update vào database)
-        System.out.println("ID: " + id);
-        System.out.println("Name: " + name);
-        System.out.println("Address: " + address);
-        System.out.println("Email: " + email);
-        System.out.println("Phone Number: " + number);
-        System.out.println("url avatar: " + filePath);
-        response.sendRedirect("viewuserinformation");
 
+        response.sendRedirect("viewlistpet");
     }
 
     /**
