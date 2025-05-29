@@ -7,7 +7,9 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
+    <c:if test="${not empty sessionScope.user}">
 
+    </c:if>
 
     <head>
         <meta charset="utf-8" />
@@ -122,7 +124,7 @@
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/assets/images/doctors/profile-bg.jpg" class="img-fluid" alt="">
+                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
                                 <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
@@ -133,8 +135,8 @@
                             <ul class="list-unstyled sidebar-nav mb-0">
                                 <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
                                 <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet?id=${user.id}" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation?id=${user.id}" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
                                 <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
                             </ul>
                         </div>
@@ -146,6 +148,7 @@
                         <div class="canle">
                             <a href="addpet" class="create-btn">Add New Pet</a>
                             <form method="post" action="searchpet" class="search-form">
+                                <input type ="text" name ="id" value ="${user.id}" hidden>
                                 <input type="text" name="search" value="${search}" placeholder="Search by Name">
                                 <button type="submit">Search</button>
                             </form>

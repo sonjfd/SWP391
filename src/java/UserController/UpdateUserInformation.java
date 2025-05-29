@@ -101,9 +101,45 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             || number == null || number.trim().isEmpty()
             || address == null || address.trim().isEmpty()) {
 
-        request.getSession().setAttribute("FailMessage", "Vui lòng điền đầy đủ thông tin.");
+        String realPath = request.getServletContext().getRealPath("/assets/images");
+        File uploads = new File(realPath);
+        if (!uploads.exists()) {
+            uploads.mkdirs();
+        }
+
+        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
+        String filePath = "/assets/images/" + filename;
+
+        // Nếu không có ảnh mới, giữ ảnh cũ
+        if (filename.isEmpty()) {
+
+            try {
+                UserDAO userDao = new UserDAO();
+                User user = userDao.getUserById(id);
+                filePath = user.getAvatar(); // Giữ lại ảnh cũ
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
+            File file = new File(uploads, filename);
+            part.write(file.getAbsolutePath());
+        }
+        UserDAO ud = new UserDAO();
+        if (ud.updateUser(id, name, address, email, number, filePath)) {
+            // Cập nhật lại user trong session
+            User updatedUser = ud.getUserById(id);
+            request.getSession().setAttribute("user", updatedUser);
+
+            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
+        } else {
+            request.getSession().setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
+        }
         response.sendRedirect("viewuserinformation");
-        return;
+
+        
+
     }
 
     if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {

@@ -80,17 +80,27 @@ public class SearchPet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String text = (String) request.getParameter("search");
-       
-        UserDAO petDAO = new UserDAO();
+        String id = request.getParameter("id");
         List<Pet> petList = null;
-        try {
-            petList = petDAO.getPetsByName(text);
-        } catch (SQLException ex) {
-            Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
+        UserDAO petDAO = new UserDAO();
+
+        if (text.isEmpty() || text.isBlank()) {
+            try {
+                petList = petDAO.getPetsByUser(id);
+            } catch (SQLException ex) {
+                Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                petList = petDAO.getPetsByName(text);
+            } catch (SQLException ex) {
+                Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        System.out.println(petList);
 
         request.setAttribute("listpet", petList);
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
