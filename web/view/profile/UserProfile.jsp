@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <c:if test="${not empty sessionScope.user}">
-        
+
     </c:if>
 
     <head>
@@ -65,7 +65,7 @@
                     <div class="col-xl-4 col-lg-4 col-md-5 col-12">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/assets/images/doctors/profile-bg.jpg" class="img-fluid" alt="">
+                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
                             </div>
 
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
@@ -73,12 +73,11 @@
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
 
                             </div>
-
                             <ul class="list-unstyled sidebar-nav mb-0">
                                 <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
                                 <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet?id=${user.id}" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation?id=${user.id}" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
                                 <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
                             </ul>
                         </div>
@@ -99,36 +98,36 @@
                                 <div class="alert alert-danger" id="failAlert">${sessionScope.FailMessage}</div>
                                 <c:remove var="FailMessage" scope="session"/>
                             </c:if>
+
                             <div class="p-4">
                                 <form id="updateUserForm" action="updateuserinformation" method="post" enctype="multipart/form-data">
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="mb-3">
-                                                <label class="form-label">ID:</label>
-                                                <input name="id" id="id" type="text" class="form-control" value="${user.id}" readonly>
+                                                <input name="id" id="id" type="text" class="form-control" value="${requestScope.user.id}" hidden>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Tên:</label>
-                                                <input name="fullName" id="fullName" type="text" class="form-control" value="${user.fullName}">
+                                                <input name="fullName" id="fullName" type="text" class="form-control" value="${requestScope.user.fullName}">
                                                 <span id="fullNameError" class="text-danger"></span>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">E-mail:</label>
-                                                <input name="email" id="email" type="email" class="form-control" value="${user.email}">
+                                                <input name="email" id="email" type="email" class="form-control" value="${requestScope.user.email}">
                                                 <span id="emailError" class="text-danger"></span>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Số điện thoại:</label>
-                                                <input name="phoneNumber" id="phoneNumber" type="text" class="form-control" value="${user.phoneNumber}">
+                                                <input name="phoneNumber" id="phoneNumber" type="text" class="form-control" value="${requestScope.user.phoneNumber}">
                                                 <span id="phoneNumberError" class="text-danger"></span>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label class="form-label">Địa chỉ:</label>
-                                                <input name="address" id="address" type="text" class="form-control" value="${user.address}">
+                                                <input name="address" id="address" type="text" class="form-control" value="${requestScope.user.address}">
                                             </div>
 
                                             <div class="mb-3">
@@ -139,7 +138,7 @@
                                         <!-- Avatar -->
                                         <div class="col-md-4 text-center">
                                             <div class="mb-3">
-                                                <img src="${pageContext.request.contextPath}/${user.avatar}" alt="Ảnh đại diện"
+                                                <img src="${pageContext.request.contextPath}/${requestScope.user.avatar}" alt="Ảnh đại diện"
                                                      class="img-thumbnail rounded-circle" style="width:150px; height:150px; object-fit:cover;">
                                             </div>
                                             <div class="mb-3">

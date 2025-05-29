@@ -22,10 +22,9 @@ public class User {
     private String avatar;
     private int status;
     private Role role;
-    
+
     private Date createDate;
     private Date updateDate;
-
 
     public User() {
     }
@@ -59,19 +58,6 @@ public class User {
         this.id = id;
     }
 
-       
-     
-
-    
-    
-  
-       
-    
-        
-    
-
-    
-
     public String getId() {
         return id;
     }
@@ -79,8 +65,6 @@ public class User {
     public void setId(String id) {
         this.id = id;
     }
-
-    
 
     public String getUserName() {
         return userName;
@@ -167,10 +151,6 @@ public class User {
         return "User{" + "id=" + id + ", userName=" + userName + ", email=" + email + ", password=" + password + ", fullName=" + fullName + ", phoneNumber=" + phoneNumber + ", address=" + address + ", avatar=" + avatar + ", status=" + status + ", role=" + role + ", createDate=" + createDate + ", updateDate=" + updateDate + '}';
     }
 
-    
-
-    
-
     public int getStatus() {
         return status;
     }
@@ -178,11 +158,5 @@ public class User {
     public void setStatus(int status) {
         this.status = status;
     }
-
-    
-    
-
-    
-    
 
 }

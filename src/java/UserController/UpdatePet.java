@@ -138,7 +138,6 @@ public class UpdatePet extends HttpServlet {
             part.write(file.getAbsolutePath());
         }
         UserDAO ud = new UserDAO();
-        Breed breed = new Breed(breedId);
         try {
             ud.updatePet(petId, name, gender, birthDate, breedId, status, description, filePath);
         } catch (SQLException ex) {

@@ -47,7 +47,6 @@ public class UpdateUserInformation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
 
     }
 
@@ -117,19 +116,17 @@ public class UpdateUserInformation extends HttpServlet {
         }
         UserDAO ud = new UserDAO();
         if (ud.updateUser(id, name, address, email, number, filePath)) {
-            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
+            // Cập nhật lại user trong session
+            User updatedUser = ud.getUserById(id);
+            request.getSession().setAttribute("user", updatedUser);
 
+            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
         } else {
             request.getSession().setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
         }
-        // Test log ra console (sau này thay bằng update vào database)
-        System.out.println("ID: " + id);
-        System.out.println("Name: " + name);
-        System.out.println("Address: " + address);
-        System.out.println("Email: " + email);
-        System.out.println("Phone Number: " + number);
-        System.out.println("url avatar: " + filePath);
         response.sendRedirect("viewuserinformation");
+
+        
 
     }
 

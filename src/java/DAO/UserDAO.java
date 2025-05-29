@@ -270,6 +270,7 @@ public class UserDAO {
     }
 
     //UserDAO
+    
     public Breed getBreedByName(String name) {
         String sql = "SELECT * FROM breeds WHERE name = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
