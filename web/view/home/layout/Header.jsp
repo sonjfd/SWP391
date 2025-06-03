@@ -8,13 +8,16 @@
         <meta charset="utf-8" />
         <title>Pet24h</title>
         <!-- Link to your CSS -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.min.css"/>
-
-        <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/images/fav/favicon-32x32.png">
-        <link rel="manifest" href="/manifest.json">
-        <meta name="msapplication-TileColor" content="#ffffff">
-        <meta name="msapplication-TileImage" content="${pageContext.request.contextPath}/assets/images/fav/ms-icon-144x144.png">
-        <meta name="theme-color" content="#ffffff">
+        <!-- Bootstrap -->
+        <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <!-- Icons -->
+        <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+        <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
+        <!-- SLIDER -->
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
+        <!-- Css -->
+        <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
 
         <!-- Custom CSS -->
         <style>
@@ -87,35 +90,35 @@
             </div>
         </div>
         <!-- Loader -->
+        <c:set var="cl" value="${sessionScope.clinicInfo}"></c:set>
+            <!-- Navbar Start -->
+            <header id="topnav" class="navigation sticky">
+                <div class="container-fluid"> <!-- Use container-fluid for full-width container -->
+                    <div class="d-flex justify-content-center align-items-center w-100"> <!-- Flexbox for layout -->
+                        <!-- Logo container-->
 
-        <!-- Navbar Start -->
-        <header id="topnav" class="navigation sticky">
-            <div class="container-fluid"> <!-- Use container-fluid for full-width container -->
-                <div class="d-flex justify-content-between align-items-center w-100"> <!-- Flexbox for layout -->
-                    <!-- Logo container-->
+                        <!-- End Logo container-->
 
-                    <!-- End Logo container-->
-
-                    <!-- Start Mobile Toggle -->
-                    <div class="menu-extras">
-                        <div class="menu-item">
-                            <!-- Mobile menu toggle-->
-                            <a class="navbar-toggle" id="isToggle" onclick="toggleMenu()">
-                                <div class="lines">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
-                            </a>
-                            <!-- End mobile menu toggle-->
+                        <!-- Start Mobile Toggle -->
+                        <div class="menu-extras">
+                            <div class="menu-item">
+                                <!-- Mobile menu toggle-->
+                                <a class="navbar-toggle" id="isToggle" onclick="toggleMenu()">
+                                    <div class="lines">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </a>
+                                <!-- End mobile menu toggle-->
+                            </div>
                         </div>
-                    </div>
-                    <!-- End Mobile Toggle -->
+                        <!-- End Mobile Toggle -->
 
-                    <!-- Start Dropdown -->
-                    <div class="d-flex align-items-center">
-                        <a class="logo d-flex align-items-center" href="homepage">
-                            <img src="${pageContext.request.contextPath}/assets/images/logo.jpg" height="30" width="30" alt="Logo">
+                        <!-- Start Dropdown -->
+                        <div class="d-flex align-items-center">
+                            <a class="logo d-flex align-items-center" href="homepage">
+                                <img src="${pageContext.request.contextPath}/${cl.logo}" height="30" width="30" alt="Logo">
                             <span class="logo-text">Pet24h</span> <!-- Gradient Text -->
                         </a>
                         <div id="navigation" class="d-flex justify-content-between align-items-center">
@@ -131,9 +134,10 @@
                                     <a href="homeblog" class="sub-menu-item">Tin tức</a>
                                 </li>
                                 <li class="has-submenu parent-menu-item position-relative">
-                                    <a href="homeaboutus#services">Dịch vụ</a>
-                                    <ul class="submenu p-0" style="width: 400px;">
-                                        <div class="row px-3 py-2">
+                                    <c:set var="services" value="${sessionScope.services}"></c:set>
+                                        <a href="homeaboutus#services">Dịch vụ</a>
+                                        <ul class="submenu p-0" style="width: 400px;">
+                                            <div class="row px-3 py-2">
                                             <c:set var="half" value="${fn:length(services) div 2 + fn:length(services) mod 2}" />
                                             <div class="col-6">
                                                 <c:forEach var="s" items="${services}" varStatus="status">
@@ -253,7 +257,16 @@
         <!-- Navbar End -->
 
 
-
+        <!-- javascript -->
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- SLIDER -->
+        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
+        <!-- Counter -->
+        <script src="${pageContext.request.contextPath}/assets/js/counter.init.js"></script>
+        <!-- Icons -->
+        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+        <!-- Main Js -->
+        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
     </body>
 </html>
-

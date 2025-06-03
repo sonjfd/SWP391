@@ -30,7 +30,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
         </style>
     </head>
     <body>
-        <c:set var="cl" value="${requestScope.clinicInfo}"></c:set>
+        <c:set var="cl" value="${sessionScope.clinicInfo}"></c:set>
             <!-- Start -->
             <footer class="bg-footer">
                 <div class="container">

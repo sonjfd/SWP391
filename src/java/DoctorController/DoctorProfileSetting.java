@@ -142,6 +142,10 @@ public class DoctorProfileSetting extends HttpServlet {
             // Nếu thành công, set thông báo thành công vào session
             request.getSession().setAttribute("alertMessage", "Cập nhật thông tin thành công!");
             request.getSession().setAttribute("alertType", "success");
+            User updatedUser = userDAO.getUserById(u.getId());
+
+        
+            request.getSession().setAttribute("user", updatedUser);
         } else {
             // Nếu thất bại, set thông báo thất bại vào session
             request.getSession().setAttribute("alertMessage", "Cập nhật thông tin không thành công!");

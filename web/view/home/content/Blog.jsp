@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -66,72 +67,71 @@
 
         <!-- Start -->
         <!-- Blogs Section Start -->
-        <section class="section">
+        <section class="py-5">
             <div class="container">
                 <div class="row">
-                    <!-- JSTL Loop for displaying blogs -->
-                    <c:forEach var="blog" items="${blogs}">
-                        <div class="col-lg-4 col-md-6 col-12 mb-4 pb-2">
-                            <div class="card blog blog-primary border-0 shadow rounded overflow-hidden">
-                                <img src="${pageContext.request.contextPath}/assets/images/Blog.png" class="img-fluid" alt="${blog.title}">
-                                <div class="card-body p-4">
-                                    <ul class="list-unstyled mb-2">
-                                        <li class="list-inline-item text-muted small me-3">
-                                            <i class="uil uil-calendar-alt text-dark h6 me-1"></i>
-                                        <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy"/>
-                                        </li>
-                                        <li class="list-inline-item text-muted small">
-                                            <i class="uil uil-clock text-dark h6 me-1"></i>5 min read
-                                        </li>
-                                    </ul>
-                                    <a href="blog-detail?id=${blog.id}" class="text-dark title h5">${blog.title}</a>
-                                    <div class="post-meta d-flex justify-content-between mt-3">
-                                        <ul class="list-unstyled mb-0">
-                                            <li class="list-inline-item me-2 mb-0">
-                                                <a href="#" class="text-muted like"><i class="mdi mdi-heart-outline me-1"></i>33</a>
-                                            </li>
-                                            <li class="list-inline-item">
-                                                <a href="#" class="text-muted comments"><i class="mdi mdi-comment-outline me-1"></i>08</a>
-                                            </li>
-                                        </ul>
-                                        <a href="blog-detail?id=${blog.id}" class="link">Read More <i class="mdi mdi-chevron-right align-middle"></i></a>
+                    <!-- LEFT: Blog Posts -->
+                    <div class="col-lg-8">
+                        <c:forEach var="blog" items="${blogs}">
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-body d-flex">
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title"><a href="blog-detail?id=${blog.id}" class="text-dark">${blog.title}</a></h5>
+                                        <p class="card-text text-muted">${fn:substring(blog.content, 0, 100)}...</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock"></i>
+                                            <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />
+                                        </small>
+                                        <div class="mt-2">
+                                            <c:forEach var="tag" items="${blog.tags}">
+                                                <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark border me-1">${tag.name}</a>
+                                            </c:forEach>
+                                        </div>
                                     </div>
+                                    <img src="${pageContext.request.contextPath}/${blog.image}" class="ms-3" style="width: 120px; height: 90px; object-fit: cover;" alt="img">
                                 </div>
                             </div>
-                        </div><!--end col-->
-                    </c:forEach>
-                </div>
+                        </c:forEach>
 
-                <!-- Pagination Start -->
-                <div class="row text-center">
-                    <div class="col-12">
-                        <ul class="pagination justify-content-center mb-0">
-
-                            <!-- Prev button -->
-                            <li class="page-item ${param.index == 1 || param.index == null ? 'disabled' : ''}">
-                                <a class="page-link" href="homeblog?index=${param.index - 1}" aria-label="Previous">Prev</a>
-                            </li>
-
-                            <!-- Page numbers -->
-                            <c:forEach var="i" begin="1" end="${requestScope.endP}">
-                                <li class="page-item ${param.index == i || (param.index == null && i == 1) ? 'active' : ''}">
-                                    <a class="page-link" href="homeblog?index=${i}">${i}</a>
+                        <!-- Pagination -->
+                        <nav class="mt-4">
+                            <!-- Pagination -->
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item ${index == 1 ? 'disabled' : ''}">
+                                    <a class="page-link" href="homeblog?index=${index - 1}&tag=${selectedTag}">Prev</a>
                                 </li>
+                                <c:forEach var="i" begin="1" end="${endP}">
+                                    <li class="page-item ${index == i ? 'active' : ''}">
+                                        <a class="page-link" href="homeblog?index=${i}&tag=${selectedTag}">${i}</a>
+                                    </li>
+                                </c:forEach>
+                                <li class="page-item ${index == endP ? 'disabled' : ''}">
+                                    <a class="page-link" href="homeblog?index=${index + 1}&tag=${selectedTag}">Next</a>
+                                </li>
+                            </ul>
+
+                        </nav>
+                    </div>
+
+                    <!-- RIGHT: Tag Suggestions -->
+                    <div class="col-lg-4">
+                        <h6 class="mb-3">CÁC THẺ ĐỀ XUẤT</h6>
+                        <div class="d-flex flex-wrap gap-2 mb-4">
+                            <c:forEach var="tag" items="${allTags}">
+                                <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark me-2 mb-2 ${selectedTag == tag.id ? 'border border-primary' : ''}">
+                                    ${tag.name}
+                                </a>
                             </c:forEach>
-
-                            <!-- Next button -->
-                            <li class="page-item ${param.index >= requestScope.endP ? 'disabled' : ''}">
-                                <a class="page-link" href="homeblog?index=${param.index + 1}" aria-label="Next">Next</a>
-                            </li>
-
-                        </ul><!--end pagination-->
-                    </div><!--end col-->
-                </div><!--end row-->
-                <!-- Pagination End -->
-            </div><!--end container-->
-        </section><!--end section-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         <!-- End Blogs Section -->
         <!-- End -->
+
+
+
 
 
 
