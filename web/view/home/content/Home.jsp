@@ -1,7 +1,7 @@
-    <%-- 
-    Document   : home
-    Created on : May 19, 2025, 10:23:09 PM
-    Author     : Dell
+<%-- 
+Document   : home
+Created on : May 19, 2025, 10:23:09 PM
+Author     : Dell
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -174,77 +174,74 @@
         <!-- BLOG / TIN TỨC MỚI NHẤT Start -->
         <section class="section bg-light">
             <div class="container">
-                <div class="section-title text-center mb-5">
-                    <h4 class="title mb-3">Tin tức & Chia sẻ</h4>
-                    <p class="text-muted">Cập nhật tin mới, kinh nghiệm chăm sóc thú cưng & ưu đãi.</p>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="title mb-0">Bài viết nổi bật</h4>
+                    <a href="homeblog" class="text-primary fw-bold">Xem tất cả &gt;</a>
                 </div>
-                <div class="row">
-                    <!-- Loop through the blogs -->
-                    <c:forEach var="blog" items="${blogs}" begin="1" end="9">
-                        <div class="col-md-4 mb-4">
-                            <div class="card h-100 border-0 shadow rounded">
-                                <div class="card-body">
-                                    <h5 class="card-title">${blog.title}</h5>
-                                    <div class="small text-muted mb-2">
-                                        ${blog.author} - <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy"/>
-                                    </div>
-                                    <div class="card-text text-muted" style="min-height:70px">
-                                        ${fn:substring(blog.content,0,90)}...
-                                    </div>
-                                    <a href="blog-detail?id=${blog.id}" class="btn btn-link p-0 mt-2">
-                                        Đọc tiếp <i class="ri-arrow-right-line"></i>
+
+                <div class="row g-3">
+                    <c:forEach var="blog" items="${blogs}" begin="0" end="7">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card border-0 shadow-sm h-100 rounded-3">
+                                <img src="${pageContext.request.contextPath}/${blog.image}" class="card-img-top" alt="${blog.title}" style="height:170px; object-fit:cover; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title mb-2 text-dark" style="font-size: 16px; line-height: 1.4">${blog.title}</h6>
+                                    <p class="text-muted small mb-2" style="font-size: 13px;">
+                                        ${blog.author.fullName} • 
+                                        <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy"/>
+                                    </p>
+                                    <a href="blog-detail?id=${blog.id}" class="mt-auto text-decoration-none text-primary small fw-bold">
+                                        Đọc tiếp <i class="ri-arrow-right-line align-middle"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </c:forEach>
                 </div>
-                <div class="text-center mt-4">
-                    <a href="homeblog" class="btn btn-primary">Xem tất cả tin tức</a>
-                </div>
             </div>
         </section>
         <!-- BLOG / TIN TỨC MỚI NHẤT End -->
 
-<!--         TESTIMONIALS Start 
-        <section class="section">
-            <div class="container">
-                <div class="section-title text-center mb-5">
-                    <h4 class="title mb-3">Khách hàng nói gì về Pet24H?</h4>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                <div class="carousel-item active text-center">
-                                    <img src="${pageContext.request.contextPath}/assets/images/customers/customer1.jpg" class="rounded-circle mb-3" width="80">
-                                    <blockquote class="blockquote">
-                                        <p>Pet24H chăm sóc cho bé mèo nhà mình rất tận tâm, bác sĩ nhiệt tình và chuyên môn cao.</p>
-                                        <footer class="blockquote-footer">Nguyễn Thị A, chủ nhân của Mimi</footer>
-                                    </blockquote>
+
+        <!--         TESTIMONIALS Start 
+                <section class="section">
+                    <div class="container">
+                        <div class="section-title text-center mb-5">
+                            <h4 class="title mb-3">Khách hàng nói gì về Pet24H?</h4>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active text-center">
+                                            <img src="${pageContext.request.contextPath}/assets/images/customers/customer1.jpg" class="rounded-circle mb-3" width="80">
+                                            <blockquote class="blockquote">
+                                                <p>Pet24H chăm sóc cho bé mèo nhà mình rất tận tâm, bác sĩ nhiệt tình và chuyên môn cao.</p>
+                                                <footer class="blockquote-footer">Nguyễn Thị A, chủ nhân của Mimi</footer>
+                                            </blockquote>
+                                        </div>
+                                        <div class="carousel-item text-center">
+                                            <img src="${pageContext.request.contextPath}/assets/images/customers/customer2.jpg" class="rounded-circle mb-3" width="80">
+                                            <blockquote class="blockquote">
+                                                <p>Dịch vụ khám và tiêm phòng rất nhanh, giá cả hợp lý. Bé cún nhà mình không còn sợ đi khám nữa!</p>
+                                                <footer class="blockquote-footer">Trần Văn B, chủ nhân của GâuGâu</footer>
+                                            </blockquote>
+                                        </div>
+                                         Thêm các feedback khác 
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Trước</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Sau</span>
+                                    </button>
                                 </div>
-                                <div class="carousel-item text-center">
-                                    <img src="${pageContext.request.contextPath}/assets/images/customers/customer2.jpg" class="rounded-circle mb-3" width="80">
-                                    <blockquote class="blockquote">
-                                        <p>Dịch vụ khám và tiêm phòng rất nhanh, giá cả hợp lý. Bé cún nhà mình không còn sợ đi khám nữa!</p>
-                                        <footer class="blockquote-footer">Trần Văn B, chủ nhân của GâuGâu</footer>
-                                    </blockquote>
-                                </div>
-                                 Thêm các feedback khác 
                             </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Trước</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Sau</span>
-                            </button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>-->
+                </section>-->
         <!-- TESTIMONIALS End -->
 
 

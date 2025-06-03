@@ -54,19 +54,14 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="index.html"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng</a></li>
-                        <li>
-                            <a href="appointment.html">
-                                <i class="bi bi-heart-pulse me-2"></i>Thú Cưng
-                            </a>
-                        </li>
-
-
-                        <li><a href="list-work-schedule"><i class="uil uil-calendar-alt d-inline-block"></i>Lịch Làm Việc Của Bác Sĩ</a></li>
-                        <li><a href="appointment.html"><i class="uil uil-notes d-inline-block"></i>Lịch Hẹn</a></li>
+                        <li><a href="list-customer"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng</a></li>
+                        <li><a href="list-pet"><i class="ri-footprint-fill me-2 d-inline-block"></i>Thú Cưng</a></li>
+                        <li><a href="list-work-schedule"><i class="uil uil-calendar-alt d-inline-block"></i>Lịch Làm Việc Bác Sĩ</a></li>
+                        <li><a href="list-appointment"><i class="uil uil-notes d-inline-block"></i>Cuộc Hẹn</a></li>
                         <li><a href="contact"><i class="uil uil-envelope me-2 d-inline-block"></i>Liên Hệ</a></li>
-
+                        <li><a href="list-blog"><i class="uil uil-file-alt me-2 d-inline-block"></i>Quản Lý Blog</a></li>
                     </ul>
+
                     <!-- sidebar-menu  -->
                 </div>
                 <!-- sidebar-content  -->

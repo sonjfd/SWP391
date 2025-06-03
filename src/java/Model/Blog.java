@@ -5,34 +5,50 @@
 package Model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
  * @author ASUS
  */
 public class Blog {
+
     private String id;
     private String title;
     private String content;
-    private String author;
-    private Date publishedAt;
+    private User author;
+    private String image;
     private String status;
+    private Date publishedAt;
     private Date createdAt;
     private Date updatedAt;
+    private int reactionCount;
+    private int commentCount;
+    private List<String> tagsAsList;
+    private List<Tag> tags;
+
+    
 
     public Blog() {
     }
 
-    public Blog(String id, String title, String content, String author, Date publishedAt, String status, Date createdAt, Date updatedAt) {
+    public Blog(String id, String title, String content, User author, String image, String status, Date publishedAt, Date createdAt, Date updatedAt, int reactionCount, int commentCount, List<String> tagsAsList, List<Tag> tags) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
-        this.publishedAt = publishedAt;
+        this.image = image;
         this.status = status;
+        this.publishedAt = publishedAt;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.reactionCount = reactionCount;
+        this.commentCount = commentCount;
+        this.tagsAsList = tagsAsList;
+        this.tags = tags;
     }
+
+    
 
     public String getId() {
         return id;
@@ -58,20 +74,20 @@ public class Blog {
         this.content = content;
     }
 
-    public String getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
-    public Date getPublishedAt() {
-        return publishedAt;
+    public String getImage() {
+        return image;
     }
 
-    public void setPublishedAt(Date publishedAt) {
-        this.publishedAt = publishedAt;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getStatus() {
@@ -80,6 +96,14 @@ public class Blog {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Date getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(Date publishedAt) {
+        this.publishedAt = publishedAt;
     }
 
     public Date getCreatedAt() {
@@ -97,5 +121,37 @@ public class Blog {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
-    
+
+    public int getReactionCount() {
+        return reactionCount;
+    }
+
+    public void setReactionCount(int reactionCount) {
+        this.reactionCount = reactionCount;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public List<String> getTagsAsList() {
+        return tagsAsList;
+    }
+
+    public void setTagsAsList(List<String> tagsAsList) {
+        this.tagsAsList = tagsAsList;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
 }
