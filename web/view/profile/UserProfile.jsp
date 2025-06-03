@@ -8,9 +8,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
-    <c:if test="${not empty sessionScope.user}">
-        
-    </c:if>
+    
 
     <head>
         <meta charset="utf-8" />
@@ -57,7 +55,7 @@
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>
         <!-- Navbar End -->
-
+<c:set var="user" value="${sessionScope.user}"/>
         <!-- Start -->
         <section class="bg-dashboard">
             <div class="container">
@@ -103,10 +101,7 @@
                                 <form id="updateUserForm" action="updateuserinformation" method="post" enctype="multipart/form-data">
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <div class="mb-3">
-                                                <label class="form-label">ID:</label>
-                                                <input name="id" id="id" type="text" class="form-control" value="${user.id}" readonly>
-                                            </div>
+                                         
 
                                             <div class="mb-3">
                                                 <label class="form-label">Tên:</label>

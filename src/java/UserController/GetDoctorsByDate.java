@@ -1,34 +1,32 @@
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package StaffController;
+package UserController;
 
-
-
-import DAO.StaffDAO;
+import DAO.DoctorDAO;
 import Model.Doctor;
-import Model.ScheduleTemplate;
-import Model.Shift;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Dell
  */
-public class AddSchedule extends HttpServlet {
+@WebServlet(name = "GetDoctorsByDate", urlPatterns = {"/get-doctors-bydate"})
+public class GetDoctorsByDate extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +45,10 @@ public class AddSchedule extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddSchedule</title>");
+            out.println("<title>Servlet GetDoctorsByDate</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddSchedule at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet GetDoctorsByDate at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -68,18 +66,34 @@ public class AddSchedule extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // lấy ra danh sách doctor
-        StaffDAO sdao = new StaffDAO();
-        List<Doctor> doctors = sdao.getAllDoctors();
-        request.setAttribute("doctors", doctors);
+        DoctorDAO d = new DoctorDAO();
+        String dateStr = request.getParameter("date");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        response.setContentType("application/json;");
+        PrintWriter out = response.getWriter();
 
-        //lấy ra danh sách ca làm việc
-        
-        List<Shift> shifts = sdao.getAllShift();
-        request.setAttribute("shifts", shifts);
+        try {
+            Date date = sdf.parse(dateStr);
+            List<Doctor> doctors = d.getDoctorsByDate(date);
+            com.google.gson.JsonArray jsonDoctors = new com.google.gson.JsonArray();
+            for (Doctor doc : doctors) {
+                com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
+                obj.addProperty("id", doc.getUser().getId());
+                obj.addProperty("fullName", doc.getUser().getFullName());
+                jsonDoctors.add(obj);
+            }
 
-        request.getRequestDispatcher("view/staff/content/AddDoctorWorkSchedule.jsp").forward(request, response);
+            com.google.gson.JsonObject jsonResult = new com.google.gson.JsonObject();
+            jsonResult.add("doctors", jsonDoctors);
 
+            out.print(jsonResult.toString());
+            out.flush();
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            
+            
+        }
     }
 
     /**
@@ -93,54 +107,7 @@ public class AddSchedule extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-          StaffDAO sdao = new StaffDAO();
-
-        try {
-            String doctorId = request.getParameter("doctor_id");
-            int shiftId = Integer.parseInt(request.getParameter("shift_id"));
-            String[] dayOfWeeks = request.getParameterValues("day_of_week");
-            String[] months = request.getParameterValues("months");
-
-            Shift shift = sdao.getShiftByID(shiftId);
-
-            boolean allDuplicate = true;
-
-            for (String dayStr : dayOfWeeks) {
-                int day = Integer.parseInt(dayStr);
-
-                if (sdao.isDuplicateWeeklySchedule(doctorId, day, shiftId)) {
-                    continue;
-                }
-
-                int insert = sdao.AddWeeklySchedule(doctorId, day, shift);
-                if (insert> 0) {
-                    allDuplicate = false;
-                }
-            }
-
-            if (allDuplicate) {
-                String errorMessage = "Tất cả lịch mẫu bạn chọn đã tồn tại ";
-                List<Shift> shifts = sdao.getAllShift();
-                List<Doctor> doctors = new StaffDAO().getAllDoctors();
-                request.setAttribute("shifts", shifts);
-                request.setAttribute("doctors", doctors);
-                request.setAttribute("error", errorMessage);
-                request.getRequestDispatcher("view/staff/content/AddDoctorWorkSchedule.jsp").forward(request, response);
-                return;
-            }
-
-            for (String monthStr : months) {
-                int month = Integer.parseInt(monthStr);
-                sdao.generateMonthlySchedule(month, doctorId);
-            }
-
-            response.sendRedirect("list-work-schedule?success=1");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }
+        processRequest(request, response);
     }
 
     /**

@@ -7,9 +7,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
-    <c:if test="${not empty sessionScope.user}">
-        
-    </c:if>
+
 
     <head>
         <meta charset="utf-8" />
@@ -111,7 +109,7 @@
 
     <body>
 
-
+        <c:set var="user" value="${sessionScope.user}"/>
 
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>
@@ -355,7 +353,7 @@
                 }
             }, 8000);
         </script>
-
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

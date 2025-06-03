@@ -39,7 +39,7 @@
     <body>
         <%@ include file="../layout/Header.jsp" %>
 
-        <%@include file="../layout/Footer.jsp" %>
+        
      <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- simplebar -->
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>

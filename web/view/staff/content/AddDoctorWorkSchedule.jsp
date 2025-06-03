@@ -121,12 +121,16 @@
                                     </div>
                                 </div>
 
-                                <!-- Nút submit -->
-                                <div class="text-center mt-4">
+                                <!-- Nút submit và nút quay lại -->
+                                <div class="d-flex justify-content-between mt-4">
+                                    <a href="list-work-schedule" class="btn btn-secondary px-4">
+                                        <i class="bi bi-arrow-left"></i> Quay lại
+                                    </a>
                                     <button type="submit" class="btn btn-success px-4">
                                         <i class="bi bi-calendar-plus"></i> Tạo lịch làm việc
                                     </button>
                                 </div>
+
                             </form>
                         </div>
                     </div>
@@ -178,8 +182,8 @@
 
 
 
-
-        <%@include file="../layout/Footer.jsp" %>
+ 
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- simplebar -->
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>

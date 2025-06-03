@@ -1,34 +1,24 @@
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package StaffController;
 
-
-
 import DAO.StaffDAO;
-import Model.Doctor;
-import Model.ScheduleTemplate;
-import Model.Shift;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  *
  * @author Dell
  */
-public class AddSchedule extends HttpServlet {
+@WebServlet(name = "DeleteAllWorkScheduleByMonth", urlPatterns = {"/delete-work-bymonth"})
+public class DeleteAllWorkScheduleByMonth extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +37,10 @@ public class AddSchedule extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddSchedule</title>");
+            out.println("<title>Servlet DeleteAllWorkScheduleByMonth</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddSchedule at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteAllWorkScheduleByMonth at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -68,18 +58,7 @@ public class AddSchedule extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // lấy ra danh sách doctor
-        StaffDAO sdao = new StaffDAO();
-        List<Doctor> doctors = sdao.getAllDoctors();
-        request.setAttribute("doctors", doctors);
-
-        //lấy ra danh sách ca làm việc
-        
-        List<Shift> shifts = sdao.getAllShift();
-        request.setAttribute("shifts", shifts);
-
-        request.getRequestDispatcher("view/staff/content/AddDoctorWorkSchedule.jsp").forward(request, response);
-
+        processRequest(request, response);
     }
 
     /**
@@ -90,56 +69,32 @@ public class AddSchedule extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-          StaffDAO sdao = new StaffDAO();
+       
+
+        StaffDAO sdao = new StaffDAO();
+        String doctorId = request.getParameter("doctorId");
+        String monthStr = request.getParameter("month");
+
+       
 
         try {
-            String doctorId = request.getParameter("doctor_id");
-            int shiftId = Integer.parseInt(request.getParameter("shift_id"));
-            String[] dayOfWeeks = request.getParameterValues("day_of_week");
-            String[] months = request.getParameterValues("months");
+            int month = Integer.parseInt(monthStr);
+           
 
-            Shift shift = sdao.getShiftByID(shiftId);
+            int deleted = sdao.deleteSchedulesByDoctorAndMonth(doctorId, month);
 
-            boolean allDuplicate = true;
+            if (deleted == 0) {
+                response.sendRedirect("list-work-schedule?msg=none");
 
-            for (String dayStr : dayOfWeeks) {
-                int day = Integer.parseInt(dayStr);
-
-                if (sdao.isDuplicateWeeklySchedule(doctorId, day, shiftId)) {
-                    continue;
-                }
-
-                int insert = sdao.AddWeeklySchedule(doctorId, day, shift);
-                if (insert> 0) {
-                    allDuplicate = false;
-                }
+            } else {
+                response.sendRedirect("list-work-schedule?msg=deleted");
             }
-
-            if (allDuplicate) {
-                String errorMessage = "Tất cả lịch mẫu bạn chọn đã tồn tại ";
-                List<Shift> shifts = sdao.getAllShift();
-                List<Doctor> doctors = new StaffDAO().getAllDoctors();
-                request.setAttribute("shifts", shifts);
-                request.setAttribute("doctors", doctors);
-                request.setAttribute("error", errorMessage);
-                request.getRequestDispatcher("view/staff/content/AddDoctorWorkSchedule.jsp").forward(request, response);
-                return;
-            }
-
-            for (String monthStr : months) {
-                int month = Integer.parseInt(monthStr);
-                sdao.generateMonthlySchedule(month, doctorId);
-            }
-
-            response.sendRedirect("list-work-schedule?success=1");
-
-        } catch (Exception e) {
+        }  catch (Exception e) {
             e.printStackTrace();
-
+            
         }
     }
 

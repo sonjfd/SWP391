@@ -172,7 +172,7 @@
 
                             <c:if test="${not empty sessionScope.user and sessionScope.user.role.name == 'customer'}">
                                 <li class="list-inline-item mb-0 ms-1">
-                                    <a href="javascript:void(0)" class="btn btn-schedule">
+                                    <a href="booking" class="btn btn-schedule">
                                         Đặt lịch khám
                                     </a>
                                 </li>

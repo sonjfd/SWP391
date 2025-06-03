@@ -43,8 +43,8 @@
 
         <div class="container-fluid bg-light">
             <div class="layout-specing">
-                
-                
+
+
 
                 <div class="row">
                     <form class="d-flex mb-5 col-4" action="search-contact" method="get" >
@@ -67,17 +67,19 @@
                 <table class="table table-striped ">
                     <thead class="bg-primary text-white" >
                         <tr>
-                            <th scope="col ">Họ Và Tên</th>
+                            <th scope="col ">Số thứ tự</th>
+                            <th scope="col ">Họ và tên</th>
                             <th scope="col">Email</th>
-                            <th scope="col">Số Điện Thoại</th>
+                            <th scope="col">Số điện thoại</th>
                             <th scope="col-5">Lời nhắn của khách hàng</th>
-                            <th scope="col">Ngày Liên Hệ</th>
-                            <th scope="col">Trạng Thái</th>
+                            <th scope="col">Ngày liên hệ</th>
+                            <th scope="col">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach items="${listContact}" var="c">
+                        <c:forEach items="${listContact}" var="c" varStatus="loop">
                             <tr>
+                                <td>${loop.index + 1}</td>
                                 <td>${c.name}</td>
                                 <td>${c.email}</td>
                                 <td>${c.phone}</td>
@@ -154,7 +156,7 @@
         </script>
 
 
-        <%@include file="../layout/Footer.jsp" %>
+        
         <!-- simplebar -->
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
         <!-- Chart -->

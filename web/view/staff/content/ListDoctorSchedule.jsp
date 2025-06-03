@@ -98,6 +98,8 @@
                     0 0 40px #b31217;
             }
 
+
+
         </style>
 
     </head>
@@ -112,17 +114,17 @@
 
                 <div class="row">
 
-                    <div >
-                        <a href="add-schedule" class="btn btn-primary">
+                    <div class="mb-2">
+                        <a href="add-schedule" class="btn btn-primary btn-sm">
                             <i class="bi bi-person-plus"></i> Tạo Lịch 
                         </a>
                     </div>
 
-                    <form method="get" action="filter-doctor-schedule" class="row g-3 mb-4">
-
+                    <!-- Form lọc lịch bác sĩ -->
+                    <form method="get" action="filter-doctor-schedule" class="row g-2 mb-3 compact-form" onsubmit="return validateFilter();">
                         <div class="col-md-3">
                             <label for="doctorId" class="form-label">Bác sĩ</label>
-                            <select id="doctorId" name="doctorId" class="form-select">
+                            <select id="doctorId" name="doctorId" class="form-select form-select-sm">
                                 <option value="">Tất cả</option>
                                 <c:forEach var="doctor" items="${doctorList}">
                                     <option value="${doctor.user.id}" ${doctor.user.id == doctorId ? "selected" : ""}>
@@ -134,7 +136,7 @@
 
                         <div class="col-md-2">
                             <label for="month" class="form-label">Tháng</label>
-                            <select id="month" name="month" class="form-select">
+                            <select id="month" name="month" class="form-select form-select-sm">
                                 <option value="">Tất cả</option>
                                 <c:forEach var="m" begin="1" end="12">
                                     <option value="${m}" ${m == month ? "selected" : ""}>${m}</option>
@@ -142,11 +144,9 @@
                             </select>
                         </div>
 
-
-
                         <div class="col-md-3">
                             <label for="shiftId" class="form-label">Ca làm việc</label>
-                            <select id="shiftId" name="shiftId" class="form-select">
+                            <select id="shiftId" name="shiftId" class="form-select form-select-sm">
                                 <option value="">Tất cả</option>
                                 <c:forEach var="shift" items="${shiftList}">
                                     <option value="${shift.id}" ${shift.id == shiftId ? "selected" : ""}>
@@ -157,9 +157,41 @@
                         </div>
 
                         <div class="col-md-2 align-self-end">
-                            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Lọc</button>
                         </div>
                     </form>
+
+
+                    <form method="post" action="delete-work-bymonth" class="row g-2 mb-3 compact-form" onsubmit="return validateDelete();">
+                        <div class="col-md-3">
+                            <label for="deleteDoctorId" class="form-label">Bác sĩ</label>
+                            <select id="deleteDoctorId" name="doctorId" class="form-select form-select-sm">
+                                <option value="">-- Chọn bác sĩ --</option>
+                                <c:forEach var="doctor" items="${doctorList}">
+                                    <option value="${doctor.user.id}">${doctor.user.fullName}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label for="deleteMonth" class="form-label">Tháng</label>
+                            <select id="deleteMonth" name="month" class="form-select form-select-sm">
+                                <option value="">-- Chọn tháng --</option>
+                                <c:forEach var="m" begin="1" end="12">
+                                    <option value="${m}">Tháng ${m}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 align-self-end">
+                            <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm w-100">
+                                Xoá
+                            </button>
+                        </div>
+                    </form>
+
+
+
 
                     <c:if test="${param.success == '1'}">
                         <script>
@@ -173,23 +205,38 @@
                         </script>
                     </c:if>
 
+                    <c:if test="${param.msg == 'deleted'}">
+                        <script>
+                            alert("Xoá lịch làm việc thành công!");
+                        </script>
+                    </c:if>
+
+                    <c:if test="${param.msg == 'none'}">
+                        <script>alert("Bác sĩ không có lịch làm việc trong tháng này!");</script>
+                    </c:if>
+
+
+
                     <table class="table table-striped ">
                         <thead class="bg-primary text-white" >
                             <tr>
+
+                                <th scope="col">Số thứ tự</th> 
                                 <th scope="col">Ảnh</th>
-                                <th scope="col ">Họ Và Tên</th>
+                                <th scope="col ">Họ và tên</th>
                                 <th scope="col-5" class="text-center">Email</th>
-                                <th scope="col">Số Điện Thoại</th>
-                                <th scope="col">Ngày Làm Việc</th>
-                                <th scope="col">Ca Làm Việc</th>
+                                <th scope="col">Số điện thoại</th>
+                                <th scope="col">Ngày làm việc</th>
+                                <th scope="col">Ca làm việc</th>
                                 <th scope="col">Thời gian làm việc</th>
-                                <th scope="col-3 " class="text-center">Hoạt Động</th>
+                                <th scope="col-3 " class="text-center">Hoạt động</th>
 
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${listshedules}" var="s">
+                            <c:forEach items="${listshedules}" var="s" varStatus="loop">
                                 <tr>
+                                    <td>${loop.index + 1}</td>
                                     <td><img src="${pageContext.request.contextPath}/${s.doctor.user.avatar}" alt="Avatar" style="width:40px; height:40px; border-radius:50%;">
                                     </td>
                                     <td>${s.doctor.user.fullName}</td>
@@ -235,10 +282,27 @@
                 </div>
             </div>
 
+            <script>
+                function validateDelete() {
+                    var doctorId = document.getElementById('deleteDoctorId').value;
+                    var month = document.getElementById('deleteMonth').value;
+                    if (!doctorId) {
+                        alert('Vui lòng chọn bác sĩ');
+                        return false;
+                    }
+                    if (!month) {
+                        alert('Vui lòng chọn tháng');
+                        return false;
+                    }
+                    return true;
+                }
+
+            </script>
 
 
 
-            <%@include file="../layout/Footer.jsp" %>
+            <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+
             <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
             <!-- simplebar -->
             <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>

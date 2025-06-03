@@ -1,5 +1,5 @@
 ﻿-- 1. Create Database
-CREATE DATABASE SWP3;
+CREATE DATABASE SWP;
 GO
 
 USE SWP;
@@ -41,7 +41,7 @@ CREATE TABLE doctors (
   qualifications NVARCHAR(255),         -- Degrees, certifications
   years_of_experience INT CHECK (years_of_experience >= 0),
   biography NVARCHAR(MAX),              -- Short description of the doctor
-  status BIT DEFAULT 1,                 -- Whether to show on public page
+  
   CONSTRAINT FK_doctors_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -132,17 +132,20 @@ CREATE TABLE appointments (
   customer_id UNIQUEIDENTIFIER NOT NULL,
   pet_id UNIQUEIDENTIFIER NOT NULL,
   doctor_id UNIQUEIDENTIFIER NOT NULL,
-  appointment_time DATETIME NOT NULL,
-  
-  status NVARCHAR(50) DEFAULT 'registered', -- registered, confirmed, completed, canceled
+  appointment_time DATETIME NOT NULL, 
+  start_time DATETIME, 
+  end_time DATETIME,  
+  status NVARCHAR(50) DEFAULT 'completed' CHECK (status IN ('completed', 'canceled')),
+   payment_status NVARCHAR(50) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
+  payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')),
   notes NVARCHAR(MAX),
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
   CONSTRAINT FK_appointments_customer FOREIGN KEY (customer_id) REFERENCES users(id),
   CONSTRAINT FK_appointments_pet FOREIGN KEY (pet_id) REFERENCES pets(id),
   CONSTRAINT FK_appointments_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(user_id)
 );
+
 
 -- 14. Appointment Services (Dịch vụ của cuộc hẹn)
 CREATE TABLE appointment_services (
@@ -242,17 +245,7 @@ CREATE TABLE clinic_info (
   updated_at DATETIME DEFAULT GETDATE()
 );
 
--- 21. Blogs (Bài viết)
-CREATE TABLE blogs (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  title NVARCHAR(255) NOT NULL,
-  content NVARCHAR(MAX) NOT NULL,
-  author NVARCHAR(100),
-  published_at DATETIME DEFAULT GETDATE(),
-  status NVARCHAR(50) DEFAULT 'draft',
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE()
-);
+
 
 -- 22. Contacts (Liên hệ)
 CREATE TABLE contacts (
@@ -266,31 +259,4 @@ CREATE TABLE contacts (
   updated_at DATETIME DEFAULT GETDATE()
 );
 
--- 23. Blog Comments (Bình luận blog)
-CREATE TABLE blog_comments (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  blog_id UNIQUEIDENTIFIER NOT NULL,
-  commenter_name NVARCHAR(100),
-  comment NVARCHAR(MAX),
-  commented_at DATETIME DEFAULT GETDATE(),
 
-  CONSTRAINT FK_blog_comments FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE
-);
-
--- 24. Chatbot Sessions (Phiên trò chuyện chatbot)
-CREATE TABLE chatbot_sessions (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  session_start DATETIME DEFAULT GETDATE(),
-  session_end DATETIME NULL
-);
-
--- 25. Chatbot Messages (Tin nhắn chatbot)
-CREATE TABLE chatbot_messages (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  session_id UNIQUEIDENTIFIER NOT NULL,
-  sender NVARCHAR(50) NOT NULL, -- 'user' hoặc 'bot'
-  message NVARCHAR(MAX) NOT NULL,
-  sent_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_chatbot_message FOREIGN KEY (session_id) REFERENCES chatbot_sessions(id) ON DELETE CASCADE
-);

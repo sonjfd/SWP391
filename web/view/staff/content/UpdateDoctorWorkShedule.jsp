@@ -61,11 +61,7 @@
                                value="${DoctorSchedule.doctor.user.email}" readonly>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="doctorPhone" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="doctorPhone"
-                               value="${DoctorSchedule.doctor.user.phoneNumber}" readonly>
-                    </div>
+
 
                     <div class="mb-3">
                         <label for="workDate" class="form-label">Ngày làm việc</label>
@@ -86,14 +82,37 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Cập nhật lịch làm việc</button>
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="list-work-schedule" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left-circle"></i> Quay lại
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            Cập nhật lịch làm việc
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
 
+        <script>
+            document.getElementById('updateScheduleForm').addEventListener('submit', function (event) {
+                const workDateInput = document.getElementById('workDate');
+                const selectedDate = new Date(workDateInput.value);
+                const today = new Date();
+
+                today.setHours(0, 0, 0, 0);
+                selectedDate.setHours(0, 0, 0, 0);
+
+                if (selectedDate < today) {
+                    alert('Ngày làm việc không được chọn ngày trong quá khứ!');
+                    workDateInput.focus();
+                    event.preventDefault();
+                }
+            });
+        </script>
 
 
-        <%@include file="../layout/Footer.jsp" %>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- simplebar -->
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>

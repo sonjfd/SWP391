@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -62,18 +63,25 @@ public class ViewListPet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("user") == null) {
+
+            response.sendRedirect("login");
+            return;
+        }
+        User user = (User) session.getAttribute("user");
         UserDAO u = new UserDAO();
-        String id = request.getParameter("id");
-        User user =  u.getUserById(id);
+        String uid = user.getId();
         try {
-            List<Pet> listpet = u.getPetsByUser(user.getId());
+            List<Pet> listpet = u.getPetsByUser(uid);
             request.setAttribute("listpet", listpet);
         } catch (SQLException ex) {
             Logger.getLogger(ViewListPet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ViewListPet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     } 
 

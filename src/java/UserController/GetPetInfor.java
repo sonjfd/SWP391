@@ -2,23 +2,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package StaffController;
+package UserController;
 
-import DAO.StaffDAO;
-import Model.DoctorSchedule;
+import DAO.UserDAO;
+import Model.Pet;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Dell
  */
-public class FIilterDoctroShedule extends HttpServlet {
+@WebServlet(name = "GetPetInfor", urlPatterns = {"/getPetInfor"})
+public class GetPetInfor extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +42,10 @@ public class FIilterDoctroShedule extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet FIilterDoctroShedule</title>");
+            out.println("<title>Servlet GetPetInfor</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet FIilterDoctroShedule at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet GetPetInfor at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,33 +63,23 @@ public class FIilterDoctroShedule extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        StaffDAO sdao = new StaffDAO();
-        String doctorId = request.getParameter("doctorId");
-        String monthStr = request.getParameter("month");
-        String shiftIdStr = request.getParameter("shiftId");
+        String petId = request.getParameter("petId");
 
-        Integer month = null;
-        Integer shiftId = null;
-
+        UserDAO user = new UserDAO();
         try {
-            if (monthStr != null && !monthStr.isEmpty()) {
-                month = Integer.parseInt(monthStr);
-            }
-            if (shiftIdStr != null && !shiftIdStr.isEmpty()) {
-                shiftId = Integer.parseInt(shiftIdStr);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-
+            Pet pet = user.getPetsById(petId);
+            response.setContentType("application/json");
+            JsonObject json = new JsonObject();
+            json.addProperty("species", pet.getBreed().getSpecie().getName());
+            json.addProperty("breed", pet.getBreed().getName());
+            PrintWriter out = response.getWriter();
+            out.print(json.toString());
+            out.flush();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
         }
-        List<DoctorSchedule> list = sdao.filterDoctorSchedules(doctorId, month, shiftId);
-        request.setAttribute("listshedules", list);
-        request.setAttribute("doctorId", doctorId);
-        request.setAttribute("month", month);
-        request.setAttribute("shiftId", shiftId);
-        request.setAttribute("shiftList", sdao.getAllShift());
-        request.setAttribute("doctorList", sdao.getAllDoctors());
-        request.getRequestDispatcher("/view/staff/content/ListDoctorSchedule.jsp").forward(request, response);
     }
 
     /**
@@ -96,10 +91,9 @@ public class FIilterDoctroShedule extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        processRequest(request, response);
     }
 
     /**
