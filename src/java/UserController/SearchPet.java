@@ -79,20 +79,26 @@ public class SearchPet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String text = (String) request.getParameter("search");
-       
-        UserDAO petDAO = new UserDAO();
+        String text = (String) request.getParameter("search").trim();
+        String id = request.getParameter("id");
         List<Pet> petList = null;
-        try {
-            petList = petDAO.getPetsByName(text);
-        } catch (SQLException ex) {
-            Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SearchPet.class.getName()).log(Level.SEVERE, null, ex);
+        UserDAO petDAO = new UserDAO();
+
+        if (text.isEmpty() || text.isBlank()) {
+            petList = petDAO.getPetsByUser(id);
+            request.setAttribute("listpet", petList);
+
+        } else {
+
+            petList = petDAO.getPetsByName(text,id);
+            request.setAttribute("listpet", petList);
         }
-        System.out.println(petList);
+        if(petList.isEmpty()){
+            request.setAttribute("Message", "Không tìm thấy pet tương ứng!");
+        }
 
         request.setAttribute("listpet", petList);
+        request.setAttribute("text", text);
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
 
     }

@@ -67,8 +67,8 @@ public class ViewUserInformation extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
-        User user = (User) session.getAttribute("user");
 
+        User user = (User) session.getAttribute("user");
         request.setAttribute("user", user);
         request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
     }

@@ -4,9 +4,11 @@
  */
 package UserController;
 
+import DAO.SpecieDAO;
 import DAO.UserDAO;
 import Model.Breed;
 import Model.Pet;
+import Model.Specie;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -73,9 +75,12 @@ public class UpdatePet extends HttpServlet {
             throws ServletException, IOException {
         String petID = request.getParameter("petID");
         UserDAO dao = new UserDAO();
-
+        SpecieDAO sdao = new SpecieDAO();
+        List<Specie> specieList = sdao.getAllSpecies();
         List<Breed> breedList = dao.getBreeds();
         request.setAttribute("breedList", breedList);
+        request.setAttribute("specieList", specieList);
+
         Pet pet = null;
         try {
             pet = dao.getPetsById(petID);
@@ -102,7 +107,7 @@ public class UpdatePet extends HttpServlet {
         String petId = request.getParameter("petId");
         String name = request.getParameter("name");
         String gender = request.getParameter("gender");
-        String birthDateStr = request.getParameter("birthDate");
+        String birthDateStr = request.getParameter("dateOfBirth");
         Date birthDate = null;
         if (birthDateStr != null && !birthDateStr.isEmpty()) {
             birthDate = Date.valueOf(birthDateStr);
@@ -111,7 +116,7 @@ public class UpdatePet extends HttpServlet {
         String status = request.getParameter("status");
         String description = request.getParameter("description");
         Part part = request.getPart("avatar");
-        
+
         String realPath = request.getServletContext().getRealPath("/assets/images");
         File uploads = new File(realPath);
         if (!uploads.exists()) {
@@ -133,18 +138,19 @@ public class UpdatePet extends HttpServlet {
             }
 
         } else {
-            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
-            File file = new File(uploads, filename);
+            String originalFilename = Path.of(part.getSubmittedFileName()).getFileName().toString();
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String randomFilename = System.currentTimeMillis() + "_" + (int) (Math.random() * 10000) + fileExtension;
+
+            filePath = "/assets/images/" + randomFilename;
+            File file = new File(uploads, randomFilename);
             part.write(file.getAbsolutePath());
         }
         UserDAO ud = new UserDAO();
-        Breed breed = new Breed(breedId);
-        try {
-            ud.updatePet(petId, name, gender, birthDate, breedId, status, description, filePath);
-        } catch (SQLException ex) {
-            Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+        if (ud.updatePet(petId, name, gender, birthDate, breedId, status, description, filePath)) {
+            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thú cưng thành công!");
+        } else {
+            request.getSession().setAttribute("FailMessage", "Cập nhật thông tin thú cưng không thành công!");
         }
 
         response.sendRedirect("viewlistpet");

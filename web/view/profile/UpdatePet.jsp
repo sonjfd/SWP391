@@ -7,9 +7,9 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
-<c:if test="${not empty sessionScope.user}">
-    
-</c:if>
+    <c:if test="${not empty sessionScope.user}">
+
+    </c:if>
 
     <head>
         <meta charset="utf-8" />
@@ -102,7 +102,31 @@
             .search-form button:hover {
                 background-color: #0056b3;
             }
+            .img-fluid{
+                max-height: 500px;
+                max-width: 400px;
+            }
+            .form-top {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
 
+            .form-column {
+                flex: 1;
+                min-width: 250px;
+            }
+            .form-top-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px 30px;
+                align-items: center;
+            }
+
+            .form-top-grid div {
+                display: flex;
+                flex-direction: column;
+            }
 
 
         </style>
@@ -110,9 +134,23 @@
     </head>
 
     <body>
+        <c:if test="${not empty sessionScope.SuccessMessage}">
+            <script>
+                alert('${sessionScope.SuccessMessage}');
+            </script>
+            <c:remove var="SuccessMessage" scope="session"/>
+        </c:if>
+
+        <c:if test="${not empty sessionScope.FailMessage}">
+            <script>
+                alert('${sessionScope.FailMessage}');
+            </script>
+            <c:remove var="FailMessage" scope="session"/>
+        </c:if>
 
 
-        <c:set var="user" value="${sessionScope.user}"/>
+
+
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>
         <!-- Navbar End -->
@@ -124,7 +162,7 @@
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/assets/images/doctors/profile-bg.jpg" class="img-fluid" alt="">
+                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
                                 <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
@@ -134,81 +172,87 @@
                             <ul class="list-unstyled sidebar-nav mb-0">
                                 <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
                                 <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet?id=${user.id}" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation?id=${user.id}" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
                                 <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
                             </ul>
                         </div>
                     </div><!--end col-->
 
                     <div class=" col-9">
-                        <c:if test="${not empty sessionScope.SuccessMessage}">
-                            <div class="alert alert-success" id="successAlert">${sessionScope.SuccessMessage}</div>
-                            <c:remove var="SuccessMessage" scope="session"/>
-                        </c:if>
-                        <c:if test="${not empty sessionScope.SuccessMessage}">
-                            <div class="alert alert-fail" id="failAlert">${sessionScope.FailMessage}</div>
-                            <c:remove var="FailMessage" scope="session"/>
-                        </c:if>
-                        <h3 class="mb-4">Cập nhật thông tin Pet</h3>
+
+                        <h3 class="mb-4">Cập nhật thông tin thú cưng:</h3>
                         <c:set var="pet" value="${requestScope.pet}"/>
 
-                        <form action="updatepet" method="post" enctype="multipart/form-data">
-                            <!-- Hidden ID để biết đang cập nhật pet nào -->
+                        <form id="updateForm" action="updatepet" method="post" enctype="multipart/form-data">
+
                             <input type="hidden" name="petId" value="${pet.id}"/>
+                            <div class="form-top-grid">
+                                <div>
+                                    <label for="name" class="form-label">Tên:</label>
+                                    <input type="text" class="form-control" id="name" name="name" value="${pet.name}" required>
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Tên Pet:</label>
-                                <input type="text" class="form-control" id="name" name="name" value="${pet.name}" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="type" class="form-label">Loại Pet:</label>
-                                <input type="text" class="form-control" id="type" name="type" value="${pet.breed.specie.name}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="breed">Giống:</label>
-                                <select class="form-select" id="breed" name="breed_id" required>
-                                    <option value="">Chọn Giống</option>
-                                    <c:forEach items="${breedList}" var="breed">
-                                        <option value="${breed.id}"
-                                                <c:if test="${breed.id == pet.breed.id}">selected</c:if>>
-                                            ${breed.name}
-                                        </option>
-                                    </c:forEach>
-                                </select>
-                            </div>
+                                <div>
+                                    <label for="gender" class="form-label">Giới tính:</label>
+                                    <select class="form-select" id="gender" name="gender">
+                                        <option value="Đực" ${pet.gender == 'Đực' ? 'selected' : ''}>Đực</option>
+                                        <option value="Cái" ${pet.gender == 'Cái' ? 'selected' : ''}>Cái</option>
+                                    </select>
+                                </div>
 
 
-                            <div class="mb-3">
-                                <label for="gender" class="form-label">Giới tính:</label>
-                                <select class="form-select" id="gender" name="gender">
-                                    <option value="Male" ${pet.gender == 'Male' ? 'selected' : ''}>Đực</option>
-                                    <option value="Female" ${pet.gender == 'Female' ? 'selected' : ''}>Cái</option>
-                                </select>
+                                <div>
+                                    <label for="birthDate" class="form-label">Ngày sinh:</label>
+                                    <input type="date" id="birthDate" name="dateOfBirth" class="form-control" value="${pet.birthDate}">
+                                    <small id="birthDateError" class="text-danger" style="display:none;">Ngày sinh không hợp lệ!</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="specie" class="form-label">Loài:</label>
+                                    <select class="form-select" id="specie" name="specie_id" required>
+                                        <option value="">Chọn Loài</option>
+                                        <c:forEach items="${specieList}" var="specie">
+                                            <option value="${specie.id}" <c:if test="${specie.id == pet.breed.specie.id}">selected</c:if>>
+                                                ${specie.name}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="breed" class="form-label">Giống:</label>
+                                    <select class="form-select" id="breed" name="breed_id" required>
+                                        <option value="">Chọn Giống</option>
+                                        <c:forEach items="${breedList}" var="breed">
+                                            <option value="${breed.id}" <c:if test="${breed.id == pet.breed.id}">selected</c:if>>
+                                                ${breed.name}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+
+
+                                <div>
+                                    <label for="status" class="form-label">Trạng thái:</label>
+                                    <select id="status" name="status" class="form-select">
+                                        <option value="active" ${pet.status == 'active' ? 'selected' : ''}>Hoạt động</option>
+                                        <option value="inactive" ${pet.status == 'inactive' ? 'selected' : ''}>Không hoạt động</option>
+                                        <option value="lost" ${pet.status == 'lost' ? 'selected' : ''}>Đã chết</option>
+                                        <option value="deceased" ${pet.status == 'deceased' ? 'selected' : ''}>Đã thất lạc</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="dateOfBirth" class="form-label">Ngày sinh:</label>
-                                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" value="${pet.birthDate}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="status">Trạng thái:</label>
-                                <select id="status" name="status" class="form-select">
-                                    <option value="active" ${pet.status == 'active' ? 'selected' : ''}>Hoạt động</option>
-                                    <option value="inactive" ${pet.status == 'inactive' ? 'selected' : ''}>Không hoạt động</option>
-                                    <option value="lost" ${pet.status == 'lost' ? 'selected' : ''}>Đã chết</option>
-                                </select>
-                            </div>
+
                             <div class="mb-3">
                                 <label for="description" class="form-label">Mô tả:</label>
-                                <input type="text" class="form-control" id="description" name="description" value="${pet.description}" required>
+                                <textarea class="form-control" id="description" name="description" rows="4" required>${pet.description}</textarea>
                             </div>
 
 
                             <div class="mb-3">
                                 <label class="form-label">Ảnh hiện tại:</label><br>
-                                <img src="${pageContext.request.contextPath}/${pet.avatar}" alt="Pet Avatar" width="150" height="150" class="rounded mb-2">
+                                <img src="${pageContext.request.contextPath}/${pet.avatar}" alt="Pet Avatar" width="150" height="150" class="rounded mb-2" >
                             </div>
 
                             <div class="mb-3">
@@ -237,118 +281,137 @@
 
 
 
-        <!-- Offcanvas Start -->
-        <div class="offcanvas bg-white offcanvas-top" tabindex="-1" id="offcanvasTop">
-            <div class="offcanvas-body d-flex align-items-center align-items-center">
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-center">
-                                <h4>Search now.....</h4>
-                                <div class="subcribe-form mt-4">
-                                    <form>
-                                        <div class="mb-0">
-                                            <input type="text" id="help" name="name" class="border bg-white rounded-pill" required="" placeholder="Search">
-                                            <button type="submit" class="btn btn-pills btn-primary">Search</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end container-->
-            </div>
-        </div>
-        <!-- Offcanvas End -->
-
-        <!-- Offcanvas Start -->
-        <div class="offcanvas offcanvas-end bg-white shadow" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-            <div class="offcanvas-header p-4 border-bottom">
-                <h5 id="offcanvasRightLabel" class="mb-0">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="light-version" alt="">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="dark-version" alt="">
-                </h5>
-                <button type="button" class="btn-close d-flex align-items-center text-dark" data-bs-dismiss="offcanvas" aria-label="Close"><i class="uil uil-times fs-4"></i></button>
-            </div>
-            <div class="offcanvas-body p-4 px-md-5">
-                <div class="row">
-                    <div class="col-12">
-                        <!-- Style switcher -->
-                        <div id="style-switcher">
-                            <div>
-                                <ul class="text-center list-unstyled mb-0">
-                                    <li class="d-grid"><a href="javascript:void(0)" class="rtl-version t-rtl-light" onclick="setTheme('style-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="ltr-version t-ltr-light" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-rtl-version t-rtl-dark" onclick="setTheme('style-dark-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-ltr-version t-ltr-dark" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-version t-dark mt-4" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Dark Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="light-version t-light mt-4" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Light Version</span></a></li>
-                                    <li class="d-grid"><a href="../admin/#" target="_blank" class="mt-4"><img src="${pageContext.request.contextPath}/assets/images/layouts/light-dash.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Admin Dashboard</span></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- end Style switcher -->
-                    </div><!--end col-->
-                </div><!--end row-->
-            </div>
-
-            <div class="offcanvas-footer p-4 border-top text-center">
-                <ul class="list-unstyled social-icon mb-0">
-                    <li class="list-inline-item mb-0"><a href="https://1.envato.market/doctris-template" target="_blank" class="rounded"><i class="uil uil-shopping-cart align-middle" title="Buy Now"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://dribbble.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-dribbble align-middle" title="dribbble"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://www.facebook.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-facebook-f align-middle" title="facebook"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://www.instagram.com/shreethemes/" target="_blank" class="rounded"><i class="uil uil-instagram align-middle" title="instagram"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://twitter.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-twitter align-middle" title="twitter"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="mailto:support@shreethemes.in" class="rounded"><i class="uil uil-envelope align-middle" title="email"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="../#" target="_blank" class="rounded"><i class="uil uil-globe align-middle" title="website"></i></a></li>
-                </ul><!--end icon-->
-            </div>
-        </div>
-        <!-- Offcanvas End -->
 
         <!-- javascript -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
         <script>
-            document.getElementById("avatar").addEventListener("change", function () {
-                var fileInput = this;
-                var fileNameDisplay = document.getElementById("fileName");
-                var fileErrorDisplay = document.getElementById("fileError");
 
-                // Clear old messages
-                fileNameDisplay.textContent = "";
-                fileErrorDisplay.textContent = "";
+                $(document).ready(function () {
+                    $("#specie").change(function () {
+                        var specieId = $(this).val();
+                        if (specieId) {
+                            $.ajax({
+                                url: "getbreedsbyspecie?specieId=" + specieId,
+                                method: "GET",
+                                dataType: "json",
+                                success: function (data) {
+                                    var breedSelect = $("#breed");
+                                    breedSelect.empty();
+                                    breedSelect.append('<option value="">-- Chọn giống --</option>');
+                                    $.each(data, function (index, breed) {
+                                        breedSelect.append('<option value="' + breed.id + '">' + breed.name + '</option>');
+                                    });
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error("Lỗi khi load breed list:", error);
+                                }
+                            });
+                        } else {
+                            $("#breed").empty().append('<option value="">-- Chọn giống --</option>');
+                        }
+                    });
+                });
+                document.getElementById("birthDate").addEventListener("change", function () {
+                    const birthDateInput = document.getElementById("birthDate");
+                    const birthDateError = document.getElementById("birthDateError");
+                    const birthDateValue = new Date(birthDateInput.value);
+                    const today = new Date();
 
-                if (fileInput.files.length > 0) {
-                    var file = fileInput.files[0];
-                    fileNameDisplay.textContent = "Đã chọn: " + file.name;
+                    // Clear time phần giờ phút giây
+                    birthDateValue.setHours(0, 0, 0, 0);
+                    today.setHours(0, 0, 0, 0);
 
-                    if (file.size > 1048576) {
+                    if (birthDateInput.value && birthDateValue >= today) {
+                        birthDateError.style.display = "block";
+                    } else {
+                        birthDateError.style.display = "none";
+                    }
+                });
+               
+                document.getElementById("updateForm").addEventListener("submit", function (event) {
+                    const birthDateInput = document.getElementById("birthDate");
+                    const birthDateError = document.getElementById("birthDateError");
+                    const birthDateValue = new Date(birthDateInput.value);
+                    const today = new Date();
+
+                    birthDateValue.setHours(0, 0, 0, 0);
+                    today.setHours(0, 0, 0, 0);
+
+                    if (birthDateInput.value && birthDateValue >= today) {
+                        event.preventDefault();
+                        birthDateError.style.display = "block";
+                    } else {
+                        birthDateError.style.display = "none";
+                    }
+                });
+                document.getElementById("avatar").addEventListener("change", function () {
+                    var fileInput = this;
+                    var fileNameDisplay = document.getElementById("fileName");
+                    var fileErrorDisplay = document.getElementById("fileError");
+
+                    // Clear old messages
+                    fileNameDisplay.textContent = "";
+                    fileErrorDisplay.textContent = "";
+
+                    if (fileInput.files.length > 0) {
+                        var file = fileInput.files[0];
+                        fileNameDisplay.textContent = "Đã chọn: " + file.name;
+
+                        if (file.size > 1048576) {
+                            fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
+                        }
+                    }
+                });
+
+                document.getElementById("updateUserForm").addEventListener("submit", function (e) {
+                    var fileInput = document.getElementById("avatar");
+                    var fileErrorDisplay = document.getElementById("fileError");
+
+                    // Nếu có file và bị lỗi kích thước thì chặn submit
+                    if (fileInput.files.length > 0 && fileInput.files[0].size > 1048576) {
+                        e.preventDefault();
                         fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
                     }
-                }
-            });
+                });
 
-            document.getElementById("updateUserForm").addEventListener("submit", function (e) {
-                var fileInput = document.getElementById("avatar");
-                var fileErrorDisplay = document.getElementById("fileError");
+                // Tự động ẩn thông báo sau 5 giây
+                setTimeout(function () {
+                    const successAlert = document.getElementById('successAlert');
+                    const failAlert = document.getElementById('failAlert');
+                    if (successAlert) {
+                        successAlert.style.display = 'none';
+                    }
+                    if (failAlert) {
+                        failAlert.style.display = 'none';
+                    }
+                }, 8000);
+                $(document).ready(function () {
+                    $('#speciesSelect').on('change', function () {
+                        var speciesId = $(this).val();
+                        if (speciesId) {
+                            $.ajax({
+                                url: 'getBreeds', // Servlet nhận speciesId và trả danh sách breed
+                                type: 'GET',
+                                data: {speciesId: speciesId},
+                                success: function (data) {
+                                    $('#breedSelect').empty();
+                                    $('#breedSelect').append('<option value="">Chọn giống</option>');
+                                    data.forEach(function (breed) {
+                                        $('#breedSelect').append('<option value="' + breed.id + '">' + breed.name + '</option>');
+                                    });
+                                },
+                                error: function () {
+                                    alert('Không tải được giống!');
+                                }
+                            });
+                        } else {
+                            $('#breedSelect').empty();
+                            $('#breedSelect').append('<option value="">Chọn giống</option>');
+                        }
+                    });
+                });
 
-                // Nếu có file và bị lỗi kích thước thì chặn submit
-                if (fileInput.files.length > 0 && fileInput.files[0].size > 1048576) {
-                    e.preventDefault();
-                    fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
-                }
-            });
-
-            // Tự động ẩn thông báo sau 5 giây
-            setTimeout(function () {
-                const successAlert = document.getElementById('successAlert');
-                const failAlert = document.getElementById('failAlert');
-                if (successAlert) {
-                    successAlert.style.display = 'none';
-                }
-                if (failAlert) {
-                    failAlert.style.display = 'none';
-                }
-            }, 8000);
         </script>
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

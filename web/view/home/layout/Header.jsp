@@ -85,7 +85,11 @@
                     <div class="d-flex justify-content-center align-items-center w-100"> <!-- Flexbox for layout -->
                         <!-- Logo container-->
 
-                        <!-- End Logo container-->
+        <!-- Navbar Start -->
+        <header id="topnav" class="navigation sticky">
+            <div class="container-fluid"> <!-- Use container-fluid for full-width container -->
+                <div class="d-flex justify-content-around align-items-center w-100"> <!-- Flexbox for layout -->
+                    <!-- Logo container-->
 
                         <!-- Start Mobile Toggle -->
                         <div class="menu-extras">
