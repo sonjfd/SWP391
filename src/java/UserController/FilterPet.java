@@ -5,26 +5,22 @@
 package UserController;
 
 import DAO.UserDAO;
-import Model.User;
+import Model.Pet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
-import java.io.File;
-import java.nio.file.Path;
+import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "UpdateUserInformation", urlPatterns = {"/updateuserinformation"})
-@MultipartConfig
-public class UpdateUserInformation extends HttpServlet {
+@WebServlet(name = "FilterPet", urlPatterns = {"/filterpet"})
+public class FilterPet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,6 +31,23 @@ public class UpdateUserInformation extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet FilterPet</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet FilterPet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -47,7 +60,7 @@ public class UpdateUserInformation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        processRequest(request, response);
     }
 
     /**
@@ -61,51 +74,27 @@ public class UpdateUserInformation extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String status = (String) request.getParameter("status");
         String id = request.getParameter("id");
-        String name = request.getParameter("fullName");
-        String address = request.getParameter("address");
-        String email = request.getParameter("email");
-        String number = request.getParameter("phone");
-       
-        Part part = request.getPart("avatar");      
-        String realPath = request.getServletContext().getRealPath("/assets/images");
-        File uploads = new File(realPath);
-        if (!uploads.exists()) {
-            uploads.mkdirs();
-        }
+        List<Pet> petList = null;
+        UserDAO petDAO = new UserDAO();
 
-        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-        String filePath = "/assets/images/" + filename;
-
-        // Nếu không có ảnh mới, giữ ảnh cũ
-        if (filename.isEmpty()) {
-
-            try {
-                UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(id);
-                filePath = user.getAvatar(); // Giữ lại ảnh cũ
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (status.isEmpty() || status.isBlank()) {
+            petList = petDAO.getPetsByUser(id);
+            request.setAttribute("listpet", petList);
 
         } else {
-            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
-            File file = new File(uploads, filename);
-            part.write(file.getAbsolutePath());
+
+            petList = petDAO.getPetsByStatus(status, id);
+            request.setAttribute("listpet", petList);
         }
-        UserDAO ud = new UserDAO();
-        if (ud.updateUser(id, name, address, email, number, filePath)) {
-            User updatedUser = ud.getUserById(id);
-            request.getSession().setAttribute("user", updatedUser);
-
-            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
-        } else {
-            request.getSession().setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
+        if (petList.isEmpty()) {
+            request.setAttribute("Message", "Không lọc thấy pet tương ứng!");
         }
-        response.sendRedirect("viewuserinformation");
 
-        
-
+        request.setAttribute("listpet", petList);
+        request.setAttribute("status", status);
+        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }
 
     /**

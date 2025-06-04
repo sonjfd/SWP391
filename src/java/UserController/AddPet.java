@@ -4,9 +4,11 @@
  */
 package UserController;
 
+import DAO.SpecieDAO;
 import DAO.UserDAO;
 import Model.Breed;
 import Model.Pet;
+import Model.Specie;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,6 +25,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.sql.Date;
 import java.util.List;
+import java.util.Random;
 
 @WebServlet(name = "AddPet", urlPatterns = {"/addpet"})
 @MultipartConfig
@@ -39,15 +42,18 @@ public class AddPet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UserDAO dao = new UserDAO();
+        SpecieDAO sd = new SpecieDAO();
         List<Breed> breedList = dao.getBreeds();
+        List<Specie> specieList = sd.getAllSpecies();
         request.setAttribute("breedList", breedList);
+        request.setAttribute("specieList", specieList);
         request.getRequestDispatcher("view/profile/AddPet.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String ownerID = request.getParameter("id");
         String name = request.getParameter("name");
         String gender = request.getParameter("gender");
@@ -67,18 +73,24 @@ public class AddPet extends HttpServlet {
         }
         String filePath;
         if (part.getSize() > 0) {
-            String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-            filePath = "/assets/images/" + filename;
-            File file = new File(uploads, filename);
+            String originalFilename = Path.of(part.getSubmittedFileName()).getFileName().toString();
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String randomFilename = System.currentTimeMillis() + "_" + (int) (Math.random() * 10000) + fileExtension;
+
+            filePath = "/assets/images/" + randomFilename;
+            File file = new File(uploads, randomFilename);
             part.write(file.getAbsolutePath());
         } else {
             filePath = "/assets/images/default-avatar.jpg";
         }
         User user = new User(ownerID);
         Breed breed = new Breed(breedId);
-        
+
         UserDAO dao = new UserDAO();
-        boolean a = dao.addPet(ownerID, name, birthDate, breedId, gender, filePath, name, status);
+        Random random = new Random();
+        int randomNumber = random.nextInt(100000); 
+        String pet_code = String.format("PET%05d", randomNumber); 
+        boolean a = dao.addPet(pet_code, ownerID, name, birthDate, breedId, gender, filePath, description, status);
         if (a) {
             request.getSession().setAttribute("SuccessMessage", "Thêm Pet thành công!");
 
