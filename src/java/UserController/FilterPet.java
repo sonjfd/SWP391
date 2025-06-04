@@ -6,7 +6,6 @@ package UserController;
 
 import DAO.UserDAO;
 import Model.Pet;
-import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,18 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ViewListPet", urlPatterns = {"/viewlistpet"})
-public class ViewListPet extends HttpServlet {
+@WebServlet(name = "FilterPet", urlPatterns = {"/filterpet"})
+public class FilterPet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +39,10 @@ public class ViewListPet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewListPet</title>");
+            out.println("<title>Servlet FilterPet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewListPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet FilterPet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,26 +59,8 @@ public class ViewListPet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-
-    throws ServletException, IOException {
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
-            return;
-
-        }
-        User user = (User) session.getAttribute("user");
-        UserDAO u = new UserDAO();
-        String uid = user.getId();
-
-        List<Pet> listpet = u.getPetsByUser(uid);
-        request.setAttribute("listpet", listpet);
-
-
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**
@@ -97,7 +74,27 @@ public class ViewListPet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String status = (String) request.getParameter("status");
+        String id = request.getParameter("id");
+        List<Pet> petList = null;
+        UserDAO petDAO = new UserDAO();
+
+        if (status.isEmpty() || status.isBlank()) {
+            petList = petDAO.getPetsByUser(id);
+            request.setAttribute("listpet", petList);
+
+        } else {
+
+            petList = petDAO.getPetsByStatus(status, id);
+            request.setAttribute("listpet", petList);
+        }
+        if (petList.isEmpty()) {
+            request.setAttribute("Message", "Không lọc thấy pet tương ứng!");
+        }
+
+        request.setAttribute("listpet", petList);
+        request.setAttribute("status", status);
+        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }
 
     /**

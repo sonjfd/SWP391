@@ -48,27 +48,7 @@ public class UpdateUserInformation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-          // Lấy user từ session
-    HttpSession session = request.getSession(false);
-    User user = (session != null) ? (User) session.getAttribute("user") : null;
 
-    if (user == null) {
-        
-        response.sendRedirect("login");
-        return;
-    }
-
-    UserDAO dao = new UserDAO();
-    try {
-        User refreshedUser = dao.getUserById(user.getId());
-        request.setAttribute("user", refreshedUser);
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("FailMessage", "Không thể lấy thông tin người dùng.");
-    }
-
-    // Forward tới JSP để hiển thị form
-    request.getRequestDispatcher("view/profile/UserInformation.jsp").forward(request, response);
 
     }
 
@@ -81,30 +61,25 @@ public class UpdateUserInformation extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-   
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
 
-    request.setCharacterEncoding("UTF-8");
-    response.setCharacterEncoding("UTF-8");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String id = request.getParameter("id");
+        String name = request.getParameter("fullName");
+        String address = request.getParameter("address");
+        String email = request.getParameter("email");
+        String number = request.getParameter("phone");
+       
+        Part part = request.getPart("avatar");      
+        String realPath = request.getServletContext().getRealPath("/assets/images");
+        File uploads = new File(realPath);
+        if (!uploads.exists()) {
+            uploads.mkdirs();
+        }
 
-    String id = request.getParameter("id");
-    String name = request.getParameter("fullName");
-    String address = request.getParameter("address");
-    String email = request.getParameter("email");
-    String number = request.getParameter("phoneNumber");
-    Part part = request.getPart("avatar");
+        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
+        String filePath = "/assets/images/" + filename;
 
-    // Validation cơ bản
-    if (name == null || name.trim().isEmpty()
-            || email == null || email.trim().isEmpty()
-            || number == null || number.trim().isEmpty()
-            || address == null || address.trim().isEmpty()) {
-
-        request.getSession().setAttribute("FailMessage", "Vui lòng điền đầy đủ thông tin.");
-        response.sendRedirect("viewuserinformation");
-        return;
-    }
 
     if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
         request.getSession().setAttribute("FailMessage", "Email không đúng định dạng.");
@@ -135,28 +110,21 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         } catch (Exception e) {
             e.printStackTrace();
         }
-    } else {
-        // Lưu file mới
-        File file = new File(uploads, filename);
-        part.write(file.getAbsolutePath());
-    }
 
-    // Cập nhật DB
-    UserDAO dao = new UserDAO();
-    boolean updated = dao.updateUser(id, name, address, email, number, filePath);
+        UserDAO ud = new UserDAO();
+        if (ud.updateUser(id, name, address, email, number, filePath)) {
+            User updatedUser = ud.getUserById(id);
+            request.getSession().setAttribute("user", updatedUser);
 
-    if (updated) {
-        // Cập nhật lại user trong session
-        try {
-            User newUser = dao.getUserById(id);
-            request.getSession().setAttribute("user", newUser);
-        } catch (Exception e) {
-            e.printStackTrace();
+            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
+        } else {
+            request.getSession().setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
         }
+        response.sendRedirect("viewuserinformation");
 
-        request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
-    } else {
-        request.getSession().setAttribute("FailMessage", "Cập nhật không thành công!");
+        
+
+
     }
 
     response.sendRedirect("viewuserinformation");

@@ -91,7 +91,7 @@
         <!-- Navbar Start -->
         <header id="topnav" class="navigation sticky">
             <div class="container-fluid"> <!-- Use container-fluid for full-width container -->
-                <div class="d-flex justify-content-between align-items-center w-100"> <!-- Flexbox for layout -->
+                <div class="d-flex justify-content-around align-items-center w-100"> <!-- Flexbox for layout -->
                     <!-- Logo container-->
 
                     <!-- End Logo container-->

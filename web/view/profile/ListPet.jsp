@@ -8,6 +8,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
+    <c:if test="${not empty sessionScope.user}">
+
+    </c:if>
+
 
     <head>
         <meta charset="utf-8" />
@@ -36,51 +40,85 @@
             body {
                 margin: 0;
                 padding: 0;
+                font-family: 'Segoe UI', sans-serif;
+                background-color: #f5f7fa;
             }
-            footer {
-                margin-bottom: 0;
+
+            table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin-top: 20px;
+                background-color: #fff;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-radius: 12px;
+                overflow: hidden;
             }
-            .bg-dashboard {
-                margin-bottom: 0;
-                padding-bottom: 0;
-            }
-            html, body {
-                height: 100%;
-            }
-            table, th, td {
-                border: 1px solid black;
-                border-collapse: collapse;
+
+            thead {
+                background-color: #007bff;
+                color: white;
             }
 
             th, td {
-                padding: 8px;
+                padding: 12px 16px;
                 text-align: center;
-            }
-            .canle{
-                display: flex;
-                justify-content: space-around;
-            }
-            .create-btn {
-                display: inline-block;
-                padding: 10px 20px;
-                background-color: #4CAF50;
-                color: white;
-                text-decoration: none;
-                border-radius: 4px;
-                margin-bottom: 20px;
-            }
-            .search-form {
-                display: flex;
-                gap: 8px;
-                margin-bottom: 20px;
+                border-bottom: 1px solid #dee2e6;
             }
 
-            .search-form input[type="text"] {
+            tbody tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            th:first-child, td:first-child {
+                border-left: none;
+            }
+
+            th:last-child, td:last-child {
+                border-right: none;
+            }
+
+            img {
+                border-radius: 8px;
+                object-fit: cover;
+            }
+
+            .canle {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 20px;
+                gap: 10px;
+            }
+
+            .create-btn {
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: bold;
+                transition: background-color 0.3s;
+            }
+
+            .create-btn:hover {
+                background-color: #218838;
+            }
+
+            .search-form, .filter-form {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .search-form input[type="text"],
+            .form-select {
                 padding: 8px 12px;
                 border: 1px solid #ccc;
                 border-radius: 6px;
+                font-size: 14px;
                 outline: none;
-                transition: border-color 0.3s;
             }
 
             .search-form input[type="text"]:focus {
@@ -101,20 +139,181 @@
                 background-color: #0056b3;
             }
 
+            .btn {
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 14px;
+                color: white;
+                transition: background-color 0.3s ease;
+                margin: 0 2px;
+            }
 
+            .btn-info {
+                background-color: #17a2b8;
+                border: none;
+            }
+
+            .btn-info:hover {
+                background-color: #138496;
+            }
+
+            .btn-warning {
+                background-color: #ffc107;
+                border: none;
+                color: #212529;
+            }
+
+            .btn-warning:hover {
+                background-color: #e0a800;
+            }
+
+            .btn-danger {
+                background-color: #dc3545;
+                border: none;
+            }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+            }
+
+            .form-label {
+                font-weight: 500;
+                margin: 0;
+                white-space: nowrap;
+                color: #333;
+            }
+
+            .modal-content {
+                border-radius: 10px;
+            }
+
+            .modal-header {
+                background-color: #007bff;
+                color: white;
+                border-bottom: none;
+            }
+
+            .modal-footer {
+                border-top: none;
+            }
+
+            .img-fluid {
+                max-height: 300px;
+                border-radius: 10px;
+            }
+
+            p {
+                margin-bottom: 8px;
+            }
+
+            footer {
+                margin-top: 20px;
+            }
+            .canle {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 20px;
+                background-color: #fff;
+                padding: 16px 20px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+
+            .search-form,
+            .filter-form {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .search-form input[type="text"],
+            .filter-form .form-select {
+                padding: 8px 14px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                font-size: 14px;
+                outline: none;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                background-color: #f8f9fa;
+            }
+
+            .search-form input[type="text"]:focus,
+            .filter-form .form-select {
+                padding: 8px 14px;
+                padding-right: 32px; /* 👈 Thêm dòng này để tránh đè lên icon */
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                font-size: 14px;
+                outline: none;
+                background-color: #f8f9fa;
+                appearance: none; /* Optional: remove default browser style */
+                background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                background-size: 16px;
+            }
+
+
+            .search-form button {
+                padding: 8px 16px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: background-color 0.3s;
+            }
+
+            .search-form button:hover {
+                background-color: #0056b3;
+            }
+
+            .create-btn {
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 600;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                transition: background-color 0.3s ease;
+            }
+
+            .create-btn:hover {
+                background-color: #218838;
+            }
 
         </style>
+
 
     </head>
 
     <body>
+        <c:if test="${not empty sessionScope.SuccessMessage}">
+            <script>
+                alert('${sessionScope.SuccessMessage}');
+            </script>
+            <c:remove var="SuccessMessage" scope="session"/>
+        </c:if>
 
-        <c:set var="user" value="${sessionScope.user}"/>
+
+        <c:if test="${not empty sessionScope.FailMessage}">
+            <script>
+                alert('${sessionScope.FailMessage}');
+            </script>
+            <c:remove var="FailMessage" scope="session"/>
+        </c:if>
+
+
 
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>
         <!-- Navbar End -->
-        <div class="container">
+        <div>
 
             <section class="bg-dashboard">
 
@@ -122,7 +321,7 @@
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/assets/images/doctors/profile-bg.jpg" class="img-fluid" alt="">
+                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
                                 <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
@@ -133,8 +332,8 @@
                             <ul class="list-unstyled sidebar-nav mb-0">
                                 <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
                                 <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet?id=${user.id}" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation?id=${user.id}" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
                                 <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
                             </ul>
                         </div>
@@ -144,53 +343,80 @@
 
                         <!-- Start -->
                         <div class="canle">
-                            <a href="addpet" class="create-btn">Add New Pet</a>
                             <form method="post" action="searchpet" class="search-form">
-                                <input type="text" name="search" value="${search}" placeholder="Search by Name">
-                                <button type="submit">Search</button>
+                                <input type ="text" name ="id" value ="${user.id}" hidden>
+                                <input type="text" name="search" value="${text}" placeholder="Tìm theo tên">
+                                <button type="submit" >Tìm kiếm</button>
                             </form>
+                            <form method="post" action="filterpet" class="filter-form">
+                                <input type="hidden" name="id" value="${user.id}">
+                                <div class="filter-inline">
+                                    <label for="status" class="form-label">Lọc theo trạng thái:</label>
+                                    <select id="status" name="status" class="form-select" onchange="this.form.submit()">
+                                        <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
+                                        <option value="active" ${status == 'active' ? 'selected' : ''}>Hoạt động</option>
+                                        <option value="inactive" ${status == 'inactive' ? 'selected' : ''}>Không hoạt động</option>
+                                        <option value="lost" ${status == 'lost' ? 'selected' : ''}>Đã chết</option>
+                                        <option value="deceased" ${status == 'deceased' ? 'selected' : ''}>Đã thất lạc</option>
+                                    </select>
+
+                                </div>
+                            </form>
+
+                            <a href="addpet" class="create-btn"> + Thêm mới</a>
                         </div>
                         <table class="table table-striped ">
                             <thead>
                                 <tr>
+                                    <th>STT</th>
+                                    <th>Mã</th>
                                     <th>Tên Pet</th>
                                     <th>Giới Tính</th>
                                     <th>Ảnh</th>
-                                    <th>Giống</th>
+                                    <th>Loài</th>
                                     <th>Trạng Thái</th>
                                     <th>Hành Động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:forEach items="${listpet}" var="pet">
+                                <c:forEach items="${listpet}" var="pet" varStatus="status">
                                     <tr>
+                                        <td>${status.index+1}</td>
+                                        <td>${pet.pet_code}</td>
                                         <td>${pet.name}</td>
-                                        <td>${pet.gender}</td>
                                         <td>
-                                            <img src="${pageContext.request.contextPath}${pet.avatar}" alt="pet" width="50px" />
+                                            <c:choose>
+                                                <c:when test="${pet.gender == 'Đực'}">Đực</c:when>
+                                                <c:when test="${pet.gender == 'Cái'}">Cái</c:when>
+                                            </c:choose>
                                         </td>
-                                        <td>${pet.breed.name}</td>
+                                        <td>
+                                            <img src="${pageContext.request.contextPath}${pet.avatar}" alt="pet" width="100px" height="80px" />
+                                        </td>
+                                        <td>${pet.breed.specie.name}</td>
                                         <td>
                                             <c:choose>
                                                 <c:when test="${pet.status == 'active'}">Hoạt động</c:when>
                                                 <c:when test="${pet.status == 'inactive'}">Không hoạt động</c:when>
                                                 <c:when test="${pet.status == 'lost'}">Đã chết</c:when>
+                                                <c:when test="${pet.status == 'deceased'}">Đã thất lạc</c:when>
 
                                             </c:choose>
                                         </td>
 
                                         <td>
-                                            <a href="updatepet?petID=${pet.id}" class="btn btn-warning">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </a>
 
-                                            <!-- Nút Chi tiết -->
                                             <button type="button" class="btn btn-info" 
                                                     data-bs-toggle="modal" data-bs-target="#detailPetModal${pet.id}">
                                                 <i class="fa-solid fa-circle-info"></i>
                                             </button>
 
-                                            <!-- Nút Xóa -->
+
+                                            <a href="updatepet?petID=${pet.id}" class="btn btn-warning">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+
+
                                             <form action="deletepet" method="post" style="display:inline;" 
                                                   onsubmit="return confirm('Bạn có chắc muốn xóa pet này không?');">
                                                 <input type="hidden" name="id" value="${pet.id}" />
@@ -214,20 +440,31 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-md-4 text-center">
-                                                        <img src="${pageContext.request.contextPath}${pet.avatar}" alt="Pet" class="img-fluid rounded mb-3" />
+                                                        <img src="${pageContext.request.contextPath}${pet.avatar}" alt="Pet" 
+                                                             class="img-fluid rounded mb-3" 
+                                                             style="max-width: 100%;
+                                                             height: auto;" />
                                                     </div>
+
                                                     <div class="col-md-8">
 
+                                                        <p><strong>Mã:</strong> ${pet.pet_code}</p>
                                                         <p><strong>Tên:</strong> ${pet.name}</p>
-                                                        <p><strong>Giới tính:</strong> ${pet.gender}</p>
+                                                        <p><strong>Giới tính:</strong>
+                                                            <c:choose>
+                                                                <c:when test="${pet.gender == 'Đực'}">Đực</c:when>
+                                                                <c:when test="${pet.gender == 'Cái'}">Cái</c:when>
+                                                            </c:choose>
+                                                        </p>
                                                         <p><strong>Ngày sinh:</strong> ${pet.birthDate}</p>
-                                                        <p><strong>Giống:</strong> ${pet.breed.name}</p>
                                                         <p><strong>Loại:</strong> ${pet.breed.specie.name}</p>
+                                                        <p><strong>Giống:</strong> ${pet.breed.name}</p>
                                                         <p><strong>Trạng thái:</strong>
                                                             <c:choose>
                                                                 <c:when test="${pet.status == 'active'}">Hoạt động</c:when>
                                                                 <c:when test="${pet.status == 'inactive'}">Không hoạt động</c:when>
-                                                                <c:when test="${pet.status == 'lost'}">Đã chết</c:when>
+                                                                <c:when test="${pet.status == 'lost'}">Đã thất lạc</c:when>
+                                                                <c:when test="${pet.status == 'deceased'}">Đã qua đời</c:when>
                                                             </c:choose>
                                                         </p>
 
@@ -246,14 +483,9 @@
                             </c:forEach>
                             </tbody>
                         </table>
-                        <c:if test="${not empty sessionScope.SuccessMessage}">
-                            <div class="alert alert-success" id="successAlert">${sessionScope.SuccessMessage}</div>
-                            <c:remove var="SuccessMessage" scope="session"/>
-                        </c:if>
-                        <c:if test="${not empty sessionScope.SuccessMessage}">
-                            <div class="alert alert-fail" id="failAlert">${sessionScope.FailMessage}</div>
-                            <c:remove var="FailMessage" scope="session"/>
-                        </c:if>
+                        <p type="text" name="id" style="color: red"  >${requestScope.Message}</p>
+
+
 
 
 
@@ -263,12 +495,6 @@
             </section><!--end section-->
 
         </div>
-        <!-- Modal Cập Nhật -->
-
-
-
-
-
 
         <!-- Offcanvas Start -->
         <div class="offcanvas bg-white offcanvas-top" tabindex="-1" id="offcanvasTop">
