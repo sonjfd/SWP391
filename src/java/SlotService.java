@@ -1,13 +1,15 @@
-
-package Model;
+import Model.Appointment;
+import Model.Shift;
+import Model.Slot;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Time;
 
 public class SlotService {
 
-    
-    public static List<Slot> generateSlots(Shift shift, List<Appointment> appointments, int slotMinutes) {
+    // slotMinutes: 30 = 30 phút/slot, 15 = 15 phút/slot...
+    public List<Slot> generateSlots(Shift shift, List<Appointment> appointments, int slotMinutes) {
         List<Slot> result = new ArrayList<>();
 
         LocalTime current = shift.getStart_time();
@@ -18,7 +20,7 @@ public class SlotService {
             LocalTime slotEnd = current.plusMinutes(slotMinutes);
             current = slotEnd;
 
-           
+            // Check xem có bị trùng với lịch đã đặt hay không
             boolean isBooked = false;
             for (Appointment appt : appointments) {
                 LocalTime apptStart = appt.getStartTime();
@@ -36,7 +38,3 @@ public class SlotService {
         return result;
     }
 }
-
-
-
-

@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.time.LocalTime;
 import java.util.Date;
 
 /**
@@ -16,9 +17,12 @@ public class Appointment {
     private User user;
     private Pet pet;
     private Doctor doctor;
-    private Date startTime;
-    private Date endTime;
+    private Date appointmentDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String status;
+    private String paymentStatus;
+    private String paymentMethod;
     private String note;
     private Date createdAt;
     private Date updatedAt;
@@ -26,14 +30,17 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(String id, User user, Pet pet, Doctor doctor, Date startTime, Date endTime, String status, String note, Date createdAt, Date updatedAt) {
+    public Appointment(String id, User user, Pet pet, Doctor doctor, Date appointmentDate, LocalTime startTime, LocalTime endTime, String status, String paymentStatus, String paymentMethod, String note, Date createdAt, Date updatedAt) {
         this.id = id;
         this.user = user;
         this.pet = pet;
         this.doctor = doctor;
+        this.appointmentDate = appointmentDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
+        this.paymentStatus = paymentStatus;
+        this.paymentMethod = paymentMethod;
         this.note = note;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -43,86 +50,106 @@ public class Appointment {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public User getUser() {
         return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Pet getPet() {
         return pet;
     }
 
-    public void setPet(Pet pet) {
-        this.pet = pet;
-    }
-
     public Doctor getDoctor() {
         return doctor;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public Date getAppointmentDate() {
+        return appointmentDate;
     }
 
-    public Date getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
     public String getNote() {
         return note;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
     }
 
     public Date getUpdatedAt() {
         return updatedAt;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setPet(Pet pet) {
+        this.pet = pet;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    public void setAppointmentDate(Date appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public String toString() {
-        return "Appointment{" + "id=" + id + ", user=" + user + ", pet=" + pet + ", doctor=" + doctor + ", startTime=" + startTime + ", endTime=" + endTime + ", status=" + status + ", note=" + note + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
-    }
-    
+   
     
 }

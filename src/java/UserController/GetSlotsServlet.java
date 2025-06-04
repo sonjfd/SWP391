@@ -2,14 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package CommonController;
+package UserController;
 
 import DAO.AppointmentDAO;
-import DAO.DoctorDAO;
 import DAO.DoctorScheduleDAO;
+import DAO.ShiftDAO;
 import Model.Appointment;
-import Model.Doctor;
-import Model.DoctorSchedule;
+import Model.Shift;
 import Model.Slot;
 import Model.SlotService;
 import java.io.IOException;
@@ -19,16 +18,21 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
- * @author ASUS
+ * @author Dell
  */
-@WebServlet("/homedoctorschedule")
-public class HomeDoctorSchedule extends HttpServlet {
+@WebServlet(name = "GetSlotsServlet", urlPatterns = {"/get-slot"})
+public class GetSlotsServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +51,10 @@ public class HomeDoctorSchedule extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet HomeDoctorSchedule</title>");
+            out.println("<title>Servlet GetSlotsServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet HomeDoctorSchedule at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet GetSlotsServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -66,9 +70,62 @@ public class HomeDoctorSchedule extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-      
+        String dateStr = request.getParameter("date");
+        String doctorId = request.getParameter("doctorId");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            Date date = sdf.parse(dateStr);
+
+            List<Shift> shifts = new ShiftDAO().getShiftByDoctorAndDate(doctorId, date);
+            if (shifts == null || shifts.isEmpty()) {
+                out.print("[]");
+                out.flush();
+                return;
+            }
+
+            List<Appointment> appointments = new AppointmentDAO().getAppointmentsByDoctorAndDate(doctorId, date);
+
+            List<Slot> allSlots = new ArrayList<>();
+            for (Shift shift : shifts) {
+                List<Slot> slots = SlotService.generateSlots(shift, appointments, 30);
+                allSlots.addAll(slots);
+            }
+
+            com.google.gson.JsonArray jsonSlots = new com.google.gson.JsonArray();
+
+            for (Slot slot : allSlots) {
+                boolean booked = false;
+                for (Appointment appt : appointments) {
+                   
+                    if (slot.getStart().isBefore(appt.getEndTime()) && slot.getEnd().isAfter(appt.getStartTime())&& appt.getStatus().equalsIgnoreCase("completed")) {
+                        booked = true;
+                        break;
+                    }
+                }
+
+                com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
+                obj.addProperty("start", slot.getStart().toString());
+                obj.addProperty("end", slot.getEnd().toString());
+                
+                obj.addProperty("booked", booked);
+
+                jsonSlots.add(obj);
+            }
+
+            out.print(jsonSlots.toString());
+            out.flush();
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            
+        }
     }
 
     /**

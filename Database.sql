@@ -260,3 +260,74 @@ CREATE TABLE contacts (
 );
 
 
+
+
+
+
+
+
+--- BẢNG BLOG
+CREATE TABLE blogs (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  title NVARCHAR(255) NOT NULL,
+  content NVARCHAR(MAX) NOT NULL,
+  author_id UNIQUEIDENTIFIER NOT NULL, -- ID của nhân viên tạo blog
+  image NVARCHAR(500),                 -- Đường dẫn ảnh đại diện blog
+  status NVARCHAR(50) DEFAULT 'draft', -- 'draft', 'published'
+  published_at DATETIME,               -- Ngày xuất bản
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME DEFAULT GETDATE(),
+  reactions_count INT DEFAULT 0,
+  comments_count INT DEFAULT 0
+);
+--- BẢNG TAG (QH M-T-M với blogs)
+CREATE TABLE tags (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  name NVARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE blog_tags (
+  blog_id UNIQUEIDENTIFIER NOT NULL,
+  tag_id UNIQUEIDENTIFIER NOT NULL,
+  PRIMARY KEY (blog_id, tag_id),
+  FOREIGN KEY (blog_id) REFERENCES blogs(id),
+  FOREIGN KEY (tag_id) REFERENCES tags(id)
+);
+-- Bảng người dùng thả tim
+CREATE TABLE blog_reactions (
+  blog_id UNIQUEIDENTIFIER NOT NULL,
+  user_id UNIQUEIDENTIFIER NOT NULL,
+  is_active BIT DEFAULT 1,
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME NULL,
+  PRIMARY KEY (blog_id, user_id),
+  FOREIGN KEY (blog_id) REFERENCES blogs(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+--- bảng comment blog
+CREATE TABLE blog_comments (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  blog_id UNIQUEIDENTIFIER NOT NULL,
+  user_id UNIQUEIDENTIFIER NOT NULL,
+  content NVARCHAR(MAX) NOT NULL,
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME NULL,
+  is_edited BIT DEFAULT 0,
+  FOREIGN KEY (blog_id) REFERENCES blogs(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+-- bảng bookmark blog
+CREATE TABLE blog_bookmarks (
+  blog_id UNIQUEIDENTIFIER NOT NULL,
+  user_id UNIQUEIDENTIFIER NOT NULL,
+  is_active BIT DEFAULT 1,
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME NULL,
+  PRIMARY KEY (blog_id, user_id),
+  FOREIGN KEY (blog_id) REFERENCES blogs(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+

@@ -180,3 +180,21 @@ VALUES
 (N'Spa - Tắm & làm đẹp', N'Thú cưng sạch thơm, đáng yêu hơn mỗi ngày cùng dịch vụ Spa.', '/assets/images/banner/banner3.jpg', 'service.jsp?id=9', 1, GETDATE(), GETDATE()),
 (N'Ưu đãi tháng 6', N'Giảm 20% dịch vụ khám bệnh cho thú cưng từ 1/6 - 30/6.', '/assets/images/banner/banner4.jpg', NULL, 1, GETDATE(), GETDATE()),
 (N'Thú cưng bị lạc?', N'Liên hệ ngay với phòng khám để được hỗ trợ tìm thú cưng.', '/assets/images/banner/banner5.jpg', 'contact.jsp', 1, GETDATE(), GETDATE());
+
+
+INSERT INTO tags (id, name) VALUES
+(NEWID(), N'Khám sức khỏe định kỳ'),
+(NEWID(), N'Tiêm phòng thú cưng'),
+(NEWID(), N'Chăm sóc sau phẫu thuật'),
+(NEWID(), N'Dinh dưỡng cho thú cưng'),
+(NEWID(), N'Tẩy giun và phòng ký sinh'),
+(NEWID(), N'Vệ sinh và làm đẹp'),
+(NEWID(), N'Bệnh lý thường gặp ở chó'),
+(NEWID(), N'Bệnh lý thường gặp ở mèo'),
+(NEWID(), N'Thuốc và điều trị'),
+(NEWID(), N'Tư vấn hành vi thú cưng'),
+(NEWID(), N'Hướng dẫn nuôi thú cưng cho người mới'),
+(NEWID(), N'Dịch vụ chăm sóc thú cưng tại nhà'),
+(NEWID(), N'Vắc xin cần thiết'),
+(NEWID(), N'Chăm sóc thú cưng mùa hè'),
+(NEWID(), N'Chăm sóc thú cưng mùa đông');

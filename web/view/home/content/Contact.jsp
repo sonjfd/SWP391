@@ -42,7 +42,7 @@
 
 
         <section class="section">
-            
+
 
             <div class="container ">
                 <div class="row align-items-center">
@@ -222,7 +222,7 @@
 
         <%@include file="../layout/Footer.jsp" %>
 
-
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- javascript -->
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- SLIDER -->

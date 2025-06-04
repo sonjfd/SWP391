@@ -61,3 +61,63 @@ BEGIN
         SELECT 1 FROM doctor_schedule ds WHERE ds.doctor_id = dd.doctor_id
     );
 END;
+
+
+
+
+
+-- Khi người dùng thả tim
+CREATE TRIGGER trg_increase_reaction
+ON blog_reactions
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    UPDATE blogs
+    SET reactions_count = reactions_count + 1
+    FROM blogs b
+    JOIN inserted i ON b.id = i.blog_id
+    WHERE i.is_active = 1
+      AND (SELECT is_active FROM blog_reactions 
+           WHERE blog_id = i.blog_id AND user_id = i.user_id) = 1
+END
+GO
+
+-- Khi người dùng bỏ tim
+CREATE TRIGGER trg_decrease_reaction
+ON blog_reactions
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE blogs
+    SET reactions_count = reactions_count - 1
+    FROM blogs b
+    JOIN inserted i ON b.id = i.blog_id
+    JOIN deleted d ON d.blog_id = i.blog_id AND d.user_id = i.user_id
+    WHERE i.is_active = 0 AND d.is_active = 1
+END
+GO
+
+-- comment
+CREATE TRIGGER trg_increase_comment
+ON blog_comments
+AFTER INSERT
+AS
+BEGIN
+    UPDATE blogs
+    SET comments_count = comments_count + 1
+    FROM blogs b
+    JOIN inserted i ON b.id = i.blog_id
+END
+GO
+-- xóa comment
+CREATE TRIGGER trg_decrease_comment
+ON blog_comments
+AFTER DELETE
+AS
+BEGIN
+    UPDATE blogs
+    SET comments_count = comments_count - 1
+    FROM blogs b
+    JOIN deleted d ON b.id = d.blog_id
+END
+GO

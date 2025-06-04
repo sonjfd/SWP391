@@ -149,6 +149,7 @@
                 const shifts = document.getElementById("shift").value;
                 const dayOfWeekCheckboxes = document.querySelectorAll('input[name="day_of_week"]:checked');
                 const monthsCheckboxes = document.querySelectorAll('input[name="months"]:checked');
+                const currentMonth = new Date().getMonth() + 1; // JavaScript: 0 = Jan -> +1
 
                 if (!doctor) {
                     alert("Vui lòng chọn bác sĩ.");
@@ -170,8 +171,16 @@
                     return false;
                 }
 
+                // Kiểm tra có tháng quá khứ nào được chọn không
+                for (let checkbox of monthsCheckboxes) {
+                    const selectedMonth = parseInt(checkbox.value, 10);
+                    if (selectedMonth < currentMonth) {
+                        alert("Không được chọn tháng trong quá khứ.");
+                        return false;
+                    }
+                }
 
-                return true;
+                return true; // Nếu mọi thứ hợp lệ
             }
         </script>
 
@@ -182,7 +191,8 @@
 
 
 
- 
+
+
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- simplebar -->

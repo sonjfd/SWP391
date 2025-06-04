@@ -32,7 +32,7 @@
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
         <style>
-            /* Nền form và border */
+
             #bookingForm {
                 background-color: #fff;
                 border: 1px solid #0d6efd;
@@ -40,7 +40,7 @@
                 padding: 25px;
                 max-width: 600px;
                 margin: auto;
-                box-shadow: 0 4px 10px rgb(13 110 253 / 0.2);
+
             }
 
             /* Label màu xanh dương */
@@ -57,19 +57,29 @@
                 outline: none;
             }
 
-            /* Ca làm việc - nút chọn ca khám */
-            #shiftContainer button.shift-btn {
-                background-color: #cfe2ff;
-                border: 1px solid #0d6efd;
-                color: #0d6efd;
-                border-radius: 20px;
-                padding: 8px 16px;
-                cursor: pointer;
-                transition: background-color 0.3s, color 0.3s;
-                user-select: none;
-                font-weight: 600;
+            #slotContainer {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 10px;
             }
 
+            .slot-btn {
+                min-width: 100px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            .slot-btn.active {
+                background-color: #0d6efd;
+                color: white;
+                border: 1px solid #0d6efd;
+            }
+
+            .slot-btn.disabled {
+                pointer-events: none;
+                opacity: 0.5;
+            }
             #shiftContainer button.shift-btn:hover {
                 background-color: #0d6efd;
                 color: white;
@@ -109,22 +119,6 @@
                 border-color: #084298;
             }
 
-            /* Mã QR */
-            #vnpayQrContainer {
-                border: 1px solid #0d6efd;
-                border-radius: 8px;
-                padding: 15px;
-                background-color: #e7f1ff;
-                text-align: center;
-            }
-
-            /* Text tiền thanh toán */
-            #paymentAmountText {
-                color: #0d6efd;
-                font-weight: 700;
-                font-size: 1.1rem;
-            }
-
         </style>
     </head>
     <body>
@@ -153,7 +147,7 @@
                         <div class="row mb-2">
                             <div class="col-md-6">
                                 <label class="form-label">SĐT:</label>
-                                <input type="text" class="form-control" value="${sessionScope.user.phoneNumber}" readonly />
+                                <input type="text" class="form-control" value="${sessionScope.user.phoneNumber}"  />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Địa chỉ:</label>
@@ -227,7 +221,7 @@
                             </div>
                         </div>
 
-                        
+
 
                         <!-- Fee alert -->
                         <div class="alert alert-info">
@@ -242,88 +236,119 @@
                 </form>
 
                 <script>
-                    // Load breed/species info
+
                     document.getElementById('petSelect').addEventListener('change', function () {
                         let petId = this.value;
                         if (!petId)
                             return;
 
-                        fetch('getPetInfor?petId=' + petId)
+                        fetch('getPetInfor?petId=' + encodeURIComponent(petId))
                                 .then(res => res.json())
                                 .then(data => {
+                                    console.log(data);
                                     document.getElementById('breedInfo').style.display = 'block';
                                     document.getElementById('speciesName').value = data.species;
                                     document.getElementById('breedName').value = data.breed;
-                                }).catch((err) =>{
-                                    alter(err);
+                                })
+                                .catch(err => {
+                                    alert(err);
                                 });
                     });
 
-                    // Load doctors by date
+
                     document.getElementById('appointmentDate').addEventListener('change', function () {
                         let date = this.value;
                         if (!date)
                             return;
 
-                        fetch('get-doctors-bydate?date=' + date)
+                        fetch('get-doctors-bydate?date=' + encodeURIComponent(date))
                                 .then(res => res.json())
                                 .then(data => {
                                     let doctorSelect = document.getElementById('doctorSelect');
                                     doctorSelect.innerHTML = '<option value="">-- Chọn bác sĩ --</option>';
+
+                                    if (!data.doctors || data.doctors.length === 0) {
+                                        let opt = document.createElement('option');
+                                        opt.value = '';
+                                        opt.textContent = 'Vui lòng chọn ngày khác!Bác sĩ không có lịch làm việc hôm nay.';
+                                        opt.disabled = true;
+                                        doctorSelect.appendChild(opt);
+                                        return;
+                                    }
+
                                     data.doctors.forEach(doc => {
                                         let opt = document.createElement('option');
                                         opt.value = doc.id;
                                         opt.textContent = doc.fullName;
                                         doctorSelect.appendChild(opt);
                                     });
-                                }).catch((err) =>{
-                                    alter(err);
+                                })
+                                .catch(err => {
+                                    alert('Lỗi khi tải danh sách bác sĩ: ' + err);
                                 });
                     });
 
-                    // Load slots when doctor selected
+
                     document.getElementById('doctorSelect').addEventListener('change', function () {
-                        let date = document.getElementById('appointmentDate').value;
-                        let doctorId = this.value;
+                        const date = document.getElementById('appointmentDate').value;
+                        const doctorId = this.value;
                         if (!date || !doctorId)
                             return;
 
-                        fetch(`GetSlotsServlet?date=${date}&doctorId=${doctorId}`)
-                                .then(res => res.json())
+                        const url = 'get-slot?date=' + encodeURIComponent(date) + '&doctorId=' + encodeURIComponent(doctorId);
+
+                        fetch(url)
+                                .then(res => {
+                                    if (!res.ok)
+                                        throw new Error('Lỗi phản hồi từ server');
+                                    return res.json();
+                                })
                                 .then(data => {
-                                    let container = document.getElementById('slotContainer');
+                                    const container = document.getElementById('slotContainer');
                                     container.innerHTML = '';
+
                                     data.forEach(slot => {
-                                        let btn = document.createElement('button');
+                                        console.log(slot);
+                                        const btn = document.createElement('button');
                                         btn.type = 'button';
-                                        btn.className = `btn ${slot.available ? 'btn-outline-primary' : 'btn-secondary disabled'}`;
-                                        btn.disabled = !slot.available;
-                                        btn.textContent = `${slot.start} - ${slot.end}`;
-                                                                btn.onclick = () => {
-                                                                    document.getElementById('slotStart').value = slot.start;
-                                                                    document.getElementById('slotEnd').value = slot.end;
-                                                                    document.querySelectorAll('#slotContainer button').forEach(b => b.classList.remove('active'));
-                                                                    btn.classList.add('active');
-                                                                };
-                                                                container.appendChild(btn);
-                                                            });
-                                                        });
-                                            });
+                                        btn.classList.add('btn', 'slot-btn', 'me-2', 'mb-2');
 
-                                           
+                                        if (slot.booked) {
 
-                                            // Optional: submit form via AJAX
-                                            document.getElementById('bookingForm').addEventListener('submit', function (e) {
-                                                e.preventDefault();
-                                                let formData = new FormData(this);
-                                                fetch('BookAppointmentServlet', {
-                                                    method: 'POST',
-                                                    body: formData
-                                                }).then(res => res.text())
-                                                        .then(msg => alert('Đặt lịch thành công!'))
-                                                        .catch(err => alert('Lỗi đặt lịch'));
+                                            btn.classList.add('btn-secondary');
+                                            btn.textContent = String(slot.start) + ' - ' + String(slot.end);
+                                            btn.style.pointerEvents = 'none';
+                                            btn.style.opacity = '0.6';
+                                        } else {
+
+                                            btn.classList.add('btn-outline-primary');
+                                            btn.textContent = String(slot.start) + ' - ' + String(slot.end);
+
+
+                                            btn.addEventListener('click', () => {
+                                                document.getElementById('slotStart').value = slot.start;
+                                                document.getElementById('slotEnd').value = slot.end;
+
+                                                document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('active'));
+                                                btn.classList.add('active');
                                             });
+                                        }
+
+                                        container.appendChild(btn);
+                                    });
+                                })
+                                .catch(err => {
+                                    alert('Lỗi khi tải lịch làm việc: ' + err.message);
+                                });
+                    });
+
+
+
+
+
+
                 </script>
+
 
 
 

@@ -69,7 +69,7 @@ public class GetDoctorsByDate extends HttpServlet {
         DoctorDAO d = new DoctorDAO();
         String dateStr = request.getParameter("date");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        response.setContentType("application/json;");
+        response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
         try {

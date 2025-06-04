@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.time.LocalTime;
 import java.util.Date;
 
 /**
@@ -12,34 +13,34 @@ import java.util.Date;
  */
 public class Slot {
     
-    private Date startTime;
-    private Date endTime;
+     private LocalTime start;
+    private LocalTime end;
     private boolean available;
     // Constructor, getter, setter
 
     public Slot() {
     }
 
-    public Slot(Date startTime, Date endTime, boolean available) {
-        this.startTime = startTime;
-        this.endTime = endTime;
+    public Slot(LocalTime start, LocalTime end, boolean available) {
+        this.start = start;
+        this.end = end;
         this.available = available;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public LocalTime getStart() {
+        return start;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setStart(LocalTime start) {
+        this.start = start;
     }
 
-    public Date getEndTime() {
-        return endTime;
+    public LocalTime getEnd() {
+        return end;
     }
 
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setEnd(LocalTime end) {
+        this.end = end;
     }
 
     public boolean isAvailable() {
@@ -49,6 +50,8 @@ public class Slot {
     public void setAvailable(boolean available) {
         this.available = available;
     }
+
+   
 
 
 }

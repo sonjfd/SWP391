@@ -7,19 +7,7 @@
     <head>
         <meta charset="utf-8" />
         <title>Pet24h</title>
-        <!-- Link to your CSS -->
-        <!-- Bootstrap -->
-        <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <!-- Icons -->
-        <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
-        <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
-        <!-- SLIDER -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
-        <!-- Css -->
-        <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
-
-        <!-- Custom CSS -->
+     
         <style>
             /* Gradient text for Pet24h */
             .logo-text {
@@ -257,16 +245,6 @@
         <!-- Navbar End -->
 
 
-        <!-- javascript -->
-        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-        <!-- SLIDER -->
-        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
-        <!-- Counter -->
-        <script src="${pageContext.request.contextPath}/assets/js/counter.init.js"></script>
-        <!-- Icons -->
-        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-        <!-- Main Js -->
-        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+       
     </body>
 </html>

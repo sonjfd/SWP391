@@ -62,15 +62,7 @@ public class DoctorAssignedAppointment extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        List<Appointment> l = new ArrayList<>();
-        try {
-            l = new AppointmentDAO().getAppointmentsByDoctorId("2D50D5B1-265C-48BA-B06C-24270D718A66");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DoctorAssignedAppointment.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        request.setAttribute("LIST_AP", l);
         
-        request.getRequestDispatcher("/view/doctor/content/DoctorAssignedAppointment.jsp").forward(request, response);
     } 
 
     /** 
