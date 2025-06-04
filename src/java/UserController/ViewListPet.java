@@ -75,14 +75,9 @@ public class ViewListPet extends HttpServlet {
         User user = (User) session.getAttribute("user");
         UserDAO u = new UserDAO();
         String uid = user.getId();
-        try {
-            List<Pet> listpet = u.getPetsByUser(uid);
-            request.setAttribute("listpet", listpet);
-        } catch (SQLException ex) {
-            Logger.getLogger(ViewListPet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ViewListPet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        List<Pet> listpet = u.getPetsByUser(uid);
+        request.setAttribute("listpet", listpet);
 
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     } 

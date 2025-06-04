@@ -13,17 +13,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "SearchPet", urlPatterns = {"/searchpet"})
-public class SearchPet extends HttpServlet {
+@WebServlet(name = "FilterPet", urlPatterns = {"/filterpet"})
+public class FilterPet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +39,10 @@ public class SearchPet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SearchPet</title>");
+            out.println("<title>Servlet FilterPet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SearchPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet FilterPet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,9 +60,7 @@ public class SearchPet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
-
+        processRequest(request, response);
     }
 
     /**
@@ -79,28 +74,27 @@ public class SearchPet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String text = (String) request.getParameter("search").trim();
+        String status = (String) request.getParameter("status");
         String id = request.getParameter("id");
         List<Pet> petList = null;
         UserDAO petDAO = new UserDAO();
 
-        if (text.isEmpty() || text.isBlank()) {
+        if (status.isEmpty() || status.isBlank()) {
             petList = petDAO.getPetsByUser(id);
             request.setAttribute("listpet", petList);
 
         } else {
 
-            petList = petDAO.getPetsByName(text,id);
+            petList = petDAO.getPetsByStatus(status, id);
             request.setAttribute("listpet", petList);
         }
-        if(petList.isEmpty()){
-            request.setAttribute("Message", "Không tìm thấy pet tương ứng!");
+        if (petList.isEmpty()) {
+            request.setAttribute("Message", "Không lọc thấy pet tương ứng!");
         }
 
         request.setAttribute("listpet", petList);
-        request.setAttribute("text", text);
+        request.setAttribute("status", status);
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
-
     }
 
     /**

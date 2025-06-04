@@ -81,26 +81,15 @@ public class UpdateUserInformation extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-   
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-
-    request.setCharacterEncoding("UTF-8");
-    response.setCharacterEncoding("UTF-8");
-
-    String id = request.getParameter("id");
-    String name = request.getParameter("fullName");
-    String address = request.getParameter("address");
-    String email = request.getParameter("email");
-    String number = request.getParameter("phoneNumber");
-    Part part = request.getPart("avatar");
-
-    // Validation cơ bản
-    if (name == null || name.trim().isEmpty()
-            || email == null || email.trim().isEmpty()
-            || number == null || number.trim().isEmpty()
-            || address == null || address.trim().isEmpty()) {
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String id = request.getParameter("id");
+        String name = request.getParameter("fullName");
+        String address = request.getParameter("address");
+        String email = request.getParameter("email");
+        String number = request.getParameter("phone");
+       
+        Part part = request.getPart("avatar");      
         String realPath = request.getServletContext().getRealPath("/assets/images");
         File uploads = new File(realPath);
         if (!uploads.exists()) {
@@ -128,7 +117,6 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         }
         UserDAO ud = new UserDAO();
         if (ud.updateUser(id, name, address, email, number, filePath)) {
-            // Cập nhật lại user trong session
             User updatedUser = ud.getUserById(id);
             request.getSession().setAttribute("user", updatedUser);
 

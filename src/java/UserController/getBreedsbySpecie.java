@@ -4,8 +4,9 @@
  */
 package UserController;
 
-import DAO.UserDAO;
-import Model.Pet;
+import DAO.BreedDAO;
+import Model.Breed;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,17 +14,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "SearchPet", urlPatterns = {"/searchpet"})
-public class SearchPet extends HttpServlet {
+@WebServlet(name = "getBreedsbySpecie", urlPatterns = {"/getbreedsbyspecie"})
+public class getBreedsbySpecie extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +40,10 @@ public class SearchPet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SearchPet</title>");
+            out.println("<title>Servlet getBreedsbySpecie</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SearchPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet getBreedsbySpecie at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,8 +61,15 @@ public class SearchPet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        int specieId = Integer.parseInt(request.getParameter("specieId"));
+        BreedDAO bd = new BreedDAO();
+        List<Breed> breeds = bd.getAllBreedsWithSpecie(specieId);
 
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
+        Gson gson = new Gson();
+        String json = gson.toJson(breeds);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
 
     }
 
@@ -79,28 +84,7 @@ public class SearchPet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String text = (String) request.getParameter("search").trim();
-        String id = request.getParameter("id");
-        List<Pet> petList = null;
-        UserDAO petDAO = new UserDAO();
-
-        if (text.isEmpty() || text.isBlank()) {
-            petList = petDAO.getPetsByUser(id);
-            request.setAttribute("listpet", petList);
-
-        } else {
-
-            petList = petDAO.getPetsByName(text,id);
-            request.setAttribute("listpet", petList);
-        }
-        if(petList.isEmpty()){
-            request.setAttribute("Message", "Không tìm thấy pet tương ứng!");
-        }
-
-        request.setAttribute("listpet", petList);
-        request.setAttribute("text", text);
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
-
+        processRequest(request, response);
     }
 
     /**

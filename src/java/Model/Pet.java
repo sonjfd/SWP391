@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class Pet {
     private String id;
+    private String pet_code;
     private User user;
     private String name;
     private Date birthDate;
@@ -28,8 +29,9 @@ public class Pet {
     public Pet() {
     }
 
-    public Pet(String id, User user, String name, Date birthDate, Breed breed, String gender, String avatar, String description, String status, Date createDate, Date updateDate) {
+    public Pet(String id, String pet_code, User user, String name, Date birthDate, Breed breed, String gender, String avatar, String description, String status, Date createDate, Date updateDate) {
         this.id = id;
+        this.pet_code = pet_code;
         this.user = user;
         this.name = name;
         this.birthDate = birthDate;
@@ -41,6 +43,16 @@ public class Pet {
         this.createDate = createDate;
         this.updateDate = updateDate;
     }
+
+    public String getPet_code() {
+        return pet_code;
+    }
+
+    public void setPet_code(String pet_code) {
+        this.pet_code = pet_code;
+    }
+
+   
 
     
     public Breed getBreed() {
@@ -137,10 +149,9 @@ public class Pet {
 
     @Override
     public String toString() {
-        return "Pet{" + "id=" + id + ", user=" + user + ", name=" + name + ", birthDate=" + birthDate + ", breed=" + breed + ", gender=" + gender + ", avatar=" + avatar + ", description=" + description + ", status=" + status + ", createDate=" + createDate + ", updateDate=" + updateDate + '}';
+        return "Pet{" + "id=" + id + ", pet_code=" + pet_code + ", user=" + user + ", name=" + name + ", birthDate=" + birthDate + ", breed=" + breed + ", gender=" + gender + ", avatar=" + avatar + ", description=" + description + ", status=" + status + ", createDate=" + createDate + ", updateDate=" + updateDate + '}';
     }
 
-    
 
     
     
