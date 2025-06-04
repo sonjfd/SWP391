@@ -4,9 +4,9 @@
  */
 package UserController;
 
-import DAO.UserDAO;
-import Model.Pet;
-import Model.User;
+import DAO.DoctorDAO;
+import Model.Doctor;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,18 +14,19 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author Admin
+ * @author Dell
  */
-@WebServlet(name = "ViewListPet", urlPatterns = {"/viewlistpet"})
-public class ViewListPet extends HttpServlet {
+@WebServlet(name = "GetDoctorsByDate", urlPatterns = {"/get-doctors-bydate"})
+public class GetDoctorsByDate extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +45,10 @@ public class ViewListPet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewListPet</title>");
+            out.println("<title>Servlet GetDoctorsByDate</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewListPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet GetDoctorsByDate at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,26 +65,35 @@ public class ViewListPet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        DoctorDAO d = new DoctorDAO();
+        String dateStr = request.getParameter("date");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        response.setContentType("application/json;");
+        PrintWriter out = response.getWriter();
 
-    throws ServletException, IOException {
+        try {
+            Date date = sdf.parse(dateStr);
+            List<Doctor> doctors = d.getDoctorsByDate(date);
+            com.google.gson.JsonArray jsonDoctors = new com.google.gson.JsonArray();
+            for (Doctor doc : doctors) {
+                com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
+                obj.addProperty("id", doc.getUser().getId());
+                obj.addProperty("fullName", doc.getUser().getFullName());
+                jsonDoctors.add(obj);
+            }
 
-        HttpSession session = request.getSession(false);
+            com.google.gson.JsonObject jsonResult = new com.google.gson.JsonObject();
+            jsonResult.add("doctors", jsonDoctors);
 
-        if (session == null || session.getAttribute("user") == null) {
+            out.print(jsonResult.toString());
+            out.flush();
 
-            response.sendRedirect("login");
-            return;
-
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            
+            
         }
-        User user = (User) session.getAttribute("user");
-        UserDAO u = new UserDAO();
-        String uid = user.getId();
-
-        List<Pet> listpet = u.getPetsByUser(uid);
-        request.setAttribute("listpet", listpet);
-
-
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }
 
     /**

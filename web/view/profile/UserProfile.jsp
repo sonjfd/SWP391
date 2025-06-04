@@ -8,9 +8,11 @@ z<%--
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
+
     <c:if test="${not empty sessionScope.user}">
 
     </c:if>
+
 
     <head>
         <meta charset="utf-8" />
@@ -113,6 +115,7 @@ z<%--
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>
         <!-- Navbar End -->
+
         <section class="bg-dashboard">
             <div class="container">
 
@@ -165,6 +168,7 @@ z<%--
                                 </div>
                                 <div class="p-4">
                                     <div class="row">
+
                                         <input name="id" type="text" class="form-control" value="${user.id}" hidden>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Họ tên</label>
@@ -182,6 +186,7 @@ z<%--
                                             <label class="form-label">Số điện thoại</label>
                                             <input name="phone" type="text" class="form-control" id="phone" value="${user.phoneNumber}" placeholder="Số điện thoại">
                                             <div class="error-message"></div>
+
 
                                         </div>
                                         <div class="col-md-6 mb-3">

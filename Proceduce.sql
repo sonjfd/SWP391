@@ -39,3 +39,25 @@ BEGIN
 END
 
 
+
+CREATE TRIGGER trg_AfterDelete_DoctorSchedule
+ON doctor_schedule
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @DeletedDoctors TABLE (doctor_id UNIQUEIDENTIFIER PRIMARY KEY);
+
+    INSERT INTO @DeletedDoctors(doctor_id)
+    SELECT DISTINCT doctor_id FROM DELETED;
+
+    
+
+    DELETE wst
+    FROM weekly_schedule_template wst
+    INNER JOIN @DeletedDoctors dd ON wst.doctor_id = dd.doctor_id
+    WHERE NOT EXISTS (
+        SELECT 1 FROM doctor_schedule ds WHERE ds.doctor_id = dd.doctor_id
+    );
+END;

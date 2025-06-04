@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -142,15 +144,38 @@ public class DoctorDAO {
         return doctorList;
     }
 
-    public static void main(String[] args) {
+    public List<Doctor> getDoctorsByDate(Date date) {
+        List<Doctor> doctors = new ArrayList<>();
+        String sql = "SELECT DISTINCT u.id AS doctor_id, u.full_name\n"
+                + "FROM doctor_schedule ds\n"
+                + "JOIN doctors d ON ds.doctor_id = d.user_id\n"
+                + "JOIN users u ON d.user_id = u.id\n"
+                + "WHERE ds.work_date = ? AND ds.is_available = 1\n"
+                + "ORDER BY u.full_name";
 
-        User u = new UserDAO().getUserById("86A70CA9-123C-4BB5-B6FE-0F5706EF1758");
-        System.out.println(u);
-        Doctor d = new DoctorDAO().getDoctorById("7FCBAB44-A3FE-40B6-AB77-95BDC98F072C");  // Giả sử doctor_id là "86A70CA9-123C-4BB5-B6FE-0F5706EF1758"
-        System.out.println(d);
-        List<Doctor> l = new DoctorDAO().getAllDoctors();
-        for (Doctor doctor : l) {
-            System.out.println(doctor);
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
+
+               java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        stm.setDate(1, sqlDate);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("doctor_id"));
+                user.setFullName(rs.getString("full_name"));
+
+                Doctor doctor = new Doctor();
+                doctor.setUser(user);
+
+                doctors.add(doctor);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        return doctors;
     }
+
+    
 }

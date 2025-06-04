@@ -75,7 +75,7 @@ public class FIilterDoctroShedule extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             System.out.println(e);
-        
+
         }
         List<DoctorSchedule> list = sdao.filterDoctorSchedules(doctorId, month, shiftId);
         request.setAttribute("listshedules", list);
@@ -96,9 +96,10 @@ public class FIilterDoctroShedule extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
     }
 
     /**

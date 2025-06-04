@@ -42,11 +42,7 @@
 
 
         <section class="section">
-            <div class="container">
-
-
-
-            </div><!--end container-->
+            
 
             <div class="container ">
                 <div class="row align-items-center">
@@ -96,7 +92,7 @@
 
 
                     </form>
-        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+                    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
 
                     <script>
                         function getParam() {
@@ -162,7 +158,7 @@
                             const errElem = createErrorElem(emailInput);
 
                             if (!emailPattern.test(val)) {
-                               errElem.textContent = 'Email phải là địa chỉ Gmail hợp lệ, ví dụ: ten@gmail.com.';
+                                errElem.textContent = 'Email phải là địa chỉ Gmail hợp lệ, ví dụ: ten@gmail.com.';
                                 return false;
                             } else {
                                 errElem.textContent = '';
@@ -177,11 +173,15 @@
                             if (val === '') {
                                 errElem.textContent = 'Họ và tên không được để trống.';
                                 return false;
+                            } else if (/\d/.test(val)) {
+                                errElem.textContent = 'Họ và tên không được chứa số.';
+                                return false;
                             } else {
                                 errElem.textContent = '';
                                 return true;
                             }
                         }
+
 
                         function validateDescription() {
                             const val = descriptionInput.value.trim();
@@ -208,7 +208,7 @@
                             const validDescription = validateDescription();
 
                             if (!validName || !validPhone || !validEmail || !validDescription) {
-                                e.preventDefault(); 
+                                e.preventDefault();
                             }
                         });
                     </script>
@@ -224,6 +224,7 @@
 
 
         <!-- javascript -->
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- SLIDER -->
         <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>

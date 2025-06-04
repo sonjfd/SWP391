@@ -3,14 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/web/view/profile/UserProfile.jsp</file>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/src/java/AminController/CreateAccount.java</file>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/web/view/profile/ListPet.jsp</file>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/web/view/profile/UpdatePet.jsp</file>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/src/java/UserController/UpdateUserInformation.java</file>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/web/view/home/layout/Header.jsp</file>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/web/view/profile/AddPet.jsp</file>
-            <file>file:/D:/FPT-Courses/Summer-2025/SWP391/SWP391-Project/SWP391/src/java/AminController/DeleteAccount.java</file>
+
+            <file>file:/D:/prj301/SWP/web/view/home/content/Home.jsp</file>
+            <file>file:/D:/prj301/SWP/web/view/home/content/Booking.jsp</file>
+            <file>file:/D:/prj301/SWP/src/java/UserController/GetPetInfor.java</file>
+            <file>file:/D:/prj301/SWP/src/java/Model/Slot.java</file>
+            <file>file:/D:/prj301/SWP/src/java/UserController/GetDoctorsByDate.java</file>
+            <file>file:/D:/prj301/SWP/src/java/Model/SlotService.java</file>
+
         </group>
     </open-files>
 </project-private>

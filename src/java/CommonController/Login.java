@@ -112,10 +112,14 @@ public class Login extends HttpServlet {
                     .forward(request, response);
             return;
         }
+        
+           
+
 
 // 4. Đăng nhập thành công
         HttpSession session = request.getSession();
         session.setAttribute("user", user);
+         session.setMaxInactiveInterval(30 * 60);
 
         String remember = request.getParameter("remember");
         if ("true".equals(remember)) {

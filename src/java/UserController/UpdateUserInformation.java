@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
@@ -48,6 +49,7 @@ public class UpdateUserInformation extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+
     }
 
     /**
@@ -59,6 +61,7 @@ public class UpdateUserInformation extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String id = request.getParameter("id");
@@ -77,22 +80,37 @@ public class UpdateUserInformation extends HttpServlet {
         String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
         String filePath = "/assets/images/" + filename;
 
-        // Nếu không có ảnh mới, giữ ảnh cũ
-        if (filename.isEmpty()) {
 
-            try {
-                UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(id);
-                filePath = user.getAvatar(); // Giữ lại ảnh cũ
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+        request.getSession().setAttribute("FailMessage", "Email không đúng định dạng.");
+        response.sendRedirect("viewuserinformation");
+        return;
+    }
 
-        } else {
-            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
-            File file = new File(uploads, filename);
-            part.write(file.getAbsolutePath());
+    if (!number.matches("^(0|\\+84)[0-9]{9,10}$")) {
+        request.getSession().setAttribute("FailMessage", "Số điện thoại không đúng định dạng.");
+        response.sendRedirect("viewuserinformation");
+        return;
+    }
+
+    // Xử lý ảnh đại diện
+    String realPath = request.getServletContext().getRealPath("/assets/images");
+    File uploads = new File(realPath);
+    if (!uploads.exists()) uploads.mkdirs();
+
+    String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
+    String filePath = "/assets/images/" + filename;
+
+    // Nếu không upload ảnh mới, lấy ảnh cũ
+    if (filename == null || filename.trim().isEmpty()) {
+        try {
+            UserDAO dao = new UserDAO();
+            User existingUser = dao.getUserById(id);
+            filePath = existingUser.getAvatar();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         UserDAO ud = new UserDAO();
         if (ud.updateUser(id, name, address, email, number, filePath)) {
             User updatedUser = ud.getUserById(id);
@@ -106,7 +124,12 @@ public class UpdateUserInformation extends HttpServlet {
 
         
 
+
     }
+
+    response.sendRedirect("viewuserinformation");
+}
+
 
     /**
      * Returns a short description of the servlet.

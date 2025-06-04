@@ -627,9 +627,41 @@ public class StaffDAO {
         return list;
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-       StaffDAO dao=new StaffDAO();
-        System.out.println(dao.getAllContact());
+    public int deleteSchedulesByDoctorAndMonth(String doctorId, int month) {
+        String deleteDoctorSchedule = "DELETE FROM doctor_schedule WHERE doctor_id = ? AND MONTH(work_date) = ?";
 
+        Connection conn = null;
+        PreparedStatement psDoctorSchedule = null;
+        int rowsAffected = 0;
+
+        try {
+            conn = DBContext.getConnection();
+
+            psDoctorSchedule = conn.prepareStatement(deleteDoctorSchedule);
+            psDoctorSchedule.setString(1, doctorId);
+            psDoctorSchedule.setInt(2, month);
+            rowsAffected = psDoctorSchedule.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (psDoctorSchedule != null) {
+                    psDoctorSchedule.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return rowsAffected;
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        
+     
     }
 }

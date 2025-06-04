@@ -2,11 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package UserController;
+package StaffController;
 
-import DAO.UserDAO;
-import Model.Pet;
-import Model.User;
+import DAO.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,18 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
- * @author Admin
+ * @author Dell
  */
-@WebServlet(name = "ViewListPet", urlPatterns = {"/viewlistpet"})
-public class ViewListPet extends HttpServlet {
+@WebServlet(name = "DeleteAllWorkScheduleByMonth", urlPatterns = {"/delete-work-bymonth"})
+public class DeleteAllWorkScheduleByMonth extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +37,10 @@ public class ViewListPet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewListPet</title>");
+            out.println("<title>Servlet DeleteAllWorkScheduleByMonth</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewListPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteAllWorkScheduleByMonth at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,26 +57,8 @@ public class ViewListPet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-
-    throws ServletException, IOException {
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
-            return;
-
-        }
-        User user = (User) session.getAttribute("user");
-        UserDAO u = new UserDAO();
-        String uid = user.getId();
-
-        List<Pet> listpet = u.getPetsByUser(uid);
-        request.setAttribute("listpet", listpet);
-
-
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**
@@ -94,10 +69,33 @@ public class ViewListPet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+       
+
+        StaffDAO sdao = new StaffDAO();
+        String doctorId = request.getParameter("doctorId");
+        String monthStr = request.getParameter("month");
+
+       
+
+        try {
+            int month = Integer.parseInt(monthStr);
+           
+
+            int deleted = sdao.deleteSchedulesByDoctorAndMonth(doctorId, month);
+
+            if (deleted == 0) {
+                response.sendRedirect("list-work-schedule?msg=none");
+
+            } else {
+                response.sendRedirect("list-work-schedule?msg=deleted");
+            }
+        }  catch (Exception e) {
+            e.printStackTrace();
+            
+        }
     }
 
     /**

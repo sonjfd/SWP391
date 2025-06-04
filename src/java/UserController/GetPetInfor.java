@@ -6,7 +6,7 @@ package UserController;
 
 import DAO.UserDAO;
 import Model.Pet;
-import Model.User;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,18 +14,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author Admin
+ * @author Dell
  */
-@WebServlet(name = "ViewListPet", urlPatterns = {"/viewlistpet"})
-public class ViewListPet extends HttpServlet {
+@WebServlet(name = "GetPetInfor", urlPatterns = {"/getPetInfor"})
+public class GetPetInfor extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +42,10 @@ public class ViewListPet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewListPet</title>");
+            out.println("<title>Servlet GetPetInfor</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewListPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet GetPetInfor at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,26 +62,24 @@ public class ViewListPet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String petId = request.getParameter("petId");
 
-    throws ServletException, IOException {
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
-            return;
-
+        UserDAO user = new UserDAO();
+        try {
+            Pet pet = user.getPetsById(petId);
+            response.setContentType("application/json");
+            JsonObject json = new JsonObject();
+            json.addProperty("species", pet.getBreed().getSpecie().getName());
+            json.addProperty("breed", pet.getBreed().getName());
+            PrintWriter out = response.getWriter();
+            out.print(json.toString());
+            out.flush();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
         }
-        User user = (User) session.getAttribute("user");
-        UserDAO u = new UserDAO();
-        String uid = user.getId();
-
-        List<Pet> listpet = u.getPetsByUser(uid);
-        request.setAttribute("listpet", listpet);
-
-
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }
 
     /**
