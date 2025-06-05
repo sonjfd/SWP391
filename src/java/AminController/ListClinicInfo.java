@@ -5,18 +5,23 @@
 
 package AminController;
 
+import DAO.AdminDao;
+import Model.ClinicInfo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *
- * @author Dell
+ * @author FPT
  */
-public class AddDoctor extends HttpServlet {
+@WebServlet(name="ListClinicInfo", urlPatterns={"/listclinicinfo"})
+public class ListClinicInfo extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,10 +38,10 @@ public class AddDoctor extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AddDoctor</title>");  
+            out.println("<title>Servlet ListClinicInfo</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AddDoctor at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ListClinicInfo at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -53,7 +58,16 @@ public class AddDoctor extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            AdminDao adminDAO = new AdminDao();
+            List<ClinicInfo> clinics = adminDAO.getAllClinicInfo();
+            request.setAttribute("clinics", clinics);
+            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("message", "Error loading clinics: " + e.getMessage());
+            request.setAttribute("messageType", "error");
+            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
+        }
     } 
 
     /** 

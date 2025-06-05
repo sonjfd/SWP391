@@ -80,6 +80,7 @@ public class CreateAccount extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber");
         String address = request.getParameter("address");
         String avatar = request.getParameter("avatar");
+//        int status = Integer.parseInt(request.getParameter("status"));
 
 
 
@@ -125,24 +126,18 @@ public class CreateAccount extends HttpServlet {
             String yearsOfExperience = request.getParameter("yearsOfExperience");
             doctor.setYearsOfExperience(yearsOfExperience != null ? Integer.parseInt(yearsOfExperience) : 0);
             doctor.setBiography(request.getParameter("biography"));
-           
+            
         }
 
-//            boolean success = adminDAO.createAccount(user, doctor);
-//            if (success) {
-//                response.sendRedirect("listaccount"); // Redirect về danh sách
-//            } else {
-//                request.setAttribute("message", "Failed to create account. Please try again.");
-//                request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
-//            }
+
 
         boolean success = adminDAO.createAccount(user, doctor);
         if (success) {
-            request.setAttribute("mmessage", "Account created successfully!");
+            request.setAttribute("message", "Account created successfully!");
 //            request.setAttribute("messageType", "success");
             response.sendRedirect("listaccount");
         } else {
-            request.setAttribute("mmessage", "Failed to create account. Please try again.");
+            request.setAttribute("message", "Failed to create account. Please try again.");
 //            request.setAttribute("messageType", "error");
             request.getRequestDispatcher("createaccount").forward(request, response);
         }

@@ -93,7 +93,7 @@ public class UpdateAccount extends HttpServlet {
         if (user == null) {
             request.setAttribute("message", "User not found.");
             request.setAttribute("messageType", "error");
-            response.sendRedirect("ListAccountsServlet");
+            response.sendRedirect("listaccount");
             return;
         }
 
@@ -133,7 +133,7 @@ public class UpdateAccount extends HttpServlet {
             String yearsOfExperience = request.getParameter("yearsOfExperience");
             doctor.setYearsOfExperience(yearsOfExperience != null ? Integer.parseInt(yearsOfExperience) : 0);
             doctor.setBiography(request.getParameter("biography"));
-          
+            
         }
 
         boolean success = adminDAO.updateAccount(user, doctor);

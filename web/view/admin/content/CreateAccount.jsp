@@ -87,6 +87,23 @@
                 color: red;
                 font-size: 0.9em;
             }
+            .btn-custom {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-custom:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
         </style> 
 
     </head>
@@ -115,7 +132,7 @@
 
 
                 <div class="form-container">
-                    <h2>Create Staff/Doctor Account</h2>
+                    
 
                     <c:if test="${not empty message}">
                         ${message}
@@ -125,38 +142,35 @@
                         <div class="form-group">
                             <label for="role_id">Role:</label>
                             <select id="role_id" name="role_id" >
-                                <option value="4">Staff</option>
-                                <option value="3">Doctor</option>
+                                <option value="4">Nhân viên</option>
+                                <option value="3">Bác sĩ</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="userName">Username:</label>
+                            <label for="userName">Tên đăng nhập:</label>
                             <input type="text" id="userName" name="userName" required value="${param.userName}">
                             <div id="userNameError" class="invalid-feedback">${requestScope.messagee}</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mật Khẩu:</label>
+                            <input type="password" id="password" name="password" required value="${param.password}">
+                            <div id="passwordError" class="invalid-feedback"></div>
+                        </div>
+                            <div class="form-group">
+                            <label for="fullName">Họ và tên:</label>
+                            <input type="text" id="fullName" name="fullName" required value="${param.fullName}">
+                            <div id="fullNameError" class="invalid-feedback"></div>
                         </div>
                         <div class="form-group">
                             <label for="email">Email:</label>
                             <input type="email" id="email" name="email" required value="${param.email}">
                             <div id="emailError" class="invalid-feedback"></div>
                         </div>
-                        <div class="form-group">
-                            <label for="password">Password:</label>
-                            <input type="password" id="password" name="password" required value="${param.password}">
-                            <div id="passwordError" class="invalid-feedback"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="fullName">Full Name:</label>
-                            <input type="text" id="fullName" name="fullName" required value="${param.fullName}">
-                            <div id="fullNameError" class="invalid-feedback"></div>
-                        </div>
-<!--                        <div class="form-group">
-                            <label for="status">Status:</label>
-                            <select id="status" name="status">
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>-->
-                        <button type="submit">Create Account</button>
+                        
+                        
+
+                        <button type="submit">Xác nhận</button>
+                        <a href="javascript:history.back()" class="btn-custom">Quay lại</a>
                     </form>
 
                     <script>
