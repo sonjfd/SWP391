@@ -15,6 +15,11 @@ SWP/build/
 # Bỏ theo dõi file DBContext.java (chú ý đúng chữ hoa thường & đường dẫn)
 src/java/DAO/DBContext.java
 
+nbproject/build-impl.xml
+nbproject/genfiles.properties
+nbproject/project.properties
+nbproject/project.xml
+
 
 
 
