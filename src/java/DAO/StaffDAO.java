@@ -4,11 +4,13 @@
  */
 package DAO;
 
+import Model.Appointment;
 import Model.Contact;
 import Model.Doctor;
 import Model.DoctorSchedule;
 import Model.Role;
 import Model.Shift;
+import Model.Slot;
 import Model.User;
 import java.sql.CallableStatement;
 import java.util.List;
@@ -109,7 +111,7 @@ public class StaffDAO {
 
                 }
                 Doctor doctor = new Doctor(userToFind, rs.getString(2), rs.getString(3),
-                        rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
+                        rs.getString(4), rs.getInt(5), rs.getString(6));
                 doctors.add(doctor);
 
             }
@@ -255,7 +257,7 @@ public class StaffDAO {
         String sql = "select * from contacts\n"
                 + "where name like ?";
         List<Contact> list = new ArrayList<>();
-        String query = "%" + name + "%";
+        String query = "%" + name.trim().toLowerCase() + "%";
         Connection conn = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -418,7 +420,7 @@ public class StaffDAO {
 
         try {
             conn = DBContext.getConnection();
-            String sql = "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography, status "
+            String sql = "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography "
                     + "FROM doctors WHERE user_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, doctorId);
@@ -431,7 +433,7 @@ public class StaffDAO {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-                doctor.setStatus(rs.getInt("status"));
+                
                 User user = getUserById(rs.getString("user_id"));
                 doctor.setUser(user);
             }
@@ -660,6 +662,11 @@ public class StaffDAO {
         return rowsAffected;
     }
 
+    
+    
+    
+    
+    
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         
      

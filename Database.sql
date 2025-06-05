@@ -91,8 +91,10 @@ CREATE TABLE breeds (
 );
 
 -- 10. Pets (Thú cưng)
+-- 10. Pets (Thú cưng)
 CREATE TABLE pets (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  pet_code NVARCHAR(15) UNIQUE,
   owner_id UNIQUEIDENTIFIER NOT NULL,
   name NVARCHAR(100) NOT NULL,
   birth_date DATE,
@@ -107,6 +109,7 @@ CREATE TABLE pets (
   CONSTRAINT FK_pets_users FOREIGN KEY (owner_id) REFERENCES users(id),
   CONSTRAINT FK_pets_breeds FOREIGN KEY (breeds_id) REFERENCES breeds(id)
 );
+
 
 -- 11. Services (Dịch vụ)
 CREATE TABLE services (
@@ -133,8 +136,8 @@ CREATE TABLE appointments (
   pet_id UNIQUEIDENTIFIER NOT NULL,
   doctor_id UNIQUEIDENTIFIER NOT NULL,
   appointment_time DATETIME NOT NULL, 
-  start_time DATETIME, 
-  end_time DATETIME,  
+  start_time TIME, 
+  end_time TIME,  
   status NVARCHAR(50) DEFAULT 'completed' CHECK (status IN ('completed', 'canceled')),
    payment_status NVARCHAR(50) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
   payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')),
@@ -145,6 +148,9 @@ CREATE TABLE appointments (
   CONSTRAINT FK_appointments_pet FOREIGN KEY (pet_id) REFERENCES pets(id),
   CONSTRAINT FK_appointments_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(user_id)
 );
+
+
+
 
 
 -- 14. Appointment Services (Dịch vụ của cuộc hẹn)

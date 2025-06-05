@@ -198,3 +198,9 @@ INSERT INTO tags (id, name) VALUES
 (NEWID(), N'Vắc xin cần thiết'),
 (NEWID(), N'Chăm sóc thú cưng mùa hè'),
 (NEWID(), N'Chăm sóc thú cưng mùa đông');
+
+INSERT INTO shift (name, start_time, end_time)
+VALUES 
+(N'Ca sáng', '07:30', '11:30'),
+(N'Ca chiều', '13:30', '17:30'),
+(N'Ca tối',   '17:30', '21:30');

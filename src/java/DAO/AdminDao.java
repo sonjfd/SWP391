@@ -45,15 +45,15 @@ public class AdminDao {
 
             if (user.getRole().getId() == 3 && doctor != null) {
                 try (PreparedStatement doctorStmt = conn.prepareStatement(
-                        "INSERT INTO doctors (user_id, specialty, certificates, qualifications, years_of_experience, biography, status) " +
-                        "VALUES ((SELECT id FROM users WHERE username = ?), ?, ?, ?, ?, ?, ?)")) {
+                        "INSERT INTO doctors (user_id, specialty, certificates, qualifications, years_of_experience, biography) " +
+                        "VALUES ((SELECT id FROM users WHERE username = ?), ?, ?, ?, ?, ?)")) {
                     doctorStmt.setString(1, user.getUserName());
                     doctorStmt.setString(2, doctor.getSpecialty());
                     doctorStmt.setString(3, doctor.getCertificates());
                     doctorStmt.setString(4, doctor.getQualifications());
                     doctorStmt.setInt(5, doctor.getYearsOfExperience());
                     doctorStmt.setString(6, doctor.getBiography());
-                    doctorStmt.setInt(7, doctor.getStatus());
+                  
                     doctorStmt.executeUpdate();
                 }
             }
@@ -160,7 +160,7 @@ public class AdminDao {
     public Doctor getDoctorByUserId(String userId) {
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography, status " +
+                     "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography " +
                      "FROM doctors WHERE user_id = ?")) {
             stmt.setString(1, userId);
             ResultSet rs = stmt.executeQuery();
@@ -174,7 +174,7 @@ public class AdminDao {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-                doctor.setStatus(rs.getInt("status"));
+                
                 return doctor;
             }
         } catch (SQLException e) {
@@ -200,15 +200,15 @@ public class AdminDao {
 
             if (doctor != null) {
                 try (PreparedStatement doctorStmt = conn.prepareStatement(
-                        "UPDATE doctors SET specialty = ?, certificates = ?, qualifications = ?, years_of_experience = ?, biography = ?, status = ? " +
+                        "UPDATE doctors SET specialty = ?, certificates = ?, qualifications = ?, years_of_experience = ?, biography = ? " +
                         "WHERE user_id = ?")) {
                     doctorStmt.setString(1, doctor.getSpecialty());
                     doctorStmt.setString(2, doctor.getCertificates());
                     doctorStmt.setString(3, doctor.getQualifications());
                     doctorStmt.setInt(4, doctor.getYearsOfExperience());
                     doctorStmt.setString(5, doctor.getBiography());
-                    doctorStmt.setInt(6, doctor.getStatus());
-                    doctorStmt.setString(7, doctor.getUser().getId());
+                   
+                    doctorStmt.setString(6, doctor.getUser().getId());
                     doctorStmt.executeUpdate();
                 }
             } else {

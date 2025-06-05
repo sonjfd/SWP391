@@ -61,7 +61,7 @@ public class DoctorDAO {
         try {
             conn = DBContext.getConnection();
             // Truy vấn lấy thông tin bác sĩ từ bảng doctors
-            String sql = "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography, status "
+            String sql = "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography "
                     + "FROM doctors WHERE user_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, doctorId);  // Truyền vào user_id để lấy thông tin bác sĩ
@@ -76,7 +76,7 @@ public class DoctorDAO {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-                doctor.setStatus(rs.getInt("status"));
+                
 
                 // Lấy thông tin người dùng từ bảng users
                 UserDAO udao = new UserDAO();
@@ -100,7 +100,7 @@ public class DoctorDAO {
         try {
             conn = DBContext.getConnection();
             // Truy vấn lấy tất cả bác sĩ từ bảng doctors
-            String sql = "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography, status "
+            String sql = "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography "
                     + "FROM doctors";
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
@@ -113,7 +113,7 @@ public class DoctorDAO {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-                doctor.setStatus(rs.getInt("status"));
+               
 
                 // Lấy thông tin người dùng từ bảng users
                 User user = new UserDAO().getUserById(rs.getString("user_id")); // Lấy thông tin người dùng

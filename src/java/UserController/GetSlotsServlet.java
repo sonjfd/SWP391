@@ -11,6 +11,8 @@ import Model.Appointment;
 import Model.Shift;
 import Model.Slot;
 import Model.SlotService;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -98,23 +100,15 @@ public class GetSlotsServlet extends HttpServlet {
                 allSlots.addAll(slots);
             }
 
-            com.google.gson.JsonArray jsonSlots = new com.google.gson.JsonArray();
+           JsonArray jsonSlots = new JsonArray();
 
             for (Slot slot : allSlots) {
-                boolean booked = false;
-                for (Appointment appt : appointments) {
-                   
-                    if (slot.getStart().isBefore(appt.getEndTime()) && slot.getEnd().isAfter(appt.getStartTime())&& appt.getStatus().equalsIgnoreCase("completed")) {
-                        booked = true;
-                        break;
-                    }
-                }
-
-                com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
+                
+                JsonObject obj = new JsonObject();
                 obj.addProperty("start", slot.getStart().toString());
                 obj.addProperty("end", slot.getEnd().toString());
                 
-                obj.addProperty("booked", booked);
+                obj.addProperty("booked", !slot.isAvailable());
 
                 jsonSlots.add(obj);
             }

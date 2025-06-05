@@ -158,7 +158,7 @@ Author     : Dell
                                     <h6 class="card-title">${doctor.user.fullName}</h6>
                                     <div class="text-muted small">${doctor.specialty}</div>
                                     <div class="text-muted small mb-2">${doctor.yearsOfExperience} năm kinh nghiệm</div>
-                                    <a href="homedoctorschedule?doctorId=${doctor.user.id}" 
+                                    <a href="boking-by-doctor?doctorId=${doctor.user.id}" 
                                        class="btn btn-outline-success btn-sm">
                                         Xem lịch & Đặt lịch
                                     </a>

@@ -133,7 +133,7 @@ public class UpdateAccount extends HttpServlet {
             String yearsOfExperience = request.getParameter("yearsOfExperience");
             doctor.setYearsOfExperience(yearsOfExperience != null ? Integer.parseInt(yearsOfExperience) : 0);
             doctor.setBiography(request.getParameter("biography"));
-            doctor.setStatus(1);
+          
         }
 
         boolean success = adminDAO.updateAccount(user, doctor);

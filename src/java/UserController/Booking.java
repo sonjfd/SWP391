@@ -65,14 +65,8 @@ public class Booking extends HttpServlet {
         HttpSession session=request.getSession();
         User u=(User)session.getAttribute("user");
         String uid=u.getId();
-        try {
-            List<Pet>pets=udao.getPetsByUser(uid);
-            request.setAttribute("pets", pets);
-        } catch (SQLException ex) {
-            Logger.getLogger(Booking.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Booking.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        List<Pet>pets=udao.getPetsByUser(uid);
+        request.setAttribute("pets", pets);
         
         
        request.getRequestDispatcher("view/home/content/Booking.jsp").forward(request, response);

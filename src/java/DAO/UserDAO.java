@@ -469,26 +469,26 @@ public class UserDAO {
         return list;
     }
 
-    public boolean addPet(String pet_code,String ownerid, String name, Date birthdate, int breedid, String gender, String avatar, String desc, String status) {
+    public boolean addPet(String pet_code,String ownerid, String name, int breedid, String gender, String avatar, String desc, String status) {
         Connection con = null;
         PreparedStatement ps = null;
         int rowsAffected = 0;
         try {
             con = DBContext.getConnection();
 
-            String sql = "INSERT INTO Pets (id, pet_code, owner_id, name, birth_date, breeds_id, gender, avatar, description, status, created_at, updated_at) "
-                    + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?, ? ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            String sql = "INSERT INTO Pets (id, pet_code, owner_id, name, breeds_id, gender, avatar, description, status, created_at, updated_at) "
+                    + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?  ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
             ps = con.prepareStatement(sql);
             ps.setString(1, pet_code);
             ps.setString(2, ownerid);
             ps.setString(3, name);
-            ps.setDate(4, (java.sql.Date) birthdate);
-            ps.setInt(5, breedid);
-            ps.setString(6, gender);
-            ps.setString(7, avatar);
-            ps.setString(8, desc);
-            ps.setString(9, status);
+            
+            ps.setInt(4, breedid);
+            ps.setString(5, gender);
+            ps.setString(6, avatar);
+            ps.setString(7, desc);
+            ps.setString(8, status);
 
             rowsAffected = ps.executeUpdate();
 

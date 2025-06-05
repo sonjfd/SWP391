@@ -198,11 +198,6 @@
 
 
 
-                                <div class="form-group">
-                                    <label for="birthDate">Ngày sinh:</label>
-                                    <input type="date" id="birthDate" name="birthDate" class="form-control">
-                                    <small id="birthDateError" class="text-danger" style="display:none;">Ngày sinh không hợp lệ!</small>
-                                </div>
 
 
                                 <div class="form-group">

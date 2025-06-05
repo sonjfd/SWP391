@@ -7,11 +7,14 @@ package CommonController;
 import DAO.AppointmentDAO;
 import DAO.DoctorDAO;
 import DAO.DoctorScheduleDAO;
+import DAO.UserDAO;
 import Model.Appointment;
 import Model.Doctor;
 import Model.DoctorSchedule;
+import Model.Pet;
 import Model.Slot;
 import Model.SlotService;
+import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -19,6 +22,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +31,7 @@ import java.util.Calendar;
  *
  * @author ASUS
  */
-@WebServlet("/homedoctorschedule")
+@WebServlet("/boking-by-doctor")
 public class HomeDoctorSchedule extends HttpServlet {
 
     /**
@@ -65,11 +69,23 @@ public class HomeDoctorSchedule extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-      
-    }
+     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        UserDAO udao=new UserDAO();
+        HttpSession session=request.getSession();
+        User u=(User)session.getAttribute("user");
+        String uid=u.getId();
+        List<Pet>pets=udao.getPetsByUser(uid);
+        request.setAttribute("pets", pets);
+        String doctorId=request.getParameter("doctorId");
+       DoctorDAO doctordao=new DoctorDAO();
+        Doctor doctor=doctordao.getDoctorById(doctorId);
+        request.setAttribute("doctor", doctor);
+        
+        
+       request.getRequestDispatcher("view/home/content/BookingByDoctor.jsp").forward(request, response);
+    } 
 
     /**
      * Handles the HTTP <code>POST</code> method.

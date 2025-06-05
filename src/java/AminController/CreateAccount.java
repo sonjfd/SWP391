@@ -80,7 +80,6 @@ public class CreateAccount extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber");
         String address = request.getParameter("address");
         String avatar = request.getParameter("avatar");
-//        int status = Integer.parseInt(request.getParameter("status"));
 
 
 
@@ -126,7 +125,7 @@ public class CreateAccount extends HttpServlet {
             String yearsOfExperience = request.getParameter("yearsOfExperience");
             doctor.setYearsOfExperience(yearsOfExperience != null ? Integer.parseInt(yearsOfExperience) : 0);
             doctor.setBiography(request.getParameter("biography"));
-            doctor.setStatus(1);
+           
         }
 
 //            boolean success = adminDAO.createAccount(user, doctor);

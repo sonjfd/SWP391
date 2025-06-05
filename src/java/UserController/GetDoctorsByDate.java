@@ -6,6 +6,7 @@ package UserController;
 
 import DAO.DoctorDAO;
 import Model.Doctor;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -75,15 +76,15 @@ public class GetDoctorsByDate extends HttpServlet {
         try {
             Date date = sdf.parse(dateStr);
             List<Doctor> doctors = d.getDoctorsByDate(date);
-            com.google.gson.JsonArray jsonDoctors = new com.google.gson.JsonArray();
+            JsonArray jsonDoctors = new JsonArray();
             for (Doctor doc : doctors) {
-                com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
+                JsonObject obj = new JsonObject();
                 obj.addProperty("id", doc.getUser().getId());
                 obj.addProperty("fullName", doc.getUser().getFullName());
                 jsonDoctors.add(obj);
             }
 
-            com.google.gson.JsonObject jsonResult = new com.google.gson.JsonObject();
+           JsonObject jsonResult = new JsonObject();
             jsonResult.add("doctors", jsonDoctors);
 
             out.print(jsonResult.toString());

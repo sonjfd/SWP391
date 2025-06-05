@@ -57,11 +57,7 @@ public class AddPet extends HttpServlet {
         String ownerID = request.getParameter("id");
         String name = request.getParameter("name");
         String gender = request.getParameter("gender");
-        String birthDateStr = request.getParameter("birthDate");
-        Date birthDate = null;
-        if (birthDateStr != null && !birthDateStr.isEmpty()) {
-            birthDate = Date.valueOf(birthDateStr);
-        }
+        
         int breedId = Integer.parseInt(request.getParameter("breed_id"));
         String status = request.getParameter("status");
         String description = request.getParameter("description");
@@ -90,7 +86,7 @@ public class AddPet extends HttpServlet {
         Random random = new Random();
         int randomNumber = random.nextInt(100000); 
         String pet_code = String.format("PET%05d", randomNumber); 
-        boolean a = dao.addPet(pet_code, ownerID, name, birthDate, breedId, gender, filePath, description, status);
+        boolean a = dao.addPet(pet_code, ownerID, name, breedId, gender, filePath, description, status);
         if (a) {
             request.getSession().setAttribute("SuccessMessage", "Thêm Pet thành công!");
 

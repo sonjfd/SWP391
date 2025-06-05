@@ -15,19 +15,19 @@ public class Doctor {
     private String qualifications;
     private int yearsOfExperience;
     private String biography;
-    private int status ;
+    
 
     public Doctor() {
     }
 
-    public Doctor(User user, String specialty, String certificates, String qualifications, int yearsOfExperience, String biography, int status) {
+    public Doctor(User user, String specialty, String certificates, String qualifications, int yearsOfExperience, String biography) {
         this.user = user;
         this.specialty = specialty;
         this.certificates = certificates;
         this.qualifications = qualifications;
         this.yearsOfExperience = yearsOfExperience;
         this.biography = biography;
-        this.status = status;
+        
     }
 
     
@@ -82,20 +82,16 @@ public class Doctor {
         this.biography = biography;
     }
 
-    
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     @Override
     public String toString() {
-        return "Doctor{" + "user=" + user + ", specialty=" + specialty + ", certificates=" + certificates + ", qualifications=" + qualifications + ", yearsOfExperience=" + yearsOfExperience + ", biography=" + biography + ", status=" + status + '}';
+        return "Doctor{" + "user=" + user + ", specialty=" + specialty + ", certificates=" + certificates + ", qualifications=" + qualifications + ", yearsOfExperience=" + yearsOfExperience + ", biography=" + biography + '}';
     }
+
+    
+
+
+
+   
 
     
 

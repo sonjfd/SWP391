@@ -120,13 +120,10 @@ public class HomeAboutUs extends HttpServlet {
         DoctorDAO doctorDAO = new DoctorDAO();
         List<Doctor> doctors = doctorDAO.getAllDoctors();
 
-        // Lọc các bác sĩ có status = 1 bằng Stream.filter()
-        List<Doctor> activeDoctors = doctors.stream()
-                .filter(doctor -> doctor.getStatus() == 1)
-                .collect(Collectors.toList());
+   
 
         // Lưu danh sách bác sĩ đã lọc vào request attribute
         // Forward request và response đến JSP
-        return activeDoctors;
+        return doctors;
     }
 }
