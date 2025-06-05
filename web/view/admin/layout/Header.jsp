@@ -56,8 +56,9 @@
 
 <li><a href="listaccount"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý tài khoản</a></li>
 
-<li><a href="ShowClinicInfo.jsp"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Thông tin phòng khám</a></li>                  
+<li><a href="listclinicinfo"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Thông tin phòng khám</a></li>                  
 
+<li><a href="listslider"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý trình chiếu</a></li> 
 
                     </ul>
                     <!-- sidebar-menu  -->

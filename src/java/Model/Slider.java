@@ -98,6 +98,11 @@ public class Slider {
         this.updatedAt = updatedAt;
     }
 
+    @Override
+    public String toString() {
+        return "Slider{" + "id=" + id + ", title=" + title + ", description=" + description + ", imageUrl=" + imageUrl + ", link=" + link + ", isActive=" + isActive + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
+    }
+
     
     
 }

@@ -53,7 +53,6 @@ public class AdminDao {
                     doctorStmt.setString(4, doctor.getQualifications());
                     doctorStmt.setInt(5, doctor.getYearsOfExperience());
                     doctorStmt.setString(6, doctor.getBiography());
-                  
                     doctorStmt.executeUpdate();
                 }
             }
@@ -64,36 +63,7 @@ public class AdminDao {
         }
     }
     
-    
-//    public List<User> getAllAccounts() {
-//        List<User> users = new ArrayList<>();
-//        try (Connection conn = DBContext.getConnection();
-//             PreparedStatement stmt = conn.prepareStatement(
-//                     "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.role_id, u.created_at, u.updated_at, r.name " +
-//                     "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,2,3,4)")) {
-//            ResultSet rs = stmt.executeQuery();
-//            while (rs.next()) {
-//                User user = new User();
-//                user.setId(rs.getString("id"));
-//                user.setUserName(rs.getString("username"));
-//                user.setEmail(rs.getString("email"));
-//                user.setFullName(rs.getString("full_name"));
-//                user.setPhoneNumber(rs.getString("phone"));
-//                user.setAddress(rs.getString("address"));
-//                user.setAvatar(rs.getString("avatar"));
-//                Role role = new Role();
-//                role.setId(rs.getInt("role_id"));
-//                role.setName(rs.getString("name"));
-//                user.setRole(role);
-//                user.setCreateDate(rs.getTimestamp("created_at"));
-//                user.setUpdateDate(rs.getTimestamp("updated_at"));
-//                users.add(user);
-//            }
-//        } catch (SQLException | ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        return users;
-//    }
+
     
     
     public List<User> getAllAccounts() {
@@ -101,7 +71,7 @@ public class AdminDao {
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.status, u.role_id, u.created_at, u.updated_at, r.name " +
-                     "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,2,3,4)")) {
+                     "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,3,4)")) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -207,8 +177,8 @@ public class AdminDao {
                     doctorStmt.setString(3, doctor.getQualifications());
                     doctorStmt.setInt(4, doctor.getYearsOfExperience());
                     doctorStmt.setString(5, doctor.getBiography());
-                   
-                    doctorStmt.setString(6, doctor.getUser().getId());
+                    
+                    doctorStmt.setString(7, doctor.getUser().getId());
                     doctorStmt.executeUpdate();
                 }
             } else {
@@ -369,43 +339,44 @@ public class AdminDao {
         }
     }
     
+    
+
+    
    
     
     
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Nhập ID phòng khám cần tìm: ");
-        String clinicId = scanner.nextLine();
+    
+       public static void main(String[] args) {
+        AdminDao dao = new AdminDao();
 
         try {
-            AdminDao dao = new AdminDao(); // Đảm bảo class DAO này chứa phương thức getClinicInfoById
-            ClinicInfo clinic = dao.getClinicInfoById(clinicId);
+            List<ClinicInfo> clinics = dao.getAllClinicInfo();
 
-            if (clinic != null) {
-                System.out.println("=== Thông tin phòng khám ===");
-                System.out.println("ID: " + clinic.getId());
-                System.out.println("Tên: " + clinic.getName());
-                System.out.println("Địa chỉ: " + clinic.getAddress());
-                System.out.println("SĐT: " + clinic.getPhone());
-                System.out.println("Email: " + clinic.getEmail());
-                System.out.println("Website: " + clinic.getWebsite());
-                System.out.println("Giờ làm việc: " + clinic.getWorkingHours());
-                System.out.println("Mô tả: " + clinic.getDescription());
-                System.out.println("Logo: " + clinic.getLogo());
-                System.out.println("Google Map: " + clinic.getGoogleMap());
-                System.out.println("Tạo lúc: " + clinic.getCreatedAt());
-                System.out.println("Cập nhật lúc: " + clinic.getUpdatedAt());
+            if (clinics.isEmpty()) {
+                System.out.println("No clinic info found.");
             } else {
-                System.out.println("Không tìm thấy phòng khám với ID: " + clinicId);
+                for (ClinicInfo clinic : clinics) {
+                    System.out.println("ID: " + clinic.getId());
+                    System.out.println("Name: " + clinic.getName());
+                    System.out.println("Address: " + clinic.getAddress());
+                    System.out.println("Phone: " + clinic.getPhone());
+                    System.out.println("Email: " + clinic.getEmail());
+                    System.out.println("Website: " + clinic.getWebsite());
+                    System.out.println("Working Hours: " + clinic.getWorkingHours());
+                    System.out.println("Description: " + clinic.getDescription());
+                    System.out.println("Logo: " + clinic.getLogo());
+                    System.out.println("Google Map: " + clinic.getGoogleMap());
+                    System.out.println("Created At: " + clinic.getCreatedAt());
+                    System.out.println("Updated At: " + clinic.getUpdatedAt());
+                    System.out.println("--------------------------------------------------");
+                }
             }
-
         } catch (Exception e) {
-            System.err.println("Đã xảy ra lỗi: " + e.getMessage());
+            System.err.println("Error fetching clinic info: " + e.getMessage());
             e.printStackTrace();
-        } finally {
-            scanner.close();
         }
     }
+    
         
     
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/Admin.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateClinicInfo.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/ListAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/Doctor.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/ClinicInfo.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/DeleteSlider.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/ListSlider.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateStatusSlider.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/layout/Header.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateSlider.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateSlider.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/SearchAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/ShowClinicInformation.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/DeleteAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/web/WEB-INF%20(1)/web.xml</file>
+            <file>file:/E:/ky%205/SWP391/src/java/DAO/AdminDao.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/DAO/SliderDAO.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateStatus.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/Slider.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/ListClinicInfo.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateAccount.java</file>
+        </group>
+    </open-files>
+</project-private>
