@@ -633,11 +633,13 @@ public class UserDAO {
         }
         return false;
     }
+    
+    
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         UserDAO d = new UserDAO();
 
-        User u = d.getUserNameDuplicate("DAI dz");
-        System.out.println(u);
+         d.updatePassword("7E0EF03E-230E-461B-9C00-A43F3731B682", "123456");
+        
     }
 }

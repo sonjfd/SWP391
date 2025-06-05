@@ -1,9 +1,20 @@
-/build/
-/dist/
-/SWP/nbproject/private/
-/SWP/build/
+# Thư mục build và dist (toàn cục)
+build/
+dist/
+
+# Thư mục private của NetBeans
+nbproject/private/
+
+# Nếu có thư mục tương tự trong SWP thì cũng thêm (nếu cần)
+SWP/nbproject/private/
+SWP/build/
+
+# Bỏ qua file web.xml ở mọi thư mục WEB-INF
 **/WEB-INF/web.xml
-SWP/src/java/DAO/DBcontext.java
+
+# Bỏ theo dõi file DBContext.java (chú ý đúng chữ hoa thường & đường dẫn)
+src/java/DAO/DBContext.java
+
 
 
 

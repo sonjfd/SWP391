@@ -88,11 +88,16 @@ public class StaffProfile extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
         Part part = request.getPart("avatar");
+
+        String filePath = null;
 
         // Lấy đường dẫn thư mục lưu ảnh
         String realPath = request.getServletContext().getRealPath("/assets/images");
@@ -101,42 +106,41 @@ public class StaffProfile extends HttpServlet {
             uploads.mkdirs();
         }
 
-        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-        String filePath = "/assets/images/" + filename;
+        HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("user");
 
-        HttpSession ss = request.getSession();
-        User u = (User) ss.getAttribute("user");
+        // Nếu người dùng chọn ảnh mới
+        if (part != null && part.getSize() > 0) {
+            String originalFilename = Path.of(part.getSubmittedFileName()).getFileName().toString();
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String randomFilename = System.currentTimeMillis() + "_" + (int) (Math.random() * 10000) + fileExtension;
+            filePath = "/assets/images/" + randomFilename;
 
-        // Nếu không có ảnh mới, giữ ảnh cũ
-        if (filename.isEmpty()) {
+            File file = new File(uploads, randomFilename);
+            part.write(file.getAbsolutePath());
+        } else {
+            // Nếu không có ảnh mới, giữ ảnh cũ
             try {
                 UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(u.getId());
-                filePath = user.getAvatar(); // Giữ lại ảnh cũ
+                User existingUser = userDao.getUserById(u.getId());
+                filePath = existingUser.getAvatar(); // Giữ lại đường dẫn ảnh cũ
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
-            File file = new File(uploads, filename);
-            part.write(file.getAbsolutePath());
         }
 
+        // Cập nhật thông tin người dùng
         UserDAO userDAO = new UserDAO();
-
         boolean isUserUpdated = userDAO.updateUser(u.getId(), fullName, address, email, phone, filePath);
 
         if (isUserUpdated) {
             User updatedUser = userDAO.getUserById(u.getId());
-
-        
-            request.getSession().setAttribute("user", updatedUser);
-            request.getSession().setAttribute("alertMessage", "Cập nhật thông tin thành công!");
-            request.getSession().setAttribute("alertType", "success");
+            session.setAttribute("user", updatedUser);
+            session.setAttribute("alertMessage", "Cập nhật thông tin thành công!");
+            session.setAttribute("alertType", "success");
         } else {
-            // Nếu thất bại, set thông báo thất bại vào session
-            request.getSession().setAttribute("alertMessage", "Cập nhật thông tin không thành công!");
-            request.getSession().setAttribute("alertType", "error");
+            session.setAttribute("alertMessage", "Cập nhật thông tin không thành công!");
+            session.setAttribute("alertType", "error");
         }
 
         response.sendRedirect("staff-profile-setting");
