@@ -34,6 +34,8 @@
         <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
 
     </head>
     <body>

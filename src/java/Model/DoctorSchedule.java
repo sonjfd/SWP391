@@ -67,6 +67,11 @@ public class DoctorSchedule {
     public void setIsAvailable(int isAvailable) {
         this.isAvailable = isAvailable;
     }
+
+    @Override
+    public String toString() {
+        return "DoctorSchedule{" + "id=" + id + ", doctor=" + doctor + ", workDate=" + workDate + ", shift=" + shift + ", isAvailable=" + isAvailable + '}';
+    }
     
 }
     

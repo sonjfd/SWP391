@@ -54,8 +54,7 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="list-customer"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng</a></li>
-                        <li><a href="list-pet"><i class="ri-footprint-fill me-2 d-inline-block"></i>Thú Cưng</a></li>
+                        <li><a href="list-pet-and-owner"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng Và Thú Cưng</a></li>                       
                         <li><a href="list-work-schedule"><i class="uil uil-calendar-alt d-inline-block"></i>Lịch Làm Việc Bác Sĩ</a></li>
                         <li><a href="list-appointment"><i class="uil uil-notes d-inline-block"></i>Cuộc Hẹn</a></li>
                         <li><a href="contact"><i class="uil uil-envelope me-2 d-inline-block"></i>Liên Hệ</a></li>
@@ -148,14 +147,6 @@
 
                 <!-- javascript -->
                 <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-                <!-- simplebar -->
-                <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
-                <!-- Chart -->
-                <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
-                <script src="${pageContext.request.contextPath}/assets/js/columnchart.init.js"></script>
-                <!-- Icons -->
-                <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-                <!-- Main Js -->
-                <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+              
                 </body>
                 </html>

@@ -91,7 +91,6 @@ CREATE TABLE breeds (
 );
 
 -- 10. Pets (Thú cưng)
--- 10. Pets (Thú cưng)
 CREATE TABLE pets (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   pet_code NVARCHAR(15) UNIQUE,
@@ -111,23 +110,7 @@ CREATE TABLE pets (
 );
 
 
--- 11. Services (Dịch vụ)
-CREATE TABLE services (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  name NVARCHAR(255) NOT NULL,
-  description NVARCHAR(MAX),
-  price DECIMAL(10, 2) NOT NULL,
-  status BIT DEFAULT 1
-);
 
--- 12. Medicines (Thuốc)
-CREATE TABLE medicines (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  name NVARCHAR(255) NOT NULL,
-  description NVARCHAR(MAX),
-  price DECIMAL(10, 2) NOT NULL,
-  status BIT DEFAULT 1
-);
 
 -- 13. Appointments (Cuộc hẹn)
 CREATE TABLE appointments (
@@ -138,25 +121,42 @@ CREATE TABLE appointments (
   appointment_time DATETIME NOT NULL, 
   start_time TIME, 
   end_time TIME,  
-  status NVARCHAR(50) DEFAULT 'completed' CHECK (status IN ('completed', 'canceled')),
+  status NVARCHAR(50) DEFAULT 'completed' CHECK (status IN ('completed', 'canceled', 'pending')),
    payment_status NVARCHAR(50) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
   payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')),
   notes NVARCHAR(MAX),
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
+  price decimal(10,2),
   CONSTRAINT FK_appointments_customer FOREIGN KEY (customer_id) REFERENCES users(id),
   CONSTRAINT FK_appointments_pet FOREIGN KEY (pet_id) REFERENCES pets(id),
   CONSTRAINT FK_appointments_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(user_id)
 );
 
+CREATE TABLE examination_prices (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  price DECIMAL(10, 2) NOT NULL,
+
+);
 
 
 
+
+-- 11. Services (Dịch vụ)
+CREATE TABLE services (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  name NVARCHAR(255) NOT NULL,
+  description NVARCHAR(MAX),
+  price DECIMAL(10, 2) NOT NULL,
+  status BIT DEFAULT 1
+);
 
 -- 14. Appointment Services (Dịch vụ của cuộc hẹn)
 CREATE TABLE appointment_services (
   appointment_id UNIQUEIDENTIFIER NOT NULL,
   service_id UNIQUEIDENTIFIER NOT NULL,
+  quantity INT NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),  -- Giá dịch vụ tại thời điểm tạo
 
   CONSTRAINT PK_appointment_services PRIMARY KEY (appointment_id, service_id),
   CONSTRAINT FK_app_services_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
@@ -181,6 +181,16 @@ CREATE TABLE medical_records (
   CONSTRAINT FK_medical_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
 
+
+-- 12. Medicines (Thuốc)
+CREATE TABLE medicines (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  name NVARCHAR(255) NOT NULL,
+  description NVARCHAR(MAX),
+  price DECIMAL(10, 2) NOT NULL,
+  status BIT DEFAULT 1
+);
+
 -- 16. Prescribed Medicines (Thuốc kê đơn)
 CREATE TABLE prescribed_medicines (
   medical_record_id UNIQUEIDENTIFIER NOT NULL,
@@ -196,7 +206,19 @@ CREATE TABLE prescribed_medicines (
   CONSTRAINT FK_prescribed_medicine FOREIGN KEY (medicine_id) REFERENCES medicines(id)
 );
 
--- 17. Invoices (Hóa đơn)
+-- 17. Invoice Medicines (Thuốc trong hóa đơn)
+CREATE TABLE invoice_medicines (
+  invoice_id UNIQUEIDENTIFIER NOT NULL,
+  medicine_id UNIQUEIDENTIFIER NOT NULL,
+  quantity INT NOT NULL CHECK(quantity > 0),
+  price DECIMAL(10, 2) NOT NULL CHECK(price >= 0),
+
+  CONSTRAINT PK_invoice_medicines PRIMARY KEY (invoice_id, medicine_id),
+
+  CONSTRAINT FK_invoice_med FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
+  CONSTRAINT FK_invoice_medicine FOREIGN KEY (medicine_id) REFERENCES medicines(id)
+);
+-- 18. Invoices (Hóa đơn)
 CREATE TABLE invoices (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   appointment_id UNIQUEIDENTIFIER NOT NULL,
@@ -210,18 +232,7 @@ CREATE TABLE invoices (
   CONSTRAINT FK_invoices_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
 
--- 18. Invoice Medicines (Thuốc trong hóa đơn)
-CREATE TABLE invoice_medicines (
-  invoice_id UNIQUEIDENTIFIER NOT NULL,
-  medicine_id UNIQUEIDENTIFIER NOT NULL,
-  quantity INT NOT NULL CHECK(quantity > 0),
-  price DECIMAL(10, 2) NOT NULL CHECK(price >= 0),
 
-  CONSTRAINT PK_invoice_medicines PRIMARY KEY (invoice_id, medicine_id),
-
-  CONSTRAINT FK_invoice_med FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
-  CONSTRAINT FK_invoice_medicine FOREIGN KEY (medicine_id) REFERENCES medicines(id)
-);
 
 -- 19. Sliders (Trang chủ/banner)
 CREATE TABLE sliders (
@@ -270,70 +281,5 @@ CREATE TABLE contacts (
 
 
 
-
-
---- BẢNG BLOG
-CREATE TABLE blogs (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  title NVARCHAR(255) NOT NULL,
-  content NVARCHAR(MAX) NOT NULL,
-  author_id UNIQUEIDENTIFIER NOT NULL, -- ID của nhân viên tạo blog
-  image NVARCHAR(500),                 -- Đường dẫn ảnh đại diện blog
-  status NVARCHAR(50) DEFAULT 'draft', -- 'draft', 'published'
-  published_at DATETIME,               -- Ngày xuất bản
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-  reactions_count INT DEFAULT 0,
-  comments_count INT DEFAULT 0
-);
---- BẢNG TAG (QH M-T-M với blogs)
-CREATE TABLE tags (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  name NVARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE blog_tags (
-  blog_id UNIQUEIDENTIFIER NOT NULL,
-  tag_id UNIQUEIDENTIFIER NOT NULL,
-  PRIMARY KEY (blog_id, tag_id),
-  FOREIGN KEY (blog_id) REFERENCES blogs(id),
-  FOREIGN KEY (tag_id) REFERENCES tags(id)
-);
--- Bảng người dùng thả tim
-CREATE TABLE blog_reactions (
-  blog_id UNIQUEIDENTIFIER NOT NULL,
-  user_id UNIQUEIDENTIFIER NOT NULL,
-  is_active BIT DEFAULT 1,
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME NULL,
-  PRIMARY KEY (blog_id, user_id),
-  FOREIGN KEY (blog_id) REFERENCES blogs(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-
---- bảng comment blog
-CREATE TABLE blog_comments (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  blog_id UNIQUEIDENTIFIER NOT NULL,
-  user_id UNIQUEIDENTIFIER NOT NULL,
-  content NVARCHAR(MAX) NOT NULL,
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME NULL,
-  is_edited BIT DEFAULT 0,
-  FOREIGN KEY (blog_id) REFERENCES blogs(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
--- bảng bookmark blog
-CREATE TABLE blog_bookmarks (
-  blog_id UNIQUEIDENTIFIER NOT NULL,
-  user_id UNIQUEIDENTIFIER NOT NULL,
-  is_active BIT DEFAULT 1,
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME NULL,
-  PRIMARY KEY (blog_id, user_id),
-  FOREIGN KEY (blog_id) REFERENCES blogs(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
 
 

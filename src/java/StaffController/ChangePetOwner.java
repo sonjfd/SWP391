@@ -5,11 +5,11 @@
 
 package StaffController;
 
-
-import DAO.StaffDAO;
+import DAO.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Dell
  */
-public class UpDateContactStatus extends HttpServlet {
+@WebServlet(name="ChangePetOwner", urlPatterns={"/change-pet-owner"})
+public class ChangePetOwner extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -35,10 +36,10 @@ public class UpDateContactStatus extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UpDateContactStatus</title>");  
+            out.println("<title>Servlet ChangePetOwner</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UpDateContactStatus at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ChangePetOwner at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -55,16 +56,15 @@ public class UpDateContactStatus extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String id=request.getParameter("id");
-        String status=request.getParameter("status");
-        StaffDAO sdao=new StaffDAO();
-       int result= sdao.updateStatusContact(id, status);
-       if(result >0){
-           response.sendRedirect("contact?success=true");
-       }else{
-           response.sendRedirect("contact?success=false");
-       }
-        
+       String petId=request.getParameter("petId");
+       String ownerId=request.getParameter("newOwnerId");
+        UserDAO udao=new UserDAO();
+        int result=udao.updateOwner(petId, ownerId);
+        if(result>0){
+            response.sendRedirect("list-pet-and-owner?success=true");
+        }else{
+            response.sendRedirect("list-pet-and-owner?success=false");
+        }
     } 
 
     /** 

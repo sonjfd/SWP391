@@ -26,11 +26,12 @@ public class Appointment {
     private String note;
     private Date createdAt;
     private Date updatedAt;
+    private Double price;
 
     public Appointment() {
     }
 
-    public Appointment(String id, User user, Pet pet, Doctor doctor, Date appointmentDate, LocalTime startTime, LocalTime endTime, String status, String paymentStatus, String paymentMethod, String note, Date createdAt, Date updatedAt) {
+    public Appointment(String id, User user, Pet pet, Doctor doctor, Date appointmentDate, LocalTime startTime, LocalTime endTime, String status, String paymentStatus, String paymentMethod, String note, Date createdAt, Date updatedAt, Double price) {
         this.id = id;
         this.user = user;
         this.pet = pet;
@@ -44,7 +45,12 @@ public class Appointment {
         this.note = note;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.price = price;
     }
+    
+    
+
+   
 
     public String getId() {
         return id;
@@ -148,6 +154,19 @@ public class Appointment {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Appointment{" + "id=" + id + ", user=" + user + ", pet=" + pet + ", doctor=" + doctor + ", appointmentDate=" + appointmentDate + ", startTime=" + startTime + ", endTime=" + endTime + ", status=" + status + ", paymentStatus=" + paymentStatus + ", paymentMethod=" + paymentMethod + ", note=" + note + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", price=" + price + '}';
     }
 
    

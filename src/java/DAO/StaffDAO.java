@@ -412,7 +412,7 @@ public class StaffDAO {
         }
     }
 
-    public Doctor getDoctorById(String doctorId) throws ClassNotFoundException {
+    public Doctor getDoctorById(String doctorId)  {
         Doctor doctor = null;
         Connection conn = null;
         PreparedStatement ps = null;

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package UserController;
+package StaffController;
 
 import DAO.AppointmentDAO;
 import DAO.StaffDAO;
@@ -15,23 +15,22 @@ import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Dell
  */
-public class Booking extends HttpServlet {
+@WebServlet(name = "AddNewBooking", urlPatterns = {"/add-new-booking"})
+public class AddNewBooking extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,10 +49,10 @@ public class Booking extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Booking</title>");
+            out.println("<title>Servlet AddNewBooking</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Booking at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AddNewBooking at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -72,15 +71,10 @@ public class Booking extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UserDAO udao = new UserDAO();
-        HttpSession session = request.getSession();
-        User u = (User) session.getAttribute("user");
-        if (u == null) {
-            response.sendRedirect("login");
-            return;
-        }
-        String uid = u.getId();
-        List<Pet> pets = udao.getPetsByUser(uid);
-        request.setAttribute("pets", pets);
+        List<User> users = udao.getAllCustomer();
+
+        request.setAttribute("users", users);
+
         AppointmentDAO adao = new AppointmentDAO();
 
         Date today = new Date();
@@ -92,8 +86,7 @@ public class Booking extends HttpServlet {
 
         request.setAttribute("defaultDate", todayStr);
         request.setAttribute("defaultPrice", defaultPrice);
-
-        request.getRequestDispatcher("view/home/content/Booking.jsp").forward(request, response);
+        request.getRequestDispatcher("view/staff/content/CreateNewBooking.jsp").forward(request, response);
     }
 
     /**
@@ -107,70 +100,73 @@ public class Booking extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("homepage");
-            return;
-        }
+
+        request.setCharacterEncoding("UTF-8");
+
+        String userId = request.getParameter("userId");
         String petId = request.getParameter("petId");
         String doctorId = request.getParameter("doctorId");
         String appointmentDateStr = request.getParameter("appointmentDate");
         String slotStartStr = request.getParameter("slotStart");
         String slotEndStr = request.getParameter("slotEnd");
         String note = request.getParameter("appointmentNote");
+
         double price = Double.parseDouble(request.getParameter("totalBill"));
+
         Appointment appointment = new Appointment();
-        appointment.setUser(user);
-        appointment.setPrice(price);
         appointment.setNote(note);
         appointment.setPaymentMethod("cash");
-        appointment.setPaymentStatus("unpaid");
-        UserDAO udao = new UserDAO();
-        Pet pet;
+        appointment.setPaymentStatus("paid");
+        appointment.setPrice(price);
+
         try {
-            pet = udao.getPetsById(petId);
+            UserDAO userDAO = new UserDAO();
+            Pet pet = userDAO.getPetsById(petId);
+            User user = userDAO.getUserById(userId);
             appointment.setPet(pet);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Booking.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(Booking.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            appointment.setUser(user);
+            
+            StaffDAO staffDAO = new StaffDAO();
+            Doctor doctor = staffDAO.getDoctorById(doctorId);
+            appointment.setDoctor(doctor);
 
-        Doctor doctor = new StaffDAO().getDoctorById(doctorId);
-        appointment.setDoctor(doctor);
-
-        try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date parsedDate = dateFormat.parse(appointmentDateStr);
             appointment.setAppointmentDate(new java.sql.Date(parsedDate.getTime()));
             appointment.setStartTime(LocalTime.parse(slotStartStr));
             appointment.setEndTime(LocalTime.parse(slotEndStr));
+
+            AppointmentDAO appointmentDAO = new AppointmentDAO();
+            int result = appointmentDAO.addNewBoking(appointment);
+
+            if (result > 0) {
+
+                SendEmail sendMail = new SendEmail();
+                sendMail.sendEmailAfterBooking(
+                        user.getEmail(),
+                        user.getFullName(),
+                        user.getPhoneNumber(),
+                        user.getAddress(),
+                        pet.getName(),
+                        appointment.getAppointmentDate().toString(),
+                        doctor.getUser().getFullName(),
+                        slotStartStr,
+                        slotEndStr,
+                        price,
+                        "Thanh toán trực tiếp"
+                );
+
+                response.sendRedirect("list-appointment?success=1");
+            } else {
+                request.setAttribute("error", "Đặt lịch thất bại. Vui lòng thử lại.");
+                request.getRequestDispatcher("view/staff/content/CreateNewBooking.jsp").forward(request, response);
+
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
-
-        }
-        AppointmentDAO adao = new AppointmentDAO();
-        int result = adao.addNewBoking(appointment);
-
-        if (result > 0) {
-
-            SendEmail sendMail = new SendEmail();
-            sendMail.sendEmailAfterBooking(appointment.getUser().getEmail(), appointment.getUser().getFullName(),
-                    appointment.getUser().getPhoneNumber(), appointment.getUser().getAddress(), appointment.getPet().getName(),
-                    appointment.getAppointmentDate().toString(), appointment.getDoctor().getUser().getFullName(),
-                    appointment.getStartTime().toString(), appointment.getEndTime().toString(), appointment.getPrice(),
-                    "Thanh Toán Trực tiếp");
-
-            request.getRequestDispatcher("view/home/content/ThanhYou.jsp").forward(request, response);
            
-
-
-        } else {
-            request.setAttribute("error", "Đặt lịch thất bại!Xin vui lòng thử lại");
-            request.getRequestDispatcher("view/home/content/Booking.jsp").forward(request, response);
         }
-
     }
 
     /**

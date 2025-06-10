@@ -95,6 +95,23 @@
                     <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
 
                     <script>
+                        // Loại bỏ thẻ HTML, chỉ lấy text thuần
+                        function stripHtml(html) {
+                            let div = document.createElement("div");
+                            div.innerHTML = html;
+                            return div.textContent || div.innerText || "";
+                        }
+
+                        // Mã hóa ký tự đặc biệt thành dạng hiển thị an toàn trên HTML
+                        function escapeHtml(text) {
+                            return text
+                                    .replace(/&/g, "&amp;")
+                                    .replace(/</g, "&lt;")
+                                    .replace(/>/g, "&gt;")
+                                    .replace(/"/g, "&quot;")
+                                    .replace(/'/g, "&#039;");
+                        }
+
                         function getParam() {
                             const param = new URLSearchParams(window.location.search);
                             return param.get('success');
@@ -107,12 +124,13 @@
                             var messageElem = document.getElementById('statusModalMessage');
 
                             if (success === 'true') {
-                                messageElem.textContent = 'Gửi liên hệ thành công! Cảm ơn bạn đã để lại thông tin';
+                                messageElem.innerHTML = escapeHtml('Gửi liên hệ thành công! Cảm ơn bạn đã để lại thông tin');
                             } else {
-                                messageElem.textContent = 'Gửi liên hệ thất bại';
+                                messageElem.innerHTML = escapeHtml('Gửi liên hệ thất bại');
                             }
 
                             statusModal.show();
+
                             if (history.replaceState) {
                                 const url = new URL(window.location.href);
                                 url.searchParams.delete('success');
@@ -136,6 +154,31 @@
                                 input.parentNode.insertBefore(err, input.nextSibling);
                             }
                             return err;
+                        }
+
+                        function validateName() {
+                           
+                            nameInput.value = stripHtml(nameInput.value).trim();
+
+                            let val = nameInput.value;
+                            const errElem = createErrorElem(nameInput);
+
+                            if (val === '') {
+                                errElem.textContent = 'Họ và tên không được để trống.';
+                                return false;
+                            } else if (val.length > 30) {
+                                errElem.textContent = 'Họ và tên không được vượt quá 30 ký tự.';
+                                return false;
+                            } else if (/\d/.test(val)) {
+                                errElem.textContent = 'Họ và tên không được chứa số.';
+                                return false;
+                            } else if (!/^[a-zA-ZÀ-ỹ\s\-]+$/u.test(val)) {  
+                                errElem.textContent = 'Họ và tên chỉ được chứa chữ cái tiếng Việt, dấu cách và dấu gạch ngang.';
+                                return false;
+                            } else {
+                                errElem.textContent = '';
+                                return true;
+                            }
                         }
 
                         function validatePhone() {
@@ -166,29 +209,15 @@
                             }
                         }
 
-                        function validateName() {
-                            const val = nameInput.value.trim();
-                            const errElem = createErrorElem(nameInput);
-
-                            if (val === '') {
-                                errElem.textContent = 'Họ và tên không được để trống.';
-                                return false;
-                            } else if (/\d/.test(val)) {
-                                errElem.textContent = 'Họ và tên không được chứa số.';
-                                return false;
-                            } else {
-                                errElem.textContent = '';
-                                return true;
-                            }
-                        }
-
-
                         function validateDescription() {
-                            const val = descriptionInput.value.trim();
+                        
+                            descriptionInput.value = stripHtml(descriptionInput.value).trim();
+
+                            let val = descriptionInput.value;
                             const errElem = createErrorElem(descriptionInput);
 
-                            if (val === '') {
-                                errElem.textContent = 'Vui lòng nhập miêu tả.';
+                            if (val.length > 1000) {
+                                errElem.textContent = 'Miêu tả không được vượt quá 1000 ký tự.';
                                 return false;
                             } else {
                                 errElem.textContent = '';
@@ -196,6 +225,7 @@
                             }
                         }
 
+                       
                         nameInput.addEventListener('blur', validateName);
                         phoneInput.addEventListener('blur', validatePhone);
                         emailInput.addEventListener('blur', validateEmail);

@@ -12,6 +12,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -37,162 +39,137 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
         <style>
-
-            /* Container tổng */
-            .container {
-                max-width: 900px;
-                margin: 0 auto;
-                padding: 20px;
+            body {
+                background-color: #f8f9fa; /* trắng xám dịu mắt */
+                font-family: 'Segoe UI', sans-serif;
             }
 
-            /* Tiêu đề */
-            h2.text-center {
+            h2 {
                 font-weight: 700;
-                color: #2c3e50;
-                margin-bottom: 40px;
-                font-size: 2.2rem;
-                letter-spacing: 1px;
+                font-size: 28px;
+                color: #ff6f00;
             }
 
-            /* Thông tin bác sĩ bên trái */
+            .form-label {
+                font-weight: 600;
+                color: #333;
+            }
+
+            .form-control,
+            .form-select {
+                border-radius: 6px;
+                padding: 10px;
+                font-size: 14px;
+                border: 1px solid #ccc;
+            }
+
+            .form-control:focus,
+            .form-select:focus {
+                border-color: #1976d2;
+                box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+            }
+
+            .row {
+                margin-top: 30px;
+            }
+
             .col-md-4.text-center {
-                background: #f8f9fa;
+                background-color: #ffffff;
+                padding: 20px;
                 border-radius: 12px;
-                padding: 25px 20px;
-                box-shadow: 0 0 15px rgb(0 0 0 / 0.05);
-                margin-bottom: 30px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             }
 
-            .col-md-4.text-center img {
-                border: 4px solid #17a2b8;
+            .col-md-8 form {
+                background-color: #ffffff;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            }
+
+            .rounded-circle {
+                border: 3px solid #1976d2;
+            }
+
+            .btn-success {
+                background-color: #1976d2;
+                border: none;
+                padding: 10px 25px;
+                font-weight: 600;
+                color: white;
+                border-radius: 6px;
+                transition: background-color 0.3s ease;
+            }
+
+            .btn-success:hover {
+                background-color: #1565c0;
+            }
+
+            .form-check-label {
+                margin-left: 6px;
+            }
+
+            /* Responsive tweak */
+            @media (max-width: 768px) {
+                .col-md-4, .col-md-8 {
+                    padding: 0;
+                    margin-bottom: 20px;
+                }
+
+                .col-md-8 form {
+                    padding: 20px;
+                }
+            }
+            .doctor-card {
+                background-color: #f9f9f9;
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                animation: fadeIn 0.6s ease-in-out;
                 transition: transform 0.3s ease;
             }
 
-            .col-md-4.text-center img:hover {
-                transform: scale(1.1);
+            .doctor-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
             }
 
-            .col-md-4.text-center h4 {
-                margin-top: 15px;
-                font-weight: 600;
-                color: #34495e;
-            }
-
-            .col-md-4.text-center p {
-                font-size: 0.9rem;
-                color: #555;
-                line-height: 1.4;
+            .doctor-name {
+                font-size: 22px;
+                font-weight: 700;
+                color: #1976d2;
                 margin-bottom: 12px;
             }
 
-            /* Tiểu sử */
-            .col-md-4.text-center p:last-child {
-                font-style: italic;
-                color: #666;
+            .doctor-info p {
+                margin-bottom: 10px;
+                font-size: 15px;
+                line-height: 1.5;
+                color: #333;
             }
 
-            /* Form đặt lịch bên phải */
-            .col-md-8 {
-                background: #ffffff;
-                padding: 30px 25px;
-                border-radius: 12px;
-                box-shadow: 0 8px 25px rgb(0 0 0 / 0.07);
-                margin-bottom: 30px;
+            .doctor-info p i {
+                color: #1976d2;
+                margin-right: 8px;
+                min-width: 20px;
+                text-align: center;
             }
 
-            /* Label cho form */
-            .form-label {
-                font-weight: 600;
-                color: #2c3e50;
-                margin-bottom: 6px;
-                display: block;
-                font-size: 1rem;
-            }
-
-            /* Input, textarea, select */
-            .form-control, .form-select {
-                border: 1.5px solid #ced4da;
-                border-radius: 8px;
-                padding: 10px 12px;
-                font-size: 1rem;
-                transition: border-color 0.3s ease;
-            }
-
-            .form-control:focus, .form-select:focus {
-                border-color: #17a2b8;
-                box-shadow: 0 0 8px rgb(23 162 184 / 0.4);
-                outline: none;
-            }
-
-            /* Slot container */
-            #slotContainer {
-                min-height: 40px;
-            }
-
-            /* Slot buttons */
-            #slotContainer button {
-                cursor: pointer;
-                border-radius: 8px;
-                padding: 8px 14px;
-                font-weight: 500;
-                border: 1.8px solid #17a2b8;
-                background-color: transparent;
-                color: #17a2b8;
-                transition: all 0.25s ease;
-                user-select: none;
-            }
-
-            #slotContainer button:hover {
-                background-color: #17a2b8;
-                color: #fff;
-                box-shadow: 0 4px 12px rgb(23 162 184 / 0.6);
-            }
-
-            #slotContainer button.active {
-                background-color: #117a8b;
-                color: #fff;
-                border-color: #117a8b;
-                box-shadow: 0 4px 15px rgb(17 122 139 / 0.8);
-            }
-
-            /* Radio button style */
-            .form-check-label {
-                font-weight: 500;
-                color: #2c3e50;
-                user-select: none;
-            }
-
-            /* Submit button */
-            button.btn-success {
-                background-color: #17a2b8;
-                border-color: #17a2b8;
-                font-weight: 600;
-                padding: 10px 25px;
-                border-radius: 10px;
-                font-size: 1.1rem;
-                transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            }
-
-            button.btn-success:hover {
-                background-color: #117a8b;
-                border-color: #117a8b;
-                box-shadow: 0 6px 18px rgb(17 122 139 / 0.7);
-            }
-
-            /* Responsive: giảm padding cho màn nhỏ */
-            @media (max-width: 768px) {
-                .container {
-                    padding: 15px;
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
                 }
-
-                .col-md-4.text-center, .col-md-8 {
-                    margin-bottom: 25px;
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
                 }
             }
-
-
         </style>
+
     </head>
     <body>
         <%@include file="../layout/Header.jsp" %>
@@ -200,33 +177,52 @@
 
         <section class="section">
 
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger">${error}</div>
+            </c:if>
+
+            <c:if test="${not empty transResult}">
+                <c:choose>
+                    <c:when test="${transResult}">
+                        <div class="alert alert-success">Thanh toán thành công! Cảm ơn bạn đã đặt lịch.</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="alert alert-warning">Thanh toán thất bại hoặc bị hủy. Vui lòng thử lại.</div>
+                    </c:otherwise>
+                </c:choose>
+            </c:if>
 
             <div class="container ">
                 <h2 class="text-center mb-4">Đặt lịch khám bệnh với bác sĩ</h2>
 
                 <div class="row">
                     <!-- Thông tin bác sĩ -->
-                    <div class="col-md-4 text-center">
+
+                    <div class="col-md-4 doctor-card text-start">
                         <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" alt="${doctor.user.fullName}"
                              class="rounded-circle mb-3" style="width:150px; height:150px; object-fit:cover;">
-                        <h4>${doctor.user.fullName}</h4>
-                        <p><strong>Chuyên ngành:</strong> ${doctor.specialty}</p>
-                        <p><strong>Chứng chỉ:</strong> ${doctor.certificates}</p>
-                        <p><strong>Bằng cấp:</strong> ${doctor.qualifications}</p>
-                        <p><strong>Kinh nghiệm:</strong> ${doctor.yearsOfExperience} năm</p>
-                        <p><strong>Tiểu sử:</strong></p>
-                        <p>${doctor.biography}</p>
+                        <h4 class="doctor-name"><i class="fas fa-user-md me-1"></i> ${doctor.user.fullName}</h4>
+                        <div class="doctor-info">
+                            <p><i class="fas fa-stethoscope"></i><strong>Chuyên ngành:</strong> ${doctor.specialty}</p>
+                            <p><i class="fas fa-certificate"></i><strong>Chứng chỉ:</strong> ${doctor.certificates}</p>
+                            <p><i class="fas fa-graduation-cap"></i><strong>Bằng cấp:</strong> ${doctor.qualifications}</p>
+                            <p><i class="fas fa-briefcase-medical"></i><strong>Kinh nghiệm:</strong> ${doctor.yearsOfExperience} năm</p>
+                            <p><i class="fas fa-user-edit"></i><strong>Tiểu sử:</strong></p>
+                            <p>${doctor.biography}</p>
+                        </div>
                     </div>
+
 
                     <!-- Form đặt lịch -->
                     <div class="col-md-8">
-                        <form id="bookingForm" method="post" action="submitBooking">
+                        <form id="bookingForm" method="post" action="payment">
 
                             <!-- Ngày khám -->
                             <div class="mb-3">
                                 <label for="appointmentDate" class="form-label">Chọn ngày khám:</label>
                                 <input type="date" id="appointmentDate" name="appointmentDate" class="form-control" 
                                        min="${todayStr}" required />
+                                <div id="dateError" class="text-danger small mt-1"></div>
                             </div>
 
                             <!-- Ca khám (slot) -->
@@ -249,7 +245,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">SĐT:</label>
-                                    <input type="text" name="phoneNumber" class="form-control" value="${sessionScope.user.phoneNumber}" />
+                                    <input type="text" name="phoneNumber" id="inputPhone"  class="form-control" value="${sessionScope.user.phoneNumber}" />
+                                    <div id="phoneError" class="text-danger small mt-1"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Địa chỉ:</label>
@@ -288,6 +285,16 @@
                                 <label class="form-label">Nội dung khám bệnh:</label>
                                 <textarea name="appointmentNote" class="form-control" rows="3"></textarea>
                             </div>
+                            <div class="mb-3">
+                                <div class="total-bill-box d-flex justify-content-between align-items-center p-2 rounded bg-light border-start border-4 border-primary">
+                                    Phí đặt lịch khám:
+                                    <span id="billText">
+                                        <fmt:formatNumber value="${defaultPrice}" type="number" maxFractionDigits="0" /> VNĐ
+                                    </span>
+                                </div>
+                                <input type="hidden" name="totalBill" id="totalBill" value="${defaultPrice}" />
+                            </div>
+
 
                             <!-- Phương thức thanh toán -->
                             <div class="mb-3">
@@ -304,7 +311,7 @@
 
                             <!-- Ẩn input doctorId để gửi về backend -->
                             <input type="hidden" name="doctorId" value="${doctor.user.id}" />
-
+                            <input type="hidden" name="totalBill" id="totalBill" value="${totalBill}" />
                             <!-- Submit -->
                             <div class="text-end">
                                 <button type="submit" class="btn btn-success">Xác nhận đặt lịch</button>
@@ -315,6 +322,72 @@
                 </div>
 
                 <script>
+                    
+                    document.getElementById("bookingForm").addEventListener("submit", function (event) {
+                        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+
+                        if (paymentMethod === "pay_later") {
+                            this.action = "booking-by-doctor";
+                        } else {
+                            this.action = "payment";
+                        }
+                    });
+
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const phoneInput = document.getElementById("inputPhone");
+                        const phoneError = document.getElementById("phoneError");
+
+                        const dateInput = document.getElementById("appointmentDate");
+                        const dateError = document.getElementById("dateError");
+
+                        const form = document.getElementById("bookingForm");
+
+                        function validatePhone() {
+                            const phone = phoneInput.value.trim();
+                            const regex = /^0\d{9}$/;
+                            if (!regex.test(phone)) {
+                                phoneError.textContent = "Số điện thoại phải bắt đầu bằng 0 và đủ 10 số.";
+                                return false;
+                            } else {
+                                phoneError.textContent = "";
+                                return true;
+                            }
+                        }
+
+                        function validateDate() {
+                            const selectedDate = new Date(dateInput.value);
+                            const today = new Date();
+
+                            selectedDate.setHours(0, 0, 0, 0);
+                            today.setHours(0, 0, 0, 0);
+
+                            if (selectedDate < today) {
+                                dateError.textContent = "Vui lòng chọn ngày khám ơ hiện tại hoặc tương lai!";
+                                return false;
+                            } else {
+                                dateError.textContent = "";
+                                return true;
+                            }
+                        }
+
+
+                        phoneInput.addEventListener("blur", validatePhone);
+                        dateInput.addEventListener("blur", validateDate);
+
+
+                        form.addEventListener("submit", function (e) {
+                            const isPhoneValid = validatePhone();
+                            const isDateValid = validateDate();
+
+                            if (!isPhoneValid || !isDateValid) {
+                                e.preventDefault();
+                            }
+                        });
+                    });
+
+
+                    
                     document.getElementById("petSelect").addEventListener('change', function () {
                         let petId = this.value;
                         if (!petId)
@@ -367,7 +440,7 @@
                                         btn.classList.add('btn', 'slot-btn', 'me-2', 'mb-2');
                                         const startTime = slot.start.substring(11, 16);
                                         const endTime = slot.end.substring(11, 16);
-                                         btn.textContent = String(slot.start) + ' - ' + String(slot.end);
+                                        btn.textContent = String(slot.start) + ' - ' + String(slot.end);
 
                                         if (slot.booked) {
                                             btn.classList.add('btn-secondary');

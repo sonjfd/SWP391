@@ -34,71 +34,47 @@
         <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
         <style>
-            i[class^="ri-"] {
-                font-size: 22px;
-                cursor: pointer;
-                margin: 0 8px;
-                padding: 8px;
-                border-radius: 50%;
-                transition: all 0.3s ease;
-                box-shadow:
-                    0 0 5px rgba(0,0,0,0.1),
-                    inset 0 0 10px rgba(255,255,255,0.6);
+            .compact-form .form-label {
+                font-size: 13px;
+                margin-bottom: 4px;
+                font-weight: 500;
+                color: #333;
             }
 
-            /* Thêm: gradient + glow */
-            .icon-add {
-                background: linear-gradient(135deg, #56ab2f, #a8e063);
-                color: white;
-                box-shadow:
-                    0 0 8px #56ab2f,
-                    0 0 20px #a8e063;
+            .compact-form .form-select-sm,
+            .compact-form .form-control-sm {
+                font-size: 14px;
+                padding: 8px 12px;
+                height: 40px;
             }
 
-            .icon-add:hover {
-                filter: brightness(1.15);
-                transform: scale(1.2) rotate(10deg);
-                box-shadow:
-                    0 0 12px #56ab2f,
-                    0 0 30px #a8e063;
+            .compact-form .btn-sm {
+                font-size: 14px;
+                padding: 8px 16px;
+                border-radius: 6px;
+                height: 40px;
             }
 
-            /* Sửa: vàng kim + bóng */
-            .icon-edit {
-                background: linear-gradient(135deg, #f7b733, #fceabb);
-                color: #5a3e1b;
-                box-shadow:
-                    0 0 8px #f7b733,
-                    inset 0 0 15px #fceabb;
+            /* Form Xoá + Tạo lịch nằm song song */
+            .form-delete-schedule {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-bottom: 16px;
             }
 
-            .icon-edit:hover {
-                filter: brightness(1.2);
-                transform: scale(1.15) rotate(-10deg);
-                box-shadow:
-                    0 0 14px #f7b733,
-                    inset 0 0 25px #fceabb;
+            /* Form Xoá trong dòng đó */
+            .form-delete-schedule form {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: flex-end;
+                gap: 12px;
             }
-
-            /* Xoá: đỏ rực + glow */
-            .icon-delete {
-                background: linear-gradient(135deg, #e52d27, #b31217);
-                color: white;
-                box-shadow:
-                    0 0 10px #e52d27,
-                    0 0 25px #b31217;
-            }
-
-            .icon-delete:hover {
-                filter: brightness(1.3);
-                transform: scale(1.25);
-                box-shadow:
-                    0 0 16px #e52d27,
-                    0 0 40px #b31217;
-            }
-
-
 
         </style>
 
@@ -113,14 +89,7 @@
             <div class="layout-specing">
 
                 <div class="row">
-
-                    <div class="mb-2">
-                        <a href="add-schedule" class="btn btn-primary btn-sm">
-                            <i class="bi bi-person-plus"></i> Tạo Lịch 
-                        </a>
-                    </div>
-
-                    <!-- Form lọc lịch bác sĩ -->
+                    <!-- Form lọc bác sĩ -->
                     <form method="get" action="filter-doctor-schedule" class="row g-2 mb-3 compact-form" onsubmit="return validateFilter();">
                         <div class="col-md-3">
                             <label for="doctorId" class="form-label">Bác sĩ</label>
@@ -161,34 +130,46 @@
                         </div>
                     </form>
 
+                    <!-- Form Xoá + Tạo lịch -->
+                    <div class="form-delete-schedule">
 
-                    <form method="post" action="delete-work-bymonth" class="row g-2 mb-3 compact-form" onsubmit="return validateDelete();">
-                        <div class="col-md-3">
-                            <label for="deleteDoctorId" class="form-label">Bác sĩ</label>
-                            <select id="deleteDoctorId" name="doctorId" class="form-select form-select-sm">
-                                <option value="">-- Chọn bác sĩ --</option>
-                                <c:forEach var="doctor" items="${doctorList}">
-                                    <option value="${doctor.user.id}">${doctor.user.fullName}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
+                        <!-- Form Xoá -->
+                        <form method="post" action="delete-work-bymonth" class="compact-form mb-0" onsubmit="return validateDelete();">
+                            <div class="d-flex flex-wrap align-items-end gap-2">
+                                <div>
+                                    <label for="deleteDoctorId" class="form-label">Bác sĩ</label>
+                                    <select id="deleteDoctorId" name="doctorId" class="form-select ">
+                                        <option value=""> Chọn bác sĩ </option>
+                                        <c:forEach var="doctor" items="${doctorList}">
+                                            <option value="${doctor.user.id}">${doctor.user.fullName}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
 
-                        <div class="col-md-2">
-                            <label for="deleteMonth" class="form-label">Tháng</label>
-                            <select id="deleteMonth" name="month" class="form-select form-select-sm">
-                                <option value="">-- Chọn tháng --</option>
-                                <c:forEach var="m" begin="1" end="12">
-                                    <option value="${m}">Tháng ${m}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
+                                <div>
+                                    <label for="deleteMonth" class="form-label">Tháng</label>
+                                    <select id="deleteMonth" name="month" class="form-select ">
+                                        <option value=""> Chọn tháng </option>
+                                        <c:forEach var="m" begin="1" end="12">
+                                            <option value="${m}">Tháng ${m}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
 
-                        <div class="col-md-2 align-self-end">
-                            <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm w-100">
-                                Xoá
-                            </button>
-                        </div>
-                    </form>
+                                <div>
+                                    <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm">
+                                        Xoá
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Nút Tạo lịch bên phải -->
+                        <a href="add-schedule" class="btn btn-primary btn-sm">
+                            <i class="bi bi-person-plus"></i> Tạo Lịch
+                        </a>
+
+                    </div>
 
 
 
@@ -250,11 +231,24 @@
                                     <td>
 
                                         <div class="action-buttons">
-                                            <a href="update-work-schedule?id=${s.id}&workDate=${s.workDate}&shifid=${s.shift.id}"><i class="ri-edit-line"></i> </a>
-                                            <a href="delete-work-schedule?id=${s.doctor.user.id}&datework=${s.workDate}"
-                                               onclick="return confirm('Bạn có chắc chắn muốn xóa lịch làm việc này không?')"><i class="ri-delete-bin-line"></i></a>
 
+                                            <button type="button"
+                                                    class="btn btn-success btn-sm"
+                                                    onclick="window.location.href = 'update-work-schedule?id=${s.id}&workDate=${s.workDate}&shifid=${s.shift.id}'"
+                                                    title="Cập nhật lịch làm việc">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="btn btn-danger btn-sm"
+                                                    onclick="if (confirm('Bạn có chắc chắn muốn xóa lịch làm việc này không?'))
+                                                                window.location.href = 'delete-work-schedule?id=${s.doctor.user.id}&datework=${s.workDate}'"
+                                                    title="Xoá lịch làm việc">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
+
+
                                     </td>
                                 </tr>
 

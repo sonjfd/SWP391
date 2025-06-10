@@ -34,6 +34,109 @@
         <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <style>
+            .layout-specing {
+                padding: 30px 20px;
+            }
+
+            /* Input & select form */
+            form input[type="text"],
+            form select {
+                padding: 8px 12px;
+                border: 1px solid #ced4da;
+                outline: none;
+                transition: all 0.2s ease-in-out;
+                font-size: 14px;
+                background-color: #fff;
+            }
+
+            form input[type="text"]:focus,
+            form select:focus {
+                border-color: #1976d2;
+                box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+            }
+
+            .btn-primary {
+                background-color: #1976d2;
+                border-color: #1976d2;
+                font-size: 14px;
+                padding: 6px 14px;
+            }
+
+            .btn-primary:hover {
+                background-color: #1565c0;
+                border-color: #1565c0;
+            }
+
+            /* Table */
+            .table {
+                margin-top: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .table th {
+                background-color: #1976d2;
+                color: #fff;
+                font-weight: 600;
+                vertical-align: middle;
+            }
+
+            .table td {
+                vertical-align: middle;
+                font-size: 14px;
+            }
+
+            .table-striped > tbody > tr:nth-of-type(odd) {
+                background-color: #f9f9f9;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f1faff;
+            }
+
+            /* Status dropdown inside table */
+            .form-select {
+                font-size: 14px;
+                padding: 6px 10px;
+                border-radius: 6px;
+            }
+
+            /* Responsive tweaks */
+            @media (max-width: 768px) {
+                .layout-specing {
+                    padding: 20px 10px;
+                }
+
+                form.d-flex {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .btn {
+                    width: 100%;
+                }
+            }
+            .toast-container {
+                animation: slideInRight 0.4s ease;
+            }
+
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+        </style>
 
     </head>
     <body>
@@ -156,7 +259,7 @@
         </script>
 
 
-        
+
         <!-- simplebar -->
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
         <!-- Chart -->

@@ -22,7 +22,7 @@ public class SlotService {
                 LocalTime apptStart = appt.getStartTime();
                 LocalTime apptEnd = appt.getEndTime();
 
-                if (appt.getStatus().equalsIgnoreCase("completed")
+                if ("completed".equalsIgnoreCase(appt.getStatus())
                         && !(slotEnd.compareTo(appt.getStartTime()) <= 0 || slotStart.compareTo(appt.getEndTime()) >= 0)) {
                     isBooked = true;
                     break;

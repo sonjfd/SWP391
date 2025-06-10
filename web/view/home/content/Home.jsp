@@ -34,6 +34,7 @@ Author     : Dell
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        
 
     </head>
 
@@ -42,6 +43,9 @@ Author     : Dell
 
     <body>
         <%@include file="../layout/Header.jsp" %>
+
+
+        
 
         <!-- Start Hero -->
         <section class="bg-half-170 pb-0 d-table w-100">
@@ -158,7 +162,7 @@ Author     : Dell
                                     <h6 class="card-title">${doctor.user.fullName}</h6>
                                     <div class="text-muted small">${doctor.specialty}</div>
                                     <div class="text-muted small mb-2">${doctor.yearsOfExperience} năm kinh nghiệm</div>
-                                    <a href="boking-by-doctor?doctorId=${doctor.user.id}" 
+                                    <a href="booking-by-doctor?doctorId=${doctor.user.id}" 
                                        class="btn btn-outline-success btn-sm">
                                         Xem lịch & Đặt lịch
                                     </a>
@@ -200,54 +204,14 @@ Author     : Dell
                 </div>
             </div>
         </section>
-        <!-- BLOG / TIN TỨC MỚI NHẤT End -->
-
-
-        <!--         TESTIMONIALS Start 
-                <section class="section">
-                    <div class="container">
-                        <div class="section-title text-center mb-5">
-                            <h4 class="title mb-3">Khách hàng nói gì về Pet24H?</h4>
-                        </div>
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
-                                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
-                                    <div class="carousel-inner">
-                                        <div class="carousel-item active text-center">
-                                            <img src="${pageContext.request.contextPath}/assets/images/customers/customer1.jpg" class="rounded-circle mb-3" width="80">
-                                            <blockquote class="blockquote">
-                                                <p>Pet24H chăm sóc cho bé mèo nhà mình rất tận tâm, bác sĩ nhiệt tình và chuyên môn cao.</p>
-                                                <footer class="blockquote-footer">Nguyễn Thị A, chủ nhân của Mimi</footer>
-                                            </blockquote>
-                                        </div>
-                                        <div class="carousel-item text-center">
-                                            <img src="${pageContext.request.contextPath}/assets/images/customers/customer2.jpg" class="rounded-circle mb-3" width="80">
-                                            <blockquote class="blockquote">
-                                                <p>Dịch vụ khám và tiêm phòng rất nhanh, giá cả hợp lý. Bé cún nhà mình không còn sợ đi khám nữa!</p>
-                                                <footer class="blockquote-footer">Trần Văn B, chủ nhân của GâuGâu</footer>
-                                            </blockquote>
-                                        </div>
-                                         Thêm các feedback khác 
-                                    </div>
-                                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Trước</span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Sau</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>-->
-        <!-- TESTIMONIALS End -->
+       
 
 
         <%@include file="../layout/Footer.jsp" %>
 
-
+ <script>
+    
+        
         <!-- javascript -->
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- SLIDER -->

@@ -6,6 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -32,94 +34,127 @@
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
         <style>
-
-            #bookingForm {
-                background-color: #fff;
-                border: 1px solid #0d6efd;
-                border-radius: 8px;
-                padding: 25px;
-                max-width: 600px;
-                margin: auto;
-
+            body {
+                background-color: #fff9f3;
+                font-family: 'Segoe UI', sans-serif;
             }
 
-            /* Label màu xanh dương */
-            #bookingForm label.form-label {
-                color: #0d6efd;
+            h2 {
+                font-weight: 800;
+                font-size: 28px;
+                color: #ff7a00;
+            }
+
+            h2 span {
+                color: #000;
+            }
+
+            .form-label {
+                font-weight: 600;
+                color: #333;
+            }
+
+            .form-control,
+            .form-select {
+                border-radius: 6px;
+                padding: 10px;
+                font-size: 14px;
+                border: 1px solid #ccc;
+            }
+
+            .form-control:focus,
+            .form-select:focus {
+                border-color: #ff9900;
+                box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+            }
+
+            .btn-success {
+                background-color: #00aa55;
+                border: none;
+                padding: 10px 25px;
                 font-weight: 600;
             }
 
-            /* Input, select focus viền xanh */
-            #bookingForm input.form-control:focus,
-            #bookingForm select.form-select:focus {
-                border-color: #0d6efd;
-                box-shadow: 0 0 6px #0d6efd88;
-                outline: none;
+            .btn-success:hover {
+                background-color: #008f47;
             }
 
-            #slotContainer {
+            .booking-row {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 10px;
-                margin-top: 10px;
+                gap: 20px;
             }
 
-            .slot-btn {
-                min-width: 100px;
-                padding: 8px 12px;
-                font-size: 14px;
+            .booking-image {
+                flex: 1 1 50%;
+                max-width: 50%;
             }
 
-            .slot-btn.active {
-                background-color: #0d6efd;
-                color: white;
-                border: 1px solid #0d6efd;
+            .booking-image img {
+                width: 100%;
+                height: auto;
+                max-height: 100%;
+                border-radius: 12px;
+                object-fit: cover;
             }
 
-            .slot-btn.disabled {
-                pointer-events: none;
-                opacity: 0.5;
-            }
-            #shiftContainer button.shift-btn:hover {
-                background-color: #0d6efd;
-                color: white;
-            }
-
-            #shiftContainer button.shift-btn.selected {
-                background-color: #084298;
-                color: white;
-                border-color: #084298;
-                pointer-events: none;
+            .booking-form {
+                flex: 1 1 50%;
+                max-width: 50%;
+                background-color: #ffffff;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
             }
 
-            /* Radio thanh toán */
-            #bookingForm .form-check-label {
-                color: #0d6efd;
+            .total-bill-box {
+                background-color: #e3f2fd; /* Xanh lam nhạt */
+                padding: 12px 16px;
+                border-left: 5px solid #1976d2;
+                border-radius: 6px;
+                font-size: 16px;
+                font-weight: 500;
+                color: #333;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .total-bill-box span {
+                font-weight: bold;
+                color: #1976d2; /* Xanh lam đậm */
+                font-size: 18px;
+            }
+
+            .btn-confirm {
+                background-color: #1976d2;   /* xanh lam mạnh */
+                color: #ffffff;              /* chữ trắng */
+                padding: 10px 25px;
                 font-weight: 600;
+                border: none;
+                border-radius: 6px;
+                transition: background-color 0.2s ease-in-out;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* tạo nổi khối nhẹ */
             }
 
-            /* Nút xác nhận đặt lịch */
-            #submitBtn {
-                background-color: #0d6efd;
-                border-color: #0d6efd;
-                font-weight: 700;
-                padding: 10px 30px;
-                transition: background-color 0.3s;
+            .btn-confirm:hover {
+                background-color: #1565c0; /* đậm hơn khi hover */
             }
 
-            #submitBtn:disabled {
-                background-color: #a5c8ff;
-                border-color: #a5c8ff;
-                cursor: not-allowed;
-                color: #eee;
-            }
 
-            #submitBtn:not(:disabled):hover {
-                background-color: #084298;
-                border-color: #084298;
-            }
 
+            @media (max-width: 768px) {
+                .booking-row {
+                    flex-direction: column;
+                }
+
+                .booking-image, .booking-form {
+                    max-width: 100%;
+                }
+            }
         </style>
+
+
     </head>
     <body>
         <%@include file="../layout/Header.jsp" %>
@@ -129,113 +164,226 @@
 
 
             <div class="container ">
+
+
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger">${error}</div>
+                </c:if>
+
+                <c:if test="${not empty transResult}">
+                    <c:choose>
+                        <c:when test="${transResult}">
+                            <div class="alert alert-success">Thanh toán thành công! Cảm ơn bạn đã đặt lịch.</div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="alert alert-warning">Thanh toán thất bại hoặc bị hủy. Vui lòng thử lại.</div>
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
+
                 <h2 class="text-center my-4">Đặt lịch khám bệnh</h2>
-                <form id="bookingForm">
-                    <div class="container-fluid">
-
-                        <!-- User info -->
-                        <div class="row mb-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Họ tên:</label>
-                                <input type="text" class="form-control" value="${sessionScope.user.fullName}" readonly />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Email:</label>
-                                <input type="email" class="form-control" value="${sessionScope.user.email}" readonly />
-                            </div>
+                <div class="container mt-4">
+                    <div class="row" id="bookingRow">
+                        <div class="col-md-6 booking-image">
+                            <img src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474108ZQo/anh-nen-thu-cung-chat-luong-cao-4k-cho-dien-thoai_050616397.jpg" alt="Cute cat" />
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-md-6">
-                                <label class="form-label">SĐT:</label>
-                                <input type="text" class="form-control" value="${sessionScope.user.phoneNumber}"  />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Địa chỉ:</label>
-                                <input type="text" class="form-control" value="${sessionScope.user.address}" readonly />
-                            </div>
-                        </div>
+                        <div class="col-md-6 booking-form" id="bookingFormWrapper">
+                            <form id="bookingForm" method="post" action="payment">
+                                <div class="container-fluid">
 
-                        <!-- Pet selection -->
-                        <div class="mb-3">
-                            <label class="form-label">Chọn thú cưng:</label>
-                            <select name="petId" id="petSelect" class="form-select" required>
-                                <option value="">-- Chọn thú cưng --</option>
-                                <c:forEach var="pet" items="${pets}">
-                                    <option value="${pet.id}">${pet.name}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
+                                    <!-- User info -->
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Họ tên:</label>
+                                            <input type="text" class="form-control" value="${sessionScope.user.fullName}" readonly />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email:</label>
+                                            <input type="email" class="form-control" value="${sessionScope.user.email}" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">SĐT:</label>
+                                            <input type="text" class="form-control" id="inputPhone" value="${sessionScope.user.phoneNumber}"  name="phone"  />
+                                            <div id="phoneError" class="text-danger small mt-1"></div>
 
-                        <!-- Breed and Species -->
-                        <div id="breedInfo" style="display:none;">
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <label class="form-label">Loài:</label>
-                                    <input type="text" class="form-control" id="speciesName" readonly />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Địa chỉ:</label>
+                                            <input type="text" class="form-control" value="${sessionScope.user.address}" readonly />
+                                        </div>
+                                    </div>
+
+                                    <!-- Pet selection -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Chọn thú cưng:</label>
+                                        <select name="petId" id="petSelect" class="form-select" required>
+                                            <option value="">-- Chọn thú cưng --</option>
+                                            <c:forEach var="pet" items="${pets}">
+                                                <option value="${pet.id}">${pet.name}</option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+
+                                    <!-- Breed and Species -->
+                                    <div id="breedInfo" style="display:none;">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Loài:</label>
+                                                <input type="text" class="form-control" id="speciesName" readonly />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Giống:</label>
+                                                <input type="text" class="form-control" id="breedName" readonly />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Date selection -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Ngày khám:</label>
+                                        <input type="date" id="appointmentDate" name="appointmentDate" class="form-control"  value="${defaultDate}" required />
+                                        <div id="dateError" class="text-danger small mt-1"></div>
+
+                                    </div>
+
+
+                                    <!-- Doctor select (populated dynamically) -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Bác sĩ:</label>
+                                        <select name="doctorId" id="doctorSelect" class="form-select" required>
+                                            <option value="">-- Chọn bác sĩ --</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Slot select (buttons generated dynamically) -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Chọn ca khám:</label>
+                                        <div class="d-flex flex-wrap gap-2" id="slotContainer"></div>
+                                        <input type="hidden" name="slotStart" id="slotStart" required />
+                                        <input type="hidden" name="slotEnd" id="slotEnd" required />
+                                    </div>
+
+                                    <!-- Appointment notes -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Nội dung khám bệnh:</label>
+                                        <textarea name="appointmentNote" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="total-bill-box">
+                                            Phí đặt lịch khám:
+                                            <span id="billText">
+                                                <fmt:formatNumber value="${defaultPrice}" type="number" maxFractionDigits="0" /> VNĐ
+                                            </span>
+
+
+                                        </div>
+
+                                        <input type="hidden" name="totalBill" id="totalBill" value="${defaultPrice}" />
+                                    </div>
+
+
+                                    <!-- Payment -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Phương thức thanh toán:</label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" value="pay_later" checked />
+                                            <label class="form-check-label">Trả tiền sau</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" value="vnpay" />
+                                            <label class="form-check-label">VNPAY</label>
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+
+
+
+                                    <!-- Submit -->
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-confirm">Xác nhận đặt lịch</button>
+                                    </div>
+
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Giống:</label>
-                                    <input type="text" class="form-control" id="breedName" readonly />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Date selection -->
-                        <div class="mb-3">
-                            <label class="form-label">Ngày khám:</label>
-                            <input type="date" id="appointmentDate" name="appointmentDate" class="form-control" min="${todayStr}" required />
-                        </div>
-
-                        <!-- Doctor select (populated dynamically) -->
-                        <div class="mb-3">
-                            <label class="form-label">Bác sĩ:</label>
-                            <select name="doctorId" id="doctorSelect" class="form-select" required>
-                                <option value="">-- Chọn bác sĩ --</option>
-                            </select>
-                        </div>
-
-                        <!-- Slot select (buttons generated dynamically) -->
-                        <div class="mb-3">
-                            <label class="form-label">Chọn ca khám:</label>
-                            <div class="d-flex flex-wrap gap-2" id="slotContainer"></div>
-                            <input type="hidden" name="slotStart" id="slotStart" required />
-                            <input type="hidden" name="slotEnd" id="slotEnd" required />
-                        </div>
-
-                        <!-- Appointment notes -->
-                        <div class="mb-3">
-                            <label class="form-label">Nội dung khám bệnh:</label>
-                            <textarea name="appointmentNote" class="form-control" rows="3"></textarea>
-                        </div>
-
-                        <!-- Payment -->
-                        <div class="mb-3">
-                            <label class="form-label">Phương thức thanh toán:</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="paymentMethod" value="pay_later" checked />
-                                <label class="form-check-label">Trả tiền sau</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="paymentMethod" value="vnpay" />
-                                <label class="form-check-label">VNPAY</label>
-                            </div>
-                        </div>
-
-
-
-                        <!-- Fee alert -->
-                        <div class="alert alert-info">
-                            Phí khám: <strong>${fee != null ? fee : 100000}</strong> VND
-                        </div>
-
-                        <!-- Submit -->
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-success">Xác nhận đặt lịch</button>
+                            </form>
                         </div>
                     </div>
-                </form>
+                </div>
 
                 <script>
+
+
+                    document.getElementById("bookingForm").addEventListener("submit", function (event) {
+                        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+
+                        if (paymentMethod === "pay_later") {
+                            this.action = "booking";
+                        } else {
+                            this.action = "payment";
+                        }
+                    });
+
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const phoneInput = document.getElementById("inputPhone");
+                        const phoneError = document.getElementById("phoneError");
+
+                        const dateInput = document.getElementById("appointmentDate");
+                        const dateError = document.getElementById("dateError");
+
+                        const form = document.getElementById("bookingForm");
+
+                        function validatePhone() {
+                            const phone = phoneInput.value.trim();
+                            const regex = /^0\d{9}$/;
+                            if (!regex.test(phone)) {
+                                phoneError.textContent = "Số điện thoại phải bắt đầu bằng 0 và đủ 10 số.";
+                                return false;
+                            } else {
+                                phoneError.textContent = "";
+                                return true;
+                            }
+                        }
+
+                        function validateDate() {
+                            const selectedDate = new Date(dateInput.value);
+                            const today = new Date();
+
+                            selectedDate.setHours(0, 0, 0, 0);
+                            today.setHours(0, 0, 0, 0);
+
+                            if (selectedDate < today) {
+                                dateError.textContent = "Vui lòng chọn ngày khám ơ hiện tại hoặc tương lai!";
+                                return false;
+                            } else {
+                                dateError.textContent = "";
+                                return true;
+                            }
+                        }
+
+
+                        phoneInput.addEventListener("blur", validatePhone);
+                        dateInput.addEventListener("blur", validateDate);
+
+
+                        form.addEventListener("submit", function (e) {
+                            const isPhoneValid = validatePhone();
+                            const isDateValid = validateDate();
+
+                            if (!isPhoneValid || !isDateValid) {
+                                e.preventDefault();
+                            }
+                        });
+                    });
+
+
 
                     document.getElementById('petSelect').addEventListener('change', function () {
                         let petId = this.value;
@@ -348,6 +496,7 @@
 
 
                 </script>
+
 
 
 
