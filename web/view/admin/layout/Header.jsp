@@ -35,6 +35,7 @@
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
 
     </head>
+    
     <body>
         <div class="page-wrapper doctris-theme toggled">
             <nav id="sidebar" class="sidebar-wrapper">
@@ -50,7 +51,16 @@
                     <ul class="sidebar-menu pt-3">
                         <li><a href="index.html"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
 
-<li><a href="ListSpecies.jsp"><i class="uil uil-list-ul me-2 d-inline-block"></i>Quản lý giống loài</a></li>
+<li class="sidebar-dropdown">
+                            <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Quản lý giống loài</a>
+                            <div class="sidebar-submenu">
+                                <ul>
+                                    <li><a href="listspecie">Danh sách loài</a></li>
+                                    <li><a href="listbreed">Danh sách giống</a></li>
+                                    
+                                </ul>
+                            </div>
+                        </li>
 
 <li><a href="ListMedicines.jsp"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý thuốc</a></li>
 
