@@ -3,29 +3,54 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/ky%205/SWP202/SWP391/src/java/CommonController/HomePage.java</file>
-            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/CreateSpecie.java</file>
-            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/ListClinicInfo.java</file>
-            <file>file:/E:/ky%205/SWP202/SWP391/src/java/Model/Breed.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/RoleDAO.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/CreateBreed.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/ListMedicine.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/Admin.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/DoctorDAO.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/SpecieDAO.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/Model/Specie.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/UpdateBreed.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/UpdateSpecie.jsp</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/DeleteBreed.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/ListBreed.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/CreateAccount.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/SliderDAO.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/ListSpecie.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/BreedDAO.java</file>
-            <file>file:/E:/ky%205/SWP202/SWP391/src/java/CommonController/HomeAboutUs.java</file>
-            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/layout/Header.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/CreateMedicine.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/MedicineDAO.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/CreateSpecie.jsp</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/DeleteAccount.java</file>
-            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/CreateBreed.java</file>
-            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/DBContext.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/UpdateMedicine.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/CreateMedicine.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/UpdateSlider.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/Model/User.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/DeleteSpecie.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/ListClinicInfo.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/ClinicDAO.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/CommonController/HomePage.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/CreateSpecie.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/ListAccount.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/UpdateBreed.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/ListClinicInfo.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/Model/Breed.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/Admin.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/UpdateMedicine.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/AdminDao.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/CommonController/HomeAboutUs.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/layout/Header.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/DeleteMedicine.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/CreateBreed.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/ListSlider.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/DBContext.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/ListSlider.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/DAO/ClinicInfoDAO.java</file>
             <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/ListSpecie.jsp</file>
             <file>file:/E:/ky%205/SWP202/SWP391/src/java/AminController/UpdateSpecie.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/ListBreed.jsp</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/src/java/Model/Medicine.java</file>
+            <file>file:/E:/ky%205/SWP202/SWP391/web/view/admin/content/ListMedicine.jsp</file>
         </group>
     </open-files>
 </project-private>

@@ -49,7 +49,7 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="index.html"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
+                        <li><a href="listmedicine"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
 
 <li class="sidebar-dropdown">
                             <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Quản lý giống loài</a>
@@ -62,7 +62,7 @@
                             </div>
                         </li>
 
-<li><a href="ListMedicines.jsp"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý thuốc</a></li>
+<li><a href="listmedicine"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý thuốc</a></li>
 
 <li><a href="listaccount"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý tài khoản</a></li>
 

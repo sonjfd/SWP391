@@ -182,20 +182,25 @@ public class SliderDAO {
     }
 }
 
-    // Test addSlider
     public static void main(String[] args) {
-        SliderDAO dao = new SliderDAO();
-        Slider slide = new Slider();
-        slide.setId(UUID.randomUUID().toString()); // Tạo UUID
-        slide.setTitle("Test Slider");
-        slide.setDescription("This is a test slider");
-        slide.setImageUrl("/assets/images/slider/test.jpg");
-        slide.setLink("/test-page");
-        slide.setIsActive(1);
+        SliderDAO sliderDAO = new SliderDAO();
+        List<Slider> sliders = sliderDAO.getAllSlider();
 
-        System.out.println("Testing addSlider...");
-        boolean success = dao.addSlider(slide);
-        System.out.println("Result: " + (success ? "Slider added successfully!" : "Failed to add slider."));
+        if (sliders.isEmpty()) {
+            System.out.println("Không có slider nào được tìm thấy.");
+        } else {
+            for (Slider s : sliders) {
+                System.out.println("ID: " + s.getId());
+                System.out.println("Title: " + s.getTitle());
+                System.out.println("Description: " + s.getDescription());
+                System.out.println("Image URL: " + s.getImageUrl());
+                System.out.println("Link: " + s.getLink());
+                System.out.println("Is Active: " + s.getIsActive());
+                System.out.println("Created At: " + s.getCreatedAt());
+                System.out.println("Updated At: " + s.getUpdatedAt());
+                System.out.println("-----------------------------");
+            }
+        }
     }
     
             

@@ -347,33 +347,27 @@ public class AdminDao {
     
     
        public static void main(String[] args) {
-        AdminDao dao = new AdminDao();
+        AdminDao adminDao = new AdminDao(); // Đảm bảo class chứa hàm getAllAccounts()
+        List<User> users = adminDao.getAllAccounts();
 
-        try {
-            List<ClinicInfo> clinics = dao.getAllClinicInfo();
-
-            if (clinics.isEmpty()) {
-                System.out.println("No clinic info found.");
-            } else {
-                for (ClinicInfo clinic : clinics) {
-                    System.out.println("ID: " + clinic.getId());
-                    System.out.println("Name: " + clinic.getName());
-                    System.out.println("Address: " + clinic.getAddress());
-                    System.out.println("Phone: " + clinic.getPhone());
-                    System.out.println("Email: " + clinic.getEmail());
-                    System.out.println("Website: " + clinic.getWebsite());
-                    System.out.println("Working Hours: " + clinic.getWorkingHours());
-                    System.out.println("Description: " + clinic.getDescription());
-                    System.out.println("Logo: " + clinic.getLogo());
-                    System.out.println("Google Map: " + clinic.getGoogleMap());
-                    System.out.println("Created At: " + clinic.getCreatedAt());
-                    System.out.println("Updated At: " + clinic.getUpdatedAt());
-                    System.out.println("--------------------------------------------------");
-                }
+        if (users.isEmpty()) {
+            System.out.println("Không có tài khoản nào được tìm thấy.");
+        } else {
+            for (User u : users) {
+                System.out.println("ID: " + u.getId());
+                System.out.println("Username: " + u.getUserName());
+                System.out.println("Email: " + u.getEmail());
+                System.out.println("Full Name: " + u.getFullName());
+                System.out.println("Phone: " + u.getPhoneNumber());
+                System.out.println("Address: " + u.getAddress());
+                System.out.println("Avatar: " + u.getAvatar());
+                System.out.println("Status: " + u.getStatus());
+                System.out.println("Role ID: " + (u.getRole() != null ? u.getRole().getId() : "null"));
+                System.out.println("Role Name: " + (u.getRole() != null ? u.getRole().getName() : "null"));
+                System.out.println("Created At: " + u.getCreateDate());
+                System.out.println("Updated At: " + u.getUpdateDate());
+                System.out.println("----------------------------------------");
             }
-        } catch (Exception e) {
-            System.err.println("Error fetching clinic info: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     
