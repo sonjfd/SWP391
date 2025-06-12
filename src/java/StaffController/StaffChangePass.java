@@ -94,12 +94,7 @@ public class StaffChangePass extends HttpServlet {
             return;
         }
         UserDAO ud = new UserDAO();
-        try {
-           
-            ud.updatePassword(user.getId(), newPassword);
-        } catch (SQLException ex) {
-            Logger.getLogger(ChangePass.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        ud.updatePassword(user.getId(), newPassword);
         session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
         response.sendRedirect("staff-profile-setting");
     }

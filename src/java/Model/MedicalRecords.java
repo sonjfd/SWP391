@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -18,14 +19,13 @@ public class MedicalRecords {
     private String diagnosis;
     private String treatment;
     private Date reExamDate;
-    private String attachments;
-    private Date createDate;
-    private Date updateDate;
+    private Date createdAt;
+    private Date updatedAt;
 
     public MedicalRecords() {
     }
 
-    public MedicalRecords(String id, Pet pet, Doctor doctor, Appointment appointment, String diagnosis, String treatment, Date reExamDate, String attachments, Date createDate, Date updateDate) {
+    public MedicalRecords(String id, Pet pet, Doctor doctor, Appointment appointment, String diagnosis, String treatment, Date reExamDate, Date createdAt, Date updatedAt) {
         this.id = id;
         this.pet = pet;
         this.doctor = doctor;
@@ -33,10 +33,11 @@ public class MedicalRecords {
         this.diagnosis = diagnosis;
         this.treatment = treatment;
         this.reExamDate = reExamDate;
-        this.attachments = attachments;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
+
+    
 
     public String getId() {
         return id;
@@ -45,9 +46,6 @@ public class MedicalRecords {
     public void setId(String id) {
         this.id = id;
     }
-
-    
-    
 
     public Pet getPet() {
         return pet;
@@ -97,34 +95,36 @@ public class MedicalRecords {
         this.reExamDate = reExamDate;
     }
 
-    public String getAttachments() {
-        return attachments;
+   
+
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setAttachments(String attachments) {
-        this.attachments = attachments;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
     public String toString() {
-        return "MedicalRecords{" + "id=" + id + ", pet=" + pet + ", doctor=" + doctor + ", appointment=" + appointment + ", diagnosis=" + diagnosis + ", treatment=" + treatment + ", reExamDate=" + reExamDate + ", attachments=" + attachments + ", createDate=" + createDate + ", updateDate=" + updateDate + '}';
+        return "MedicalRecord{" + "id=" + id + ", pet=" + pet + ", doctor=" + doctor + ", appointment=" + appointment + ", diagnosis=" + diagnosis + ", treatment=" + treatment + ", reExamDate=" + reExamDate + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
     }
+
+    
+    
+
+    
+    
+
+    
     
     
     

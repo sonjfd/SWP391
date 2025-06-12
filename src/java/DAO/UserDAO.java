@@ -11,6 +11,7 @@ import Model.Role;
 import Model.Specie;
 import Model.User;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +27,7 @@ import java.util.UUID;
  */
 public class UserDAO {
 
-    public void updatePassword(String userId, String newPassword) throws SQLException {
+    public boolean updatePassword(String userId, String newPassword)  {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -522,7 +523,7 @@ public class UserDAO {
         return list;
     }
 
-    public boolean addPet(String pet_code, String ownerid, String name, Date birthdate, int breedid, String gender, String avatar, String desc, String status) {
+    public boolean addPet(String pet_code, String ownerid, String name,  int breedid, String gender, String avatar, String desc, String status) {
         Connection con = null;
         PreparedStatement ps = null;
         int rowsAffected = 0;
@@ -530,7 +531,7 @@ public class UserDAO {
             con = DBContext.getConnection();
 
             String sql = "INSERT INTO Pets (id, pet_code, owner_id, name, breeds_id, gender, avatar, description, status, created_at, updated_at) "
-                    + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?  ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                    + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?  ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
             ps = con.prepareStatement(sql);
             ps.setString(1, pet_code);
@@ -579,29 +580,7 @@ public class UserDAO {
         return false;
     }
 
-    public User getUserByEmail(String email) {
-        String sql = "SELECT * FROM Users WHERE email = ?";
-        try {
-            Connection conn = DAO.DBContext.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                User user = new User();
-                user.setId(rs.getString("id"));
-                user.setEmail(rs.getString("email"));
-                user.setFullName(rs.getString("full_name"));
-                user.setAvatar(rs.getString("avatar"));
-                user.setStatus(rs.getInt("status"));
-                int roleId = rs.getInt("role_id");
-                user.setRole(new RoleDAO().getRoleById(roleId));
-                return user;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    
 
     public User getUserById(int userId) {
         String sql = "Select * from [Users] where id = ?";
@@ -850,6 +829,8 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
+    
+    
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
