@@ -46,10 +46,8 @@
             <h5 class="mb-3">Cập nhật thuốc</h5>
             <div class="row">
                 <div class="col-lg-6">
-                    <c:if test="${not empty message}">
-                        <div class="${message.contains('Error') ? 'error-text show' : 'success-message'}">${message}</div>
-                    </c:if>
-                    <form id="updateMedicineForm" method="post" action="${pageContext.request.contextPath}/updatemedicine">
+                    
+                    <form id="updateMedicineForm" method="post" action="updatemedicine">
                         <input type="hidden" name="id" value="${medicine.id}">
                         <div class="form-group">
                             <label for="name">Tên thuốc <span style="color: red;">*</span></label>
@@ -75,7 +73,7 @@
                             <div id="statusError" class="error-text"></div>
                         </div>
                         <button type="submit">Cập nhật thuốc</button>
-                        <a href="${pageContext.request.contextPath}/listmedicine" class="btn-back">Quay lại</a>
+                        <a href="listmedicine" class="btn-back">Quay lại</a>
                     </form>
                 </div>
             </div>
