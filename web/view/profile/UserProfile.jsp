@@ -129,8 +129,8 @@ z<%--
 
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
-                                <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
                                 <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
                                 <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
                                 <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
@@ -176,6 +176,7 @@ z<%--
                                             <label class="form-label">Email</label>
                                             <input name="email" type="email" class="form-control" id="email" value="${user.email}" placeholder="Email" >
                                             <div class="error-message"></div>
+                                            <p type="text" style="color: red">${requestScope.wrongemail}</p>
 
                                         </div>
                                         <div class="col-md-6 mb-3">
@@ -210,46 +211,44 @@ z<%--
                                 <form action="changepass" method="post" onsubmit="return validateChangePass()">
                                     <!-- Old Password -->
                                     <div class="mb-3 position-relative">
-                                        <label class="form-label">Old Password</label>
+                                        <label class="form-label">Mật khẩu cũ</label>
                                         <div class="position-relative">
-                                            <input type="password" id="oldPassword" name="oldPassword" class="form-control pe-5" onkeyup="checkOldPassword()" required>
+                                            <input type="password" id="oldPassword" name="oldPassword" class="form-control pe-5" required>
                                             <i class="bi bi-eye-slash position-absolute top-50 translate-middle-y" style="right: 15px; cursor: pointer;" id="toggleOldPass" onclick="togglePassword('oldPassword', 'toggleOldPass')"></i>
                                         </div>
-                                        <small id="oldPassFeedback" class="form-text text-success d-none">✔️ Correct password</small>
+                                        <p type="text" name="id" style="color: red"  >${requestScope.errorOldPass}</p>
+                                        <small id="oldPasswordError" class="text-danger"></small>
                                     </div>
-                                    <p type="text" name="id" style="color: red"  >${requestScope.errorOldPass}</p>
-
 
                                     <!-- New Password -->
                                     <div class="mb-3 position-relative">
-                                        <label class="form-label">New Password</label>
+                                        <label class="form-label">Mật khẩu mới</label>
                                         <div class="position-relative">
                                             <input type="password" id="newPassword" name="newPassword" class="form-control pe-5" onkeyup="checkPasswordStrength()" required>
                                             <i class="bi bi-eye-slash position-absolute top-50 translate-middle-y" style="right: 15px; cursor: pointer;" id="toggleNewPass" onclick="togglePassword('newPassword', 'toggleNewPass')"></i>
-                                            
                                         </div>
-                                        <small id="samePasswordError"></small>
-
                                         <div id="passwordRules" class="mt-2">
-                                            <small id="lengthRule" class="text-danger">• Minimum 8 characters</small><br>
-                                            <small id="uppercaseRule" class="text-danger">• At least one uppercase character</small><br>
-                                            <small id="lowercaseRule" class="text-danger">• At least one lowercase character</small><br>
-                                            <small id="numberRule" class="text-danger">• At least one number</small><br>
-                                            <small id="specialRule" class="text-danger">• At least one special character</small>
+                                            <small id="lengthRule" class="text-danger">• Ít nhất 8 kí tự, nhiều nhất 20 kí tự</small><br>
+                                            <small id="uppercaseRule" class="text-danger">• Ít nhất 1 kí tự in hoa</small><br>
+                                            <small id="lowercaseRule" class="text-danger">• Ít nhất 1 kí tự in thường</small><br>
+                                            <small id="numberRule" class="text-danger">• Ít nhất 1 số</small><br>
+                                            <small id="specialRule" class="text-danger">• Ít nhất 1 kí tự đặc biệt</small>
                                         </div>
+                                        <small id="newPasswordError" class="text-danger"></small>
                                     </div>
 
                                     <!-- Confirm New Password -->
                                     <div class="mb-3 position-relative">
-                                        <label class="form-label">Confirm New Password</label>
+                                        <label class="form-label">Nhập lại mật khẩu mới</label>
                                         <div class="position-relative">
                                             <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
                                             <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" id="toggleConfirmPass" style="cursor: pointer;" onclick="togglePassword('confirmPassword', 'toggleConfirmPass')"></i>
                                         </div>
-                                        <small id="confirmFeedback" class="form-text text-danger d-none">Passwords do not match.</small>
+                                        <small id="confirmPasswordError" class="text-danger"></small>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary w-100">Change Password</button>
+
+                                    <button type="submit" class="btn btn-primary w-100">Đổi mật khẩu</button>
                                 </form>
                             </div>
 
@@ -282,14 +281,12 @@ z<%--
             function checkPasswordStrength() {
                 let password = document.getElementById("newPassword").value;
 
-                // Regex điều kiện
-                let lengthCheck = password.length >= 8;
+                let lengthCheck = password.length >= 8 && password.length <= 20;
                 let uppercaseCheck = /[A-Z]/.test(password);
                 let lowercaseCheck = /[a-z]/.test(password);
                 let numberCheck = /[0-9]/.test(password);
                 let specialCheck = /[\W_]/.test(password);
 
-                // Cập nhật từng rule
                 document.getElementById("lengthRule").className = lengthCheck ? "text-success" : "text-danger";
                 document.getElementById("uppercaseRule").className = uppercaseCheck ? "text-success" : "text-danger";
                 document.getElementById("lowercaseRule").className = lowercaseCheck ? "text-success" : "text-danger";
@@ -298,44 +295,69 @@ z<%--
             }
 
             function validateChangePass() {
-                let oldPassword = document.getElementById("oldPassword").value;
-                let newPassword = document.getElementById("newPassword").value;
-                let confirmPassword = document.getElementById("confirmPassword").value;
-                let confirmFeedback = document.getElementById("confirmFeedback");
-                let samePasswordError = document.getElementById("samePasswordError");
+                let oldPassword = document.getElementById("oldPassword").value.trim();
+                let newPassword = document.getElementById("newPassword").value.trim();
+                let confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-                // Xóa lỗi cũ (nếu có)
-                samePasswordError.textContent = "";
-                samePasswordError.className = "form-text text-danger";
+                // Các phần hiển thị lỗi riêng
+                let oldPasswordError = document.getElementById("oldPasswordError");
+                let newPasswordError = document.getElementById("newPasswordError");
+                let confirmPasswordError = document.getElementById("confirmPasswordError");
 
-                // 1. Kiểm tra mật khẩu mới trùng mật khẩu cũ
-                if (oldPassword === newPassword) {
-                    samePasswordError.textContent = " Mật khẩu mới không được trùng với mật khẩu cũ.";
-                    return false;
+                // Reset lỗi cũ
+                oldPasswordError.innerHTML = "";
+                newPasswordError.innerHTML = "";
+                confirmPasswordError.innerHTML = "";
+
+                let isValid = true;
+
+                // Old Password: kiểm tra độ dài
+                if (oldPassword.length < 8 || oldPassword.length > 20) {
+                    oldPasswordError.innerHTML = "Mật khẩu cũ phải từ 8 đến 20 ký tự.";
+                    isValid = false;
                 }
 
-                // 2. Kiểm tra xác nhận mật khẩu
-                if (newPassword !== confirmPassword) {
-                    confirmFeedback.classList.remove("d-none");
-                    return false;
-                } else {
-                    confirmFeedback.classList.add("d-none");
-                }
-
-                // 3. Kiểm tra độ mạnh của mật khẩu
-                let lengthCheck = newPassword.length >= 12;
+                // New Password: kiểm tra độ mạnh
+                let lengthCheck = newPassword.length >= 8 && newPassword.length <= 20;
                 let uppercaseCheck = /[A-Z]/.test(newPassword);
                 let lowercaseCheck = /[a-z]/.test(newPassword);
                 let numberCheck = /[0-9]/.test(newPassword);
                 let specialCheck = /[\W_]/.test(newPassword);
 
-                if (lengthCheck && uppercaseCheck && lowercaseCheck && numberCheck && specialCheck) {
-                    return true;
-                } else {
-                    samePasswordError.textContent = "❌ Mật khẩu chưa đủ mạnh theo yêu cầu.";
-                    return false;
+                if (!lengthCheck || !uppercaseCheck || !lowercaseCheck || !numberCheck || !specialCheck) {
+                    if (!lengthCheck)
+                        newPasswordError.innerHTML += "• Từ 8 đến 20 ký tự.<br>";
+                    if (!uppercaseCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 chữ hoa.<br>";
+                    if (!lowercaseCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 chữ thường.<br>";
+                    if (!numberCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 số.<br>";
+                    if (!specialCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 ký tự đặc biệt.<br>";
+                    isValid = false;
                 }
+
+                // New Password không trùng với Old Password
+                if (newPassword === oldPassword && newPassword.length > 0) {
+                    newPasswordError.innerHTML += "• Mật khẩu mới không được trùng mật khẩu cũ.<br>";
+                    isValid = false;
+                }
+
+                // Confirm Password: kiểm tra độ dài và trùng khớp
+                if (confirmPassword.length < 8 || confirmPassword.length > 20) {
+                    confirmPasswordError.innerHTML += "•Mật khẩu phải từ 8 đến 20 ký tự.<br>";
+                    isValid = false;
+                }
+                if (newPassword !== confirmPassword) {
+                    confirmPasswordError.innerHTML += "• Mật khẩu xác nhận không khớp.<br>";
+                    isValid = false;
+                }
+
+                return isValid;
             }
+
+
 
 
             function togglePassword(inputId, iconId) {
@@ -471,10 +493,6 @@ z<%--
             });
 
 
-        </script>
-
-
-        <script>
             document.getElementById("avatar").addEventListener("change", function () {
                 var fileInput = this;
                 var fileNameDisplay = document.getElementById("fileName");
@@ -508,6 +526,7 @@ z<%--
         </script>
 
 
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- Icons -->
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>

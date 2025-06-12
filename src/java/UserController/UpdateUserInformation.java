@@ -14,9 +14,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -66,8 +72,8 @@ public class UpdateUserInformation extends HttpServlet {
         String address = request.getParameter("address");
         String email = request.getParameter("email");
         String number = request.getParameter("phone");
-       
-        Part part = request.getPart("avatar");      
+
+        Part part = request.getPart("avatar");
         String realPath = request.getServletContext().getRealPath("/assets/images");
         File uploads = new File(realPath);
         if (!uploads.exists()) {
@@ -77,23 +83,37 @@ public class UpdateUserInformation extends HttpServlet {
         String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
         String filePath = "/assets/images/" + filename;
 
-        // Nếu không có ảnh mới, giữ ảnh cũ
         if (filename.isEmpty()) {
 
             try {
                 UserDAO userDao = new UserDAO();
                 User user = userDao.getUserById(id);
-                filePath = user.getAvatar(); // Giữ lại ảnh cũ
+                filePath = user.getAvatar();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         } else {
-            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
-            File file = new File(uploads, filename);
+            String originalFilename = Path.of(part.getSubmittedFileName()).getFileName().toString();
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String randomFilename = System.currentTimeMillis() + "_" + (int) (Math.random() * 10000) + fileExtension;
+
+            filePath = "/assets/images/" + randomFilename;
+            File file = new File(uploads, randomFilename);
             part.write(file.getAbsolutePath());
         }
+
         UserDAO ud = new UserDAO();
+        User u = ud.getUserByEmail(email);
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (u != null && !u.getId().equals(user.getId())) {
+            request.setAttribute("wrongemail", "Cập nhật thông tin không thành công do email đã được sử dụng");
+            User currentUser = ud.getUserById(id);
+            request.setAttribute("user", currentUser);
+            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+            return;
+        }
         if (ud.updateUser(id, name, address, email, number, filePath)) {
             User updatedUser = ud.getUserById(id);
             request.getSession().setAttribute("user", updatedUser);
@@ -103,8 +123,6 @@ public class UpdateUserInformation extends HttpServlet {
             request.getSession().setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
         }
         response.sendRedirect("viewuserinformation");
-
-        
 
     }
 

@@ -2,9 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+
 package UserController;
 
+import DAO.AppointmentDAO;
 import DAO.UserDAO;
+import Model.Appointment;
+import Model.Pet;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,47 +18,42 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ChangePass", urlPatterns = {"/changepass"})
-public class ChangePass extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+@WebServlet(name="FilterAppointment", urlPatterns={"/filterappointment"})
+public class FilterAppointment extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangePass</title>");
+            out.println("<title>Servlet FilterAppointment</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangePass at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet FilterAppointment at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -62,13 +61,12 @@ public class ChangePass extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-    }
+    throws ServletException, IOException {
+        processRequest(request, response);
+    } 
 
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -76,46 +74,34 @@ public class ChangePass extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String oldPassword = request.getParameter("oldPassword").trim();
-        String newPassword = request.getParameter("newPassword");
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
-            return;
-        }
+    throws ServletException, IOException {
+       String status = (String) request.getParameter("status");
+         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        UserDAO ud = new UserDAO();
-        String hashedOldPassword = ud.hashPassword(oldPassword);
+        String id = user.getId(); // Lấy từ session
+        List<Appointment> appList = null;
+        AppointmentDAO ad = new AppointmentDAO();
 
-        if (!user.getPassword().equals(hashedOldPassword)) {
-            request.setAttribute("user", user);
-            request.setAttribute("errorOldPass", "Mật khẩu cũ không đúng.");
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-            return;
-        }
+        if (status.isEmpty() || status.isBlank()) {
+            appList = ad.getAppointmentByCustomer(id);
+            request.setAttribute("appointments", appList);
 
-        String hashedNewPassword = ud.hashPassword(newPassword);
-
-        if (ud.updatePassword(user.getId(), hashedNewPassword)) {
-            session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
-
-            user.setPassword(hashedNewPassword);
-            session.setAttribute("user", user);
-            response.sendRedirect("viewuserinformation");
         } else {
-            request.setAttribute("user", user);
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+
+            appList = ad.getAppointmentByStatus(id, status);
+            request.setAttribute("appointments", appList);
+        }
+        if (appList.isEmpty()) {
+            request.setAttribute("Message", "Không lọc thấy lịch hẹn tương ứng!");
         }
 
+        request.setAttribute("appointments", appList);
+      
+        request.getRequestDispatcher("view/profile/Appointment.jsp").forward(request, response);
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

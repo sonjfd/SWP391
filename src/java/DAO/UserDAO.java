@@ -9,6 +9,7 @@ import Model.Pet;
 import Model.Role;
 import Model.Specie;
 import Model.User;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,15 +26,12 @@ public class UserDAO {
 
     private static final String SELECT_ALL_USERS = "SELECT * FROM users;";
 
-    public List<User> getAllUsers() throws SQLException, ClassNotFoundException {
-        List<User> userList = new ArrayList<>();
-        Connection conn = DBContext.getConnection();
-        if (conn == null) {
-            return userList;
-        }
-        String query = SELECT_ALL_USERS;
-        try (PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
-
+    public List<User> getAllCustomer() {
+        String sql = "select * from users\n"
+                + "where role_id=1";
+        List<User> list = new ArrayList<>();
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql);) {
+            ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 Role role = new Role();
                 role.setId(rs.getInt("role_id"));
@@ -50,33 +48,43 @@ public class UserDAO {
                         rs.getInt("status"),
                         role,
                         rs.getDate("created_at"),
-                        rs.getDate("updated_at")
-                );
-                userList.add(user);
+                        rs.getDate("updated_at"));
+                list.add(user);
             }
-        } finally {
-            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return userList;
+        return list;
     }
 
-    public void updatePassword(String userId, String newPassword) throws SQLException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DBContext.getConnection();
-            String sql = "UPDATE Users SET password = ? WHERE id = ?";
-            stmt = conn.prepareStatement(sql);
+    public boolean updatePassword(String userId, String newPassword) {
+        String sql = "UPDATE Users SET password = ? WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, newPassword);
             stmt.setString(2, userId);
-            stmt.executeUpdate();
-        } finally {
-            if (stmt != null) {
-                stmt.close();
+            int check = stmt.executeUpdate();
+            if (check > 0) {
+                return true;
             }
-            if (conn != null) {
-                conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) {
+                sb.append(String.format("%02x", b));
             }
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi mã hóa mật khẩu", e);
         }
     }
 
@@ -155,6 +163,29 @@ public class UserDAO {
             e.printStackTrace(); // In ra lỗi nếu có
         }
         return false; // Nếu không thành công, trả về false
+    }
+    public User getUserByEmail(String email) {
+        String sql = "SELECT * FROM Users WHERE email = ?";
+        try {
+            Connection conn = DAO.DBContext.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("id"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("full_name"));
+                user.setAvatar(rs.getString("avatar"));
+                user.setStatus(rs.getInt("status"));
+                int roleId = rs.getInt("role_id");
+                user.setRole(new RoleDAO().getRoleById(roleId));
+                return user;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<Pet> getPetsByUser(String userId) {
@@ -469,7 +500,7 @@ public class UserDAO {
         return list;
     }
 
-    public boolean addPet(String pet_code,String ownerid, String name, Date birthdate, int breedid, String gender, String avatar, String desc, String status) {
+    public boolean addPet(String pet_code, String ownerid, String name, Date birthdate, int breedid, String gender, String avatar, String desc, String status) {
         Connection con = null;
         PreparedStatement ps = null;
         int rowsAffected = 0;
@@ -530,7 +561,7 @@ public class UserDAO {
         List<Pet> petList = new ArrayList<>();
         String sql = "SELECT * FROM Pets WHERE status = ? and owner_id =?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1,  status);
+            ps.setString(1, status);
             ps.setString(2, userId);
             ResultSet rs = ps.executeQuery();
 
@@ -636,7 +667,8 @@ public class UserDAO {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         UserDAO d = new UserDAO();
-
+String pass = d.hashPassword("BoiMuiMit.03");
+        System.out.println(pass);
         User u = d.getUserNameDuplicate("DAI dz");
         System.out.println(u);
     }

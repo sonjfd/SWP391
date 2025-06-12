@@ -4,8 +4,8 @@
  */
 package UserController;
 
-import DAO.UserDAO;
-import Model.User;
+import DAO.MedicalRecordsDAO;
+import Model.MedicalRecords;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,17 +13,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ChangePass", urlPatterns = {"/changepass"})
-public class ChangePass extends HttpServlet {
+@WebServlet(name = "SearchRecordByPet", urlPatterns = {"/searchrecordbypet"})
+public class SearchRecordByPet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +40,10 @@ public class ChangePass extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangePass</title>");
+            out.println("<title>Servlet SearchRecordByPet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangePass at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SearchRecordByPet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,7 +61,7 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -77,40 +75,26 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String oldPassword = request.getParameter("oldPassword").trim();
-        String newPassword = request.getParameter("newPassword");
+        String text = (String) request.getParameter("search").trim();
+        String id = request.getParameter("id");
+        List<MedicalRecords> ml = null;
+        MedicalRecordsDAO md = new MedicalRecordsDAO();
+        if (text.isEmpty() || text.isBlank()) {
+            ml = md.getMedicalRecordsByCustomerId(id);
+            request.setAttribute("ListPetsMedical", ml);
 
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
-            return;
-        }
-        User user = (User) session.getAttribute("user");
-        UserDAO ud = new UserDAO();
-        String hashedOldPassword = ud.hashPassword(oldPassword);
-
-        if (!user.getPassword().equals(hashedOldPassword)) {
-            request.setAttribute("user", user);
-            request.setAttribute("errorOldPass", "Mật khẩu cũ không đúng.");
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-            return;
-        }
-
-        String hashedNewPassword = ud.hashPassword(newPassword);
-
-        if (ud.updatePassword(user.getId(), hashedNewPassword)) {
-            session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
-
-            user.setPassword(hashedNewPassword);
-            session.setAttribute("user", user);
-            response.sendRedirect("viewuserinformation");
         } else {
-            request.setAttribute("user", user);
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+
+            ml = md.getMedicalRecordsByCustomerIdAndPetName(id, text);
+            request.setAttribute("ListPetsMedical", ml);
+        }
+        if (ml.isEmpty()) {
+            request.setAttribute("Message", "Không tìm thấy lịch sử khám bệnh tương ứng!");
         }
 
+        request.setAttribute("ListPetsMedical", ml);
+        request.setAttribute("text", text);
+        request.getRequestDispatcher("view/profile/ListMedicalHistory.jsp").forward(request, response);
     }
 
     /**

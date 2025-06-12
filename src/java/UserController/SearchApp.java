@@ -4,7 +4,8 @@
  */
 package UserController;
 
-import DAO.UserDAO;
+import DAO.AppointmentDAO;
+import Model.Appointment;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,16 +15,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ChangePass", urlPatterns = {"/changepass"})
-public class ChangePass extends HttpServlet {
+@WebServlet(name = "SearchApp", urlPatterns = {"/searchapp"})
+public class SearchApp extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +41,10 @@ public class ChangePass extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangePass</title>");
+            out.println("<title>Servlet SearchApp</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangePass at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SearchApp at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,7 +62,7 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+        request.getRequestDispatcher("view/profile/Appointment.jsp").forward(request, response);
     }
 
     /**
@@ -77,40 +76,30 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String oldPassword = request.getParameter("oldPassword").trim();
-        String newPassword = request.getParameter("newPassword");
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
-            return;
-        }
+        String text = (String) request.getParameter("search").trim();
+        HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        UserDAO ud = new UserDAO();
-        String hashedOldPassword = ud.hashPassword(oldPassword);
+        String id = user.getId(); // Lấy từ session
 
-        if (!user.getPassword().equals(hashedOldPassword)) {
-            request.setAttribute("user", user);
-            request.setAttribute("errorOldPass", "Mật khẩu cũ không đúng.");
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-            return;
-        }
+        List<Appointment> appList = null;
+        AppointmentDAO ad = new AppointmentDAO();
 
-        String hashedNewPassword = ud.hashPassword(newPassword);
+        if (text.isEmpty() || text.isBlank()) {
+            appList = ad.getAppointmentByCustomer(id);
+            request.setAttribute("appointments", appList);
 
-        if (ud.updatePassword(user.getId(), hashedNewPassword)) {
-            session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
-
-            user.setPassword(hashedNewPassword);
-            session.setAttribute("user", user);
-            response.sendRedirect("viewuserinformation");
         } else {
-            request.setAttribute("user", user);
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+
+            appList = ad.getAppointmentByPetName(id, text);
+            request.setAttribute("appointments", appList);
+        }
+        if (appList.isEmpty()) {
+            request.setAttribute("Message", "Không tìm thấy lịch hẹn tương ứng!");
         }
 
+        request.setAttribute("appointments", appList);
+        request.setAttribute("text", text);
+        request.getRequestDispatcher("view/profile/Appointment.jsp").forward(request, response);
     }
 
     /**
