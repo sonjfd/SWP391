@@ -170,7 +170,7 @@
         <div class="container">
         
         <c:if test="${not empty message}">
-            <p class="message ${messageType}">${message}</p>
+            ${message}
         </c:if>
         
 
