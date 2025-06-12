@@ -4,7 +4,8 @@
  */
 package UserController;
 
-import DAO.UserDAO;
+import DAO.MedicalRecordsDAO;
+import Model.MedicalRecords;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,16 +15,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ChangePass", urlPatterns = {"/changepass"})
-public class ChangePass extends HttpServlet {
+@WebServlet(name = "ViewMedicalHistory", urlPatterns = {"/viewmedicalhistory"})
+public class ViewMedicalHistory extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +42,10 @@ public class ChangePass extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangePass</title>");
+            out.println("<title>Servlet ViewMedicalHistory</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangePass at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ViewMedicalHistory at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,7 +63,19 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("user") == null) {
+
+            response.sendRedirect("login");
+            return;
+        }
+        User user = (User) session.getAttribute("user");
+        MedicalRecordsDAO md = new MedicalRecordsDAO();
+        List<MedicalRecords> list = new ArrayList<>();
+        list = md.getMedicalRecordsByCustomerId(user.getId());
+        request.setAttribute("ListPetsMedical", list);
+        request.getRequestDispatcher("view/profile/ListMedicalHistory.jsp").forward(request, response);
     }
 
     /**
@@ -77,40 +89,7 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String oldPassword = request.getParameter("oldPassword").trim();
-        String newPassword = request.getParameter("newPassword");
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
-            return;
-        }
-        User user = (User) session.getAttribute("user");
-        UserDAO ud = new UserDAO();
-        String hashedOldPassword = ud.hashPassword(oldPassword);
-
-        if (!user.getPassword().equals(hashedOldPassword)) {
-            request.setAttribute("user", user);
-            request.setAttribute("errorOldPass", "Mật khẩu cũ không đúng.");
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-            return;
-        }
-
-        String hashedNewPassword = ud.hashPassword(newPassword);
-
-        if (ud.updatePassword(user.getId(), hashedNewPassword)) {
-            session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
-
-            user.setPassword(hashedNewPassword);
-            session.setAttribute("user", user);
-            response.sendRedirect("viewuserinformation");
-        } else {
-            request.setAttribute("user", user);
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-        }
-
+        processRequest(request, response);
     }
 
     /**

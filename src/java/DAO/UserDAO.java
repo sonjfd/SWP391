@@ -10,7 +10,7 @@ import Model.Pet;
 import Model.Role;
 import Model.Specie;
 import Model.User;
-import java.security.SecureRandom;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,14 +35,28 @@ public class UserDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, newPassword);
             stmt.setString(2, userId);
-            stmt.executeUpdate();
-        } finally {
-            if (stmt != null) {
-                stmt.close();
+            int check = stmt.executeUpdate();
+            if (check > 0) {
+                return true;
             }
-            if (conn != null) {
-                conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) {
+                sb.append(String.format("%02x", b));
             }
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi mã hóa mật khẩu", e);
         }
     }
 
@@ -121,6 +135,29 @@ public class UserDAO {
             e.printStackTrace(); // In ra lỗi nếu có
         }
         return false; // Nếu không thành công, trả về false
+    }
+    public User getUserByEmail(String email) {
+        String sql = "SELECT * FROM Users WHERE email = ?";
+        try {
+            Connection conn = DAO.DBContext.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("id"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("full_name"));
+                user.setAvatar(rs.getString("avatar"));
+                user.setStatus(rs.getInt("status"));
+                int roleId = rs.getInt("role_id");
+                user.setRole(new RoleDAO().getRoleById(roleId));
+                return user;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void updateUserProfileFirtTime(User user) {
@@ -485,7 +522,7 @@ public class UserDAO {
         return list;
     }
 
-    public boolean addPet(String pet_code, String ownerid, String name, int breedid, String gender, String avatar, String desc, String status) {
+    public boolean addPet(String pet_code, String ownerid, String name, Date birthdate, int breedid, String gender, String avatar, String desc, String status) {
         Connection con = null;
         PreparedStatement ps = null;
         int rowsAffected = 0;

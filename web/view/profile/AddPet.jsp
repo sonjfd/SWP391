@@ -145,8 +145,8 @@
 
                                 </div>
                                 <ul class="list-unstyled sidebar-nav mb-0">
-                                    <li class="navbar-item"><a href="doctor-appointment.html" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
-                                    <li class="navbar-item"><a href="doctor-schedule.html" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                    <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> </a></li>
+                                    <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
                                     <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
                                     <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
                                     <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
@@ -237,245 +237,245 @@
 
                 <script>
 
-                                        $(document).ready(function () {
-                                            $("#specie").change(function () {
-                                                var specieId = $(this).val();
-                                                if (specieId) {
-                                                    $.ajax({
-                                                        url: "getbreedsbyspecie?specieId=" + specieId,
-                                                        method: "GET",
-                                                        dataType: "json",
-                                                        success: function (data) {
-                                                            var breedSelect = $("#breed");
-                                                            breedSelect.empty();
-                                                            breedSelect.append('<option value="">-- Chọn giống --</option>');
-                                                            $.each(data, function (index, breed) {
-                                                                breedSelect.append('<option value="' + breed.id + '">' + breed.name + '</option>');
-                                                            });
-                                                        },
-                                                        error: function (xhr, status, error) {
-                                                            console.error("Lỗi khi load breed list:", error);
-                                                        }
-                                                    });
-                                                } else {
-                                                    $("#breed").empty().append('<option value="">-- Chọn giống --</option>');
-                                                }
-                                            });
+                    $(document).ready(function () {
+                        $("#specie").change(function () {
+                            var specieId = $(this).val();
+                            if (specieId) {
+                                $.ajax({
+                                    url: "getbreedsbyspecie?specieId=" + specieId,
+                                    method: "GET",
+                                    dataType: "json",
+                                    success: function (data) {
+                                        var breedSelect = $("#breed");
+                                        breedSelect.empty();
+                                        breedSelect.append('<option value="">-- Chọn giống --</option>');
+                                        $.each(data, function (index, breed) {
+                                            breedSelect.append('<option value="' + breed.id + '">' + breed.name + '</option>');
                                         });
-                                        document.getElementById("birthDate").addEventListener("change", function () {
-                                            const birthDateInput = document.getElementById("birthDate");
-                                            const birthDateError = document.getElementById("birthDateError");
-                                            const birthDateValue = new Date(birthDateInput.value);
-                                            const today = new Date();
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Lỗi khi load breed list:", error);
+                                    }
+                                });
+                            } else {
+                                $("#breed").empty().append('<option value="">-- Chọn giống --</option>');
+                            }
+                        });
+                    });
+                    document.getElementById("birthDate").addEventListener("change", function () {
+                        const birthDateInput = document.getElementById("birthDate");
+                        const birthDateError = document.getElementById("birthDateError");
+                        const birthDateValue = new Date(birthDateInput.value);
+                        const today = new Date();
 
-                                            // Clear time phần giờ phút giây
-                                            birthDateValue.setHours(0, 0, 0, 0);
-                                            today.setHours(0, 0, 0, 0);
+                        // Clear time phần giờ phút giây
+                        birthDateValue.setHours(0, 0, 0, 0);
+                        today.setHours(0, 0, 0, 0);
 
-                                            if (birthDateInput.value && birthDateValue >= today) {
-                                                birthDateError.style.display = "block";
-                                            } else {
-                                                birthDateError.style.display = "none";
-                                            }
-                                        });
-                                       
+                        if (birthDateInput.value && birthDateValue >= today) {
+                            birthDateError.style.display = "block";
+                        } else {
+                            birthDateError.style.display = "none";
+                        }
+                    });
+
 // Đồng thời giữ lại check khi submit
-                                        document.getElementById("addPetForm").addEventListener("submit", function (event) {
-                                            const birthDateInput = document.getElementById("birthDate");
-                                            const birthDateError = document.getElementById("birthDateError");
-                                            const birthDateValue = new Date(birthDateInput.value);
-                                            const today = new Date();
+                    document.getElementById("addPetForm").addEventListener("submit", function (event) {
+                        const birthDateInput = document.getElementById("birthDate");
+                        const birthDateError = document.getElementById("birthDateError");
+                        const birthDateValue = new Date(birthDateInput.value);
+                        const today = new Date();
 
-                                            birthDateValue.setHours(0, 0, 0, 0);
-                                            today.setHours(0, 0, 0, 0);
+                        birthDateValue.setHours(0, 0, 0, 0);
+                        today.setHours(0, 0, 0, 0);
 
-                                            if (birthDateInput.value && birthDateValue >= today) {
-                                                event.preventDefault();
-                                                birthDateError.style.display = "block";
-                                            } else {
-                                                birthDateError.style.display = "none";
-                                            }
-                                        });
-
-
-                                        // Hàm kiểm tra email hợp lệ
-                                        function isValidEmail(email) {
-                                            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-                                        }
-
-                                        // Hàm kiểm tra username hợp lệ
-                                        function isValidUsername(username) {
-                                            return /^[a-zA-Z0-9_]{3,}$/.test(username);
-                                        }
-                                        // hàm kiểm tra Name hợp lệ                       
-                                        function isValidName(name) {
-                                            return /^[a-zA-Z0-9_]{2,}$/.test(name);
-                                        }
-
-                                        // Hàm kiểm tra số điện thoại hợp lệ
-                                        function isValidPhoneNumber(phone) {
-                                            return /^0\d{9}$/.test(phone); // bắt đầu bằng 0, đủ 10 số
-                                        }
-
-                                        // Hàm hiển thị lỗi
-                                        function showError(inputId, message) {
-                                            const errorElement = document.getElementById(inputId + 'Error');
-                                            if (errorElement) {
-                                                errorElement.textContent = message;
-                                                errorElement.style.display = message ? 'block' : 'none';
-                                            }
-                                        }
-
-                                        // Hàm kiểm tra username
-                                        function validateUsername() {
-                                            const usernameInput = document.getElementById('userName');
-                                            const username = usernameInput.value.trim();
-                                            if (!username) {
-                                                showError('userName', 'Tên đăng nhập không được để trống!');
-                                                return false;
-                                            } else if (!isValidUsername(username)) {
-                                                showError('userName', 'Tên đăng nhập phải có ít nhất 3 ký tự!');
-                                                return false;
-                                            }
-                                            showError('userName', '');
-                                            return true;
-                                        }
-
-                                        // Hàm kiểm tra email
-                                        function validateEmail() {
-                                            const emailInput = document.getElementById('email');
-                                            const email = emailInput.value.trim();
-                                            if (!email) {
-                                                showError('email', 'Email không được để trống!');
-                                                return false;
-                                            } else if (!isValidEmail(email)) {
-                                                showError('email', 'Email không hợp lệ!');
-                                                return false;
-                                            }
-                                            showError('email', '');
-                                            return true;
-                                        }
-
-                                        // Hàm kiểm tra  name
-                                        function validateName() {
-                                            const fullNameInput = document.getElementById('name');
-                                            const fullName = fullNameInput.value.trim();
-
-                                            if (!fullName) {
-                                                showError('fullName', 'Tên thú cưng không được để trống!');
-                                                return false;
-                                            } else if (!isValidFullname(fullName)) {
-                                                showError('fullName', 'Tên thú cưng phải có ít nhất 2 ký tự!');
-                                                return false;
-                                            }
-
-                                            showError('fullName', '');
-                                            return true;
-                                        }
+                        if (birthDateInput.value && birthDateValue >= today) {
+                            event.preventDefault();
+                            birthDateError.style.display = "block";
+                        } else {
+                            birthDateError.style.display = "none";
+                        }
+                    });
 
 
-                                        // Hàm kiểm tra phone number
-                                        function validatePhoneNumber() {
-                                            const phoneInput = document.getElementById('phoneNumber');
-                                            const phone = phoneInput.value.trim();
-                                            if (!phone) {
-                                                showError('phoneNumber', 'Số điện thoại không được để trống!');
-                                                return false;
-                                            } else if (!isValidPhoneNumber(phone)) {
-                                                showError('phoneNumber', 'Số điện thoại phải bắt đầu bằng 0 và có đúng 10 số!');
-                                                return false;
-                                            }
-                                            showError('phoneNumber', '');
-                                            return true;
-                                        }
+                    // Hàm kiểm tra email hợp lệ
+                    function isValidEmail(email) {
+                        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                    }
 
-                                        // Hàm kiểm tra toàn bộ biểu mẫu khi submit
-                                        function validateForm() {
-                                            const isUsernameValid = validateUsername();
-                                            const isEmailValid = validateEmail();
-                                            const isFullNameValid = validateFullName();
-                                            const isPhoneNumberValid = validatePhoneNumber();
-                                            return isUsernameValid && isEmailValid && isFullNameValid && isPhoneNumberValid;
-                                        }
+                    // Hàm kiểm tra username hợp lệ
+                    function isValidUsername(username) {
+                        return /^[a-zA-Z0-9_]{3,}$/.test(username);
+                    }
+                    // hàm kiểm tra Name hợp lệ                       
+                    function isValidName(name) {
+                        return /^[a-zA-Z0-9_]{2,}$/.test(name);
+                    }
 
-                                        // Gắn sự kiện blur khi trang tải
-                                        document.addEventListener('DOMContentLoaded', function () {
-                                            const inputs = [
-                                                {id: 'userName', validate: validateUsername},
-                                                {id: 'email', validate: validateEmail},
-                                                {id: 'fullName', validate: validateFullName},
-                                                {id: 'phoneNumber', validate: validatePhoneNumber}
-                                            ];
+                    // Hàm kiểm tra số điện thoại hợp lệ
+                    function isValidPhoneNumber(phone) {
+                        return /^0\d{9}$/.test(phone); // bắt đầu bằng 0, đủ 10 số
+                    }
 
-                                            inputs.forEach(({ id, validate }) => {
-                                                const input = document.getElementById(id);
-                                                if (input) {
-                                                    input.addEventListener('blur', () => {
-                                                        console.log(`Blur event triggered for ${id}`); // Debugging
-                                                        validate();
-                                                    });
-                                                } else {
-                                                    console.error(`Element with ID ${id} not found`);
-                                            }
-                                            });
+                    // Hàm hiển thị lỗi
+                    function showError(inputId, message) {
+                        const errorElement = document.getElementById(inputId + 'Error');
+                        if (errorElement) {
+                            errorElement.textContent = message;
+                            errorElement.style.display = message ? 'block' : 'none';
+                        }
+                    }
 
-                                            // Gắn sự kiện change cho role_id (nếu cần)
-                                            const roleSelect = document.getElementById('role_id');
-                                            if (roleSelect) {
-                                                roleSelect.addEventListener('change', toggleDoctorFields);
-                                            }
-                                        });
+                    // Hàm kiểm tra username
+                    function validateUsername() {
+                        const usernameInput = document.getElementById('userName');
+                        const username = usernameInput.value.trim();
+                        if (!username) {
+                            showError('userName', 'Tên đăng nhập không được để trống!');
+                            return false;
+                        } else if (!isValidUsername(username)) {
+                            showError('userName', 'Tên đăng nhập phải có ít nhất 3 ký tự!');
+                            return false;
+                        }
+                        showError('userName', '');
+                        return true;
+                    }
 
-                                        // Hàm toggleDoctorFields (giữ nguyên nếu vẫn cần)
-                                        function toggleDoctorFields() {
-                                            const roleId = document.getElementById('role_id').value;
-                                            const doctorFields = document.querySelector('.doctor-fields');
-                                            if (doctorFields) {
-                                                doctorFields.style.display = roleId === '3' ? 'block' : 'none';
-                                            }
-                                        }
+                    // Hàm kiểm tra email
+                    function validateEmail() {
+                        const emailInput = document.getElementById('email');
+                        const email = emailInput.value.trim();
+                        if (!email) {
+                            showError('email', 'Email không được để trống!');
+                            return false;
+                        } else if (!isValidEmail(email)) {
+                            showError('email', 'Email không hợp lệ!');
+                            return false;
+                        }
+                        showError('email', '');
+                        return true;
+                    }
 
-                                        document.getElementById("avatar").addEventListener("change", function () {
-                                            var fileInput = this;
-                                            var fileNameDisplay = document.getElementById("fileName");
-                                            var fileErrorDisplay = document.getElementById("fileError");
+                    // Hàm kiểm tra  name
+                    function validateName() {
+                        const fullNameInput = document.getElementById('name');
+                        const fullName = fullNameInput.value.trim();
 
-                                            // Clear old messages
-                                            fileNameDisplay.textContent = "";
-                                            fileErrorDisplay.textContent = "";
+                        if (!fullName) {
+                            showError('fullName', 'Tên thú cưng không được để trống!');
+                            return false;
+                        } else if (!isValidFullname(fullName)) {
+                            showError('fullName', 'Tên thú cưng phải có ít nhất 2 ký tự!');
+                            return false;
+                        }
 
-                                            if (fileInput.files.length > 0) {
-                                                var file = fileInput.files[0];
-                                                fileNameDisplay.textContent = "Đã chọn: " + file.name;
+                        showError('fullName', '');
+                        return true;
+                    }
 
-                                                if (file.size > 1048576) {
-                                                    fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
-                                                }
-                                            }
-                                        });
 
-                                        document.getElementById("updateUserForm").addEventListener("submit", function (e) {
-                                            var fileInput = document.getElementById("avatar");
-                                            var fileErrorDisplay = document.getElementById("fileError");
+                    // Hàm kiểm tra phone number
+                    function validatePhoneNumber() {
+                        const phoneInput = document.getElementById('phoneNumber');
+                        const phone = phoneInput.value.trim();
+                        if (!phone) {
+                            showError('phoneNumber', 'Số điện thoại không được để trống!');
+                            return false;
+                        } else if (!isValidPhoneNumber(phone)) {
+                            showError('phoneNumber', 'Số điện thoại phải bắt đầu bằng 0 và có đúng 10 số!');
+                            return false;
+                        }
+                        showError('phoneNumber', '');
+                        return true;
+                    }
 
-                                            // Nếu có file và bị lỗi kích thước thì chặn submit
-                                            if (fileInput.files.length > 0 && fileInput.files[0].size > 1048576) {
-                                                e.preventDefault();
-                                                fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
-                                            }
-                                        });
+                    // Hàm kiểm tra toàn bộ biểu mẫu khi submit
+                    function validateForm() {
+                        const isUsernameValid = validateUsername();
+                        const isEmailValid = validateEmail();
+                        const isFullNameValid = validateFullName();
+                        const isPhoneNumberValid = validatePhoneNumber();
+                        return isUsernameValid && isEmailValid && isFullNameValid && isPhoneNumberValid;
+                    }
 
-                                        // Tự động ẩn thông báo sau 5 giây
-                                        setTimeout(function () {
-                                            const successAlert = document.getElementById('successAlert');
-                                            const failAlert = document.getElementById('failAlert');
-                                            if (successAlert) {
-                                                successAlert.style.display = 'none';
-                                            }
-                                            if (failAlert) {
-                                                failAlert.style.display = 'none';
-                                            }
-                                        }, 8000);
+                    // Gắn sự kiện blur khi trang tải
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const inputs = [
+                            {id: 'userName', validate: validateUsername},
+                            {id: 'email', validate: validateEmail},
+                            {id: 'fullName', validate: validateFullName},
+                            {id: 'phoneNumber', validate: validatePhoneNumber}
+                        ];
+
+                        inputs.forEach(({ id, validate }) => {
+                            const input = document.getElementById(id);
+                            if (input) {
+                                input.addEventListener('blur', () => {
+                                    console.log(`Blur event triggered for ${id}`); // Debugging
+                                    validate();
+                                });
+                            } else {
+                                console.error(`Element with ID ${id} not found`);
+                        }
+                        });
+
+                        // Gắn sự kiện change cho role_id (nếu cần)
+                        const roleSelect = document.getElementById('role_id');
+                        if (roleSelect) {
+                            roleSelect.addEventListener('change', toggleDoctorFields);
+                        }
+                    });
+
+                    // Hàm toggleDoctorFields (giữ nguyên nếu vẫn cần)
+                    function toggleDoctorFields() {
+                        const roleId = document.getElementById('role_id').value;
+                        const doctorFields = document.querySelector('.doctor-fields');
+                        if (doctorFields) {
+                            doctorFields.style.display = roleId === '3' ? 'block' : 'none';
+                        }
+                    }
+
+                    document.getElementById("avatar").addEventListener("change", function () {
+                        var fileInput = this;
+                        var fileNameDisplay = document.getElementById("fileName");
+                        var fileErrorDisplay = document.getElementById("fileError");
+
+                        // Clear old messages
+                        fileNameDisplay.textContent = "";
+                        fileErrorDisplay.textContent = "";
+
+                        if (fileInput.files.length > 0) {
+                            var file = fileInput.files[0];
+                            fileNameDisplay.textContent = "Đã chọn: " + file.name;
+
+                            if (file.size > 1048576) {
+                                fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
+                            }
+                        }
+                    });
+
+                    document.getElementById("updateUserForm").addEventListener("submit", function (e) {
+                        var fileInput = document.getElementById("avatar");
+                        var fileErrorDisplay = document.getElementById("fileError");
+
+                        // Nếu có file và bị lỗi kích thước thì chặn submit
+                        if (fileInput.files.length > 0 && fileInput.files[0].size > 1048576) {
+                            e.preventDefault();
+                            fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
+                        }
+                    });
+
+                    // Tự động ẩn thông báo sau 5 giây
+                    setTimeout(function () {
+                        const successAlert = document.getElementById('successAlert');
+                        const failAlert = document.getElementById('failAlert');
+                        if (successAlert) {
+                            successAlert.style.display = 'none';
+                        }
+                        if (failAlert) {
+                            failAlert.style.display = 'none';
+                        }
+                    }, 8000);
 
 
                 </script>

@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
@@ -103,22 +104,15 @@ public class UpdateUserInformation extends HttpServlet {
         }
 
         UserDAO ud = new UserDAO();
-        List<User> ul = new ArrayList();
-        ul = ud.getAllCustomer();
-        for (User user : ul) {
-            if (user.getEmail().equals(email) && !user.getId().equals(id)) {
-                request.setAttribute("wrongemail", "Cập nhật thông tin không thành công do email đã được sử dụng");
-                User currentUser = ud.getUserById(id);
-                request.setAttribute("user", currentUser);
-                request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-                return;
-            }else if(user.getEmail().equals(email) && user.getId().equals(id)&&user.getAddress().equals(address) && user.getFullName().equals(name)&&user.getPhoneNumber().equals(number)){
-                User currentUser = ud.getUserById(id);
-                request.setAttribute("user", currentUser);
-                request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
-                return;
-            }
-
+        User u = ud.getUserByEmail(email);
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (u != null && !u.getId().equals(user.getId())) {
+            request.setAttribute("wrongemail", "Cập nhật thông tin không thành công do email đã được sử dụng");
+            User currentUser = ud.getUserById(id);
+            request.setAttribute("user", currentUser);
+            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+            return;
         }
         if (ud.updateUser(id, name, address, email, number, filePath)) {
             User updatedUser = ud.getUserById(id);

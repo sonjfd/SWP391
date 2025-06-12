@@ -4,8 +4,8 @@
  */
 package UserController;
 
+import DAO.AppointmentDAO;
 import DAO.UserDAO;
-import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,17 +13,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ChangePass", urlPatterns = {"/changepass"})
-public class ChangePass extends HttpServlet {
+@WebServlet(name = "CancelBooking", urlPatterns = {"/cancelbooking"})
+public class CancelBooking extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +43,10 @@ public class ChangePass extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ChangePass</title>");
+            out.println("<title>Servlet CancelBooking</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ChangePass at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CancelBooking at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,7 +64,7 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+        request.getRequestDispatcher("view/profile/Appointment.jsp").forward(request, response);
     }
 
     /**
@@ -77,40 +78,40 @@ public class ChangePass extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String oldPassword = request.getParameter("oldPassword").trim();
-        String newPassword = request.getParameter("newPassword");
-
-        HttpSession session = request.getSession(false);
-
-        if (session == null || session.getAttribute("user") == null) {
-
-            response.sendRedirect("login");
+        String idApp = (String) request.getParameter("id");
+        String appDate = request.getParameter("appTime");  // yyyy-MM-dd
+        String startTime = request.getParameter("startTime");  // HH:mm
+        if (idApp == null) {
+            response.sendRedirect("viewappointment");
             return;
         }
-        User user = (User) session.getAttribute("user");
-        UserDAO ud = new UserDAO();
-        String hashedOldPassword = ud.hashPassword(oldPassword);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        if (!user.getPassword().equals(hashedOldPassword)) {
-            request.setAttribute("user", user);
-            request.setAttribute("errorOldPass", "Mật khẩu cũ không đúng.");
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+        LocalDate appointmentDate = LocalDate.parse(appDate, dateFormatter);
+        LocalTime appointmentStartTime = LocalTime.parse(startTime, timeFormatter);
+
+        LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentStartTime);
+        LocalDateTime now = LocalDateTime.now();
+
+        // So sánh thời gian
+        Duration duration = Duration.between(now, appointmentDateTime);
+
+        if (duration.toHours() < 1) {
+            // Nếu còn dưới 1 tiếng thì báo lỗi
+            request.setAttribute("errorMessage", "Chỉ được phép hủy lịch khám trước giờ hẹn ít nhất 1 tiếng.");
+            request.getRequestDispatcher("appointment-list.jsp").forward(request, response);
             return;
         }
 
-        String hashedNewPassword = ud.hashPassword(newPassword);
-
-        if (ud.updatePassword(user.getId(), hashedNewPassword)) {
-            session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
-
-            user.setPassword(hashedNewPassword);
-            session.setAttribute("user", user);
-            response.sendRedirect("viewuserinformation");
+        AppointmentDAO ad = new AppointmentDAO();
+        if (ad.cancelBooking(idApp)) {
+            request.getSession().setAttribute("SuccessMessage", "Hủy đặt lịch thành công");
+            response.sendRedirect("viewappointment");
         } else {
-            request.setAttribute("user", user);
-            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+            request.getSession().setAttribute("FailMessage", "Hủy đặt lịch không thành công");
+            response.sendRedirect("viewappointment");
         }
-
     }
 
     /**
