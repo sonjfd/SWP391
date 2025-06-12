@@ -1,4 +1,4 @@
-package VNPay;
+package Payment;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -8,7 +8,7 @@ import DAO.AppointmentDAO;
 import Mail.SendEmail;
 import Model.Appointment;
 import Model.User;
-import VNPay.Config;
+import Payment.Config;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -77,30 +77,31 @@ public class VnpayReturn extends HttpServlet {
 
                     appointment.setStatus("pending");
                     appointment.setPaymentStatus("paid");
+
+                    Appointment fullAppointment = dao.getAppointmentById(appointmentId);
+
+                    String email = fullAppointment.getUser().getEmail();
+                    String name = fullAppointment.getUser().getFullName();
+                    String phone = fullAppointment.getUser().getPhoneNumber();
+                    String address = fullAppointment.getUser().getAddress();
+                    String petName = fullAppointment.getPet().getName();
+                    String appointmentDate = new SimpleDateFormat("dd/MM/yyyy").format(fullAppointment.getAppointmentDate());
+                    String doctorName = fullAppointment.getDoctor().getUser().getFullName();
+
+                    String slotStart = fullAppointment.getStartTime().toString();
+                    String slotEnd = fullAppointment.getEndTime().toString();
+                    double totalBill = fullAppointment.getPrice();
+                    String paymentMethod = "Thanh Toán Qua Vnpay";
+
+                    SendEmail email1 = new SendEmail();
+                    email1.sendEmailAfterBooking(email, name, phone, address, petName,
+                            appointmentDate, doctorName, slotStart, slotEnd, totalBill, paymentMethod);
                     transSuccess = true;
                 } else {
                     appointment.setStatus("canceled");
                     appointment.setPaymentStatus("unpaid");
                 }
                 dao.updatePaymentStatus(appointment);
-                Appointment fullAppointment = dao.getAppointmentById(appointmentId); 
-
-                String email = fullAppointment.getUser().getEmail();
-                String name = fullAppointment.getUser().getFullName();
-                String phone = fullAppointment.getUser().getPhoneNumber();
-                String address = fullAppointment.getUser().getAddress();
-                String petName = fullAppointment.getPet().getName();
-                String appointmentDate = new SimpleDateFormat("dd/MM/yyyy").format(fullAppointment.getAppointmentDate());
-                String doctorName = fullAppointment.getDoctor().getUser().getFullName();
-
-                String slotStart = fullAppointment.getStartTime().toString(); 
-                String slotEnd = fullAppointment.getEndTime().toString();    
-                double totalBill = fullAppointment.getPrice();
-                String paymentMethod = "Thanh Toán Qua Vnpay";
-
-                SendEmail email1 = new SendEmail();
-                email1.sendEmailAfterBooking(email, name, phone, address, petName,
-                        appointmentDate, doctorName, slotStart, slotEnd, totalBill, paymentMethod);
                 request.setAttribute("transResult", transSuccess);
                 request.getRequestDispatcher("view/home/content/PaymentResult.jsp").forward(request, response);
             } else {

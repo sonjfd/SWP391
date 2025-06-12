@@ -4,11 +4,13 @@
  */
 package DAO;
 
+import static GoogleLogin.PasswordUtils.hashPassword;
 import Model.Breed;
 import Model.Pet;
 import Model.Role;
 import Model.Specie;
 import Model.User;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -93,7 +96,7 @@ public class UserDAO {
 
     public boolean updateUser(String id, String fullName, String address, String email, String phone, String avatar) {
         // Sửa lại câu SQL để cập nhật đúng trường gender
-        String sql = "UPDATE users SET full_name=?, address=?, email=?, phone=?, avatar=?, updated_at=CURRENT_TIMESTAMP WHERE id=?";
+        String sql = "UPDATE users SET full_name=?, address=?, email=?, phone=?, avatar=? WHERE id=?";
 
         try {
             // Tạo kết nối và chuẩn bị câu lệnh SQL
@@ -118,6 +121,20 @@ public class UserDAO {
             e.printStackTrace(); // In ra lỗi nếu có
         }
         return false; // Nếu không thành công, trả về false
+    }
+
+    public void updateUserProfileFirtTime(User user) {
+        String sql = "UPDATE users SET full_name = ?, phone = ?, address = ? WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getPhoneNumber());
+            ps.setString(3, user.getAddress());
+            ps.setString(4, user.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Pet> getPetsByUser(String userId) {
@@ -525,6 +542,98 @@ public class UserDAO {
         return false;
     }
 
+    public User getUserByEmail(String email) {
+        String sql = "SELECT * FROM Users WHERE email = ?";
+        try {
+            Connection conn = DAO.DBContext.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("id"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("full_name"));
+                user.setAvatar(rs.getString("avatar"));
+                user.setStatus(rs.getInt("status"));
+                int roleId = rs.getInt("role_id");
+                user.setRole(new RoleDAO().getRoleById(roleId));
+                return user;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User getUserById(int userId) {
+        String sql = "Select * from [Users] where id = ?";
+        try {
+            Connection conn = DBContext.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return new User(
+                        rs.getString("id"),
+                        rs.getString("userName"),
+                        rs.getString("email"),
+                        rs.getString("password"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public boolean updatePassword(User user) {
+        String sql = "UPDATE [dbo].[users] SET [password] = ? WHERE [email] = ?";
+        try {
+            Connection conn = DBContext.getConnection();
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, user.getPassword());
+            st.setString(2, user.getEmail());
+            int rowsAffected = st.executeUpdate();
+
+            // Nếu không có dòng nào bị ảnh hưởng => không tìm thấy email
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Update
+    public void insertUser(User user) {
+        String sql = "INSERT INTO Users(id, username,email, full_name,password) VALUES(?,?, ?,?,?)";
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            String generatedPassword = generateRandomPassword(10);
+            String uuid = UUID.randomUUID().toString();
+            ps.setString(1, uuid);  // id
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getFullName());
+
+            ps.setString(5, hashPassword(generatedPassword));
+            System.out.println(">> UserDAO.insertUser: chuẩn bị chèn " + user.getEmail());
+            int rows = ps.executeUpdate();
+            System.out.println(">> UserDAO.insertUser: có " + rows + " dòng bị ảnh hưởng.");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(chars.length());
+            sb.append(chars.charAt(index));
+        }
+        return sb.toString();
+    }
+
     public List<Pet> getPetsByStatus(String status, String userId) {
         List<Pet> petList = new ArrayList<>();
         String sql = "SELECT * FROM Pets WHERE status = ? and owner_id =?";
@@ -612,7 +721,7 @@ public class UserDAO {
             Connection conn = DAO.DBContext.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
 
-            // Gán giá trị cho các tham số
+            
             stmt.setString(1, name);
             stmt.setString(2, gender);
             stmt.setDate(3, (java.sql.Date) birthDate);  // đã là java.sql.Date
@@ -665,26 +774,63 @@ public class UserDAO {
         return list;
     }
 
-    public int updateOwner(String petId,String ownerId) {
+    public int updateOwner(String petId, String ownerId) {
         String sql = "update pets\n"
                 + "set owner_id=?\n"
                 + "where id=?";
-        int result=-1;
-     try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql);) {
-         stm.setString(1, ownerId);
-         stm.setString(2, petId);
-         result=stm.executeUpdate();
-            
+        int result = -1;
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql);) {
+            stm.setString(1, ownerId);
+            stm.setString(2, petId);
+            result = stm.executeUpdate();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDAO d = new UserDAO();
-
-        System.out.println(d.getAllPet());
-
+    public boolean isEmailExists(String email) {
+        String sql = "SELECT 1 FROM users WHERE email = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql);) {
+            stm.setString(1, email);
+            ResultSet rs = stm.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
+
+    public void updateUserStatus(String userId, int status) {
+        String sql = "UPDATE users SET status = ? WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql);) {
+
+            stm.setInt(1, status);
+            stm.setString(2, userId);
+            stm.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+
+        UserDAO dao = new UserDAO();
+        String testEmail = "sondnhe180400@fpt.edu.vn";
+
+        User user = dao.getUserByEmail(testEmail);
+
+        if (user != null) {
+            System.out.println("ID: " + user.getId());
+            System.out.println("Email: " + user.getEmail());
+            System.out.println("Full Name: " + user.getFullName());
+            System.out.println("Avatar: " + user.getAvatar());
+            System.out.println("Status: " + user.getStatus()); // ❗Quan trọng
+            System.out.println("Role: " + user.getRole().getName());
+        } else {
+            System.out.println("Không tìm thấy user với email: " + testEmail);
+        }
+    }
+
 }

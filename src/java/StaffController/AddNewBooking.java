@@ -135,7 +135,8 @@ public class AddNewBooking extends HttpServlet {
             appointment.setAppointmentDate(new java.sql.Date(parsedDate.getTime()));
             appointment.setStartTime(LocalTime.parse(slotStartStr));
             appointment.setEndTime(LocalTime.parse(slotEndStr));
-
+            appointment.setStatus("completed");
+            appointment.setPaymentStatus("unpaid");
             AppointmentDAO appointmentDAO = new AppointmentDAO();
             int result = appointmentDAO.addNewBoking(appointment);
 

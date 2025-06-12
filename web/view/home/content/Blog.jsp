@@ -28,107 +28,166 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <style>
+            .pet-hero-solid {
+                background-color: #0047AB; /* Xanh đậm chuẩn (Blue 900 - Material Design) */
+                padding: 80px 0 40px;
+                text-align: center;
+            }
 
+            .hero-heading {
+                font-size: 36px;
+                font-weight: 700;
+                color: #fff; /* trắng cho nổi */
+            }
+
+            .breadcrumb-text {
+                font-size: 15px;
+                color: #fff;
+            }
+
+
+            /* Featured blog image */
+            .featured-img {
+                width: 100%;
+                height: 340px; /* Tăng chiều cao ảnh */
+                object-fit: cover;
+                border-radius: 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            }
+
+            /* Tiêu đề nổi bật */
+            .featured-title {
+                font-size: 24px;  /* To hơn */
+                font-weight: 700;
+                background-color: #1d4ed8;
+                color: #fff;
+                padding: 14px 18px;
+                border-radius: 6px;
+                display: inline-block;
+                line-height: 1.4;
+                max-width: 100%;
+            }
+            .btn-green {
+                background-color: #4CAF50; /* Màu xanh Pet24h */
+                color: white;
+                padding: 10px 24px;
+                border-radius: 30px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: background 0.2s ease;
+                display: inline-block;
+            }
+
+            .btn-green:hover {
+                background-color: #43a047; /* xanh lá đậm hơn khi hover */
+            }
+
+            .btn-green {
+                background-color: #4CAF50; /* Màu xanh Pet24h */
+                color: white;
+                padding: 10px 24px;
+                border-radius: 30px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: background 0.2s ease;
+                display: inline-block;
+            }
+
+            .btn-green:hover {
+                background-color: #43a047; /* xanh lá đậm hơn khi hover */
+            }
+
+            .news-img {
+                width: 100%;
+                height: 150px;
+                object-fit: cover;
+                border-radius: 12px;
+                transition: transform 0.2s ease;
+            }
+
+            .news-card {
+                border: 1px solid #eee;
+                border-radius: 12px;
+                background-color: #fff;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                transition: 0.3s;
+            }
+
+            .news-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .text-orange {
+                color: #FF6A00;
+            }
+
+            .text-blue {
+                color: #0030FF;
+            }
+
+            @media (max-width: 768px) {
+                .news-img {
+                    height: 130px;
+                }
+            }
+
+
+
+
+        </style>
     </head>
     <body>
         <%@include file="../layout/Header.jsp" %>
-        <!-- Start Hero -->
-        <section class="bg-half-170 d-table w-100" style="background: url('${pageContext.request.contextPath}/assets/images/bg/aboutus.jpg') center center;">
-            <div class="bg-overlay bg-overlay-dark"></div>
-            <div class="container">
-                <div class="row mt-5 justify-content-center">
-                    <div class="col-12">
-                        <div class="section-title text-center">
-                            <h3 class="sub-title mb-4 text-white title-dark">Tin tức</h3>
-                            <p class="para-desc mx-auto text-white-50">
-                                Cập nhật những thông tin mới nhất về chăm sóc thú cưng, kiến thức thú y, mẹo nuôi dưỡng và các hoạt động tại phòng khám. Đồng hành cùng bạn trên hành trình chăm sóc sức khỏe cho người bạn bốn chân của mình.
-                            </p>
 
-
-                            <nav aria-label="breadcrumb" class="d-inline-block mt-3">
-                                <ul class="breadcrumb bg-light rounded mb-0 py-1 px-2">
-                                    <li class="breadcrumb-item"><a href="homepage">Pet24h</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Tin tức</li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div><!--end col-->
-                </div><!--end row-->
-            </div><!--end container-->
-        </section><!--end section-->
-        <div class="position-relative">
-            <div class="shape overflow-hidden text-white">
-                <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
-                </svg>
+        <!-- PHẦN HERO -->
+        <section class="pet-hero-solid" style="margin-top: 100px">
+            <div class="container text-center">
+                <h2 class="hero-heading">Tin tức</h2>
+                <p class="breadcrumb-text">Trang chủ / Tin tức</p>
             </div>
-        </div>
-        <!-- End Hero -->
+        </section>
 
-        <!-- Start -->
-        <!-- Blogs Section Start -->
-        <section class="py-5">
-            <div class="container">
-                <div class="row">
-                    <!-- LEFT: Blog Posts -->
-                    <div class="col-lg-8">
-                        <c:forEach var="blog" items="${blogs}">
-                            <div class="card mb-4 shadow-sm">
-                                <div class="card-body d-flex">
-                                    <div class="flex-grow-1">
-                                        <h5 class="card-title"><a href="blog-detail?id=${blog.id}" class="text-dark">${blog.title}</a></h5>
-                                        <p class="card-text text-muted">${fn:substring(blog.content, 0, 100)}...</p>
-                                        <small class="text-muted">
-                                            <i class="bi bi-clock"></i>
-                                            <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />
-                                        </small>
-                                        <div class="mt-2">
-                                            <c:forEach var="tag" items="${blog.tags}">
-                                                <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark border me-1">${tag.name}</a>
-                                            </c:forEach>
-                                        </div>
-                                    </div>
-                                    <img src="${pageContext.request.contextPath}/${blog.image}" class="ms-3" style="width: 120px; height: 90px; object-fit: cover;" alt="img">
-                                </div>
-                            </div>
-                        </c:forEach>
 
-                        <!-- Pagination -->
-                        <nav class="mt-4">
-                            <!-- Pagination -->
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item ${index == 1 ? 'disabled' : ''}">
-                                    <a class="page-link" href="homeblog?index=${index - 1}&tag=${selectedTag}">Prev</a>
-                                </li>
-                                <c:forEach var="i" begin="1" end="${endP}">
-                                    <li class="page-item ${index == i ? 'active' : ''}">
-                                        <a class="page-link" href="homeblog?index=${i}&tag=${selectedTag}">${i}</a>
-                                    </li>
-                                </c:forEach>
-                                <li class="page-item ${index == endP ? 'disabled' : ''}">
-                                    <a class="page-link" href="homeblog?index=${index + 1}&tag=${selectedTag}">Next</a>
-                                </li>
-                            </ul>
-
-                        </nav>
-                    </div>
-
-                    <!-- RIGHT: Tag Suggestions -->
-                    <div class="col-lg-4">
-                        <h6 class="mb-3">CÁC THẺ ĐỀ XUẤT</h6>
-                        <div class="d-flex flex-wrap gap-2 mb-4">
-                            <c:forEach var="tag" items="${allTags}">
-                                <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark me-2 mb-2 ${selectedTag == tag.id ? 'border border-primary' : ''}">
-                                    ${tag.name}
-                                </a>
-                            </c:forEach>
-                        </div>
-                    </div>
+        <section class="featured-news container py-5">
+            <div class="row align-items-center gx-5">
+                <div class="col-md-6">
+                    <img src="${pageContext.request.contextPath}/${blogs[0].image}" class="featured-img img-fluid rounded-4 shadow-sm" alt="Main blog image">
+                </div>
+                <div class="col-md-6">
+                    <p class="text-orange small mb-1">
+                        <fmt:formatDate value="${blogs[0].publishedAt}" pattern="dd/MM/yyyy"/>
+                    </p>
+                    <h1 >${blogs[0].title}</h1>
+                    <p class="text-muted mt-3">${fn:substring(blogs[0].content, 0, 240)}...</p>
+                    <a href="blog-detail?id=${blogs[0].id}" class="btn-green mt-2">Xem thêm <span>&#8594;</span></a>
                 </div>
             </div>
         </section>
-        <!-- End Blogs Section -->
-        <!-- End -->
+
+
+
+        <!-- TIN MỚI -->
+        <section class="container pb-5">
+            <h4 class="text-blue fw-bold mb-4">TIN MỚI</h4>
+            <div class="row g-4">
+                <c:forEach var="blog" items="${blogs}" varStatus="loop" begin="1">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="news-card p-3 h-100">
+                            <img src="${pageContext.request.contextPath}/${blog.image}" class="news-img mb-2" alt="Blog Image">
+                            <p class="text-muted small mb-1">BẢN TIN BỆNH VIỆN</p>
+                            <p class="text-orange small mb-1">
+                                <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />
+                            </p>
+                            <h6 class="fw-bold mb-1">${blog.title}</h6>
+                            <p class="text-muted small mb-2">${fn:substring(blog.content, 0, 100)}...</p>
+                            <a href="blog-detail?id=${blog.id}" class="text-orange small">Xem thêm →</a>
+                        </div>
+                    </div>
+                </c:forEach>
+            </div>
+        </section>
 
 
 

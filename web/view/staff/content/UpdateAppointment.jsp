@@ -153,8 +153,8 @@
                     <div class="col-md-6 mb-3">
                         <label for="status" class="form-label">Trạng thái:</label>
                         <select name="status" class="form-select" id="status">
-                            <option value="pending" ${appointment.status == 'pending' ? 'selected' : ''}>Chờ xác nhận</option>
-                            <option value="completed" ${appointment.status == 'completed' ? 'selected' : ''}>Hoàn tất</option>
+                            <option value="pending" ${appointment.status == 'pending' ? 'selected' : ''}>Đang xử lí</option>
+                            <option value="completed" ${appointment.status == 'completed' ? 'selected' : ''}>Đã đặt</option>
                             <option value="canceled" ${appointment.status == 'canceled' ? 'selected' : ''}>Đã hủy</option>
                         </select>
                     </div>
@@ -178,12 +178,14 @@
 
 
         <script>
-
             let doctorChanged = false;
             let dateChanged = false;
             let slotSelected = false;
+
             const originalDoctorId = document.getElementById('doctorId').value;
             const originalDate = document.getElementById('appointmentDate').value;
+            const originalStartTime = document.getElementById('slotStart').value;
+            const originalEndTime = document.getElementById('slotEnd').value;
 
             function fetchSlots() {
                 const date = document.getElementById('appointmentDate').value;
@@ -201,7 +203,7 @@
                         .then(data => {
                             const container = document.getElementById('slotContainer');
                             container.innerHTML = '';
-                            slotSelected = false; 
+                            let preselected = false;
 
                             if (data.length === 0) {
                                 const msg = document.createElement('div');
@@ -212,13 +214,15 @@
                             }
 
                             data.forEach(slot => {
+                                console.log(slot.start);
+                                console.log(slot.end);
                                 const btn = document.createElement('button');
                                 btn.type = 'button';
                                 btn.classList.add('btn', 'slot-btn', 'me-2', 'mb-2');
 
-                                const startTime = slot.start.substring(11, 16);
-                                const endTime = slot.end.substring(11, 16);
-                                btn.textContent = slot.start + ' - ' + slot.end;
+                                const startTime = slot.start;
+                                const endTime = slot.end;
+                                btn.textContent = startTime + ' - ' + endTime;
 
                                 if (slot.booked) {
                                     btn.classList.add('btn-secondary');
@@ -226,10 +230,18 @@
                                     btn.style.opacity = '0.6';
                                 } else {
                                     btn.classList.add('btn-outline-primary');
+
+                                    if (startTime === originalStartTime && endTime === originalEndTime && !doctorChanged && !dateChanged) {
+                                        btn.classList.add('active');
+                                        slotSelected = true;
+                                        preselected = true;
+                                    }
+
                                     btn.addEventListener('click', () => {
                                         document.getElementById('slotStart').value = startTime;
                                         document.getElementById('slotEnd').value = endTime;
                                         slotSelected = true;
+
                                         document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('active'));
                                         btn.classList.add('active');
                                     });
@@ -237,6 +249,11 @@
 
                                 container.appendChild(btn);
                             });
+
+                            // Nếu khung giờ ban đầu được khớp lại → giữ selected
+                            if (!preselected && !doctorChanged && !dateChanged) {
+                                slotSelected = true;
+                            }
                         })
                         .catch(err => {
                             alert('Lỗi khi tải lịch làm việc: ' + err.message);
@@ -263,14 +280,18 @@
 
             document.querySelector('form').addEventListener('submit', function (e) {
                 const needSlot = doctorChanged || dateChanged;
-                if (needSlot && !slotSelected) {
+                const start = document.getElementById('slotStart').value;
+                const end = document.getElementById('slotEnd').value;
+
+                if ((needSlot && !slotSelected) || !start || !end) {
                     e.preventDefault();
-                    alert('Vui lòng chọn khung giờ khám sau khi thay đổi bác sĩ hoặc ngày khám.');
-                    return false;
+                    alert('Vui lòng chọn khung giờ khám hợp lệ.');
                 }
             });
+
             window.addEventListener('DOMContentLoaded', fetchSlots);
         </script>
+
 
 
 

@@ -5,7 +5,6 @@
 package StaffController;
 
 import DAO.AppointmentDAO;
-import Model.ExaminationPrice;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,16 +12,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  *
  * @author Dell
  */
-@WebServlet(urlPatterns = {"/updatebookingprice"})
-
-public class UpdateBokingPrice extends HttpServlet {
+@WebServlet(name = "UpdateCheckingStatus", urlPatterns = {"/update-chekin"})
+public class UpdateCheckInStatus extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,10 +37,10 @@ public class UpdateBokingPrice extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UpdateBokingPrice</title>");
+            out.println("<title>Servlet UpdateCheckingStatus</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UpdateBokingPrice at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UpdateCheckingStatus at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -62,7 +58,14 @@ public class UpdateBokingPrice extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String appointmentId = request.getParameter("id");
+        String status = request.getParameter("status");
+
+        AppointmentDAO dao = new AppointmentDAO();
+        boolean success = dao.updateCheckinStatus(appointmentId, status);
+
+        response.setContentType("text/plain");
+        response.getWriter().write(success ? "success" : "fail");
     }
 
     /**
@@ -76,32 +79,7 @@ public class UpdateBokingPrice extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String id = request.getParameter("id");
-        String priceStr = request.getParameter("newPrice");
-
-        try {
-            double price = Double.parseDouble(priceStr);
-            ExaminationPrice examPrice = new ExaminationPrice();
-
-            if (id == null || id.trim().isEmpty()) {
-                id = java.util.UUID.randomUUID().toString(); 
-            }
-
-            examPrice.setId(id);
-            examPrice.setPrice(price);
-
-            boolean saved = new AppointmentDAO().updateExaminationPrice(examPrice);
-
-            if (saved) {
-                response.sendRedirect("list-appointment");
-            } else {
-                request.setAttribute("error", "Cập nhật hoặc thêm giá khám thất bại.");
-                request.getRequestDispatcher("view/staff/content/ListAppointment.jsp").forward(request, response);
-            }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Giá không hợp lệ.");
-            request.getRequestDispatcher("view/staff/content/ListAppointment.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**

@@ -280,7 +280,7 @@
                     <!-- Date selection -->
                     <div class="mb-3" >
                         <label class="form-label">Ngày khám:</label>
-                        <input type="date" id="appointmentDate" name="appointmentDate" class="form-control" value="${defaultDate}" required />
+                        <input type="date" id="appointmentDate" name="appointmentDate" class="form-control"  required />
                         <div id="dateError" class="text-danger small mt-1"></div>
                     </div>
 
@@ -432,10 +432,8 @@
                                 noPetsMessage.style.display = 'block';
                                 window.loadedPets = [];
                             }
-                        })
-                        .catch(err => {
-                            alert("Lỗi khi lấy thông tin: " + err);
                         });
+                        
             });
 
 

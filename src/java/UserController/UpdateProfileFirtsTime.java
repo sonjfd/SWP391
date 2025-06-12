@@ -3,10 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package CommonController;
+package UserController;
 
 import DAO.UserDAO;
-import static GoogleLogin.PasswordUtils.hashPassword;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,19 +14,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jakarta.servlet.RequestDispatcher;
-
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
- * @author Admin
+ * @author Dell
  */
-@WebServlet(name="Register", urlPatterns={"/register"})
-public class Register extends HttpServlet {
+@WebServlet(name="UpdateProfileFirtsTime", urlPatterns={"/update-profile-firtstime"})
+public class UpdateProfileFirtsTime extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -44,10 +38,10 @@ public class Register extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Register</title>");  
+            out.println("<title>Servlet UpdateProfileFirtsTime</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Register at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet UpdateProfileFirtsTime at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,7 +58,7 @@ public class Register extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       request.getRequestDispatcher("view/home/content/Register.jsp").forward(request, response);
+        request.getRequestDispatcher("view/profile/UpdateFirtTime.jsp").forward(request, response);
     } 
 
     /** 
@@ -75,37 +69,30 @@ public class Register extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-   protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-    String userName = request.getParameter("username");
-    String e = request.getParameter("email");
-    String pass = request.getParameter("password");
-    String name = request.getParameter("name");
-    String phone = request.getParameter("phone");
-    String addr = request.getParameter("address");
 
-     //  Mã hóa mật khẩu trước khi lưu
-    String hashedPass = hashPassword(pass);
-    
-    User user = new User(userName, e, hashedPass, name, phone, addr);
-    UserDAO dao = new UserDAO();
-    User userCheck = dao.getUserNameDuplicate(userName);
-
-    if (userCheck != null) {
-        request.setAttribute("mess", "Tài khoản đã tồn tại, xin hãy nhập lại.");
-
-        request.getRequestDispatcher("view/home/content/Register.jsp").forward(request, response);
-    } else {
-        try {
-            dao.addUserByRegister(userName, e, hashedPass, name, phone, addr);
-            response.sendRedirect("homepage");
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            request.setAttribute("mess", "Đăng ký thất bại. Vui lòng thử lại sau.");
-            request.getRequestDispatcher("view/home/content/Register.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login");
+            return;
         }
+
+        String fullName = request.getParameter("fullname");
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
+
+        user.setFullName(fullName);
+        user.setPhoneNumber(phone);
+        user.setAddress(address);
+
+        new UserDAO().updateUserProfileFirtTime(user);
+        session.setAttribute("user", user);
+
+        response.sendRedirect("homepage"); 
     }
-}
+
 
     /** 
      * Returns a short description of the servlet.

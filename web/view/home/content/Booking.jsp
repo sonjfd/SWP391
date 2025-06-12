@@ -243,7 +243,7 @@
                                     <!-- Date selection -->
                                     <div class="mb-3">
                                         <label class="form-label">Ngày khám:</label>
-                                        <input type="date" id="appointmentDate" name="appointmentDate" class="form-control"  value="${defaultDate}" required />
+                                        <input type="date" id="appointmentDate" name="appointmentDate" class="form-control"   required />
                                         <div id="dateError" class="text-danger small mt-1"></div>
 
                                     </div>
@@ -385,24 +385,7 @@
 
 
 
-                    document.getElementById('petSelect').addEventListener('change', function () {
-                        let petId = this.value;
-                        if (!petId)
-                            return;
-
-                        fetch('getPetInfor?petId=' + encodeURIComponent(petId))
-                                .then(res => res.json())
-                                .then(data => {
-                                    console.log(data);
-                                    document.getElementById('breedInfo').style.display = 'block';
-                                    document.getElementById('speciesName').value = data.species;
-                                    document.getElementById('breedName').value = data.breed;
-                                })
-                                .catch(err => {
-                                    alert(err);
-                                });
-                    });
-
+                  cccccccccccccccccccccccccccccc
 
                     document.getElementById('appointmentDate').addEventListener('change', function () {
                         let date = this.value;

@@ -168,6 +168,41 @@
             }
 
 
+
+
+            .checkin-btn {
+                display: inline-block;
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-size: 10px;
+                font-weight: 500;
+                color: #fff;
+                text-align: center;
+                text-decoration: none;
+                transition: background-color 0.3s ease, box-shadow 0.2s ease;
+                cursor: pointer;
+            }
+
+            .checkin-btn.bg-success {
+                background-color: #28a745;
+            }
+
+            .checkin-btn.bg-success:hover {
+                background-color: #218838;
+                box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+            }
+
+            .checkin-btn.bg-danger {
+                background-color: #dc3545;
+            }
+
+            .checkin-btn.bg-danger:hover {
+                background-color: #c82333;
+                box-shadow: 0 0 8px rgba(220, 53, 69, 0.6);
+            }
+
+
+
         </style>
 
     </head>
@@ -282,7 +317,7 @@
                             <th scope="col">Bác sĩ khám</th>
                             <th scope="col">Trạng thái</th> 
                             <th scope="col">Thanh toán</th> 
-                            <th scope="col">Phương Thức</th> 
+                            <th scope="col">Check in</th> 
 
                             <th scope="col">Hoạt động</th>
                         </tr>
@@ -329,16 +364,21 @@
 
                                 <!-- Phương thức thanh toán -->
                                 <td>
-                                    <c:choose>
-                                        <c:when test="${app.paymentMethod == 'cash'}">
-                                            <span class="badge bg-primary">Tiền mặt</span>
-                                        </c:when>
-                                        <c:when test="${app.paymentMethod == 'online'}">
-                                            <span class="badge bg-info text-dark">Trực tuyến</span>
-                                        </c:when>
 
-                                    </c:choose>
+                                    <a href="javascript:void(0);"
+                                       class="checkin-btn ${app.chekinStatus == 'checkin' ? 'bg-success' : 'bg-danger'}"
+                                       data-appointment-id="${app.id}"
+                                       data-status="${app.chekinStatus}"
+                                       onclick="updateCheckinStatus(this)">
+                                        ${app.chekinStatus == 'checkin' ? 'Đã tới khám 👌' : 'Chưa tới khám 👆'}
+                                    </a>
+
+
+
+
+
                                 </td>
+
 
                                 <td>                                  
                                     <div class="action-buttons">
@@ -490,7 +530,40 @@
 
         <script>
 
-           
+
+            function updateCheckinStatus(el) {
+                const appointmentId = el.dataset.appointmentId;
+                const currentStatus = el.dataset.status;
+                const newStatus = currentStatus === 'noshow' ? 'checkin' : 'noshow';
+
+                const url = 'update-chekin?id=' + encodeURIComponent(appointmentId)
+                        + '&status=' + encodeURIComponent(newStatus);
+
+                fetch(url)
+                        .then(response => response.text())
+                        .then(result => {
+                            if (result.trim() === 'success') {
+                           
+                                el.dataset.status = newStatus;
+
+                                if (newStatus === 'checkin') {
+                                    el.classList.remove('bg-danger');
+                                    el.classList.add('bg-success');
+                                    el.innerHTML = 'Đã tới khám 👌';
+                                } else {
+                                    el.classList.remove('bg-success');
+                                    el.classList.add('bg-danger');
+                                    el.innerHTML = 'Chưa tới khám 👆';
+                                }
+                            } else {
+                                alert('Cập nhật trạng thái thất bại!');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Lỗi:', err);
+                            alert('Có lỗi xảy ra khi gửi yêu cầu.');
+                        });
+            }
 
 
             function getParam() {
@@ -506,7 +579,7 @@
             if (success === '1') {
                 alert('Thêm thành lịch hẹn thành công');
             }
-            if(success==='update_success'){
+            if (success === 'update_success') {
                 alert('Cập nhật thành công');
             }
 

@@ -6,6 +6,8 @@
 package CommonController;
 
 import DAO.UserDAO;
+import GoogleLogin.PasswordUtils;
+import static GoogleLogin.PasswordUtils.hashPassword;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +18,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.tomcat.dbcp.dbcp2.Utils;
+
 
 /**
  *
@@ -33,19 +37,7 @@ public class Login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Login</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Login at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+        
     } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -90,41 +82,40 @@ public class Login extends HttpServlet {
 // 1. Kiểm tra đầu vào rỗng
         if (identifier == null || identifier.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
-            request.setAttribute("error", "Please enter both identifier and password.");
+            request.setAttribute("error", "Vui lòng nhập đầy đủ tên tài khoản, email và password");
             request.getRequestDispatcher("/view/home/content/Login.jsp").forward(request, response);
             return;
         }
 
-// 2. Kiểm tra thông tin đăng nhập
-        UserDAO dao = new UserDAO();
-        User user = dao.loginCheck(identifier, password);
+        // 2. Mã hóa mật khẩu
+        String hashedPassword = hashPassword(password);
 
-// 3. Nếu không tìm được hoặc bị khóa
+// 3. Kiểm tra thông tin đăng nhập
+        UserDAO dao = new UserDAO();
+        User user = dao.loginCheck(identifier, hashedPassword);
+
+// 4. Nếu không tìm được hoặc bị khóa
         if (user == null) {
-            request.setAttribute("error", "Username, email or password is incorrect");
+            request.setAttribute("error", "Tên tài khoản, email hoặc mật khẩu không đúng. Vui lòng nhập lại.");
             request.getRequestDispatcher("/view/home/content/Login.jsp")
                     .forward(request, response);
             return;
         }
         if (user.getStatus() == 0) {
-            request.setAttribute("error", "Your account has been locked. Please contact admin.");
+            request.setAttribute("error", "Tài khoản của bạn đã bị khóa. Vui lòng liên hiện đến Admin.");
             request.getRequestDispatcher("/view/home/content/Login.jsp")
                     .forward(request, response);
             return;
         }
-        
-           
 
-
-// 4. Đăng nhập thành công
+// 5. Đăng nhập thành công
         HttpSession session = request.getSession();
         session.setAttribute("user", user);
-         session.setMaxInactiveInterval(30 * 60);
 
         String remember = request.getParameter("remember");
         if ("true".equals(remember)) {
             Cookie cUser = new Cookie("identifier", identifier);
-            Cookie cPass = new Cookie("password", password);
+            Cookie cPass = new Cookie("password", hashedPassword);
             cUser.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
             cPass.setMaxAge(7 * 24 * 60 * 60);
             response.addCookie(cUser);

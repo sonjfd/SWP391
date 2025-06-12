@@ -221,7 +221,7 @@
                             <div class="mb-3">
                                 <label for="appointmentDate" class="form-label">Chọn ngày khám:</label>
                                 <input type="date" id="appointmentDate" name="appointmentDate" class="form-control" 
-                                       min="${todayStr}" required />
+                                        required />
                                 <div id="dateError" class="text-danger small mt-1"></div>
                             </div>
 

@@ -27,11 +27,12 @@ public class Appointment {
     private Date createdAt;
     private Date updatedAt;
     private Double price;
+    private String chekinStatus;
 
     public Appointment() {
     }
 
-    public Appointment(String id, User user, Pet pet, Doctor doctor, Date appointmentDate, LocalTime startTime, LocalTime endTime, String status, String paymentStatus, String paymentMethod, String note, Date createdAt, Date updatedAt, Double price) {
+    public Appointment(String id, User user, Pet pet, Doctor doctor, Date appointmentDate, LocalTime startTime, LocalTime endTime, String status, String paymentStatus, String paymentMethod, String note, Date createdAt, Date updatedAt, Double price, String chekinStatus) {
         this.id = id;
         this.user = user;
         this.pet = pet;
@@ -46,9 +47,8 @@ public class Appointment {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.price = price;
+        this.chekinStatus = chekinStatus;
     }
-    
-    
 
    
 
@@ -164,11 +164,17 @@ public class Appointment {
         this.price = price;
     }
 
+    public String getChekinStatus() {
+        return chekinStatus;
+    }
+
+    public void setChekinStatus(String chekinStatus) {
+        this.chekinStatus = chekinStatus;
+    }
+
     @Override
     public String toString() {
         return "Appointment{" + "id=" + id + ", user=" + user + ", pet=" + pet + ", doctor=" + doctor + ", appointmentDate=" + appointmentDate + ", startTime=" + startTime + ", endTime=" + endTime + ", status=" + status + ", paymentStatus=" + paymentStatus + ", paymentMethod=" + paymentMethod + ", note=" + note + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", price=" + price + '}';
     }
 
-   
-    
 }

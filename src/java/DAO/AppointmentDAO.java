@@ -48,7 +48,7 @@ public class AppointmentDAO {
                 StaffDAO sdao = new StaffDAO();
                 Doctor doctor = sdao.getDoctorById(doctorId);
                 appointment.setDoctor(doctor);
-
+                appointment.setChekinStatus(rs.getString("checkin_status"));
                 list.add(appointment);
             }
         } catch (Exception e) {
@@ -124,8 +124,8 @@ public class AppointmentDAO {
 
     public int addNewBoking(Appointment appointment) {
         String sql = "INSERT INTO appointments "
-                + "( customer_id, pet_id, doctor_id, appointment_time, start_time, end_time,payment_status,payment_method, notes, price) "
-                + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+                + "( customer_id, pet_id, doctor_id, appointment_time, start_time, end_time,status,payment_status,payment_method, notes, price) "
+                + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
 
         int result = -1;
 
@@ -139,12 +139,13 @@ public class AppointmentDAO {
 
             stmt.setTime(5, Time.valueOf(appointment.getStartTime()));
             stmt.setTime(6, Time.valueOf(appointment.getEndTime()));
-            stmt.setString(7, appointment.getPaymentStatus());
-            stmt.setString(8, appointment.getPaymentMethod());
+            stmt.setString(7, appointment.getStatus());
+            stmt.setString(8, appointment.getPaymentStatus());
+            stmt.setString(9, appointment.getPaymentMethod());
+            
+            stmt.setString(10, appointment.getNote() != null ? appointment.getNote() : "");
 
-            stmt.setString(9, appointment.getNote() != null ? appointment.getNote() : "");
-
-            stmt.setDouble(10, appointment.getPrice());
+            stmt.setDouble(11, appointment.getPrice());
 
             result = stmt.executeUpdate();
 
@@ -194,6 +195,7 @@ public class AppointmentDAO {
                 appointment.setPaymentMethod(rs.getString("payment_method"));
                 appointment.setNote(rs.getString("notes"));
                 appointment.setPrice(rs.getDouble("price"));
+                appointment.setChekinStatus(rs.getString("checkin_status"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -217,7 +219,8 @@ public class AppointmentDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return price;
+        return price != null ? price : 100000.0;
+
     }
 
     public ExaminationPrice getExaminationPrice() {
@@ -239,16 +242,31 @@ public class AppointmentDAO {
     }
 
     public boolean updateExaminationPrice(ExaminationPrice examPrice) {
-        String sql = "update examination_prices\n"
-                + "set price=? \n"
-                + "where id=?";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setDouble(1, examPrice.getPrice());
+        String selectSql = "SELECT COUNT(*) FROM examination_prices WHERE id = ?";
+        String updateSql = "UPDATE examination_prices SET price = ? WHERE id = ?";
+        String insertSql = "INSERT INTO examination_prices (id, price) VALUES (?, ?)";
 
-            ps.setString(2, examPrice.getId());
+        try (Connection conn = DBContext.getConnection(); PreparedStatement selectPs = conn.prepareStatement(selectSql)) {
+            selectPs.setString(1, examPrice.getId());
+            ResultSet rs = selectPs.executeQuery();
+            rs.next();
+            boolean exists = rs.getInt(1) > 0;
 
-            int rows = ps.executeUpdate();
-            return rows > 0;
+            if (exists) {
+                try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                    updatePs.setDouble(1, examPrice.getPrice());
+                    updatePs.setString(2, examPrice.getId());
+                    int rows = updatePs.executeUpdate();
+                    return rows > 0;
+                }
+            } else {
+                try (PreparedStatement insertPs = conn.prepareStatement(insertSql)) {
+                    insertPs.setString(1, examPrice.getId());
+                    insertPs.setDouble(2, examPrice.getPrice());
+                    int rows = insertPs.executeUpdate();
+                    return rows > 0;
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -260,10 +278,11 @@ public class AppointmentDAO {
 
         try (Connection conn = DBContext.getConnection()) {
 
-            String sql = "SELECT a.* FROM appointments a ";
+            StringBuilder sql = new StringBuilder("SELECT a.* FROM appointments a WHERE 1=1");
 
             String startTime = null;
             String endTime = null;
+
             if (slotId != 0) {
                 String sqlShift = "SELECT start_time, end_time FROM shift WHERE shift_id = ?";
                 try (PreparedStatement psShift = conn.prepareStatement(sqlShift)) {
@@ -274,26 +293,25 @@ public class AppointmentDAO {
                         endTime = rsShift.getString("end_time");
                     }
                 }
-            }
-            sql += " WHERE 1=1";
 
-            if (slotId != 0 && startTime != null && endTime != null) {
-                sql += " AND a.start_time >= ? AND a.end_time <= ?";
+                if (startTime != null && endTime != null) {
+                    sql.append(" AND a.start_time = ? AND a.end_time = ?");
+                }
             }
 
             if (appointmentDate != null) {
-                sql += " AND a.appointment_time  = ?";
+                sql.append(" AND a.appointment_time = ?");
             }
 
             if (doctorId != null && !doctorId.isEmpty()) {
-                sql += " AND a.doctor_id = ?";
+                sql.append(" AND a.doctor_id = ?");
             }
 
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql.toString());
 
             int index = 1;
 
-            if (slotId != 0 && startTime != null && endTime != null) {
+            if (startTime != null && endTime != null) {
                 ps.setString(index++, startTime);
                 ps.setString(index++, endTime);
             }
@@ -309,42 +327,41 @@ public class AppointmentDAO {
 
             ResultSet rs = ps.executeQuery();
 
+            UserDAO udao = new UserDAO();
+            StaffDAO sdao = new StaffDAO();
+
             while (rs.next()) {
-                while (rs.next()) {
-                    Appointment appointment = new Appointment();
+                Appointment appointment = new Appointment();
 
-                    appointment.setId(rs.getString("id"));
-                    appointment.setStatus(rs.getString("status"));
-                    appointment.setPaymentStatus(rs.getString("payment_status"));
-                    appointment.setPaymentMethod(rs.getString("payment_method"));
-                    appointment.setNote(rs.getString("notes"));
-                    appointment.setPrice(rs.getDouble("price"));
-                    appointment.setAppointmentDate(rs.getTimestamp("appointment_time"));
-                    appointment.setStartTime(rs.getTime("start_time").toLocalTime());
-                    appointment.setEndTime(rs.getTime("end_time").toLocalTime());
-                    String customerId = rs.getString("customer_id");
-                    UserDAO udao = new UserDAO();
-                    User user = udao.getUserById(customerId);
-                    appointment.setUser(user);
+                appointment.setId(rs.getString("id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setPaymentStatus(rs.getString("payment_status"));
+                appointment.setPaymentMethod(rs.getString("payment_method"));
+                appointment.setNote(rs.getString("notes"));
+                appointment.setPrice(rs.getDouble("price"));
+                appointment.setAppointmentDate(rs.getTimestamp("appointment_time"));
+                appointment.setStartTime(rs.getTime("start_time").toLocalTime());
+                appointment.setEndTime(rs.getTime("end_time").toLocalTime());
 
-                    String petId = rs.getString("pet_id");
-                    Pet pet = udao.getPetsById(petId);
-                    appointment.setPet(pet);
+                String customerId = rs.getString("customer_id");
+                User user = udao.getUserById(customerId);
+                appointment.setUser(user);
 
-                    String doctorIdTable = rs.getString("doctor_id");
-                    StaffDAO sdao = new StaffDAO();
-                    Doctor doctor = sdao.getDoctorById(doctorIdTable);
-                    appointment.setDoctor(doctor);
+                String petId = rs.getString("pet_id");
+                Pet pet = udao.getPetsById(petId);
+                appointment.setPet(pet);
 
-                    appointments.add(appointment);
-                }
+                String doctorIdTable = rs.getString("doctor_id");
+                Doctor doctor = sdao.getDoctorById(doctorIdTable);
+                appointment.setDoctor(doctor);
 
+                appointment.setChekinStatus(rs.getString("checkin_status"));
+
+                appointments.add(appointment);
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AppointmentDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return appointments;
@@ -369,7 +386,35 @@ public class AppointmentDAO {
             return false;
         }
     }
-
     
+    public boolean updateCheckinStatus(String appointmentId, String status) {
+    String sql = "UPDATE appointments SET checkin_status = ? WHERE id = ?";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, status);
+        ps.setString(2, appointmentId);
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+    public static void main(String[] args) {
+        AppointmentDAO dao = new AppointmentDAO();
+        String appointmentId = "B6192EC2-D431-41C1-BD17-09BF1077ECA0";
+       
+
+        
+       
+
+        boolean success = dao.updateCheckinStatus(appointmentId, "checkin");
+
+        if (success) {
+            System.out.println("✅ Cập nhật giờ hẹn thành công!");
+        } else {
+            System.out.println("❌ Cập nhật giờ hẹn thất bại.");
+        }
+    }
 
 }

@@ -1,6 +1,6 @@
 <%-- 
-    Document   : login
-    Created on : May 26, 2025, 10:50:39 AM
+    Document   : ResetPassword
+    Created on : Jun 8, 2025, 11:54:30 PM
     Author     : Admin
 --%>
 
@@ -50,76 +50,29 @@
         </div>
 
         <!-- Hero Start -->
-        <section class="bg-half-100 d-table w-100 "
-         style="background: #87CEFA url('${pageContext.request.contextPath}/assets/images/bg/bg-lines-one.png') center center no-repeat;">
+        <section class="bg-home d-flex  align-items-center" style="background: #87CEFA url('${pageContext.request.contextPath}/assets/images/bg/bg-lines-one.png') center;">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-5 col-md-8">
 
-                        <div class="card login-page shadow mt-4 rounded border-0" style="background-color: #CAE1FF;">
+                        <div class="card login-page  shadow mt-4 rounded border-0" style="background-color: #CAE1FF;">
                             <div class="card-body">
-                                <h4 class="text-center">Đăng kí</h4>  
-                                <form action="register"  method="POST" class="login-form mt-4">
+                                <h4 class="text-center">Cấp lại mật khẩu</h4>  
+                                <form class="login-form mt-4" method="post" action="resetPassword">
                                     <div class="row">
-                                        <div class="col-md-12 ">
-                                            <div class="mb-3 ">                                               
-                                                <label class="form-label text-center">Họ và tên<span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                                    <input type="text" class="form-control" id="fullName" placeholder="Nhập họ và tên ..." name="name" required="">
-                                                     </div>
-                                                    <small id="fullNameError" class="error" style="color:red; display:none;"></small>
-                                               
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Email <span class="text-danger">*</span></label>
-                                                <div class="input-group">
+                                        <div class="mb-3">
+                                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                                            <div class="input-group">
                                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                                    <input type="email" class="form-control" id="email" placeholder="Nhập Email..." name="email" required="">
-                                                   </div> 
-                                                    <small id="emailError" class="error" style="color:red; display:none;"></small>
-                                                
+                                            <!-- Hiển thị email, không cho sửa -->
+                                            <input type="email"
+                                                   class="form-control"
+                                                   id="email"
+                                                   name="email"
+                                                   value="${email}"    <!-- tự động điền giá trị từ servlet -->
                                             </div>
                                         </div>
 
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                                    <input type="number" class="form-control"  id="phone"placeholder="Nhập số điện thoại ..." name="phone" required="">
-                                                   </div>
-                                                    <small id="phoneError" class="error" style="color:red; display:none;"></small>
-                                                
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                                                    <input type="Text" class="form-control" placeholder="Nhập địa chỉ ..." name="address" required="">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Tên tài khoản<span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                                    <input type="text" class="form-control" id="userName" placeholder="Nhập tên tài khoản ..." name="username" required="">
-                                                    </div>
-                                                    <small id="userNameError" class="error" style="color:red; display:none;"></small>
-                                                
-                                            </div>
-                                        </div>   
-                                        
-                                        <!--sửa ở chỗ này-->
                                         <div class="col-md-12">
                                             <div class="mb-3">
                                                 <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
@@ -148,27 +101,15 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-12">
+                                        <div class="col-lg-12">
                                             <div class="d-grid">
-                                                <button class="btn btn-primary">Đăng kí</button>
+                                                <button class="btn btn-primary">Cấp lại</button>
                                             </div>
                                         </div>
-
-                                        <div class="col-lg-12 mt-3 text-center">
-                                            <h6 class="text-muted">Hoặc</h6>
-                                        </div>
-
-                                        <div class="col-12 mt-3">
-                                            <div class="d-grid">
-                                                <a href="javascript:void(0)" class="btn btn-soft-danger"><i class="uil uil-google"></i> Google</a>
-                                            </div>
-                                        </div><!--end col-->
-
-                                        <div class="mx-auto text-center">
-                                            <p class="mb-0 mt-3"><small class="text-dark me-2">Đã có tài khoản ?</small> <a href="login" class="text-dark fw-bold text-decoration-underline">Đăng nhập</a></p>
-                                        </div>
+                                        
                                     </div>
                                 </form>
+                                <p class="text-danger text-center">${mess}</p>
                             </div>
                         </div><!---->
                     </div> <!--end col-->
@@ -177,26 +118,13 @@
         </section><!--end section-->
         <!-- Hero End -->
 
+
         <script>
             // Regex kiểm tra email hợp lệ
             function isValidEmail(email) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
             }
 
-            // Regex kiểm tra username hợp lệ: ít nhất 3 ký tự, không cho nhập <script>, _
-            function isValidUsername(username) {
-                // Không cho phép script (để tránh XSS nguy hiểm)
-                const hasScript = /<\s*script/i.test(username);
-                if (hasScript)
-                    return false;
-
-                return username.length >= 3;
-            }
-
-            // Regex kiểm tra số điện thoại: 10 số bắt đầu bằng 0 hoặc +84
-            function isValidPhone(phone) {
-                return /^(032|033|034|035|036|037|038|039|096|097|098|086|081|082|083|084|091|090|093|089|070|079|077|076|078)\d{7}$/.test(phone);
-            }
 
             // Hiển thị lỗi
             function showError(inputId, message) {
@@ -207,20 +135,6 @@
                 }
             }
 
-            // Kiểm tra username
-            function validateUsername() {
-                const username = document.getElementById('userName').value.trim();
-                if (!username) {
-                    showError('userName', 'Tên đăng nhập không được để trống!');
-                    return false;
-                }
-                if (!isValidUsername(username)) {
-                    showError('userName', 'Tên đăng nhập phải có ít nhất 3 ký tự!');
-                    return false;
-                }
-                showError('userName', '');
-                return true;
-            }
 
             // Kiểm tra email
             function validateEmail() {
@@ -237,7 +151,7 @@
                 return true;
             }
 
-            // Kiểm tra password 8<x<20 ký tự, trong đấy có ít nhất 1 chữ hoa, thường, ký tự đặc biệt, số
+            // Kiểm tra password ≥ 6 ký tự, trong đấy có ít nhất 1 chữ hoa, thường, ký tự đặc biệt, số
             function validatePassword() {
                 const password = document.getElementById('password').value.trim();
 
@@ -297,38 +211,7 @@
                 return true;
             }
 
-            // Kiểm tra họ tên
-            function validateFullName() {
-                const fullName = document.getElementById('fullName').value.trim();
 
-                if (!fullName) {
-                    showError('fullName', 'Họ và tên không được để trống!');
-                    return false;
-                }
-
-                if (fullName.length > 30) {
-                    showError('fullName', 'Họ và tên không được vượt quá 30 ký tự!');
-                    return false;
-                }
-
-                showError('fullName', '');
-                return true;
-            }
-
-            // Kiểm tra số điện thoại
-            function validatePhone() {
-                const phone = document.getElementById('phone').value.trim();
-                if (!phone) {
-                    showError('phone', 'Số điện thoại không được để trống! số phải thuộc các nhà mạng Viettel, Vinaphone, Mobiphone');
-                    return false;
-                }
-                if (!isValidPhone(phone)) {
-                    showError('phone', 'Số điện thoại không hợp lệ!');
-                    return false;
-                }
-                showError('phone', '');
-                return true;
-            }
             // sửa ở chỗ này!!!
             function togglePassword() {
                 const passwordField = document.getElementById("password");
@@ -362,23 +245,19 @@
 
             // Kiểm tra toàn bộ form
             function validateForm() {
-                return validateUsername()
-                        && validateEmail()
+                return  validateEmail()
                         && validatePassword()
                         && validateRePassword()
-                        && validateFullName()
-                        && validatePhone();
+
             }
 
             // Gắn sự kiện blur khi trang tải
             document.addEventListener('DOMContentLoaded', function () {
                 const inputs = [
-                    {id: 'userName', validate: validateUsername},
+
                     {id: 'email', validate: validateEmail},
                     {id: 'password', validate: validatePassword},
                     {id: 'repassword', validate: validateRePassword},
-                    {id: 'fullName', validate: validateFullName},
-                    {id: 'phone', validate: validatePhone}
                 ];
 
                 inputs.forEach(({ id, validate }) => {
@@ -392,12 +271,11 @@
                 if (form) {
                     form.addEventListener('submit', function (e) {
                         if (
-                                !validateUsername() ||
                                 !validateEmail() ||
                                 !validatePassword() ||
-                                !validateRePassword() ||
-                                !validateFullName() ||
-                                !validatePhone()
+                                !validateRePassword()
+
+
                                 ) {
                             e.preventDefault(); // chặn submit nếu có lỗi
                         }

@@ -89,6 +89,7 @@ public class Booking extends HttpServlet {
         String todayStr = sdf.format(today);
 
         double defaultPrice = adao.getPriceByDate();
+        
 
         request.setAttribute("defaultDate", todayStr);
         request.setAttribute("defaultPrice", defaultPrice);

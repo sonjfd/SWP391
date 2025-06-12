@@ -54,10 +54,25 @@ public class User {
         this.address = address;
     }
 
+    public User(String email, String fullName) {
+        this.email = email;
+        this.fullName = fullName;
+        this.avatar = null;
+
+    }
+
+    public User(String id, String userName, String email, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+    }
+
     public User(String id) {
         this.id = id;
     }
 
+  
     public String getId() {
         return id;
     }
