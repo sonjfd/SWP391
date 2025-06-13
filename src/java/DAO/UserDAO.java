@@ -61,6 +61,26 @@ public class UserDAO {
         }
     }
 
+    public void updatePassword(String userId, String newPassword) throws SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBContext.getConnection();
+            String sql = "UPDATE Users SET password = ? WHERE id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, newPassword);
+            stmt.setString(2, userId);
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
+
     public User getUserById(String id) {
         String sql = "SELECT * FROM users WHERE id = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -589,6 +609,7 @@ public class UserDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
                 return new User(
                         rs.getString("id"),
@@ -828,9 +849,8 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
-    
-    
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 

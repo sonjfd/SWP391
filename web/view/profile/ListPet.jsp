@@ -7,11 +7,16 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
+    <c:if test="${not empty sessionScope.user}">
 
+<<<<<<< HEAD
     <c:if test="${not empty sessionScope.user}">
 
     </c:if>
 
+=======
+    </c:if>
+>>>>>>> dai
 
     <head>
         <meta charset="utf-8" />
@@ -300,14 +305,12 @@
             <c:remove var="SuccessMessage" scope="session"/>
         </c:if>
 
-
         <c:if test="${not empty sessionScope.FailMessage}">
             <script>
                 alert('${sessionScope.FailMessage}');
             </script>
             <c:remove var="FailMessage" scope="session"/>
         </c:if>
-
 
 
         <!-- Navbar STart -->

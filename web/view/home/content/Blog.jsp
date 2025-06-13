@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -149,45 +150,74 @@
             </div>
         </section>
 
-
-        <section class="featured-news container py-5">
-            <div class="row align-items-center gx-5">
-                <div class="col-md-6">
-                    <img src="${pageContext.request.contextPath}/${blogs[0].image}" class="featured-img img-fluid rounded-4 shadow-sm" alt="Main blog image">
-                </div>
-                <div class="col-md-6">
+        <!-- Start -->
+        <!-- Blogs Section Start -->
+       
+<section class="featured-news container py-5">
+    <div class="row align-items-center gx-5">
+        <div class="col-md-6">
+            <img src="${pageContext.request.contextPath}/${blogs[0].image}" class="featured-img img-fluid rounded-4 shadow-sm" alt="Main blog image">
+        </div>
+        <div class="col-md-6">
+            <p class="text-orange small mb-1">
+                <fmt:formatDate value="${blogs[0].publishedAt}" pattern="dd/MM/yyyy"/>
+            </p>
+            <h3 class="featured-title">${blogs[0].title}</h3>
+            <p class="text-muted mt-3">${fn:substring(blogs[0].content, 0, 240)}...</p>
+            <a href="blog-detail?id=${blogs[0].id}" class="btn-green mt-2">Xem thêm <span>&#8594;</span></a>
+        </div>
+    </div>
+</section>
+<section class="container pb-5">
+    <h4 class="text-blue fw-bold mb-4">TIN MỚI</h4>
+    <div class="row g-4">
+        <c:forEach var="blog" items="${blogs}" varStatus="loop" begin="1">
+            <div class="col-md-4 col-sm-6">
+                <div class="news-card p-3 h-100">
+                    <img src="${pageContext.request.contextPath}/${blog.image}" class="news-img mb-2" alt="Blog Image">
+                    <p class="text-muted small mb-1">BẢN TIN BỆNH VIỆN</p>
                     <p class="text-orange small mb-1">
-                        <fmt:formatDate value="${blogs[0].publishedAt}" pattern="dd/MM/yyyy"/>
+                        <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />
                     </p>
-                    <h1 >${blogs[0].title}</h1>
-                    <p class="text-muted mt-3">${fn:substring(blogs[0].content, 0, 240)}...</p>
-                    <a href="blog-detail?id=${blogs[0].id}" class="btn-green mt-2">Xem thêm <span>&#8594;</span></a>
+                    <h6 class="fw-bold mb-1">${blog.title}</h6>
+                    <p class="text-muted small mb-2">${fn:substring(blog.content, 0, 100)}...</p>
+                    <a href="blog-detail?id=${blog.id}" class="text-orange small">Xem thêm →</a>
                 </div>
             </div>
-        </section>
-
-
-
-        <!-- TIN MỚI -->
-        <section class="container pb-5">
-            <h4 class="text-blue fw-bold mb-4">TIN MỚI</h4>
-            <div class="row g-4">
-                <c:forEach var="blog" items="${blogs}" varStatus="loop" begin="1">
-                    <div class="col-md-4 col-sm-6">
-                        <div class="news-card p-3 h-100">
-                            <img src="${pageContext.request.contextPath}/${blog.image}" class="news-img mb-2" alt="Blog Image">
-                            <p class="text-muted small mb-1">BẢN TIN BỆNH VIỆN</p>
-                            <p class="text-orange small mb-1">
-                                <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />
-                            </p>
-                            <h6 class="fw-bold mb-1">${blog.title}</h6>
-                            <p class="text-muted small mb-2">${fn:substring(blog.content, 0, 100)}...</p>
-                            <a href="blog-detail?id=${blog.id}" class="text-orange small">Xem thêm →</a>
-                        </div>
-                    </div>
+        </c:forEach>
+    </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <h6 class="mb-3">CÁC THẺ ĐỀ XUẤT</h6>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <c:forEach var="tag" items="${allTags}">
+                    <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark me-2 mb-2 ${selectedTag == tag.id ? 'border border-primary' : ''}">
+                        ${tag.name}
+                    </a>
                 </c:forEach>
             </div>
-        </section>
+        </div>
+        <div class="col-12">
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item ${index == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="homeblog?index=${index - 1}&tag=${selectedTag}">Prev</a>
+                    </li>
+                    <c:forEach var="i" begin="1" end="${endP}">
+                        <li class="page-item ${index == i ? 'active' : ''}">
+                            <a class="page-link" href="homeblog?index=${i}&tag=${selectedTag}">${i}</a>
+                        </li>
+                    </c:forEach>
+                    <li class="page-item ${index == endP ? 'disabled' : ''}">
+                        <a class="page-link" href="homeblog?index=${index + 1}&tag=${selectedTag}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</section>
+        <!-- End Blogs Section -->
+        <!-- End -->
 
 
 

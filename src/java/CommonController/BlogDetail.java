@@ -6,7 +6,6 @@ package CommonController;
 
 import DAO.BlogDAO;
 import Model.Blog;
-import Model.BlogComment;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,19 +46,13 @@ public class BlogDetail extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
-        boolean hasReacted = false;
-        boolean isBookmarked = false;
+        
 
-        if (user != null && blog != null) {
-            hasReacted = blogDAO.hasReacted(blog, user);
-            isBookmarked = blogDAO.isBookmarked(blog, user);
-        }
+        
 
-        request.setAttribute("hasReacted", hasReacted);
-        request.setAttribute("isBookmarked", isBookmarked);
+        
 
-        List<BlogComment> comments = blogDAO.getCommentsByBlogId(blogId);
-        request.setAttribute("comments", comments);
+        
         request.getRequestDispatcher("/view/home/content/BlogDetail.jsp").forward(request, response);
     }
 

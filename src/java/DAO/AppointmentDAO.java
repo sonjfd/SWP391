@@ -836,10 +836,296 @@ public class AppointmentDAO {
         return list;
     }
 
-    public static void main(String[] args) {
-        AppointmentDAO dao = new AppointmentDAO();
+    
 
-        System.out.println(dao.filterAppointments(1, null, null));
+
+
+
+    // CỦA ĐẠI
+    
+
+    
+    //Lấy tổng cuộc họp theo ca của ngày của bác si
+    public int getTotalAppointments(String doctorId, Date workDate, int shiftId) {
+        int total = 0;
+        String sql = """
+    SELECT COUNT(*) 
+    FROM appointments a
+    JOIN doctor_schedule ds ON a.doctor_id = ds.doctor_id
+    JOIN shift s ON ds.shift_id = s.shift_id
+    WHERE a.doctor_id = ?
+      AND ds.work_date = ?
+      AND ds.shift_id = ?
+      AND CONVERT(DATE, a.appointment_time) = ds.work_date
+      AND a.start_time BETWEEN s.start_time AND s.end_time
+    """;
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, doctorId);
+            ps.setDate(2, new java.sql.Date(workDate.getTime()));
+            ps.setInt(3, shiftId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getInt(1); // Get the count of appointments
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    //DASHBOARD
+    public List<Appointment> getLatestAppointments(String doctorId) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = """
+        SELECT TOP 5 a.id, a.appointment_time, a.status, p.pet_code, p.name as pet_name, p.avatar as pet_avatar
+        FROM appointments a
+        JOIN pets p ON a.pet_id = p.id
+        WHERE a.doctor_id = ? AND a.appointment_time >= CAST(GETDATE() AS DATE)
+        ORDER BY a.appointment_time DESC
+        """;
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Appointment appt = new Appointment();
+                appt.setId(rs.getString("id"));
+                appt.setAppointmentDate(rs.getTimestamp("appointment_time"));
+                appt.setStatus(rs.getString("status"));
+
+                Pet pet = new Pet();
+                pet.setPet_code(rs.getString("pet_code"));
+                pet.setName(rs.getString("pet_name"));
+                pet.setAvatar(rs.getString("pet_avatar"));
+
+                appt.setPet(pet);
+                list.add(appt);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Lấy tổng số cuộc hẹn trong tuần hiện tại
+    public int getAppointmentsCountForWeek(String doctorId) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) AS total FROM appointments "
+                + "WHERE doctor_id = ? "
+                + "AND DATEPART(WEEK, appointment_time) = DATEPART(WEEK, GETDATE()) "
+                + "AND YEAR(appointment_time) = YEAR(GETDATE())";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setString(1, doctorId);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    // Lấy tổng số bệnh nhân trong tuần
+    public int getPatientsCountForWeek(String doctorId) {
+        int count = 0;
+        String sql = "SELECT COUNT(DISTINCT customer_id) AS total FROM appointments "
+                + "WHERE doctor_id = ? "
+                + "AND DATEPART(WEEK, appointment_time) = DATEPART(WEEK, GETDATE()) "
+                + "AND YEAR(appointment_time) = YEAR(GETDATE())";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setString(1, doctorId);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+    //HẾT DASHBOARD
+
+    
+   
+    
+
+    public List<Appointment> getAppointmentDetailsByDoctorAndAppointment( String appointmentId) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = """
+        SELECT
+            a.status as a_status, notes, a.appointment_time as app_time, start_time, end_time,       
+            u.full_name AS owner_name, u.avatar as u_avatar,
+            u.phone AS owner_phone,
+            u.email AS owner_email,
+            u.address AS owner_address,
+            p.pet_code AS pet_code,p.id as pet_id,  -- Mã pet để phân biệt pet trùng tên
+            p.name AS pet_name,p.description as p_desc,a.doctor_id,
+            p.gender AS pet_gender,
+            p.birth_date AS pet_birth_date,
+            p.avatar AS pet_avatar,
+            b.name AS breed_name,
+            s.name AS species_name
+        FROM appointments a
+        JOIN users u ON a.customer_id = u.id
+        JOIN pets p ON a.pet_id = p.id
+        JOIN breeds b ON p.breeds_id = b.id
+        JOIN species s ON b.species_id = s.id
+        WHERE a.id = ?;
+        """;
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, appointmentId);      // Set appointment_id vào câu lệnh SQL
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                // Lấy thông tin của chủ pet
+                User user = new User();
+                user.setFullName(rs.getString("owner_name"));
+                user.setPhoneNumber(rs.getString("owner_phone"));
+                user.setEmail(rs.getString("owner_email"));
+                user.setAddress(rs.getString("owner_address"));
+                user.setAvatar(rs.getString("u_avatar"));
+
+                // Lấy thông tin giống loài
+                Breed breed = new Breed();
+                breed.setName(rs.getString("breed_name"));
+                // Lấy thông tin loài
+                Specie species = new Specie();
+                species.setName(rs.getString("species_name"));
+                breed.setSpecie(species);
+
+                // Lấy thông tin pet
+                Pet pet = new Pet();
+                pet.setPet_code(rs.getString("pet_code"));
+                pet.setName(rs.getString("pet_name"));
+                pet.setGender(rs.getString("pet_gender"));
+                pet.setBirthDate(rs.getDate("pet_birth_date"));
+                pet.setAvatar(rs.getString("pet_avatar"));
+                pet.setBreed(breed);
+                pet.setDescription(rs.getString("p_desc"));
+                pet.setUser(user);
+                pet.setId(rs.getString("pet_id"));
+                
+
+                // Tạo đối tượng Appointment và gắn thông tin
+                Appointment appt = new Appointment();
+                appt.setUser(user);
+                appt.setPet(pet);
+                appt.setNote(rs.getString("notes"));
+                appt.setStartTime(rs.getTime("start_time").toLocalTime());
+                appt.setEndTime(rs.getTime("end_time").toLocalTime());
+                appt.setAppointmentDate(rs.getDate("app_time"));
+                appt.setStatus(rs.getString("a_status"));
+                User doc = new User(rs.getString("doctor_id"));
+                Doctor doctor = new Doctor();
+                doctor.setUser(doc);
+                appt.setDoctor(doctor);
+                // Thêm vào danh sách kết quả
+                list.add(appt);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+/// API LẤY CUỘC HẸN THEO TUẦN
+    public List<Appointment> getAppointmentsByWeek(String doctorId, Date startOfWeek, Date endOfWeek) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = """
+        SELECT 
+            a.id as a_id,a.status as a_status,start_time,end_time,notes,appointment_time,a.doctor_id,      
+            u.id as user_id, u.full_name, u.avatar as user_avatar,address,phone,email,
+            p.id as pet_id, p.birth_date as pet_birth, p.avatar as pet_avatar, p.pet_code as pet_code,p.name as pet_name,
+            p.gender as pet_gender,p.description as pet_description,
+            b.name as breed_name,
+            s.name AS species_name
+        FROM appointments a
+        JOIN users u ON a.customer_id = u.id
+        JOIN pets p ON a.pet_id = p.id
+        JOIN breeds b ON p.breeds_id = b.id
+        JOIN species s ON b.species_id = s.id
+        WHERE a.doctor_id = ? 
+        AND a.appointment_time BETWEEN ? AND ?
+        ORDER BY a.appointment_time
+        """;
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, doctorId);
+            ps.setTimestamp(2, new Timestamp(startOfWeek.getTime()));
+            ps.setTimestamp(3, new Timestamp(endOfWeek.getTime()));
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("user_id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setAvatar(rs.getString("user_avatar"));
+                user.setAddress(rs.getString("address"));
+                user.setPhoneNumber(rs.getString("phone"));
+                user.setEmail(rs.getString("email"));
+
+                // Lấy thông tin giống loài
+                Breed breed = new Breed();
+                breed.setName(rs.getString("breed_name"));
+                Specie specie = new Specie();
+
+                // Lấy thông tin pet
+                Pet pet = new Pet();
+                pet.setId(rs.getString("pet_id"));
+                pet.setGender(rs.getString("pet_gender"));
+                pet.setAvatar(rs.getString("pet_avatar"));
+                pet.setPet_code(rs.getString("pet_code"));
+                pet.setDescription(rs.getString("pet_description"));
+                pet.setBirthDate(rs.getDate("pet_birth"));
+                pet.setBreed(breed);
+                pet.setUser(user);
+                pet.setName(rs.getString("pet_name"));
+
+                // Tạo đối tượng Appointment
+                Appointment appt = new Appointment();
+                appt.setId(rs.getString("a_id"));
+                User doctor = new User();
+                doctor.setId(doctorId);
+                Doctor d =new Doctor();
+                d.setUser(doctor);
+                appt.setDoctor(d);
+                appt.setUser(user);
+                appt.setPet(pet);
+                appt.setAppointmentDate(rs.getTimestamp("appointment_time"));
+                appt.setStartTime(rs.getTime("start_time").toLocalTime());
+                appt.setEndTime(rs.getTime("end_time").toLocalTime());
+                appt.setStatus(rs.getString("a_status"));
+                appt.setNote(rs.getString("notes"));
+
+                // Thêm vào danh sách
+                list.add(appt);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+// HẾT CỦA ĐẠI
+
+    public static void main(String[] args) throws ParseException {
+        // Get a Calendar instance
+        Calendar calendar = Calendar.getInstance();
+
+        // Add one day to the current date
+        SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+        Date da = s.parse("2025-06-11");
+        // Get the Date object from the Calendar
+        Date tomorrow = calendar.getTime();
+
+        java.sql.Date today = new java.sql.Date(new Date().getTime());
+        System.out.println(da);
+        List<Appointment> pets = new AppointmentDAO().getAppointmentDetailsByDoctorAndAppointment("D19186EE-65A3-4CF3-971B-FF7BD769F454");
+        System.out.println("Found pets: " + pets.get(0).getPet().getPet_code());
     }
 
 }

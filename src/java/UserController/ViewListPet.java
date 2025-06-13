@@ -82,7 +82,6 @@ public class ViewListPet extends HttpServlet {
         List<Pet> listpet = u.getPetsByUser(uid);
         request.setAttribute("listpet", listpet);
 
-
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }
 
