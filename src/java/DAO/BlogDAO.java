@@ -1,7 +1,6 @@
 package DAO;
 
 import Model.Blog;
-
 import Model.Tag;
 import Model.User;
 import java.sql.Connection;

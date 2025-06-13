@@ -6,7 +6,6 @@ package CommonController;
 
 import DAO.BlogDAO;
 import Model.Blog;
-
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
