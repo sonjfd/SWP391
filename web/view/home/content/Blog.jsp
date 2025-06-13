@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -28,7 +29,59 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
-
+        <style>
+            .featured-img {
+            width: 100%;
+            height: 340px;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        .featured-title {
+            font-size: 24px;
+            font-weight: 700;
+            background-color: #1d4ed8;
+            color: #fff;
+            padding: 14px 18px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .btn-green {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            display: inline-block;
+        }
+        .btn-green:hover {
+            background-color: #43a047;
+        }
+        .news-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            transition: transform 0.2s ease;
+        }
+        .news-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: 0.3s;
+        }
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+        .text-orange { color: #FF6A00; }
+        .text-blue { color: #0030FF; }
+        @media (max-width: 768px) {
+            .news-img { height: 130px; }
+        }
+        </style>
     </head>
     <body>
         <%@include file="../layout/Header.jsp" %>
@@ -67,66 +120,70 @@
 
         <!-- Start -->
         <!-- Blogs Section Start -->
-        <section class="py-5">
-            <div class="container">
-                <div class="row">
-                    <!-- LEFT: Blog Posts -->
-                    <div class="col-lg-8">
-                        <c:forEach var="blog" items="${blogs}">
-                            <div class="card mb-4 shadow-sm">
-                                <div class="card-body d-flex">
-                                    <div class="flex-grow-1">
-                                        <h5 class="card-title"><a href="blog-detail?id=${blog.id}" class="text-dark">${blog.title}</a></h5>
-                                        <p class="card-text text-muted">${fn:substring(blog.content, 0, 100)}...</p>
-                                        <small class="text-muted">
-                                            <i class="bi bi-clock"></i>
-                                            <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />
-                                        </small>
-                                        <div class="mt-2">
-                                            <c:forEach var="tag" items="${blog.tags}">
-                                                <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark border me-1">${tag.name}</a>
-                                            </c:forEach>
-                                        </div>
-                                    </div>
-                                    <img src="${pageContext.request.contextPath}/${blog.image}" class="ms-3" style="width: 120px; height: 90px; object-fit: cover;" alt="img">
-                                </div>
-                            </div>
-                        </c:forEach>
-
-                        <!-- Pagination -->
-                        <nav class="mt-4">
-                            <!-- Pagination -->
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item ${index == 1 ? 'disabled' : ''}">
-                                    <a class="page-link" href="homeblog?index=${index - 1}&tag=${selectedTag}">Prev</a>
-                                </li>
-                                <c:forEach var="i" begin="1" end="${endP}">
-                                    <li class="page-item ${index == i ? 'active' : ''}">
-                                        <a class="page-link" href="homeblog?index=${i}&tag=${selectedTag}">${i}</a>
-                                    </li>
-                                </c:forEach>
-                                <li class="page-item ${index == endP ? 'disabled' : ''}">
-                                    <a class="page-link" href="homeblog?index=${index + 1}&tag=${selectedTag}">Next</a>
-                                </li>
-                            </ul>
-
-                        </nav>
-                    </div>
-
-                    <!-- RIGHT: Tag Suggestions -->
-                    <div class="col-lg-4">
-                        <h6 class="mb-3">CÁC THẺ ĐỀ XUẤT</h6>
-                        <div class="d-flex flex-wrap gap-2 mb-4">
-                            <c:forEach var="tag" items="${allTags}">
-                                <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark me-2 mb-2 ${selectedTag == tag.id ? 'border border-primary' : ''}">
-                                    ${tag.name}
-                                </a>
-                            </c:forEach>
-                        </div>
-                    </div>
+       
+<section class="featured-news container py-5">
+    <div class="row align-items-center gx-5">
+        <div class="col-md-6">
+            <img src="${pageContext.request.contextPath}/${blogs[0].image}" class="featured-img img-fluid rounded-4 shadow-sm" alt="Main blog image">
+        </div>
+        <div class="col-md-6">
+            <p class="text-orange small mb-1">
+                <fmt:formatDate value="${blogs[0].publishedAt}" pattern="dd/MM/yyyy"/>
+            </p>
+            <h3 class="featured-title">${blogs[0].title}</h3>
+            <p class="text-muted mt-3">${fn:substring(blogs[0].content, 0, 240)}...</p>
+            <a href="blog-detail?id=${blogs[0].id}" class="btn-green mt-2">Xem thêm <span>&#8594;</span></a>
+        </div>
+    </div>
+</section>
+<section class="container pb-5">
+    <h4 class="text-blue fw-bold mb-4">TIN MỚI</h4>
+    <div class="row g-4">
+        <c:forEach var="blog" items="${blogs}" varStatus="loop" begin="1">
+            <div class="col-md-4 col-sm-6">
+                <div class="news-card p-3 h-100">
+                    <img src="${pageContext.request.contextPath}/${blog.image}" class="news-img mb-2" alt="Blog Image">
+                    <p class="text-muted small mb-1">BẢN TIN BỆNH VIỆN</p>
+                    <p class="text-orange small mb-1">
+                        <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />
+                    </p>
+                    <h6 class="fw-bold mb-1">${blog.title}</h6>
+                    <p class="text-muted small mb-2">${fn:substring(blog.content, 0, 100)}...</p>
+                    <a href="blog-detail?id=${blog.id}" class="text-orange small">Xem thêm →</a>
                 </div>
             </div>
-        </section>
+        </c:forEach>
+    </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <h6 class="mb-3">CÁC THẺ ĐỀ XUẤT</h6>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <c:forEach var="tag" items="${allTags}">
+                    <a href="homeblog?tag=${tag.id}" class="badge bg-light text-dark me-2 mb-2 ${selectedTag == tag.id ? 'border border-primary' : ''}">
+                        ${tag.name}
+                    </a>
+                </c:forEach>
+            </div>
+        </div>
+        <div class="col-12">
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item ${index == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="homeblog?index=${index - 1}&tag=${selectedTag}">Prev</a>
+                    </li>
+                    <c:forEach var="i" begin="1" end="${endP}">
+                        <li class="page-item ${index == i ? 'active' : ''}">
+                            <a class="page-link" href="homeblog?index=${i}&tag=${selectedTag}">${i}</a>
+                        </li>
+                    </c:forEach>
+                    <li class="page-item ${index == endP ? 'disabled' : ''}">
+                        <a class="page-link" href="homeblog?index=${index + 1}&tag=${selectedTag}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</section>
         <!-- End Blogs Section -->
         <!-- End -->
 
