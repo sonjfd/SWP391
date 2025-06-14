@@ -71,6 +71,9 @@
 <li><a href="listslider"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý trình chiếu</a></li> 
 
 <li><a href="listshift"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý ca làm việc</a></li>
+
+<li><a href="listservice"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý dịch vụ</a></li>
+
                     </ul>
                     <!-- sidebar-menu  -->
                 </div>

@@ -260,6 +260,7 @@
                             <option value="">Tất cả</option>
                             <option value="3">Bác sĩ</option>
                             <option value="4">Nhân viên</option>
+                            <option value="5">Y tá</option>
                         </select>
                     </div>
                     <div>

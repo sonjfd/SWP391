@@ -115,7 +115,7 @@
         </div>
     </div>
 
-    <jsp:include page="../layout/Footer.jsp" />
+    
 
     <script>
         const form = document.getElementById('createShiftForm');
