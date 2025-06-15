@@ -345,106 +345,6 @@ CREATE TABLE blog_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
-
-
--- Danh mục sản phẩm
-CREATE TABLE categories (
-  category_id INT PRIMARY KEY IDENTITY(1,1),
-  category_name NVARCHAR(50) UNIQUE NOT NULL,
-  description TEXT
-);
-
--- Nhà cung cấp
-CREATE TABLE suppliers (
-  supplier_id INT PRIMARY KEY IDENTITY(1,1),
-  supplier_name NVARCHAR(100) NOT NULL,
-  contact_name NVARCHAR(100),
-  phone NVARCHAR(20),
-  email NVARCHAR(100),
-  address TEXT,
-  created_at DATETIME DEFAULT GETDATE()
-);
-
--- Sản phẩm
-CREATE TABLE products (
-  product_id INT PRIMARY KEY IDENTITY(1,1),
-  category_id INT NOT NULL,
-  supplier_id INT NOT NULL,
-  product_name NVARCHAR(100) NOT NULL,
-  description TEXT,
-  image NVARCHAR(255),
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_products_categories FOREIGN KEY (category_id) REFERENCES categories(category_id),
-  CONSTRAINT FK_products_suppliers FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
-);
-
--- Biến thể sản phẩm (ví dụ: size, gói nhỏ/lớn)
-CREATE TABLE product_variants (
-  product_variant_id INT PRIMARY KEY IDENTITY(1,1),
-  product_id INT NOT NULL,
-  variant_name NVARCHAR(100) NOT NULL,
-  price DECIMAL(10,2) NOT NULL,
-  stock_quantity INT NOT NULL,
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_variants_products FOREIGN KEY (product_id) REFERENCES products(product_id)
-);
-
--- Trọng lượng cho biến thể
-CREATE TABLE product_variant_weights (
-  weight_id INT PRIMARY KEY IDENTITY(1,1),
-  product_variant_id INT UNIQUE NOT NULL,
-  weight DECIMAL(10,2),
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_weights_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
-);
-
--- Hương vị cho biến thể
-CREATE TABLE product_variant_flavors (
-  flavor_id INT PRIMARY KEY IDENTITY(1,1),
-  product_variant_id INT UNIQUE NOT NULL,
-  flavor NVARCHAR(50),
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_flavors_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
-);
-
-
--- HOÁ ĐƠN BÁN HÀNG TẠI QUẦY (POS = Point Of Sale)
-CREATE TABLE pos_invoices (
-  pos_invoice_id INT PRIMARY KEY IDENTITY(1,1),
-  customer_id UNIQUEIDENTIFIER NOT NULL, -- users.id (role = 'customer')
-  staff_id UNIQUEIDENTIFIER NOT NULL,    -- users.id (role = 'staff')
-  invoice_date DATETIME DEFAULT GETDATE(),
-  total_amount DECIMAL(10,2) NOT NULL,
-  payment_status NVARCHAR(20) DEFAULT 'Unpaid', -- 'Paid' | 'Unpaid'
-  notes NVARCHAR(255),
-  created_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_pos_invoice_customer FOREIGN KEY (customer_id) REFERENCES users(id),
-  CONSTRAINT FK_pos_invoice_staff FOREIGN KEY (staff_id) REFERENCES users(id),
-  CONSTRAINT chk_pos_payment_status CHECK (payment_status IN ('Paid', 'Unpaid'))
-);
-
--- CHI TIẾT HOÁ ĐƠN BÁN HÀNG
-CREATE TABLE pos_invoice_items (
-  pos_invoice_item_id INT PRIMARY KEY IDENTITY(1,1),
-  pos_invoice_id INT NOT NULL,
-  product_variant_id INT NOT NULL,
-  quantity INT NOT NULL,
-  unit_price DECIMAL(10,2) NOT NULL,
-  total_price AS (quantity * unit_price) PERSISTED,
-
-  CONSTRAINT FK_pos_items_invoice FOREIGN KEY (pos_invoice_id) REFERENCES pos_invoices(pos_invoice_id),
-  CONSTRAINT FK_pos_items_variant FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
-);
-
 CREATE TABLE [dbo].[tokenForgetPassword](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[token] [varchar](255) NOT NULL,
@@ -461,3 +361,31 @@ GO
 ALTER TABLE [dbo].[tokenForgetPassword]  WITH CHECK ADD FOREIGN KEY([userId])
 REFERENCES [dbo].[users] ([id])
 GO
+
+CREATE TABLE ratings (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  appointment_id UNIQUEIDENTIFIER NOT NULL,
+  customer_id UNIQUEIDENTIFIER NOT NULL,
+  doctor_id UNIQUEIDENTIFIER NOT NULL,
+  satisfaction_level INT CHECK (satisfaction_level BETWEEN 1 AND 5),
+  comment NVARCHAR(MAX),
+  status NVARCHAR(50) DEFAULT 'pending' CHECK (status IN ('posted', 'hide', 'pending')),
+  created_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_rating_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+  CONSTRAINT FK_rating_customer FOREIGN KEY (customer_id) REFERENCES users(id),
+  CONSTRAINT FK_rating_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(user_id),
+  CONSTRAINT UQ_rating_appointment UNIQUE (appointment_id) -- mỗi appointment chỉ được đánh giá 1 lần
+);
+
+
+CREATE TABLE [dbo].[ChatHistory] (
+    [chat_id] INT IDENTITY(1,1) PRIMARY KEY,
+    [session_id] NVARCHAR(100),            
+    [user_id] UNIQUEIDENTIFIER NULL,       
+    [sender_type] NVARCHAR(10) NOT NULL,   
+    [message_text] NVARCHAR(MAX),
+    [created_at] DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT FK_ChatHistory_User FOREIGN KEY (user_id) REFERENCES users(id)
+);
