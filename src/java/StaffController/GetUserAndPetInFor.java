@@ -8,6 +8,7 @@ import DAO.UserDAO;
 import Model.Pet;
 import Model.User;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -65,23 +66,46 @@ public class GetUserAndPetInFor extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String userId = request.getParameter("userId");
-         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+
         UserDAO userDAO = new UserDAO();
         User user = userDAO.getUserById(userId);
         List<Pet> pets = userDAO.getPetsByUser(userId);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("user", user);
-        result.put("pets", pets);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        JsonObject json = new JsonObject();
 
        
+        JsonObject userJson = new JsonObject();
+        userJson.addProperty("id", user.getId());
+        userJson.addProperty("fullName", user.getFullName());
+        userJson.addProperty("email", user.getEmail());
+        userJson.addProperty("phoneNumber", user.getPhoneNumber());
+        userJson.addProperty("address", user.getAddress());
 
-        Gson gson = new Gson();
-        String json = gson.toJson(result);
+        json.add("user", userJson);
 
-        response.getWriter().write(json);
+        JsonArray petsArray = new JsonArray();
+        for (Pet pet : pets) {
+            JsonObject petJson = new JsonObject();
+            petJson.addProperty("id", pet.getId());
+            petJson.addProperty("name", pet.getName());
+            petJson.addProperty("species", pet.getBreed().getSpecie().getName());
+            petJson.addProperty("breed", pet.getBreed().getName());
+           
+
+            petsArray.add(petJson);
+        }
+
+        json.add("pets", petsArray);
+
+        // Trả về response
+        PrintWriter out = response.getWriter();
+        out.print(json.toString());
+        out.flush();
     }
 
     /**

@@ -412,7 +412,7 @@
                                                         <p><strong>Điều trị:</strong>${medical.treatment}</p>
                                                         <p><strong>Ngày tái khám:</strong> ${medical.reExamDate}</p>
                                                         <p><strong>Bác sĩ:</strong> ${medical.doctor.user.fullName}</p>
-                                                        <p><strong>Giờ khám:</strong><fmt:formatDate value="${medical.appointment.appointmentDate}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
+                                                        <p><strong>Giờ khám:</strong>${medical.appointment.startTime}-${medical.appointment.endTime}
                                                         <p><strong>Ngày tạo:</strong> <fmt:formatDate value="${medical.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
 
                                                         <p><strong>Ngày cập nhật:</strong> <fmt:formatDate value="${medical.updatedAt}" pattern="yyyy-MM-dd HH:mm:ss"/></p>

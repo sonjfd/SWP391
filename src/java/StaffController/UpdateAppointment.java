@@ -6,6 +6,7 @@ package StaffController;
 
 import DAO.AppointmentDAO;
 import DAO.StaffDAO;
+import Mail.SendEmail;
 import Model.Appointment;
 import Model.Doctor;
 import Model.User;
@@ -132,6 +133,14 @@ public class UpdateAppointment extends HttpServlet {
             boolean updated = adao.updateAppointment(appointment);
 
             if (updated) {
+                SendEmail send = new SendEmail();
+                if ("canceled".equals(appointment.getStatus())) {
+                    send.sendEmailAfterCancelBooking(appointment.getUser().getEmail(), appointment.getUser().getFullName(),
+                            appointment.getUser().getPhoneNumber(), appointment.getUser().getAddress(),
+                            appointment.getPet().getName(), 
+                            new SimpleDateFormat("dd/MM/yyyy").format(appointment.getAppointmentDate()),
+                            appointment.getStartTime().toString(), appointment.getEndTime().toString());
+                }
                 response.sendRedirect("list-appointment?success=update_success");
             } else {
                 request.setAttribute("error", "Cập nhật thất bại");

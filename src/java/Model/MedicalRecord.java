@@ -6,6 +6,7 @@ package Model;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -21,6 +22,8 @@ public class MedicalRecord {
     private Date reExamDate;
     private Date createdAt;
     private Date updatedAt;
+    private List<MedicalRecordFile> files;
+    private List<PrescribedMedicine> prescribedMedicines;
 
     public MedicalRecord() {
     }
@@ -111,6 +114,22 @@ public class MedicalRecord {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<MedicalRecordFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<MedicalRecordFile> files) {
+        this.files = files;
+    }
+
+    public List<PrescribedMedicine> getPrescribedMedicines() {
+        return prescribedMedicines;
+    }
+
+    public void setPrescribedMedicines(List<PrescribedMedicine> prescribedMedicines) {
+        this.prescribedMedicines = prescribedMedicines;
     }
 
     @Override

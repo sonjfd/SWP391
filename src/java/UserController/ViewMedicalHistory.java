@@ -4,8 +4,9 @@
  */
 package UserController;
 
-import DAO.MedicalRecordsDAO;
-import Model.MedicalRecords;
+
+import DAO.MedicalRecordDAO;
+import Model.MedicalRecord;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -71,8 +72,8 @@ public class ViewMedicalHistory extends HttpServlet {
             return;
         }
         User user = (User) session.getAttribute("user");
-        MedicalRecordsDAO md = new MedicalRecordsDAO();
-        List<MedicalRecords> list = new ArrayList<>();
+        MedicalRecordDAO md = new MedicalRecordDAO();
+        List<MedicalRecord> list = new ArrayList<>();
         list = md.getMedicalRecordsByCustomerId(user.getId());
         request.setAttribute("ListPetsMedical", list);
         request.getRequestDispatcher("view/profile/ListMedicalHistory.jsp").forward(request, response);

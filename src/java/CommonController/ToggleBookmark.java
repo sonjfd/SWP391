@@ -57,7 +57,7 @@ public class ToggleBookmark extends HttpServlet {
         BlogDAO blogDAO = new BlogDAO();
         Blog blog = blogDAO.getBlogById(blogId);
 
-        blogDAO.toggleBookmark(blog, user);
+        
 
         response.sendRedirect("blog-detail?id=" + blogId+"#reactions");
     }

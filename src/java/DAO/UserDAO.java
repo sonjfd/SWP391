@@ -27,7 +27,7 @@ import java.util.UUID;
  */
 public class UserDAO {
 
-    public boolean updatePassword(String userId, String newPassword)  {
+    public boolean updatePassword(String userId, String newPassword) {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -58,26 +58,6 @@ public class UserDAO {
             return sb.toString();
         } catch (Exception e) {
             throw new RuntimeException("Lỗi mã hóa mật khẩu", e);
-        }
-    }
-
-    public void updatePassword(String userId, String newPassword) throws SQLException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DBContext.getConnection();
-            String sql = "UPDATE Users SET password = ? WHERE id = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, newPassword);
-            stmt.setString(2, userId);
-            stmt.executeUpdate();
-        } finally {
-            if (stmt != null) {
-                stmt.close();
-            }
-            if (conn != null) {
-                conn.close();
-            }
         }
     }
 
@@ -157,20 +137,27 @@ public class UserDAO {
         }
         return false; // Nếu không thành công, trả về false
     }
+
     public User getUserByEmail(String email) {
         String sql = "SELECT * FROM Users WHERE email = ?";
-        try {
-            Connection conn = DAO.DBContext.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                User user = new User();
+              User user = new User();
                 user.setId(rs.getString("id"));
+                user.setUserName(rs.getString("username"));
                 user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
                 user.setFullName(rs.getString("full_name"));
+                user.setPhoneNumber(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
                 user.setAvatar(rs.getString("avatar"));
                 user.setStatus(rs.getInt("status"));
+                user.setCreateDate(rs.getTimestamp("created_at"));
+                user.setUpdateDate(rs.getTimestamp("updated_at"));
+
                 int roleId = rs.getInt("role_id");
                 user.setRole(new RoleDAO().getRoleById(roleId));
                 return user;
@@ -543,7 +530,7 @@ public class UserDAO {
         return list;
     }
 
-    public boolean addPet(String pet_code, String ownerid, String name,  int breedid, String gender, String avatar, String desc, String status) {
+ public boolean addPet(String pet_code, String ownerid, String name,  int breedid, String gender, String avatar, String desc) {
         Connection con = null;
         PreparedStatement ps = null;
         int rowsAffected = 0;
@@ -551,18 +538,17 @@ public class UserDAO {
             con = DBContext.getConnection();
 
             String sql = "INSERT INTO Pets (id, pet_code, owner_id, name, breeds_id, gender, avatar, description, status, created_at, updated_at) "
-                    + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?  ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                    + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ? ,'active' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
             ps = con.prepareStatement(sql);
             ps.setString(1, pet_code);
             ps.setString(2, ownerid);
             ps.setString(3, name);
-
             ps.setInt(4, breedid);
             ps.setString(5, gender);
             ps.setString(6, avatar);
             ps.setString(7, desc);
-            ps.setString(8, status);
+            
 
             rowsAffected = ps.executeUpdate();
 
@@ -582,7 +568,6 @@ public class UserDAO {
         }
         return rowsAffected > 0;
     }
-
     public boolean deletePet(String id) {
         String sql = "Delete pets where id =? ;";
         try {
@@ -599,8 +584,6 @@ public class UserDAO {
         }
         return false;
     }
-
-    
 
     public User getUserById(int userId) {
         String sql = "Select * from [Users] where id = ?";
@@ -758,7 +741,6 @@ public class UserDAO {
             Connection conn = DAO.DBContext.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
 
-            
             stmt.setString(1, name);
             stmt.setString(2, gender);
             stmt.setDate(3, (java.sql.Date) birthDate);  // đã là java.sql.Date
@@ -849,7 +831,7 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {

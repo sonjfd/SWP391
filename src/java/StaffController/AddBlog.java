@@ -17,6 +17,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 @MultipartConfig(
@@ -49,10 +50,14 @@ public class AddBlog extends HttpServlet {
         Part filePart = request.getPart("image");
 
         // Giả lập User
-        User author = new User();
-        author.setId("15CDC3F2-D890-4CC0-B021-0E3B2E584EF5");
-        author.setFullName("Trần Thị B");
-
+        HttpSession ss = request.getSession();
+        User u  = (User) ss.getAttribute("user");
+       
+        if(u==null){
+            response.sendRedirect("login");
+            return;
+        }
+        System.out.println("l");
         // Xử lý file ảnh
         String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
         String uploadPath = request.getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
@@ -68,7 +73,7 @@ public class AddBlog extends HttpServlet {
         blog.setTitle(title);
         blog.setContent(content);
         blog.setImage(dbImagePath);
-        blog.setAuthor(author);
+        blog.setAuthor(u);
         blog.setStatus(status);
         blog.setCreatedAt(new Date());
         blog.setUpdatedAt(new Date());
@@ -80,3 +85,4 @@ public class AddBlog extends HttpServlet {
         response.sendRedirect("list-blog");
     }
 }
+

@@ -90,7 +90,7 @@
 
                 <div class="row">
                     <!-- Form lọc bác sĩ -->
-                    <form method="get" action="filter-doctor-schedule" class="row g-2 mb-3 compact-form" onsubmit="return validateFilter();">
+                    <form method="get" action="list-work-schedule" class="row g-2 mb-3 compact-form" onsubmit="return validateFilter();">
                         <div class="col-md-3">
                             <label for="doctorId" class="form-label">Bác sĩ</label>
                             <select id="doctorId" name="doctorId" class="form-select form-select-sm">
@@ -217,7 +217,7 @@
                         <tbody>
                             <c:forEach items="${listshedules}" var="s" varStatus="loop">
                                 <tr>
-                                    <td>${loop.index + 1}</td>
+                                    <td>${offset + loop.index + 1}</td>
                                     <td><img src="${pageContext.request.contextPath}/${s.doctor.user.avatar}" alt="Avatar" style="width:40px; height:40px; border-radius:50%;">
                                     </td>
                                     <td>${s.doctor.user.fullName}</td>
@@ -257,6 +257,33 @@
                     </table>
                 </div>
             </div>
+            <c:if test="${totalPages > 0}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                            <a class="page-link" 
+                               href="list-work-schedule?page=${currentPage - 1}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}" 
+                               tabindex="-1">Trước</a>
+                        </li>
+
+                        <c:forEach var="i" begin="1" end="${totalPages}">
+                            <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" 
+                                   href="list-work-schedule?page=${i}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}">
+                                    ${i}
+                                </a>
+                            </li>
+                        </c:forEach>
+
+                        <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                            <a class="page-link" 
+                               href="list-work-schedule?page=${currentPage + 1}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}">
+                                Sau
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </c:if>
 
             <!--       Modal thong bao-->
             <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">

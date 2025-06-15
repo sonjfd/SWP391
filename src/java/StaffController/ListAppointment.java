@@ -5,8 +5,10 @@
 package StaffController;
 
 import DAO.AppointmentDAO;
+import DAO.ClinicInfoDAO;
 import DAO.StaffDAO;
 import Model.Appointment;
+import Model.ClinicInfo;
 import Model.Doctor;
 import Model.ExaminationPrice;
 import Model.Shift;
@@ -67,21 +69,69 @@ public class ListAppointment extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        AppointmentDAO adao = new AppointmentDAO();
-        List<Appointment> appointments = adao.getAllAppointment();
-        request.setAttribute("appointments", appointments);
-
-        StaffDAO sdao = new StaffDAO();
-        List<Shift> shifts = sdao.getAllShift();
+        String slotIdStr = request.getParameter("slot");
+        String dateStr = request.getParameter("date");
+        String doctorId = request.getParameter("doctor");
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        StaffDAO staffDAO = new StaffDAO();
+        ExaminationPrice price = appointmentDAO.getExaminationPrice();
+        request.setAttribute("ExaminationPrice", price);
+        ClinicInfoDAO clinicdao = new ClinicInfoDAO();
+        ClinicInfo clinic = clinicdao.getClinicInfo();
+        request.setAttribute("ClinicInfo", clinic);
+        List<Shift> shifts = staffDAO.getAllShift();
+        List<Doctor> doctors = staffDAO.getAllDoctors();
         request.setAttribute("shifts", shifts);
+        request.setAttribute("doctors", doctors);    
+        int slotId = -1;
+        java.sql.Date appointmentDate = null;
 
-        List<Doctor> doctors = sdao.getAllDoctors();
-        request.setAttribute("doctors", doctors);
-        ExaminationPrice e = adao.getExaminationPrice();
-        request.setAttribute("ExaminationPrice", e);
+        if (slotIdStr != null && !slotIdStr.trim().isEmpty()) {
+            try {
+                slotId = Integer.parseInt(slotIdStr);
+            } catch (NumberFormatException e) {
+                slotId = -1;
+            }
+        }
+
+        if (dateStr != null && !dateStr.trim().isEmpty()) {
+            try {
+                appointmentDate = java.sql.Date.valueOf(dateStr);
+            } catch (IllegalArgumentException e) {
+                appointmentDate = null;
+            }
+        }
+
+        List<Appointment> allAppointments;
+        if ((slotIdStr != null && !slotIdStr.isEmpty())
+                || (dateStr != null && !dateStr.isEmpty())
+                || (doctorId != null && !doctorId.isEmpty())) {
+            allAppointments = appointmentDAO.filterAppointments(slotId, appointmentDate, doctorId);
+        } else {
+            allAppointments = appointmentDAO.getAllAppointment();
+        }
+
+        String page_raw = request.getParameter("page");
+        int page = (page_raw != null) ? Integer.parseInt(page_raw) : 1;
+        int pageSize = 10;
+        int totalItems = allAppointments.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalItems);
+        int offset = (page - 1) * pageSize;
+        List<Appointment> appointmentsPage = allAppointments.subList(start, end);
+        request.setAttribute("appointments", appointmentsPage);
+        request.setAttribute("offset", offset);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("selectedSlot", slotIdStr);
+        request.setAttribute("selectedDate", dateStr);
+        request.setAttribute("selectedDoctor", doctorId);
+
         request.getRequestDispatcher("view/staff/content/ListAppointment.jsp").forward(request, response);
     }
 
@@ -95,7 +145,7 @@ public class ListAppointment extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
     }
 
     /**

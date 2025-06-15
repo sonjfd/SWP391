@@ -59,7 +59,6 @@ public class AddPet extends HttpServlet {
         String gender = request.getParameter("gender");
         
         int breedId = Integer.parseInt(request.getParameter("breed_id"));
-        String status = request.getParameter("status");
         String description = request.getParameter("description");
         Part part = request.getPart("avatar");
         String realPath = request.getServletContext().getRealPath("/assets/images");
@@ -86,7 +85,7 @@ public class AddPet extends HttpServlet {
         Random random = new Random();
         int randomNumber = random.nextInt(100000); 
         String pet_code = String.format("PET%05d", randomNumber); 
-        boolean a = dao.addPet(pet_code, ownerID, name, breedId, gender, filePath, description, status);
+        boolean a = dao.addPet(pet_code, ownerID, name, breedId, gender, filePath, description);
         if (a) {
             request.getSession().setAttribute("SuccessMessage", "Thêm Pet thành công!");
 

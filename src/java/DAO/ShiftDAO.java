@@ -45,4 +45,17 @@ public class ShiftDAO {
         }
         return list;
     }
+    
+     public static List<Shift> getAllShifts() {
+        List<Shift> list = new ArrayList<>();
+        String sql = "SELECT * FROM shift ORDER BY start_time";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(new Shift(rs.getInt(1), rs.getString(2), rs.getTime(3).toLocalTime(), rs.getTime(4).toLocalTime()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

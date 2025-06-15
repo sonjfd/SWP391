@@ -42,8 +42,8 @@
                     </div>
 
                     <div class="col-md-12">
-                        <label for="content" class="form-label">📄 Nội dung</label>
-                        <textarea class="form-control" id="content" name="content" rows="8" required></textarea>
+                        <label for="default" class="form-label">📄 Nội dung</label>
+                        <textarea class="form-control" id="default" name="content"></textarea>
                     </div>
 
                     <div class="col-md-12">
@@ -71,7 +71,8 @@
                 </form>
             </div>
         </div>
-
+<script src="${pageContext.request.contextPath}/tinymce/tinymce.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/tinymceConfig.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/select2.min.js"></script>
         

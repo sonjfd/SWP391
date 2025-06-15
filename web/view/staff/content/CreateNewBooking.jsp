@@ -253,7 +253,7 @@
                         <div>
                             <label class="form-label">Chọn thú cưng:</label>
                             <select name="petId" id="petSelect" class="form-select" required>
-                                
+
                             </select>
                         </div>
 
@@ -384,7 +384,7 @@
                 fetch('get-user-and-pet?userId=' + encodeURIComponent(userId))
                         .then(res => res.json())
                         .then(data => {
-                        
+
                             document.getElementById('userInfor1').style.display = 'block';
                             document.getElementById('userInfor2').style.display = 'block';
                             document.getElementById('fullName').value = data.user.fullName;
@@ -392,7 +392,7 @@
                             document.getElementById('phone').value = data.user.phoneNumber;
                             document.getElementById('address').value = data.user.address;
 
-                            
+
                             const petSelectContainer = document.getElementById('petSelectContainer');
                             const petSelect = document.getElementById('petSelect');
                             petSelect.innerHTML = '<option value="">-- Chọn thú cưng --</option>';
@@ -401,7 +401,7 @@
                             document.getElementById('speciesName').value = '';
                             document.getElementById('breedName').value = '';
 
-                           
+
                             let noPetsMessage = document.getElementById('noPetsMessage');
                             if (!noPetsMessage) {
                                 noPetsMessage = document.createElement('div');
@@ -410,7 +410,7 @@
                                 petSelectContainer.appendChild(noPetsMessage);
                             }
 
-                          
+
                             if (data.pets && data.pets.length > 0) {
                                 petSelect.style.display = 'block';
                                 noPetsMessage.style.display = 'none';
@@ -425,7 +425,7 @@
 
                                 window.loadedPets = data.pets;
                             } else {
-                               
+
                                 petSelect.style.display = 'none';
                                 petSelectContainer.style.display = 'block';
                                 noPetsMessage.textContent = 'Khách hàng này hiện chưa có thú cưng nào!';
@@ -433,7 +433,7 @@
                                 window.loadedPets = [];
                             }
                         });
-                        
+
             });
 
 
@@ -442,17 +442,16 @@
                 const selectedPetId = this.value;
                 const selectedPet = window.loadedPets?.find(p => p.id === selectedPetId);
 
-                if (selectedPet && selectedPet.breed && selectedPet.breed.specie) {
+                if (selectedPet) {
                     document.getElementById('breedInfo').style.display = 'block';
-                    document.getElementById('speciesName').value = selectedPet.breed.specie.name;
-                    document.getElementById('breedName').value = selectedPet.breed.name;
+                    document.getElementById('speciesName').value = selectedPet.species || '';
+                    document.getElementById('breedName').value = selectedPet.breed || '';
                 } else {
                     document.getElementById('breedInfo').style.display = 'none';
                     document.getElementById('speciesName').value = '';
                     document.getElementById('breedName').value = '';
                 }
             });
-
 
 
 

@@ -6,9 +6,8 @@
 package UserController;
 
 import DAO.AppointmentDAO;
-import DAO.MedicalRecordsDAO;
 import Model.Appointment;
-import Model.MedicalRecords;
+
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;

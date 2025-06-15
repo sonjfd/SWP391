@@ -6,6 +6,7 @@ package StaffController;
 
 import DAO.BlogDAO;
 import Model.Blog;
+import Model.Tag;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -60,10 +61,37 @@ public class ListBlog extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+       // Lấy các tham số từ request (lọc theo ngày, trạng thái, tag)
+        String dateFrom = request.getParameter("dateFrom");
+        String dateTo = request.getParameter("dateTo");
+        String status = request.getParameter("status");
+        String tag = request.getParameter("tag");  // Thêm tham số lọc theo tag
+
+        // Xử lý phân trang
+        int page = 1;
+        int pageSize = 10;
+        String pageParam = request.getParameter("page");
+        if (pageParam != null && !pageParam.isEmpty()) {
+            page = Integer.parseInt(pageParam);
+        }
+
+        // DAO để lấy danh sách blog theo lọc và phân trang
         BlogDAO dao = new BlogDAO();
-        List<Blog> listBlogs = dao.getAllBlogs();
-        System.out.println(listBlogs.size());
+        List<Blog> listBlogs = dao.getBlogsWithFilterAndPagination(dateFrom, dateTo, status, tag, page, pageSize);
+        int totalBlogs = dao.getTotalBlogsCount(dateFrom, dateTo, status, tag);
+        int totalPages = (int) Math.ceil((double) totalBlogs / pageSize);
+
+        // Lấy danh sách tags để hiển thị trong dropdown
+        List<Tag> tagsList = dao.getAllTags();
+
+        // Thiết lập các thuộc tính request
         request.setAttribute("listBlogs", listBlogs);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("tagsList", tagsList); // Đưa danh sách tags vào request
+
+        // Forward request tới JSP
         request.getRequestDispatcher("/view/staff/content/ListBlog.jsp").forward(request, response);
     }
 

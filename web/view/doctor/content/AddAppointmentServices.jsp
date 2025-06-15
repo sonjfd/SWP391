@@ -74,6 +74,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
+    <c:if test="${not empty sessionScope.serviceAddSuccess}">
+    <script>
+        window.onload = function() { alert('Thêm dịch vụ thành công!'); }
+    </script>
+    <c:remove var="serviceAddSuccess" scope="session"/>
+</c:if>
+
 <div class="container">
     <h2 class="text-center mb-4 text-primary">Thêm Dịch Vụ Cho Cuộc Hẹn</h2>
 

@@ -222,7 +222,7 @@
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 gap-2">
 
 
-                    <form id="filterForm" action="filter-appoinment" method="get" class="d-flex flex-wrap align-items-center gap-2 mb-0">
+                    <form id="filterForm" action="list-appointment" method="get" class="d-flex flex-wrap align-items-center gap-2 mb-0">
 
                         <select class="form-select form-select-sm" style="width: auto;" id="slotFilter" name="slot">
                             <option value="">Ca làm việc</option>
@@ -325,7 +325,7 @@
                     <tbody>
                         <c:forEach var="app" items="${appointments}" varStatus="status">
                             <tr>
-                                <td>${status.index + 1}</td> 
+                                <td>${offset + status.index + 1}</td>
                                 <td>${app.pet.name}</td> 
                                 <td>${app.user.fullName}</td> 
                                 <td><fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy"/></td>
@@ -372,14 +372,7 @@
                                        onclick="updateCheckinStatus(this)">
                                         ${app.chekinStatus == 'checkin' ? 'Đã tới khám 👌' : 'Chưa tới khám 👆'}
                                     </a>
-
-
-
-
-
                                 </td>
-
-
                                 <td>                                  
                                     <div class="action-buttons">
 
@@ -390,17 +383,252 @@
                                         <button type="button" class="btn btn-success" title="Cập nhật lịch hẹn"   onclick="window.location.href = 'update-appointment?id=${app.id}'">
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
+                                        <button type="button" class="btn btn-outline-dark" title="In phiếu thú cưng"
+                                                data-bs-toggle="modal" data-bs-target="#printModal-${app.id}">
+                                            <i class="bi bi-printer"></i>
+                                        </button>
+
                                     </div>
                                 </td>
-
                             </tr>
-
-
                         </c:forEach>
 
                     </tbody>
 
                 </table>
+                <c:if test="${totalPages > 0}">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+
+                            <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link" 
+                                   href="list-appointment?page=${currentPage - 1}&slot=${selectedSlot}&date=${selectedDate}&doctor=${selectedDoctor}" 
+                                   tabindex="-1">Trước</a>
+                            </li>
+
+                            <c:forEach var="i" begin="1" end="${totalPages}">
+                                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                    <a class="page-link" 
+                                       href="list-appointment?page=${i}&slot=${selectedSlot}&date=${selectedDate}&doctor=${selectedDoctor}">
+                                        ${i}
+                                    </a>
+                                </li>
+                            </c:forEach>
+
+                            <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link" 
+                                   href="list-appointment?page=${currentPage + 1}&slot=${selectedSlot}&date=${selectedDate}&doctor=${selectedDoctor}">
+                                    Sau
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </c:if>
+
+
+                <c:forEach var="app" items="${appointments}">
+                    <div class="modal fade" id="printModal-${app.id}" tabindex="-1" aria-labelledby="printModal-${app.id}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Phiếu khám bệnh</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                </div>
+                                <div class="modal-body" id="printArea-${app.id}">
+                                    <style>
+                                        .print-section {
+                                            font-family: 'Arial', sans-serif;
+                                            font-size: 14px;
+                                            padding: 20px;
+                                            color: #000;
+                                        }
+                                        .print-section .header {
+                                            text-align: center;
+                                            margin-bottom: 25px;
+                                            font-weight: bold;
+                                            border-bottom: 2px solid #000;
+                                            padding-bottom: 10px;
+                                        }
+                                        .print-section .header img {
+                                            height: 60px;
+                                            margin-bottom: 10px;
+                                        }
+                                        .print-section table {
+                                            width: 100%;
+                                            border-collapse: collapse;
+                                            margin-bottom: 15px;
+                                        }
+                                        .print-section th, .print-section td {
+                                            border: 1px solid #000;
+                                            padding: 8px 10px;
+                                            vertical-align: top;
+                                        }
+                                        .print-section th {
+                                            background-color: #f0f0f0;
+                                            width: 25%;
+                                            text-align: left;
+                                        }
+                                        .print-section h4 {
+                                            text-align: center;
+                                            margin-top: 15px;
+                                            font-size: 16px;
+                                            text-transform: uppercase;
+                                        }
+                                        .signature-section {
+                                            margin-top: 40px;
+                                            display: flex;
+                                            justify-content: space-between;
+                                            font-size: 13px;
+                                        }
+
+                                        @media print {
+                                            body * {
+                                                visibility: hidden;
+                                            }
+
+                                            .print-section, .print-section * {
+                                                visibility: visible;
+                                            }
+
+                                            .print-section {
+                                                position: absolute;
+                                                top: 0;
+                                                left: 0;
+                                                width: 100%;
+                                                font-family: 'Arial', sans-serif;
+                                                font-size: 14px;
+                                                color: #000;
+                                                padding: 20px;
+                                            }
+                                        }
+
+                                        .print-section .header {
+                                            text-align: center;
+                                            margin-bottom: 25px;
+                                            font-weight: bold;
+                                            border-bottom: 2px solid #000;
+                                            padding-bottom: 10px;
+                                        }
+
+                                        .print-section .header img {
+                                            height: 60px;
+                                            margin-bottom: 10px;
+                                        }
+
+                                        .print-section table {
+                                            width: 100%;
+                                            border-collapse: collapse;
+                                            margin-bottom: 15px;
+                                        }
+
+                                        .print-section th, .print-section td {
+                                            border: 1px solid #000;
+                                            padding: 8px 10px;
+                                            vertical-align: top;
+                                        }
+
+                                        .print-section th {
+                                            background-color: #f0f0f0;
+                                            width: 25%;
+                                            text-align: left;
+                                        }
+
+                                        .print-section h4 {
+                                            text-align: center;
+                                            margin-top: 15px;
+                                            font-size: 16px;
+                                            text-transform: uppercase;
+                                        }
+
+                                        .signature-section {
+                                            margin-top: 40px;
+                                            display: flex;
+                                            justify-content: space-between;
+                                            font-size: 13px;
+                                        }
+                                    </style>
+
+                                    <div class="print-section">
+                                        <div class="header text-center">
+                                            <c:if test="${not empty ClinicInfo.logo}">
+                                                <img src="${pageContext.request.contextPath}${ClinicInfo.logo}" 
+                                                     alt="Logo Phòng khám">
+                                            </c:if>
+                                            <div><strong>${ClinicInfo.name}</strong></div>
+                                            <div>Địa chỉ: ${ClinicInfo.address}</div>
+                                            <div>ĐT: ${ClinicInfo.phone} - Email: ${ClinicInfo.email}</div>
+                                            <c:if test="${not empty ClinicInfo.website}">
+                                                <div>Website: ${ClinicInfo.website}</div>
+                                            </c:if>
+                                            <c:if test="${not empty ClinicInfo.workingHours}">
+                                                <div>Giờ làm việc: ${ClinicInfo.workingHours}</div>
+                                            </c:if>
+
+                                            <h4>PHIẾU KHÁM BỆNH</h4>
+                                        </div>
+
+                                        <table>
+                                            <tr>
+                                                <th>Giờ Khám</th>
+                                                <td>${app.startTime} - ${app.endTime}</td>
+                                                <th>Ngày Khám</th>
+                                                <td><fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy " /></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Mã thú</th>
+                                                <td>${app.pet.pet_code}</td>
+                                                <th>Tên thú</th>
+                                                <td>${app.pet.name}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>Loài</th>
+                                                <td>${app.pet.breed.specie.name}</td>
+                                                <th>Giống</th>
+                                                <td>${app.pet.breed.name}</td>
+                                            </tr>
+                                            <tr>
+                                                <th><strong>Bác sĩ khám</strong></th>
+                                                <td colspan="3">${app.doctor.user.fullName}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Ghi chú</th>
+                                                <td colspan="3">${app.note != null ? app.note : ''}</td>
+                                            </tr>
+                                        </table>
+
+                                        <table>
+                                            <tr>
+                                                <th>Khách hàng</th>
+                                                <td>${app.user.fullName}</td>
+                                                <th>Số điện thoại</th>
+                                                <td>${app.user.phoneNumber}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Địa chỉ</th>
+                                                <td colspan="3">${app.user.address}</td>
+                                            </tr>
+                                        </table>
+
+                                        <div class="signature-section">
+                                            <div>Khách hàng<br/><em>(Ký, họ tên)</em></div>
+                                            <div>Người tiếp nhận<br/><em>(Ký, họ tên)</em></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" onclick="printDiv('printArea-${app.id}')">
+                                        <i class="bi bi-printer"></i> In phiếu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </c:forEach>
 
                 <c:forEach var="app" items="${appointments}">
                     <div class="modal fade" id="detailModal-${app.id}" tabindex="-1" aria-labelledby="detailModalLabel-${app.id}" aria-hidden="true">
@@ -412,7 +640,7 @@
                                 </div>
                                 <div class="modal-body">
 
-                                    <!-- Thông tin Pet -->
+
                                     <h5>Thông tin thú cưng</h5>
                                     <div class="row">
                                         <div class="col-md-4">
@@ -531,6 +759,18 @@
         <script>
 
 
+            function printDiv(divId) {
+                const printContents = document.getElementById(divId).innerHTML;
+                const originalContents = document.body.innerHTML;
+
+                document.body.innerHTML = printContents;
+                window.print();
+                document.body.innerHTML = originalContents;
+
+
+                location.reload();
+            }
+
             function updateCheckinStatus(el) {
                 const appointmentId = el.dataset.appointmentId;
                 const currentStatus = el.dataset.status;
@@ -543,7 +783,7 @@
                         .then(response => response.text())
                         .then(result => {
                             if (result.trim() === 'success') {
-                           
+
                                 el.dataset.status = newStatus;
 
                                 if (newStatus === 'checkin') {

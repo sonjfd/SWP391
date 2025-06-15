@@ -87,6 +87,7 @@
 
         <!-- Start Hero -->
         <section class="bg-half-170 d-table w-100 " style="background: url('${pageContext.request.contextPath}/assets/images/bg/aboutus.jpg') center center;">
+            <div class="bg-overlay bg-dark opacity-75 position-absolute top-0 start-0 w-100 h-100" style="z-index:0"></div>
 
             <div class="container">
                 <div class="row mt-5 justify-content-center">

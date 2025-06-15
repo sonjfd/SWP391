@@ -8,6 +8,7 @@ import DAO.BlogDAO;
 import DAO.BreedDAO;
 import DAO.ClinicInfoDAO;
 import DAO.DoctorDAO;
+import DAO.RatingDAO;
 import DAO.ServiceDAO;
 import DAO.SliderDAO;
 import DAO.SpecieDAO;
@@ -16,6 +17,7 @@ import Model.Blog;
 import Model.Breed;
 import Model.ClinicInfo;
 import Model.Doctor;
+import Model.Rating;
 import Model.Service;
 import Model.Slider;
 import Model.Specie;
@@ -115,6 +117,9 @@ public class HomePage extends HttpServlet {
             // Thêm setter List<Breed> breeds vào Specie nếu chưa có
             specie.setBreeds(breedsOfThisSpecie);
         }
+        
+        List<Rating> listRate=new RatingDAO().getAllRatings();
+        request.setAttribute("listRate", listRate);
 
         request.setAttribute("speciesList", speciesList);
         request.getRequestDispatcher("/view/home/content/Home.jsp").forward(request, response);

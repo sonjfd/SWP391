@@ -27,9 +27,9 @@ public class DBContext {
 
     public static Connection getConnection() {
         Connection conn = null;
-        String url = "jdbc:sqlserver://localhost:1433;databaseName=SWP301;encrypt=true;trustServerCertificate=true";
-        String user = "admin";
-        String password = "hai";
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=SWP;encrypt=true;trustServerCertificate=true";
+        String user = "sa";
+        String password = "condoc123";
 
         try {
             // Load driver lên

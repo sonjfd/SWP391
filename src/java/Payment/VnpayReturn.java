@@ -75,7 +75,7 @@ public class VnpayReturn extends HttpServlet {
                 boolean transSuccess = false;
                 if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
 
-                    appointment.setStatus("pending");
+                    appointment.setStatus("completed");
                     appointment.setPaymentStatus("paid");
 
                     Appointment fullAppointment = dao.getAppointmentById(appointmentId);

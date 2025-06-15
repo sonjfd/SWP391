@@ -107,6 +107,16 @@ public class UpdateUserInformation extends HttpServlet {
         User u = ud.getUserByEmail(email);
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        if(user.getAddress().equalsIgnoreCase(address)&&
+                user.getAvatar().equalsIgnoreCase(filePath)&&
+                user.getFullName().equalsIgnoreCase(name)&&
+                user.getEmail().equalsIgnoreCase(email)&&
+                user.getPhoneNumber().equalsIgnoreCase(number)){
+            User currentUser = ud.getUserById(id);
+            request.setAttribute("user", currentUser);
+            request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);
+            return;
+        }
         if (u != null && !u.getId().equals(user.getId())) {
             request.setAttribute("wrongemail", "Cập nhật thông tin không thành công do email đã được sử dụng");
             User currentUser = ud.getUserById(id);

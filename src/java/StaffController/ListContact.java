@@ -4,7 +4,6 @@
  */
 package StaffController;
 
-
 import DAO.StaffDAO;
 import Model.Contact;
 import java.io.IOException;
@@ -59,12 +58,23 @@ public class ListContact extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        StaffDAO sdao=new StaffDAO();
-        List<Contact> listContact = sdao.getAllContact();
-        request.setAttribute("listContact", listContact);
+        StaffDAO sdao = new StaffDAO();
+        List<Contact> allContacts = sdao.getAllContact();
+        String pageRaw = request.getParameter("page");
+        int page = (pageRaw != null) ? Integer.parseInt(pageRaw) : 1;
+        int pageSize = 10;
+        int totalItems = allContacts.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalItems);
+        List<Contact> contactPage = allContacts.subList(start, end);
+
+        request.setAttribute("listContact", contactPage);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("offset", start);
 
         request.getRequestDispatcher("view/staff/content/ListContact.jsp").forward(request, response);
-
     }
 
     /**

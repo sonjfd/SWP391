@@ -1,10 +1,5 @@
-<%-- 
-    Document   : Verify
-    Created on : Jun 12, 2025, 6:07:20 AM
-    Author     : Dell
---%>
-
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -40,6 +35,26 @@
             <div class="verify-card text-center">
                 <h2 class="mb-4 text-success">Vui lòng kiểm tra email</h2>
                 <p class="lead">Chúng tôi đã gửi cho bạn một email xác thực tài khoản. Hãy mở email và nhấn vào liên kết để kích hoạt tài khoản của bạn.</p>
+
+                <!-- Hiển thị thông báo -->
+                <c:if test="${not empty message}">
+                    <div class="alert alert-info">${message}</div>
+                </c:if>
+                <c:if test="${not empty success}">
+                    <div class="alert alert-success">${success}</div>
+                </c:if>
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger">${error}</div>
+                </c:if>
+
+                <!-- Nút gửi lại email xác thực -->
+                <c:if test="${resendEmail}">
+                    <form action="resend-verify" method="post" class="mt-3">
+                        <input type="hidden" name="email" value="${email}">
+                        <button type="submit" class="btn btn-outline-primary">Gửi lại email xác thực</button>
+                    </form>
+                </c:if>
+
                 <a href="login" class="btn btn-custom mt-4">Quay lại trang đăng nhập</a>
             </div>
         </div>

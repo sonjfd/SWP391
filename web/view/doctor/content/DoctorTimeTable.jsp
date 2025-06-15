@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -7,7 +7,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Lịch làm việc bác sĩ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Bootstrap -->
+        <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <!-- Select2 -->
+        <link href="${pageContext.request.contextPath}/assets/css/select2.min.css" rel="stylesheet" />
+        <!-- Date picker -->
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/flatpickr.min.css">
+        <link href="${pageContext.request.contextPath}/assets/css/jquery.timepicker.min.css" rel="stylesheet" type="text/css" />
+        <!-- Icons -->
+        <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+        <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
+        <!-- Css -->
+        <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
     <style>
     body {
             font-family: Arial, sans-serif;
@@ -168,8 +182,11 @@
     
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-4">Lịch làm việc bác sĩ: ${sessionScope.user.fullName}</h2>
+    <%@include file="../layout/Header.jsp" %>
+    <div class="container-fluid bg-light">
+            <div class="layout-specing">
+                <div class="row justify-content-center">
+        <h2 class="mb-4">Lịch cuộc hẹn bác sĩ: ${sessionScope.user.fullName}</h2>
 
         <!-- Form chọn năm và tuần -->
         <form method="get" action="your_api_endpoint">
@@ -204,6 +221,8 @@
                 <!-- JavaScript sẽ điền vào đây -->
             </tbody>
         </table>
+    </div>
+            </div>
     </div>
         
         <!-- Modal -->
@@ -492,7 +511,16 @@ document.querySelectorAll('.add-record-btn').forEach(function(button) {
     </script>
 
     <!-- Bootstrap JS (optional) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+     <!-- Bootstrap JS (optional) -->
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+       
+        
+       
+        
+        <!-- Icons -->
+        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+        <!-- Main Js -->
+        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
 </body>
 </html>
 

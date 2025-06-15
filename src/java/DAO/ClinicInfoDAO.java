@@ -8,20 +8,20 @@ import java.util.List;
 public class ClinicInfoDAO {
 
     // Lấy thông tin phòng khám từ cơ sở dữ liệu
-    public ClinicInfo getClinicInfo() throws SQLException, ClassNotFoundException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        ClinicInfo clinicInfo = null;
-
-        try {
-            conn = DBContext.getConnection();
+    public ClinicInfo getClinicInfo()  {
+   
             String sql = "SELECT id, name, address, phone, email, website, working_hours, description, logo, googlemap, created_at, updated_at FROM clinic_info";
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
+      
+       
+
+        try( Connection conn =DBContext.getConnection();
+                PreparedStatement ps=conn.prepareStatement(sql)) {
+         
+            
+           ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                clinicInfo = new ClinicInfo();
+              ClinicInfo  clinicInfo = new ClinicInfo();
                 clinicInfo.setId(rs.getString("id"));
                 clinicInfo.setName(rs.getString("name"));
                 clinicInfo.setAddress(rs.getString("address"));
@@ -34,13 +34,12 @@ public class ClinicInfoDAO {
                 clinicInfo.setGoogleMap(rs.getString("googlemap"));
                 clinicInfo.setCreatedAt(rs.getDate("created_at"));
                 clinicInfo.setUpdatedAt(rs.getDate("updated_at"));
+                return clinicInfo;
             }
-        } finally {
-            if (rs != null) rs.close();
-            if (ps != null) ps.close();
-            if (conn != null) conn.close();
-        }
-        return clinicInfo;
+        }catch(Exception e){
+            e.printStackTrace();
+        } 
+        return null;
     }
     
     public static void main(String[] args) throws ClassNotFoundException, SQLException {

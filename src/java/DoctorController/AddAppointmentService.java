@@ -66,11 +66,11 @@ public class AddAppointmentService extends HttpServlet {
         try {
             double price = Double.parseDouble(priceStr);
             
-            if (apmdao.isServiceAlreadyAdded(appointmentId, serviceId)) {
-                request.setAttribute("errorMessage", "Dịch vụ này đã được thêm vào cho cuộc hẹn.");
-                request.getRequestDispatcher("/view/doctor/content/AddAppointmentServices.jsp").forward(request, response);
-                return;
-            }
+//            if (apmdao.isServiceAlreadyAdded(appointmentId, serviceId)) {
+//                request.setAttribute("errorMessage", "Dịch vụ này đã được thêm vào cho cuộc hẹn.");
+//                request.getRequestDispatcher("/view/doctor/content/AddAppointmentServices.jsp").forward(request, response);
+//                return;
+//            }
             boolean result = apmdao.addAppointmentService(appointmentId, serviceId, price);
 
             if (result) {

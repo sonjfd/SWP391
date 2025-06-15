@@ -40,7 +40,6 @@
     <body>
         <%@include file="../layout/Header.jsp" %>
 
-
         <section class="section">
 
 

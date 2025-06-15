@@ -204,6 +204,31 @@
             </div>
         </div>
 
+        <c:if test="${not empty listContact}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="contact?page=${currentPage - 1}">Trước</a>
+                    </li>
+
+                    <c:forEach var="i" begin="1" end="${totalPages}">
+                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                            <a class="page-link" href="contact?page=${i}">${i}</a>
+                        </li>
+                    </c:forEach>
+
+                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="contact?page=${currentPage + 1}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </c:if>
+
+        <c:if test="${empty listContact}">
+            <p class="text-center text-danger mt-3">Không có phản hồi nào.</p>
+        </c:if>
+
+
         <!--       Modal thong bao-->
         <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

@@ -79,37 +79,15 @@ public class CancelBooking extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String idApp = (String) request.getParameter("id");
-        String appDate = request.getParameter("appTime");  // yyyy-MM-dd
-        String startTime = request.getParameter("startTime");  // HH:mm
-        if (idApp == null) {
-            response.sendRedirect("viewappointment");
-            return;
-        }
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        LocalDate appointmentDate = LocalDate.parse(appDate, dateFormatter);
-        LocalTime appointmentStartTime = LocalTime.parse(startTime, timeFormatter);
-
-        LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentStartTime);
-        LocalDateTime now = LocalDateTime.now();
-
-        // So sánh thời gian
-        Duration duration = Duration.between(now, appointmentDateTime);
-
-        if (duration.toHours() < 1) {
-            // Nếu còn dưới 1 tiếng thì báo lỗi
-            request.setAttribute("errorMessage", "Chỉ được phép hủy lịch khám trước giờ hẹn ít nhất 1 tiếng.");
-            request.getRequestDispatcher("appointment-list.jsp").forward(request, response);
-            return;
-        }
+       
+        
 
         AppointmentDAO ad = new AppointmentDAO();
-        if (ad.cancelBooking(idApp)) {
-            request.getSession().setAttribute("SuccessMessage", "Hủy đặt lịch thành công");
+        if (ad.requestCancelWithAdmin(idApp)) {
+            request.getSession().setAttribute("SuccessMessage", "Đã Yêu cầu Huỷ Lịch");
             response.sendRedirect("viewappointment");
         } else {
-            request.getSession().setAttribute("FailMessage", "Hủy đặt lịch không thành công");
+            request.getSession().setAttribute("FailMessage", "Không giửi được yêu cầu");
             response.sendRedirect("viewappointment");
         }
     }

@@ -149,6 +149,12 @@ checkin_status NVARCHAR(20) DEFAULT 'noshow' CHECK (checkin_status IN ('noshow',
   CONSTRAINT FK_appointments_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(user_id)
 );
 
+
+CREATE TABLE examination_prices (
+    id UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
+    price DECIMAL(10, 2) NOT NULL
+);
+
 -- 11. Services (Dịch vụ)
 CREATE TABLE services (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -198,10 +204,6 @@ CREATE TABLE uploaded_files (
   
   CONSTRAINT FK_uploaded_files_result FOREIGN KEY (result_id) REFERENCES nurse_specialization_results(id) ON DELETE CASCADE
 );
-
-
-
-
 
 
 
@@ -268,20 +270,6 @@ CREATE TABLE invoices (
 
   CONSTRAINT FK_invoice_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
-
--- 21. Invoice Medicines (Thuốc trong hóa đơn)
-CREATE TABLE invoice_medicines (
-  invoice_id UNIQUEIDENTIFIER NOT NULL,
-  medicine_id UNIQUEIDENTIFIER NOT NULL,
-  quantity INT NOT NULL CHECK(quantity > 0),
-  price DECIMAL(10, 2) NOT NULL CHECK(price >= 0),
-
-  CONSTRAINT PK_invoice_medicines PRIMARY KEY (invoice_id, medicine_id),
-
-  CONSTRAINT FK_invoice_med FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
-  CONSTRAINT FK_invoice_medicine FOREIGN KEY (medicine_id) REFERENCES medicines(id)
-);
-
 
 
 
@@ -457,3 +445,19 @@ CREATE TABLE pos_invoice_items (
   CONSTRAINT FK_pos_items_variant FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
 );
 
+CREATE TABLE [dbo].[tokenForgetPassword](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[token] [varchar](255) NOT NULL,
+	[expiryTime] [datetime] NOT NULL,
+	[isUsed] [bit] NOT NULL,
+	[userId] [uniqueidentifier] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[tokenForgetPassword]  WITH CHECK ADD FOREIGN KEY([userId])
+REFERENCES [dbo].[users] ([id])
+GO

@@ -6,6 +6,8 @@
 package AminController;
 
 import DAO.AdminDao;
+import DAO.UserDAO;
+import GoogleLogin.PasswordUtils;
 import Model.Doctor;
 import Model.Role;
 import Model.User;
@@ -104,7 +106,8 @@ public class CreateAccount extends HttpServlet {
         User user = new User();
         user.setUserName(userName);
         user.setEmail(email);
-        user.setPassword(password); // Nên mã hóa password
+        
+        user.setPassword(PasswordUtils.hashPassword(password)); // Nên mã hóa password
         user.setFullName(fullName);
         user.setPhoneNumber(phoneNumber);
         user.setAddress(address);
