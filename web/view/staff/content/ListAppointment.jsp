@@ -651,9 +651,9 @@
                                             <p><strong>Tên:</strong> ${app.pet.name}</p>
                                             <p><strong>Ngày sinh:</strong> <fmt:formatDate value="${app.pet.birthDate}" pattern="dd/MM/yyyy"/></p>
                                             <p><strong>Giống loài:</strong> ${app.pet.breed.name} (Loài: ${app.pet.breed.specie.name})</p>
-                                            <p><strong>Giới tính:</strong> ${app.pet.gender}</p>
-                                            <p><strong>Mô tả:</strong> ${app.pet.description}</p>
-                                            <p><strong>Trạng thái thú cưng:</strong> ${app.pet.status}</p>
+                                            <p><strong>Giới tính:</strong> ${app.pet.gender == 'male' ? 'Đực' : 'Cái'}</p>
+                                           
+                                            
                                         </div>
                                     </div>
 
@@ -671,8 +671,7 @@
                                             <p><strong>Email:</strong> ${app.user.email}</p>
                                             <p><strong>Số điện thoại:</strong> ${app.user.phoneNumber}</p>
                                             <p><strong>Địa chỉ:</strong> ${app.user.address}</p>
-                                            <p><strong>Trạng thái người dùng:</strong> ${app.user.status == 1 ? 'Hoạt động' : 'Không hoạt động'}</p>
-                                            <p><strong>Vai trò:</strong> ${app.user.role.name}</p>
+                                            
                                         </div>
                                     </div>
 

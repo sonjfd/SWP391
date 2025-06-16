@@ -5,19 +5,23 @@
 
 package AminController;
 
+import DAO.ShiftDAO;
+import Model.Shift;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalTime;
 
 /**
  *
  * @author FPT
  */
-
-public class Admin extends HttpServlet {
+@WebServlet(name="CreateShift", urlPatterns={"/createshift"})
+public class CreateShift extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -34,10 +38,10 @@ public class Admin extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Admin</title>");  
+            out.println("<title>Servlet CreateShift</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Admin at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet CreateShift at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -54,7 +58,7 @@ public class Admin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("view/admin/content/Admin.jsp").forward(request, response);
+        request.getRequestDispatcher("view/admin/content/CreateShift.jsp").forward(request, response);
     } 
 
     /** 
@@ -67,8 +71,36 @@ public class Admin extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            String name = request.getParameter("name").trim();
+            LocalTime startTime = LocalTime.parse(request.getParameter("start_time"));
+            LocalTime endTime = LocalTime.parse(request.getParameter("end_time"));
+
+            Shift shift = new Shift();
+            shift.setName(name);
+            shift.setStart_time(startTime);
+            shift.setEnd_time(endTime);
+
+            ShiftDAO shiftDAO = new ShiftDAO();
+            if (shiftDAO.addShift(shift)) {
+                request.getSession().setAttribute("message", "Tạo ca thành công!");
+                response.sendRedirect("listshift");
+            } else {
+                request.setAttribute("error", "Lỗi khi tạo ca làm việc!");
+                request.setAttribute("name", name);
+                request.setAttribute("start_time", request.getParameter("start_time"));
+                request.setAttribute("end_time", request.getParameter("end_time"));
+                request.getRequestDispatcher("view/admin/content/CreateShift.jsp").forward(request, response);
+            }
+        } catch (Exception e) {
+            request.setAttribute("error", "Dữ liệu không hợp lệ!");
+            request.setAttribute("name", request.getParameter("name"));
+            request.setAttribute("start_time", request.getParameter("start_time"));
+            request.setAttribute("end_time", request.getParameter("end_time"));
+            request.getRequestDispatcher("view/admin/content/CreateShift.jsp").forward(request, response);
+        }
     }
+    
 
     /** 
      * Returns a short description of the servlet.

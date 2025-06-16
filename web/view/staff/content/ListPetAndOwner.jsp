@@ -186,7 +186,7 @@
                             <th scope="col">STT</th>
                             <th scope="col">Tên thú cưng</th>
                             <th scope="col">Giống </th>
-                            <th scope="col">Giới tính</th>
+                            
                             <th scope="col">Chủ sở hữu</th>
                             <th scope="col">Trạng thái</th>
                             <th class="col">Xem chi tiết</th>
@@ -202,7 +202,7 @@
                                 <td>${p.name}</td>
                                 <td>${p.breed.name}</td> 
 
-                                <td>${p.gender }</td>
+                                
                                 <td>${p.user.fullName}</td>
 
                                 <td>

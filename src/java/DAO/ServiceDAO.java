@@ -7,142 +7,146 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class ServiceDAO {
+    private Connection getConnection() throws SQLException {
+        return DBContext.getConnection();
+    }
 
-    // Lấy tất cả dịch vụ
+    public boolean addService(Service service) {
+        String sql = "INSERT INTO services (id, department_id, name, description, price, status) VALUES (NEWID(), ?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, service.getDepartmentId());
+            stmt.setString(2, service.getName());
+            stmt.setString(3, service.getDescription());
+            stmt.setDouble(4, service.getPrice());
+            stmt.setInt(5, service.getStatus());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateService(Service service) {
+        String sql = "UPDATE services SET department_id = ?, name = ?, description = ?, price = ?, status = ? WHERE id = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, service.getDepartmentId());
+            stmt.setString(2, service.getName());
+            stmt.setString(3, service.getDescription());
+            stmt.setDouble(4, service.getPrice());
+            stmt.setInt(5, service.getStatus());
+            stmt.setString(6, service.getId());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteService(String id) {
+        String sql = "DELETE FROM services WHERE id = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Service getServiceById(String id) {
+        String sql = "SELECT * FROM services WHERE id = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Service service = new Service();
+                service.setId(rs.getString("id"));
+                service.setDepartmentId(rs.getInt("department_id"));
+                service.setName(rs.getString("name"));
+                service.setDescription(rs.getString("description"));
+                service.setPrice(rs.getDouble("price"));
+                service.setStatus(rs.getInt("status"));
+                return service;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<Service> getAllServices() {
         List<Service> services = new ArrayList<>();
-        String sql = "SELECT s.id, s.name AS service_name, d.name AS dep_name, s.description AS service_des, s.price, s.status "
-                + "FROM services s "
-                + "JOIN departments d ON s.department_id = d.id";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
+        String sql = "SELECT * FROM services";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Department department = new Department();
-                department.setName(rs.getString("dep_name"));
-                Service s = new Service(
-                        rs.getString("id"),
-                        department,
-                        rs.getString("service_name"),
-                        rs.getString("service_des"),
-                        rs.getDouble("price"),
-                        rs.getInt("status") // Giả sử class Service có field status
-                );
-                services.add(s);
+                Service service = new Service();
+                service.setId(rs.getString("id"));
+                service.setDepartmentId(rs.getInt("department_id"));
+                service.setName(rs.getString("name"));
+                service.setDescription(rs.getString("description"));
+                service.setPrice(rs.getDouble("price"));
+                service.setStatus(rs.getInt("status"));
+                services.add(service);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return services;
     }
 
-// Lấy tất cả dịch vụ có status = 1
-    public List<Service> getAllActiveServices() {
+    
+     public List<Service> getAllActiveServices() {
         return getAllServices()
                 .stream()
                 .filter(s -> s.getStatus() == 1)
                 .collect(Collectors.toList());
     }
 
-    // Lấy dịch vụ theo ID
-    public Service getServiceById(String id) {
-        String sql = "SELECT id, s.name as service_name,d.name as dep_name, s.description as service_des , price,status FROM services s JOIN departments d ON s.department_id=d.id WHERE id = ?";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                Department department = new Department();
-                department.setName(rs.getString("dep_name"));
-                return new Service(
-                        rs.getString("id"),
-                        department,
-                        rs.getString("service_name"),
-                        rs.getString("service_des"), rs.getDouble("price"),rs.getInt("status")
-                );
+    public List<Department> getAllDepartments() {
+        List<Department> departments = new ArrayList<>();
+        String sql = "SELECT * FROM departments";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Department dept = new Department();
+                dept.setId(rs.getInt("id"));
+                dept.setName(rs.getString("name"));
+                dept.setDescription(rs.getString("description"));
+                departments.add(dept);
             }
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return departments;
     }
-
-    // Thêm dịch vụ mới
-    public boolean addService(Service s) {
-        String sql = "INSERT INTO services (id, name, description, price) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, s.getId());
-            ps.setString(2, s.getName());
-            ps.setString(3, s.getDescription());
-            ps.setDouble(4, s.getPrice());
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Cập nhật dịch vụ
-    public boolean updateService(Service s) {
-        String sql = "UPDATE services SET name = ?, description = ?, price = ? WHERE id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, s.getName());
-            ps.setString(2, s.getDescription());
-            ps.setDouble(3, s.getPrice());
-            ps.setString(4, s.getId());
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Xóa dịch vụ theo ID
-    public boolean deleteService(String id) {
-        String sql = "DELETE FROM services WHERE id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, id);
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public double getServicePrice(String serviceId) {
-        double price = 0.0;
-        String sql = "SELECT price FROM services WHERE id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, serviceId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                price = rs.getDouble("price");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return price;
-    }
-
+    
     public static void main(String[] args) {
-        List<Service> l = new ServiceDAO().getAllActiveServices();
-        for (Service service : l) {
-            System.out.println(service);
+        // Tạo đối tượng Service cần thêm
+        Service newService = new Service();
+        newService.setDepartmentId(1);           // ID khoa/phòng
+        newService.setName("Khám tổng quát");    // Tên dịch vụ
+        newService.setDescription("Dịch vụ khám sức khỏe tổng quát");
+        newService.setPrice(250000);             // Giá tiền
+        newService.setStatus(0);                 // Trạng thái: 1 = hoạt động, 0 = ngưng
+
+        // Tạo đối tượng DAO (hoặc nơi có phương thức addService)
+        ServiceDAO serviceDAO = new ServiceDAO();
+
+        // Gọi phương thức addService
+        boolean result = serviceDAO.addService(newService);
+
+        // In kết quả
+        if (result) {
+            System.out.println("Thêm dịch vụ thành công!");
+        } else {
+            System.out.println("Thêm dịch vụ thất bại.");
         }
     }
+    
+   
 }

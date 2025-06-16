@@ -155,11 +155,25 @@
                         </div>
 
                         <ul class="dropdowns list-inline mb-0" style="min-width:220px;">
-                            <c:if test="${empty sessionScope.user || sessionScope.user.role.name == 'customer'}">
-                                <li class="list-inline-item mb-0 ms-1">
-                                    <a href="booking" class="btn btn-schedule">Đặt lịch khám</a>
-                                </li>
-                            </c:if>
+                            <!-- Schedule Button -->
+                            <li class="list-inline-item mb-0 ms-1" style="min-width: 150px;">
+                                <c:choose>
+                                    <c:when test="${empty sessionScope.user}">
+                                        <a href="login" class="btn btn-schedule shadow rounded-pill">
+                                            Đặt lịch khám
+                                        </a>
+                                    </c:when>
+                                    <c:when test="${sessionScope.user.role.name == 'customer'}">
+                                        <a href="booking" class="btn btn-schedule shadow rounded-pill">
+                                            Đặt lịch khám
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <%-- Không hiển thị nút nhưng giữ khoảng trắng để không bị xô --%>
+                                        <span style="display:inline-block; width:100%; height:38px;"></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </li>
 
                             <c:choose>
                                 <c:when test="${not empty sessionScope.user}">
@@ -180,7 +194,7 @@
                                                     <a class="dropdown-item text-dark" href="viewuserinformation"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <c:if test="${sessionScope.user.role.name == 'doctor'}">
-                                                    <a class="dropdown-item text-dark" href="doctor-dashboard"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
+                                                    <a class="dropdown-item text-dark" href="doctor-schedule"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
                                                     <a class="dropdown-item text-dark" href="doctor-profile-setting"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <c:if test="${sessionScope.user.role.name == 'staff'}">
@@ -212,3 +226,4 @@
 
     </body>
 </html>
+

@@ -5,19 +5,24 @@
 
 package AminController;
 
+import DAO.ServiceDAO;
+import Model.Department;
+import Model.Service;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *
  * @author FPT
  */
-
-public class Admin extends HttpServlet {
+@WebServlet(name="ListService", urlPatterns={"/listservice"})
+public class ListService extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -34,10 +39,10 @@ public class Admin extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Admin</title>");  
+            out.println("<title>Servlet ListService</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Admin at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ListService at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -54,7 +59,13 @@ public class Admin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("view/admin/content/Admin.jsp").forward(request, response);
+        ServiceDAO serviceDAO = new ServiceDAO();
+        List<Service> services = serviceDAO.getAllServices();
+        List<Department> departments = serviceDAO.getAllDepartments();
+        request.setAttribute("departments", departments );
+        request.setAttribute("listService", services);
+        request.getRequestDispatcher("view/admin/content/ListService.jsp").forward(request, response);
+    
     } 
 
     /** 

@@ -471,20 +471,20 @@
                                                 </button>
 
                                                 <c:if test="${app.status == 'completed'}">
-                                                    <form action="cancelbooking" method="post" style="display:inline;"
-                                                          onsubmit="return checkTimeBeforeCancel(this);">
+                                                    <fmt:formatDate value="${app.appointmentDate}" pattern="yyyy-MM-dd" var="formattedDate" />
+
+                                                    <form class="cancel-form" 
+                                                          data-app-time="${formattedDate}" 
+                                                          data-start-time="${app.startTime}" 
+                                                          data-app-id="${app.id}" 
+                                                          action="cancelbooking" method="post" 
+                                                          onsubmit="return checkTimeBeforeCancel(this)">
+
                                                         <input type="hidden" name="id" value="${app.id}" />
-
-                                                        <input type="hidden" name="appTime"
-                                                               value="<fmt:formatDate value='${app.appointmentDate}' pattern='yyyy-MM-dd' />" />
-                                                        <input type="hidden" name="startTime" value="${app.startTime}" />
-                                                        <input type="hidden" name="appCreated"
-                                                               value="<fmt:formatDate value='${app.createdAt}' pattern='yyyy-MM-dd HH:mm:ss' />" />
-
-                                                        <button type="submit" class="btn btn-danger action-button">
-                                                            <i class="fa-solid fa-xmark"></i>
-                                                        </button>
+                                                        <button type="submit" class="btn btn-danger btn-sm">Huỷ</button>
                                                     </form>
+
+
 
                                                     <button type="button"
                                                             class="btn btn-warning action-button"
@@ -658,24 +658,40 @@
 
         <script>
             function checkTimeBeforeCancel(form) {
-                const appDateStr = form.appTime?.value;     
-                const startTimeStr = form.startTime?.value;  
-                const appointmentDateTimeStr = `${appDateStr}T${startTimeStr.substring(0,5)}:00`; 
-                const appointmentTime = new Date(appointmentDateTimeStr);
-                const now = new Date();
-                const diffInMs = appointmentTime.getTime() - now.getTime();
-                const diffInMinutes = diffInMs / (1000 * 60);
-                if (diffInMinutes < 0) {
-                    alert("Không thể huỷ lịch vì thời gian khám đã qua.");
+                const appDateStr = form.dataset.appTime;     // ví dụ: "2025-06-17"
+                const startTimeStr = form.dataset.startTime; // ví dụ: "08:00"
+
+                if (!appDateStr || !startTimeStr) {
+                    alert("Thiếu dữ liệu thời gian.");
                     return false;
                 }
+
+                const [year, month, day] = appDateStr.split('-').map(Number); // tháng -1 do JS tính từ 0
+                const [hour, minute] = startTimeStr.split(':').map(Number);
+
+                const appointmentTime = new Date(year, month - 1, day, hour, minute);
+                const now = new Date();
+
+                console.log("📅 Ngày khám:", appointmentTime.toString());
+                console.log("⏱️ Giờ hiện tại:", now.toString());
+
+                const diffInMs = appointmentTime.getTime() - now.getTime();
+                const diffInMinutes = diffInMs / (1000 * 60);
+
+                if (diffInMinutes < 0) {
+                    alert("Không thể huỷ lịch đã qua.");
+                    return false;
+                }
+
                 if (diffInMinutes < 30) {
                     alert("Không thể huỷ lịch nếu còn dưới 30 phút trước giờ khám.");
                     return false;
                 }
 
-                return confirm("Bạn có muốn giửi yêu cầu huỷ lịch khám!");
+                return confirm("Bạn có muốn gửi yêu cầu huỷ lịch khám?");
             }
+
+
 
             document.addEventListener("DOMContentLoaded", function () {
                 const rateModal = document.getElementById("rateModal");

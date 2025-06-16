@@ -10,38 +10,25 @@ package Model;
  */
 public class Service {
     private String id;
-    private Department department;
+    private int departmentId;
     private String name;
-    
     private String description;
     private double price;
     private int status;
-    
+
     public Service() {
     }
 
-    public Service(String id, Department department, String name, String description, double price, int status) {
+    public Service(String id, int departmentId, String name, String description, double price, int status) {
         this.id = id;
-        this.department = department;
+        this.departmentId = departmentId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.status = status;
     }
-
     
 
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    
-
-    
     public String getId() {
         return id;
     }
@@ -50,7 +37,13 @@ public class Service {
         this.id = id;
     }
 
-    
+    public int getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
+    }
 
     public String getName() {
         return name;
@@ -86,10 +79,8 @@ public class Service {
 
     @Override
     public String toString() {
-        return "Service{" + "id=" + id + ", department=" + department + ", name=" + name + ", description=" + description + ", price=" + price + ", status=" + status + '}';
+        return "Service{" + "id=" + id + ", departmentId=" + departmentId + ", name=" + name + ", description=" + description + ", price=" + price + ", status=" + status + '}';
     }
-
-    
 
     
     

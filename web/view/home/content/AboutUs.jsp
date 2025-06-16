@@ -76,6 +76,149 @@
             }
 
         </style>
+        <style>
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .section-title {
+                text-align: left;
+                margin-top: 20px;
+            }
+
+            .clinic-logo img {
+                max-width: 200px;
+                border-radius: 12px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .clinic-info-content {
+                padding-left: 30px;
+            }
+
+            .clinic-info-content h4 {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #1e3a8a;
+            }
+
+            .clinic-info-content p {
+                font-size: 1rem;
+                color: #64748b;
+                margin-bottom: 0.5rem;
+                line-height: 1.6;
+            }
+
+            .clinic-info-map iframe {
+                width: 100%;
+                height: 400px;
+                border: 0;
+                border-radius: 10px;
+            }
+
+            .clinic-info-content .icons {
+                font-size: 20px;
+                color: #ff6f61;
+                cursor: pointer;
+                margin-right: 8px;
+            }
+
+            /* Card dịch vụ */
+            .card.features {
+                border-radius: 20px;
+                transition: transform 0.3s ease;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+                background-color: #fff;
+                padding: 20px;
+            }
+
+            .card.features:hover {
+                transform: translateY(-5px);
+            }
+
+            .card.features h5.title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 0.5rem;
+            }
+
+            .card.features p.text-muted {
+                font-size: 0.95rem;
+                color: #6c757d;
+            }
+
+            .card.features .text-primary {
+                color: #0d47a1 !important;
+                font-weight: bold;
+            }
+
+            /* Bác sĩ */
+            .card.border-0.shadow-sm.h-100.rounded-3.overflow-hidden {
+                transition: transform 0.3s ease;
+                border-radius: 20px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+                background: #fff;
+            }
+
+            .card.border-0.shadow-sm.h-100.rounded-3.overflow-hidden:hover {
+                transform: translateY(-5px);
+            }
+
+            .card .card-img-top {
+                height: 220px;
+                object-fit: cover;
+                border-bottom: 1px solid #f1f1f1;
+            }
+
+            .card .card-title {
+                font-size: 1.05rem;
+                font-weight: 600;
+                color: #212529;
+            }
+
+            .card .text-muted.small {
+                font-size: 0.85rem;
+                color: #666;
+            }
+
+            .btn.btn-green {
+                background: linear-gradient(to right, #38b000, #008000);
+                border: none;
+                border-radius: 30px;
+                padding: 10px 16px;
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: #fff;
+                transition: background 0.3s ease;
+            }
+
+            .btn.btn-green:hover {
+                background: linear-gradient(to right, #008000, #38b000);
+                color: #fff;
+            }
+
+            h4.title {
+                color: #1e3a8a;
+                font-weight: 700;
+                font-size: 1.8rem;
+                letter-spacing: 0.3px;
+            }
+
+            p.text-muted {
+                color: #64748b;
+                font-size: 1rem;
+                font-style: italic;
+            }
+            .hero-section p {
+                color: #e0e0e0;
+                font-size: 1rem;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+        </style>
+
 
     </head>
 
@@ -86,36 +229,32 @@
         <%@include file="../layout/Header.jsp" %>
 
         <!-- Start Hero -->
-        <section class="bg-half-170 d-table w-100 " style="background: url('${pageContext.request.contextPath}/assets/images/bg/aboutus.jpg') center center;">
-            <div class="bg-overlay bg-dark opacity-75 position-absolute top-0 start-0 w-100 h-100" style="z-index:0"></div>
+        <section class="hero-section d-flex align-items-center"
+                 style="min-height: 30vh; background: linear-gradient(135deg, #0d47a1, #1976d2);"
+                 >
 
-            <div class="container">
-                <div class="row mt-5 justify-content-center">
-                    <div class="col-12">
-                        <div class="section-title text-center">
-                            <h3 class="sub-title mb-4 text-white title-dark">Về chúng tôi</h3>
-                            <p class="para-desc mx-auto text-white h5">
-                                Bác sĩ rất tận tâm và chuyên môn cao – lựa chọn lý tưởng khi thú cưng của bạn cần được hỗ trợ ngay lập tức, điều trị khẩn cấp hoặc đơn giản là một buổi tư vấn chăm sóc sức khỏe.
-                            </p>
+            <div class="container text-center py-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
 
-                            <nav aria-label="breadcrumb" class="d-inline-block mt-3">
-                                <ul class="breadcrumb bg-light rounded mb-0 py-1 px-2">
-                                    <li class="breadcrumb-item"><a href="index.html">PET24H</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Về chúng tôi</li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div><!--end col-->
-                </div><!--end row-->
-            </div><!--end container-->
-        </section><!--end section-->
-        <div class="position-relative">
-            <div class="shape overflow-hidden text-white">
-                <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
-                </svg>
+                        <h3 class="fw-bold text-dark mb-3 fs-3" style="color: #fff">
+                            Về chúng tôi
+                        </h3>
+                        <p >
+                            Đội ngũ bác sĩ thú y giàu kinh nghiệm, sẵn sàng hỗ trợ thú cưng của bạn kịp thời với các dịch vụ khám, điều trị và tư vấn chuyên nghiệp.
+                        </p>
+                        <nav aria-label="breadcrumb" class="d-inline-block mt-3">
+                            <ul class="breadcrumb bg-light rounded mb-0 py-1 px-2">
+                                <li class="breadcrumb-item"><a href="homepage">PET24H</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Về chúng tôi</li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
+        
+
         <!-- End Hero -->
 
         <!-- Start -->
@@ -176,8 +315,8 @@
                 </div><!--end row-->
                 <div class="row">
                     <c:forEach var="s" items="${services}">
-                        <div class="col-xl-3 col-md-4 col-12 mt-4 pt-2">
-                            <div class="card features feature-primary border-0 text-center py-4">
+                        <div class="col-xl-3 col-md-4 col-12 mt-4 pt-2 d-flex">
+                            <div class="card features feature-primary border-0 text-center py-4 h-100 d-flex flex-column">
                                 <div class="mb-3">
                                     <c:choose>
                                         <c:when test="${s.name eq 'Khám tổng quát'}">
@@ -228,67 +367,76 @@
             </div><!--end container-->
         </section>
 
-        <div class="container mt-100 mt-60">
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="section-title text-center mb-4 pb-2">
-                        <h4 class="title mb-4">Bác sĩ</h4>
-                        <p class="text-muted mx-auto para-desc mb-0">Great doctor if you need your family member to get effective immediate assistance, emergency treatment or a simple consultation.</p>
-                    </div>
-                </div><!--end col-->
-            </div><!--end row-->
+        <!-- ĐỘI NGŨ BÁC SĨ Start -->
+        <section class="section bg-light">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <h4 class="title mb-3">Đội ngũ bác sĩ</h4>
+                    <p class="text-muted">Đội ngũ bác sĩ giàu kinh nghiệm và tận tâm của Pet24H.</p>
+                </div>
 
-            <div class="row align-items-center">
-                <!-- Lặp qua danh sách bác sĩ -->
-                <c:forEach var="doctor" items="${doctors}">
-                    <div class="col-xl-3 col-lg-3 col-md-6 mt-4 pt-2">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <!-- Bạn có thể sử dụng ảnh của bác sĩ hoặc một ảnh mặc định -->
-                                <img src="${pageContext.request.contextPath}/assets/images/default.png" class="img-fluid" alt="">
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="#" class="btn btn-icon btn-pills btn-soft-primary"><i data-feather="facebook" class="icons"></i></a></li>
-                                    <li class="mt-2"><a href="#" class="btn btn-icon btn-pills btn-soft-primary"><i data-feather="linkedin" class="icons"></i></a></li>
-                                    <li class="mt-2"><a href="#" class="btn btn-icon btn-pills btn-soft-primary"><i data-feather="github" class="icons"></i></a></li>
-                                    <li class="mt-2"><a href="#" class="btn btn-icon btn-pills btn-soft-primary"><i data-feather="twitter" class="icons"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <!-- Hiển thị tên bác sĩ -->
-                                <a href="#" class="title text-dark h5 d-block mb-0">${doctor.user.fullName}</a>
-                                <small class="text-muted speciality">${doctor.specialty}</small>
+                <div class="row g-4">
+                    <c:forEach var="doctor" items="${doctors}">
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
+                                <!-- Ảnh top -->
+                                <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" 
+                                     alt="${doctor.user.fullName}" 
+                                     class="card-img-top" 
+                                     style="height:220px; object-fit:cover;">
+
+                                <!-- Nội dung -->
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title mb-2 fw-bold text-dark" style="font-size: 16px;">
+                                        ${doctor.user.fullName}
+                                    </h6>
+                                    <p class="text-muted small mb-1" style="font-size: 14px;">
+                                        ${doctor.specialty}
+                                    </p>
+                                    <p class="text-muted small mb-2" style="font-size: 14px;">
+                                        ${doctor.yearsOfExperience} năm kinh nghiệm
+                                    </p>
+
+                                    <!-- Nút -->
+                                    <a href="booking-by-doctor?doctorId=${doctor.user.id}" 
+                                       class="btn btn-green mt-auto w-100">
+                                        Xem lịch & Đặt lịch
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div><!--end col-->
-                </c:forEach>
-            </div><!--end row-->
-        </div><!--end container-->
-    </section><!--end section-->
-    <!-- End -->
-    
-
-
-<%@include file="../layout/Footer.jsp" %>
-
-<!-- Back to top -->
-<a href="#" onclick="topFunction()" id="back-to-top" class="btn btn-icon btn-pills btn-primary back-to-top"><i data-feather="arrow-up" class="icons"></i></a>
-<!-- Back to top -->
-
-<!-- Modal để hiển thị Google Map -->
-<div class="modal fade" id="googleMapModal" tabindex="-1" aria-labelledby="googleMapModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="googleMapModalLabel">Vị trí phòng khám trên Google Maps</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </c:forEach>
+                </div>
             </div>
-            <div class="modal-body">
-                <!-- Nhúng Google Map bằng iframe -->
-                <iframe id="googleMapIframe" src="" width="100%" height="400" style="border: 0;" allowfullscreen="" loading="lazy"></iframe>
+        </section>
+
+        <!-- ĐỘI NGŨ BÁC SĨ End -->
+
+        <!-- End -->
+
+
+
+        <%@include file="../layout/Footer.jsp" %>
+
+        <!-- Back to top -->
+        <a href="#" onclick="topFunction()" id="back-to-top" class="btn btn-icon btn-pills btn-primary back-to-top"><i data-feather="arrow-up" class="icons"></i></a>
+        <!-- Back to top -->
+
+        <!-- Modal để hiển thị Google Map -->
+        <div class="modal fade" id="googleMapModal" tabindex="-1" aria-labelledby="googleMapModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="googleMapModalLabel">Vị trí phòng khám trên Google Maps</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Nhúng Google Map bằng iframe -->
+                        <iframe id="googleMapIframe" src="" width="100%" height="400" style="border: 0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
 
 
@@ -296,35 +444,35 @@
 
 
 
-<!-- javascript -->
+        <!-- javascript -->
 
-<script src="${pageContext.request.contextPath}/assets/js/jquery.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-<!-- SLIDER -->
-<script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
-<!-- Icons -->
-<script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-<!-- Main Js -->
-<script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/jquery.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- SLIDER -->
+        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
+        <!-- Icons -->
+        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+        <!-- Main Js -->
+        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
 
-<script>
-    // Lắng nghe sự kiện khi modal được mở
-    $('#googleMapModal').on('show.bs.modal', function (event) {
-        // Lấy URL Google Map từ phần tử trong database (được truyền vào modal)
-        var googleMapUrl = "${clinicInfo.googleMap}"; // lấy URL Google Map từ database
+        <script>
+            // Lắng nghe sự kiện khi modal được mở
+            $('#googleMapModal').on('show.bs.modal', function (event) {
+                // Lấy URL Google Map từ phần tử trong database (được truyền vào modal)
+                var googleMapUrl = "${clinicInfo.googleMap}"; // lấy URL Google Map từ database
 
-        // Cập nhật src của iframe để hiển thị bản đồ
-        var modal = $(this);
-        modal.find('#googleMapIframe').attr('src', googleMapUrl);
-    });
+                // Cập nhật src của iframe để hiển thị bản đồ
+                var modal = $(this);
+                modal.find('#googleMapIframe').attr('src', googleMapUrl);
+            });
 
-    // Khi modal đóng, xóa src để ngừng tải bản đồ (tăng hiệu suất)
-    $('#googleMapModal').on('hidden.bs.modal', function (event) {
-        var modal = $(this);
-        modal.find('#googleMapIframe').attr('src', '');
-    });
-</script>
-</body>
+            // Khi modal đóng, xóa src để ngừng tải bản đồ (tăng hiệu suất)
+            $('#googleMapModal').on('hidden.bs.modal', function (event) {
+                var modal = $(this);
+                modal.find('#googleMapIframe').attr('src', '');
+            });
+        </script>
+    </body>
 
 </html>

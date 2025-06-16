@@ -5,19 +5,23 @@
 
 package AminController;
 
+import DAO.ShiftDAO;
+import Model.Shift;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *
  * @author FPT
  */
-
-public class Admin extends HttpServlet {
+@WebServlet(name="ListShift", urlPatterns={"/listshift"})
+public class ListShift extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -34,10 +38,10 @@ public class Admin extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Admin</title>");  
+            out.println("<title>Servlet ListShift</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Admin at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ListShift at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -54,8 +58,12 @@ public class Admin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("view/admin/content/Admin.jsp").forward(request, response);
-    } 
+        ShiftDAO shiftDAO = new ShiftDAO();
+        List<Shift> shiftList = shiftDAO.getAllShifts();
+        request.setAttribute("shiftList", shiftList);
+        request.getRequestDispatcher("view/admin/content/ListShift.jsp").forward(request, response);
+    }
+    
 
     /** 
      * Handles the HTTP <code>POST</code> method.

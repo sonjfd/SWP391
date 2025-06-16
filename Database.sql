@@ -66,6 +66,35 @@ CREATE TABLE species (
   name NVARCHAR(100) UNIQUE NOT NULL
 );
 
+
+-- 11. Breeds (Giống loài)
+CREATE TABLE breeds (
+  id INT PRIMARY KEY IDENTITY(1,1),
+  species_id INT NOT NULL,
+  name NVARCHAR(100) NOT NULL,
+  CONSTRAINT FK_breeds_species FOREIGN KEY (species_id) REFERENCES species(id)
+);
+
+-- 12. Pets (Thú cưng)
+CREATE TABLE pets (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  pet_code NVARCHAR(15) UNIQUE,
+  owner_id UNIQUEIDENTIFIER NOT NULL,
+  name NVARCHAR(100) NOT NULL,
+  birth_date DATE,
+  breeds_id INT NOT NULL,
+  gender NVARCHAR(20),
+  avatar NVARCHAR(255) DEFAULT '/assets/images/default_pet.png',
+  description NVARCHAR(MAX) NULL,
+  status NVARCHAR(50) DEFAULT 'active',
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_pets_users FOREIGN KEY (owner_id) REFERENCES users(id),
+  CONSTRAINT FK_pets_breeds FOREIGN KEY (breeds_id) REFERENCES breeds(id)
+);
+
+
 -- 8. Shift (Ca làm việc)
 CREATE TABLE shift (
     shift_id INT PRIMARY KEY IDENTITY(1,1),
@@ -99,32 +128,6 @@ CREATE TABLE doctor_schedule (
     CONSTRAINT UQ_schedule UNIQUE (doctor_id, work_date, shift_id)
 );
 
--- 11. Breeds (Giống loài)
-CREATE TABLE breeds (
-  id INT PRIMARY KEY IDENTITY(1,1),
-  species_id INT NOT NULL,
-  name NVARCHAR(100) NOT NULL,
-  CONSTRAINT FK_breeds_species FOREIGN KEY (species_id) REFERENCES species(id)
-);
-
--- 12. Pets (Thú cưng)
-CREATE TABLE pets (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  pet_code NVARCHAR(15) UNIQUE,
-  owner_id UNIQUEIDENTIFIER NOT NULL,
-  name NVARCHAR(100) NOT NULL,
-  birth_date DATE,
-  breeds_id INT NOT NULL,
-  gender NVARCHAR(20),
-  avatar NVARCHAR(255) DEFAULT '/assets/images/default_pet.png',
-  description NVARCHAR(MAX) NULL,
-  status NVARCHAR(50) DEFAULT 'active',
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_pets_users FOREIGN KEY (owner_id) REFERENCES users(id),
-  CONSTRAINT FK_pets_breeds FOREIGN KEY (breeds_id) REFERENCES breeds(id)
-);
 
 -- 13. Appointments (Cuộc hẹn)
 CREATE TABLE appointments (
@@ -159,7 +162,7 @@ CREATE TABLE examination_prices (
 CREATE TABLE services (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   department_id INT NOT NULL,
-  name NVARCHAR(255) NOT NULL,
+  name NVARCHAR(255) UNIQUE NOT NULL,
   description NVARCHAR(MAX),
   price DECIMAL(10, 2) NOT NULL,
   status BIT DEFAULT 1,
@@ -236,9 +239,8 @@ CREATE TABLE medical_record_files (
 -- 19. Medicines (Thuốc)
 CREATE TABLE medicines (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  name NVARCHAR(255) NOT NULL,
+  name NVARCHAR(255) Unique  NOT NULL,
   description NVARCHAR(MAX),
-  price DECIMAL(10, 2) NOT NULL,
   status BIT DEFAULT 1
 );
 
@@ -328,8 +330,7 @@ CREATE TABLE blogs (
   published_at DATETIME,               -- Ngày xuất bản
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-  reactions_count INT DEFAULT 0,
-  comments_count INT DEFAULT 0
+  
 );
 --- BẢNG TAG (QH M-T-M với blogs)
 CREATE TABLE tags (
@@ -388,4 +389,15 @@ CREATE TABLE [dbo].[ChatHistory] (
     [created_at] DATETIME DEFAULT GETDATE(),
 
     CONSTRAINT FK_ChatHistory_User FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+CREATE TABLE appointment_symptoms (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  appointment_id UNIQUEIDENTIFIER NOT NULL,
+  symptom NVARCHAR(255) NOT NULL,     
+  note NVARCHAR(MAX),
+  created_at DATETIME DEFAULT GETDATE(),
+
+  FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );

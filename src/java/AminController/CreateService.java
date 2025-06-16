@@ -5,9 +5,12 @@
 
 package AminController;
 
+import DAO.ServiceDAO;
+import Model.Service;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,8 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author FPT
  */
-
-public class Admin extends HttpServlet {
+@WebServlet(name="CreateService", urlPatterns={"/createservice"})
+public class CreateService extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -34,10 +37,10 @@ public class Admin extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Admin</title>");  
+            out.println("<title>Servlet CreateService</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Admin at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet CreateService at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -54,7 +57,9 @@ public class Admin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("view/admin/content/Admin.jsp").forward(request, response);
+        ServiceDAO serviceDAO = new ServiceDAO();
+        request.setAttribute("departments", serviceDAO.getAllDepartments());
+        request.getRequestDispatcher("view/admin/content/CreateService.jsp").forward(request, response);
     } 
 
     /** 
@@ -67,7 +72,38 @@ public class Admin extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            request.setCharacterEncoding("UTF-8");
+            int departmentId = Integer.parseInt(request.getParameter("department_id"));
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+            double price = Double.parseDouble(request.getParameter("price"));
+            int status = Integer.parseInt(request.getParameter("status"));
+
+            Service service = new Service();
+            service.setDepartmentId(departmentId);
+            service.setName(name);
+            service.setDescription(description);
+            service.setPrice(price);
+            service.setStatus(status);
+
+            ServiceDAO serviceDAO = new ServiceDAO();
+            if (serviceDAO.addService(service)) {
+                request.getSession().setAttribute("message", "Tạo dịch vụ thành công!");
+                response.sendRedirect(request.getContextPath() + "/listservice");
+            } else {
+                request.setAttribute("error", "Lỗi khi tạo dịch vụ!");
+                request.setAttribute("departments", serviceDAO.getAllDepartments());
+                request.setAttribute("service", service);
+                request.getRequestDispatcher("view/admin/content/CreateService.jsp").forward(request, response);
+            }
+        } catch (Exception e) {
+            request.setAttribute("error", "Dữ liệu không hợp lệ!");
+            ServiceDAO serviceDAO = new ServiceDAO();
+            request.setAttribute("departments", serviceDAO.getAllDepartments());
+            request.getRequestDispatcher("view/admin/content/CreateService.jsp").forward(request, response);
+        }
+    
     }
 
     /** 
