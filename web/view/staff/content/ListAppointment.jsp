@@ -315,11 +315,14 @@
                             <th scope="col">Ngày khám</th>
                             <th scope="col">Ca khám</th>
                             <th scope="col">Bác sĩ khám</th>
+                            <th scope="col">Thời gian đặt</th>
                             <th scope="col">Trạng thái</th> 
                             <th scope="col">Thanh toán</th> 
                             <th scope="col">Check in</th> 
 
                             <th scope="col">Hoạt động</th>
+
+
                         </tr>
                     </thead>
                     <tbody>
@@ -332,6 +335,11 @@
                                 <td>${app.startTime} - ${app.endTime}</td>
                                 <td>${app.doctor.user.fullName}</td>
                                 <!-- Trạng thái -->
+
+                                <td>
+                                    <fmt:formatDate value="${app.createdAt}" pattern="dd-MM-yyyy HH:mm" />
+
+                                </td>
                                 <td>
                                     <c:choose>
 
@@ -390,6 +398,7 @@
 
                                     </div>
                                 </td>
+
                             </tr>
                         </c:forEach>
 
@@ -652,8 +661,8 @@
                                             <p><strong>Ngày sinh:</strong> <fmt:formatDate value="${app.pet.birthDate}" pattern="dd/MM/yyyy"/></p>
                                             <p><strong>Giống loài:</strong> ${app.pet.breed.name} (Loài: ${app.pet.breed.specie.name})</p>
                                             <p><strong>Giới tính:</strong> ${app.pet.gender == 'male' ? 'Đực' : 'Cái'}</p>
-                                           
-                                            
+
+
                                         </div>
                                     </div>
 
@@ -671,7 +680,7 @@
                                             <p><strong>Email:</strong> ${app.user.email}</p>
                                             <p><strong>Số điện thoại:</strong> ${app.user.phoneNumber}</p>
                                             <p><strong>Địa chỉ:</strong> ${app.user.address}</p>
-                                            
+
                                         </div>
                                     </div>
 

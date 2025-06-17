@@ -188,6 +188,7 @@
                             <th scope="col">Giống </th>
                             
                             <th scope="col">Chủ sở hữu</th>
+                          
                             <th scope="col">Trạng thái</th>
                             <th class="col">Xem chi tiết</th>
                             <th scope="col">Đổi chủ</th>
@@ -204,6 +205,7 @@
 
                                 
                                 <td>${p.user.fullName}</td>
+                                  
 
                                 <td>
                                     <c:choose>

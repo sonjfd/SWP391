@@ -25,22 +25,23 @@ public class AppointmentDAO {
 
     public List<Appointment> getAllAppointment() {
         String sql = """
-    SELECT a.*, 
-           u.id AS user_id, u.username, u.email, u.full_name, u.phone, 
-           u.address, u.avatar, u.status AS user_status, u.role_id,
-           p.id AS pet_id, p.pet_code, p.name AS pet_name, p.birth_date, p.gender,
-           b.id AS breeds_id, b.name AS breed_name,
-           s.id AS species_id, s.name AS species_name,
-           d.user_id AS doctor_id, d.specialty, d.certificates, d.qualifications, 
-           d.years_of_experience, d.biography,
-           docu.full_name AS doctor_name
-    FROM appointments a
-    JOIN users u ON a.customer_id = u.id
-    JOIN pets p ON a.pet_id = p.id
-    JOIN breeds b ON p.breeds_id = b.id
-    JOIN species s ON b.species_id = s.id
-    JOIN doctors d ON a.doctor_id = d.user_id
-    JOIN users docu ON d.user_id = docu.id
+     SELECT a.*, 
+              u.id AS user_id, u.username, u.email, u.full_name, u.phone, 
+              u.address, u.avatar, u.status AS user_status, u.role_id,
+              p.id AS pet_id, p.pet_code, p.name AS pet_name, p.birth_date, p.gender,
+              b.id AS breeds_id, b.name AS breed_name,
+              s.id AS species_id, s.name AS species_name,
+              d.user_id AS doctor_id, d.specialty, d.certificates, d.qualifications, 
+              d.years_of_experience, d.biography,
+              docu.full_name AS doctor_name
+       FROM appointments a
+       JOIN users u ON a.customer_id = u.id
+       JOIN pets p ON a.pet_id = p.id
+       JOIN breeds b ON p.breeds_id = b.id
+       JOIN species s ON b.species_id = s.id
+       JOIN doctors d ON a.doctor_id = d.user_id
+       JOIN users docu ON d.user_id = docu.id
+   	order by created_at desc
 """;
 
         List<Appointment> list = new ArrayList<>();
@@ -371,6 +372,7 @@ public class AppointmentDAO {
             if (doctorId != null && !doctorId.isEmpty()) {
                 sql.append(" AND a.doctor_id = ?");
             }
+            sql.append("order by created_at desc");
 
             PreparedStatement ps = conn.prepareStatement(sql.toString());
 
@@ -1191,8 +1193,6 @@ public class AppointmentDAO {
 //        }
 //        return false;
 //    }
-   
-
     public static void main(String[] args) {
         AppointmentDAO dao = new AppointmentDAO(); // hoặc tên DAO thật sự bạn đang dùng
         List<Appointment> appointments = dao.getAllAppointment();

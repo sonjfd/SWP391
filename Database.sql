@@ -401,3 +401,81 @@ CREATE TABLE appointment_symptoms (
 
   FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
+
+
+
+-- =============================
+-- 1. DANH MỤC SẢN PHẨM (CATEGORIES)
+-- =============================
+CREATE TABLE categories (
+  category_id INT PRIMARY KEY IDENTITY(1,1),
+  category_name NVARCHAR(50) UNIQUE NOT NULL,
+  description NVARCHAR(100),
+  status BIT DEFAULT 1  -- 1: hiển thị, 0: ẩn
+);
+
+-- =============================
+-- 2. NHÀ CUNG CẤP (SUPPLIERS)
+-- =============================
+CREATE TABLE suppliers (
+  supplier_id INT PRIMARY KEY IDENTITY(1,1),
+  supplier_name NVARCHAR(100) NOT NULL,
+  contact_name NVARCHAR(100),
+  phone NVARCHAR(20),
+  email NVARCHAR(100),
+  address NVARCHAR(100),
+  created_at DATETIME DEFAULT GETDATE()
+);
+
+
+CREATE TABLE products (
+  product_id INT PRIMARY KEY IDENTITY(1,1),
+  category_id INT NOT NULL,
+  supplier_id INT NOT NULL,
+  product_name NVARCHAR(100) NOT NULL,
+  description NVARCHAR(100),
+  image NVARCHAR(255),
+  status BIT DEFAULT 1,  -- 1: hiển thị, 0: ẩn
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_products_categories FOREIGN KEY (category_id) REFERENCES categories(category_id),
+  CONSTRAINT FK_products_suppliers FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+);
+
+
+CREATE TABLE product_variants (
+  product_variant_id INT PRIMARY KEY IDENTITY(1,1),
+  product_id INT NOT NULL,
+  variant_name NVARCHAR(100) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  stock_quantity INT NOT NULL,
+  status BIT DEFAULT 1,  -- 1: hiển thị, 0: ẩn
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_variants_products FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+
+CREATE TABLE product_variant_weights (
+  weight_id INT PRIMARY KEY IDENTITY(1,1),
+  product_variant_id INT NOT NULL,
+  weight DECIMAL(10,2),
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_weights_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+);
+
+
+CREATE TABLE product_variant_flavors (
+  flavor_id INT PRIMARY KEY IDENTITY(1,1),
+  product_variant_id INT NOT NULL,
+  flavor NVARCHAR(50) NOT NULL,
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_flavors_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+);
+
