@@ -49,7 +49,7 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="listmedicine"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
+                        <li><a href="dashboard"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
 
 <li class="sidebar-dropdown">
                             <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Quản lý giống loài</a>
