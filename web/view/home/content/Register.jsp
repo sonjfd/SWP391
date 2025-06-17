@@ -154,14 +154,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-12 mt-3 text-center">
-                                            <h6 class="text-muted">Hoặc</h6>
-                                        </div>
-
-                                        <div class="col-12 mt-3">
-                                            <div class="d-grid">
-                                                <a href="javascript:void(0)" class="btn btn-soft-danger"><i class="uil uil-google"></i> Google</a>
-                                            </div>
+                                        
                                         </div><!--end col-->
 
                                         <div class="mx-auto text-center">

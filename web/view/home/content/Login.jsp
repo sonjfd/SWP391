@@ -46,7 +46,9 @@
             <%-- Xóa thông báo sau khi hiển thị --%>
             <% session.removeAttribute("successMessage"); %>
         </c:if>
-
+            <div class="back-to-home rounded d-none d-sm-block">
+                <a href="${pageContext.request.contextPath}/homepage" class="btn btn-icon btn-primary"><i data-feather="home" class="icons"></i></a>
+            </div>
         <!-- Hero Start -->
         <section class="bg-home d-flex  align-items-center" style="background: url('${pageContext.request.contextPath}/assets/images/bg/bg-lines-one.png'); background-position: center; background-color: #87CEFA;">
             
@@ -88,13 +90,8 @@
                                         </div>
 
                                         <div class="col-lg-12">
-                                            <div class="d-flex justify-content-between">
-                                                <div class="mb-3">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input align-middle" type="checkbox" value="true" name="remember" id="remember-check">
-                                                        <label class="form-check-label" for="remember-check">Nhớ mật khẩu</label>
-                                                    </div>
-                                                </div>
+                                            <div class="d-flex justify-content-lg-end">
+                                               
                                                 <a href="requestPassword" class="text-dark h6 mb-0 text-decoration-underline">Quên mật khẩu ?</a>
                                             </div>
                                         </div>
