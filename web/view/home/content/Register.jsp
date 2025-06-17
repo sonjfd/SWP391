@@ -11,7 +11,11 @@
 
     <head>
         <meta charset="utf-8" />
+
         <title>Doctris - Doctor Appointment Booking System</title>
+
+        <title>Hệ Thống Khám Thú Cưng</title>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -154,7 +158,18 @@
                                             </div>
                                         </div>
 
+
                                         
+
+                                        <div class="col-lg-12 mt-3 text-center">
+                                            <h6 class="text-muted">Hoặc</h6>
+                                        </div>
+
+                                        <div class="col-12 mt-3">
+                                            <div class="d-grid">
+                                                <a href="javascript:void(0)" class="btn btn-soft-danger"><i class="uil uil-google"></i> Google</a>
+                                            </div>
+
                                         </div><!--end col-->
 
                                         <div class="mx-auto text-center">
