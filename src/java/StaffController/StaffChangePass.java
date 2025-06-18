@@ -21,6 +21,9 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author ASUS
  */
+
+
+@WebServlet("/staff-changepass")
 public class StaffChangePass extends HttpServlet {
 
     /**

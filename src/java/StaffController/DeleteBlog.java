@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author ASUS
  */
 
-@WebServlet("/delete-blog")
+@WebServlet("/staff-delete-blog")
 public class DeleteBlog extends HttpServlet {
    
     /** 
@@ -63,7 +63,7 @@ public class DeleteBlog extends HttpServlet {
             dao.deleteBlog(id);
         }
 
-        response.sendRedirect("list-blog");
+        response.sendRedirect("staff-list-blog");
     } 
 
     /** 

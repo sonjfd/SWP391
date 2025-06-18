@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Dell
  */
-@WebServlet(name = "ListAppointment", urlPatterns = {"/list-appointment"})
+@WebServlet(name = "ListAppointment", urlPatterns = {"/staff-list-appointment"})
 public class ListAppointment extends HttpServlet {
 
     /**

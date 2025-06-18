@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Dell
  */
-@WebServlet(name = "UpdateAppointment", urlPatterns = {"/update-appointment"})
+@WebServlet(name = "UpdateAppointment", urlPatterns = {"/staff-update-appointment"})
 public class UpdateAppointment extends HttpServlet {
 
     /**
@@ -133,7 +133,7 @@ public class UpdateAppointment extends HttpServlet {
             boolean updated = adao.updateAppointment(appointment);
 
             if (updated) {
-                response.sendRedirect("list-appointment?success=update_success");
+                response.sendRedirect("staff-list-appointment?success=update_success");
             } else {
                 request.setAttribute("error", "Cập nhật thất bại");
                 request.getRequestDispatcher("view/staff/content/UpdateAppointment.jsp").forward(request, response);

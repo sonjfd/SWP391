@@ -277,7 +277,7 @@
                 <h4 class="mb-3">Danh sách Blogs</h4>
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <!-- Form lọc bên trái -->
-    <form method="get" action="list-blog" class="row gx-2 align-items-center flex-nowrap">
+    <form method="get" action="staff-list-blog" class="row gx-2 align-items-center flex-nowrap">
         <div class="col-auto">
             <input type="date" name="dateFrom" value="${param.dateFrom}" class="form-control form-control-sm" />
         </div>
@@ -305,7 +305,7 @@
     </form>
 
     <!-- Nút thêm mới bên phải -->
-    <a href="add-blog" class="btn btn-sm btn-success d-flex align-items-center gap-1">
+    <a href="staff-add-blog" class="btn btn-sm btn-success d-flex align-items-center gap-1">
         <i class="fas fa-plus-circle"></i> Thêm mới
     </a>
 </div>
@@ -340,10 +340,10 @@
                                 </td>
                                 <td><c:if test="${blog.publishedAt eq null}">Chưa có</c:if>${blog.publishedAt}</td>
                                     <td>
-                                        <a href="edit-blog?id=${blog.id}" class="btn btn-sm btn-warning">
+                                        <a href="staff-edit-blog?id=${blog.id}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit icon-btn"></i> <span>Sửa</span>
                                     </a>
-                                    <a href="delete-blog?id=${blog.id}" 
+                                    <a href="staff-delete-blog?id=${blog.id}" 
                                        class="btn btn-sm btn-danger"
                                        onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?')">
                                         <i class="fas fa-trash-alt icon-btn"></i> <span>Xóa</span>
@@ -366,7 +366,7 @@
         <ul class="pagination justify-content-center">
             <!-- Nút Previous -->
             <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                <a class="page-link" href="list-blog?page=${currentPage - 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Previous">
+                <a class="page-link" href="staff-list-blog?page=${currentPage - 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
@@ -374,13 +374,13 @@
             <!-- Các trang số -->
             <c:forEach var="i" begin="1" end="${totalPages}" varStatus="status">
                 <li class="page-item ${currentPage == i ? 'active' : ''}">
-                    <a class="page-link" href="list-blog?page=${i}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}">${i}</a>
+                    <a class="page-link" href="staff-list-blog?page=${i}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}">${i}</a>
                 </li>
             </c:forEach>
 
             <!-- Nút Next -->
             <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="list-blog?page=${currentPage + 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Next">
+                <a class="page-link" href="staff-list-blog?page=${currentPage + 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>

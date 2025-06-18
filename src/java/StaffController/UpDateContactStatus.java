@@ -10,6 +10,7 @@ import DAO.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,9 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Dell
  */
+
+
+@WebServlet("/staff-update-contact-status")
 public class UpDateContactStatus extends HttpServlet {
    
     /** 
@@ -60,9 +64,9 @@ public class UpDateContactStatus extends HttpServlet {
         StaffDAO sdao=new StaffDAO();
        int result= sdao.updateStatusContact(id, status);
        if(result >0){
-           response.sendRedirect("contact?success=true");
+           response.sendRedirect("staff-contact?success=true");
        }else{
-           response.sendRedirect("contact?success=false");
+           response.sendRedirect("staff-contact?success=false");
        }
         
     } 

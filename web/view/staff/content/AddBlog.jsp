@@ -22,7 +22,7 @@
             <div class="layout-specing">
                 <h4 class="mb-4">📝 Tạo bài viết mới</h4>
 
-                <form action="add-blog" method="post" enctype="multipart/form-data" class="row g-4">
+                <form action="staff-add-blog" method="post" enctype="multipart/form-data" class="row g-4">
                     <div class="col-md-6">
                         <label for="title" class="form-label">📌 Tiêu đề</label>
                         <input type="text" class="form-control" id="title" name="title" required>
@@ -66,7 +66,7 @@
 
                     <div class="col-12 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary me-2">💾 Lưu bài viết</button>
-                        <a href="list-blog" class="btn btn-outline-secondary">↩️ Quay lại</a>
+                        <a href="staff-list-blog" class="btn btn-outline-secondary">↩️ Quay lại</a>
                     </div>
                 </form>
             </div>

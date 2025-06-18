@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author Dell
  */
-@WebServlet(name = "AddNewBooking", urlPatterns = {"/add-new-booking"})
+@WebServlet(name = "AddNewBooking", urlPatterns = {"/staff-add-new-booking"})
 public class AddNewBooking extends HttpServlet {
 
     /**
@@ -157,7 +157,7 @@ public class AddNewBooking extends HttpServlet {
                         "Thanh toán trực tiếp"
                 );
 
-                response.sendRedirect("list-appointment?success=1");
+                response.sendRedirect("staff-list-appointment?success=1");
             } else {
                 request.setAttribute("error", "Đặt lịch thất bại. Vui lòng thử lại.");
                 request.getRequestDispatcher("view/staff/content/CreateNewBooking.jsp").forward(request, response);

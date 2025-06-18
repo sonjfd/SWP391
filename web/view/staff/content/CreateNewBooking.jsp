@@ -209,7 +209,7 @@
 
                 <h2 class="text-center my-4 mt-5">Thêm lịch khám</h2>
 
-                <form id="bookingForm" method="post" action="add-new-booking">
+                <form id="bookingForm" method="post" action="staff-add-new-booking">
 
                     <!-- User info -->
                     <div class="row mb-3">

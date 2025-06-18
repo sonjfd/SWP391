@@ -12,7 +12,7 @@
 
 <div class="container mt-4">
     <h4>Chỉnh sửa bài viết Blog</h4>
-    <form action="edit-blog" method="post" enctype="multipart/form-data">
+    <form action="staff-edit-blog" method="post" enctype="multipart/form-data">
         <input type="hidden" name="id" value="${blog.id}" />
 
         <div class="mb-3">
@@ -51,7 +51,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-        <a href="list-blog" class="btn btn-secondary">Hủy</a>
+        <a href="staff-list-blog" class="btn btn-secondary">Hủy</a>
     </form>
 </div>
 </body>

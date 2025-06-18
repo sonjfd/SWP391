@@ -45,7 +45,7 @@
                     <div class="alert alert-danger">${error}</div>
                 </c:if>
 
-                <form id="updateScheduleForm" action="update-work-schedule" method="post" class="p-4 border rounded shadow-sm">
+                <form id="updateScheduleForm" action="staff-update-work-schedule" method="post" class="p-4 border rounded shadow-sm">
 
                     <input type="hidden" name="schedule_id" value="${DoctorSchedule.id}" />
 
@@ -83,7 +83,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="list-work-schedule" class="btn btn-secondary">
+                        <a href="staff-list-work-schedule" class="btn btn-secondary">
                             <i class="bi bi-arrow-left-circle"></i> Quay lại
                         </a>
 

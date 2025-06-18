@@ -56,7 +56,7 @@
                                 </div>
                             </c:if>
 
-                            <form id="workShiftForm" action="add-schedule" method="post" onsubmit="return validateForm()">
+                            <form id="workShiftForm" action="staff-add-schedule" method="post" onsubmit="return validateForm()">
                                 <div class="mb-3">
                                     <label for="doctor" class="form-label">Chọn bác sĩ</label>
                                     <select id="doctor" name="doctor_id" class="form-select">
@@ -125,7 +125,7 @@
 
                                 <!-- Nút submit và nút quay lại -->
                                 <div class="d-flex justify-content-between mt-4">
-                                    <a href="list-work-schedule" class="btn btn-secondary px-4">
+                                    <a href="staff-list-work-schedule" class="btn btn-secondary px-4">
                                         <i class="bi bi-arrow-left"></i> Quay lại
                                     </a>
                                     <button type="submit" class="btn btn-success px-4">

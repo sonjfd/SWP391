@@ -121,7 +121,7 @@ z<%--
                                 <h5 class="mt-3 mb-1">${staff.fullName}</h5>
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="list-pet-and-owner" class="navbar-link"><i class="ri-calendar-check-line navbar-icon"></i>Bảng Điều Khiển</a></li>
+                                <li class="navbar-item"><a href="staff-list-pet-and-owner" class="navbar-link"><i class="ri-calendar-check-line navbar-icon"></i>Bảng Điều Khiển</a></li>
                                 
                             </ul>
                         </div>

@@ -37,26 +37,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
         <style>
-            .compact-form .form-label {
-                font-size: 13px;
-                margin-bottom: 4px;
-                font-weight: 500;
-                color: #333;
-            }
-
-            .compact-form .form-select-sm,
-            .compact-form .form-control-sm {
-                font-size: 14px;
-                padding: 8px 12px;
-                height: 40px;
-            }
-
-            .compact-form .btn-sm {
-                font-size: 14px;
-                padding: 8px 16px;
-                border-radius: 6px;
-                height: 40px;
-            }
+          
 
             /* Form Xoá + Tạo lịch nằm song song */
             .form-delete-schedule {
@@ -90,7 +71,7 @@
 
                 <div class="row">
                     <!-- Form lọc bác sĩ -->
-                    <form method="get" action="list-work-schedule" class="row g-2 mb-3 compact-form" onsubmit="return validateFilter();">
+                    <form method="get" action="staff-list-work-schedule" class="row g-2 mb-3 compact-form" onsubmit="return validateFilter();">
                         <div class="col-md-3">
                             <label for="doctorId" class="form-label">Bác sĩ</label>
                             <select id="doctorId" name="doctorId" class="form-select form-select-sm">
@@ -134,7 +115,7 @@
                     <div class="form-delete-schedule">
 
                         <!-- Form Xoá -->
-                        <form method="post" action="delete-work-bymonth" class="compact-form mb-0" onsubmit="return validateDelete();">
+                        <form method="post" action="staff-delete-work-bymonth" class="compact-form mb-0" onsubmit="return validateDelete();">
                             <div class="d-flex flex-wrap align-items-end gap-2">
                                 <div>
                                     <label for="deleteDoctorId" class="form-label">Bác sĩ</label>
@@ -165,7 +146,7 @@
                         </form>
 
                         <!-- Nút Tạo lịch bên phải -->
-                        <a href="add-schedule" class="btn btn-primary btn-sm">
+                        <a href="staff-add-schedule" class="btn btn-primary btn-sm">
                             <i class="bi bi-person-plus"></i> Tạo Lịch
                         </a>
 
@@ -234,7 +215,7 @@
 
                                             <button type="button"
                                                     class="btn btn-success btn-sm"
-                                                    onclick="window.location.href = 'update-work-schedule?id=${s.id}&workDate=${s.workDate}&shifid=${s.shift.id}'"
+                                                    onclick="window.location.href = 'staff-update-work-schedule?id=${s.id}&workDate=${s.workDate}&shifid=${s.shift.id}'"
                                                     title="Cập nhật lịch làm việc">
                                                 <i class="bi bi-pencil-square"></i>
                                             </button>
@@ -242,7 +223,7 @@
                                             <button type="button"
                                                     class="btn btn-danger btn-sm"
                                                     onclick="if (confirm('Bạn có chắc chắn muốn xóa lịch làm việc này không?'))
-                                                                window.location.href = 'delete-work-schedule?id=${s.doctor.user.id}&datework=${s.workDate}'"
+                                                                window.location.href = 'staff-delete-work-schedule?id=${s.doctor.user.id}&datework=${s.workDate}'"
                                                     title="Xoá lịch làm việc">
                                                 <i class="bi bi-trash"></i>
                                             </button>
@@ -262,14 +243,14 @@
                     <ul class="pagination justify-content-center">
                         <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
                             <a class="page-link" 
-                               href="list-work-schedule?page=${currentPage - 1}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}" 
+                               href="staff-list-work-schedule?page=${currentPage - 1}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}" 
                                tabindex="-1">Trước</a>
                         </li>
 
                         <c:forEach var="i" begin="1" end="${totalPages}">
                             <li class="page-item ${i == currentPage ? 'active' : ''}">
                                 <a class="page-link" 
-                                   href="list-work-schedule?page=${i}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}">
+                                   href="staff-list-work-schedule?page=${i}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}">
                                     ${i}
                                 </a>
                             </li>
@@ -277,7 +258,7 @@
 
                         <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
                             <a class="page-link" 
-                               href="list-work-schedule?page=${currentPage + 1}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}">
+                               href="staff-list-work-schedule?page=${currentPage + 1}&doctorId=${doctorId}&month=${month}&shiftId=${shiftId}">
                                 Sau
                             </a>
                         </li>

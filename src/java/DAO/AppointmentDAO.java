@@ -372,7 +372,7 @@ public class AppointmentDAO {
             if (doctorId != null && !doctorId.isEmpty()) {
                 sql.append(" AND a.doctor_id = ?");
             }
-            sql.append("order by created_at desc");
+            sql.append(" ORDER BY created_at DESC");
 
             PreparedStatement ps = conn.prepareStatement(sql.toString());
 
@@ -428,7 +428,8 @@ public class AppointmentDAO {
             }
 
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            
+            e.printStackTrace();  
         }
 
         return appointments;
@@ -766,13 +767,12 @@ public class AppointmentDAO {
             return false;
         }
     }
-    
 
-    public boolean updateCheckinStatus(String appointmentId, String status) {
-        String sql = "UPDATE appointments SET checkin_status = ? WHERE id = ?";
+    public boolean updateCheckinStatus(String appointmentId) {
+        String sql = "UPDATE appointments SET checkin_status = 'checkin' WHERE id = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, status);
-            ps.setString(2, appointmentId);
+            ps.setString(1, appointmentId);
+            
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1175,22 +1175,19 @@ public class AppointmentDAO {
         }
         return false;
     }
-    
-    
-    public boolean apprpoveBooking(String id) {
-    String sql = "UPDATE appointments SET status = 'canceled' WHERE id = ?";
-    try (Connection con = DBContext.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-       
-        ps.setString(1, id);
-       int row= ps.executeUpdate();
-       return row>0;
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-        return false;
-}
 
+    public boolean apprpoveBooking(String id) {
+        String sql = "UPDATE appointments SET status = 'canceled' WHERE id = ?";
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, id);
+            int row = ps.executeUpdate();
+            return row > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 //    public boolean cancelBooking(String id) {
 //        String sql = "Update appointments set status ='canceled' where id =? ;";

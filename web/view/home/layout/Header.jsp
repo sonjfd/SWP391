@@ -218,7 +218,7 @@
                                                     <a class="dropdown-item text-dark" href="doctor-profile-setting"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <c:if test="${sessionScope.user.role.name == 'staff'}">
-                                                    <a class="dropdown-item text-dark" href="list-pet-and-owner"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
+                                                    <a class="dropdown-item text-dark" href="staff-list-pet-and-owner"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
                                                     <a class="dropdown-item text-dark" href="staff-profile-setting"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <c:if test="${sessionScope.user.role.name == 'admin'}">

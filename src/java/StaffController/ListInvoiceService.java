@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Dell
  */
-@WebServlet(name = "InvoiceService", urlPatterns = {"/list-invoice-service"})
+@WebServlet(name = "InvoiceService", urlPatterns = {"/staff-list-invoice-service"})
 public class ListInvoiceService extends HttpServlet {
 
     /**

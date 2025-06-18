@@ -25,7 +25,7 @@ import jakarta.servlet.http.Part;
     maxFileSize = 5 * 1024 * 1024,
     maxRequestSize = 10 * 1024 * 1024
 )
-@WebServlet("/add-blog")
+@WebServlet("/staff-add-blog")
 public class AddBlog extends HttpServlet {
 
     private final String UPLOAD_DIR = "assets/images/blogs";
@@ -82,7 +82,7 @@ public class AddBlog extends HttpServlet {
         BlogDAO dao = new BlogDAO();
         dao.createBlog(blog, tagIds); // Truyền mảng tagIds
 
-        response.sendRedirect("list-blog");
+        response.sendRedirect("staff-list-blog");
     }
 }
 

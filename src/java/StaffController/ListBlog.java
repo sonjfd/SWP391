@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author ASUS
  */
-@WebServlet("/list-blog")
+@WebServlet("/staff-list-blog")
 public class ListBlog extends HttpServlet {
 
     /**

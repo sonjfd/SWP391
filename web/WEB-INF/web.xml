@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    <servlet>
-        <servlet-name>Contact</servlet-name>
-        <servlet-class>StaffController.ListContact</servlet-class>
-    </servlet>
+    
     <servlet>
         <servlet-name>addcontact</servlet-name>
         <servlet-class>StaffController.AddContact</servlet-class>
@@ -13,98 +10,36 @@
         <servlet-class>CommonController.HomeContact</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpDateContactStatus</servlet-name>
-        <servlet-class>StaffController.UpDateContactStatus</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SearchContact</servlet-name>
-        <servlet-class>StaffController.SearchContact</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FilterContacStatus</servlet-name>
-        <servlet-class>StaffController.FilterContacStatus</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>AddSchedule</servlet-name>
-        <servlet-class>StaffController.AddSchedule</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>CheckDupalicateSchedule</servlet-name>
         <servlet-class>StaffController.CheckDupalicateSchedule</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>ListWorkShedule</servlet-name>
-        <servlet-class>StaffController.ListWorkShedule</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteDoctorWorkSchedule</servlet-name>
-        <servlet-class>StaffController.DeleteDoctorWorkSchedule</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateDoctorWorkSchedule</servlet-name>
-        <servlet-class>StaffController.UpdateDoctorWorkSchedule</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FIilterDoctroShedule</servlet-name>
-        <servlet-class>StaffController.FIilterDoctroShedule</servlet-class>
-    </servlet>
+    
+    
+    
+    
     <servlet>
         <servlet-name>Booking</servlet-name>
         <servlet-class>UserController.Booking</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>StaffChangePass</servlet-name>
-        <servlet-class>StaffController.StaffChangePass</servlet-class>
-    </servlet>
     
-    <servlet-mapping>
-        <servlet-name>Contact</servlet-name>
-        <url-pattern>/contact</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>addcontact</servlet-name>
-        <url-pattern>/addcontact</url-pattern>
-    </servlet-mapping>
+    
+    
     <servlet-mapping>
         <servlet-name>HomeContact</servlet-name>
         <url-pattern>/home-contact</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpDateContactStatus</servlet-name>
-        <url-pattern>/update-contact-status</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SearchContact</servlet-name>
-        <url-pattern>/search-contact</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FilterContacStatus</servlet-name>
-        <url-pattern>/filter-contact-status</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AddSchedule</servlet-name>
-        <url-pattern>/add-schedule</url-pattern>
-    </servlet-mapping>
+   
+    
+   
+  
     <servlet-mapping>
         <servlet-name>CheckDupalicateSchedule</servlet-name>
         <url-pattern>/check-dupalicate-schedule</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ListWorkShedule</servlet-name>
-        <url-pattern>/list-work-schedule</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteDoctorWorkSchedule</servlet-name>
-        <url-pattern>/delete-work-schedule</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateDoctorWorkSchedule</servlet-name>
-        <url-pattern>/update-work-schedule</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FIilterDoctroShedule</servlet-name>
-        <url-pattern>/filter-doctor-schedule</url-pattern>
-    </servlet-mapping>
+    
+   
+    
+   
     <servlet>
         <servlet-name>AddDoctor</servlet-name>
         <servlet-class>AminController.AddDoctor</servlet-class>
@@ -173,10 +108,7 @@
         <servlet-name>Booking</servlet-name>
         <url-pattern>/booking</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>StaffChangePass</servlet-name>
-        <url-pattern>/staff-changepass</url-pattern>
-    </servlet-mapping>
+    
     
     <session-config>
         <session-timeout>30</session-timeout>

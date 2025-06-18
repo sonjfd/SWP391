@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * @author Dell
  */
-@WebServlet(name = "ListPetAndOwner", urlPatterns = {"/list-pet-and-owner"})
+@WebServlet(name = "ListPetAndOwner", urlPatterns = {"/staff-list-pet-and-owner"})
 public class ListPetAndOwner extends HttpServlet {
 
     /**

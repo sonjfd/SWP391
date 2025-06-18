@@ -9,6 +9,7 @@ import DAO.StaffDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,9 @@ import java.sql.Date;
  *
  * @author Dell
  */
+
+
+@WebServlet("/staff-delete-work-schedule")
 public class DeleteDoctorWorkSchedule extends HttpServlet {
    
     /** 
@@ -59,7 +63,7 @@ public class DeleteDoctorWorkSchedule extends HttpServlet {
         String date=request.getParameter("datework");
         int result=new StaffDAO().deleteDoctorWorkShedule(id, Date.valueOf(date));
         if(result>0){
-            response.sendRedirect("list-work-schedule");
+            response.sendRedirect("staff-list-work-schedule");
         }else{
             request.getRequestDispatcher("view/staff/content/ListDoctorSchedule.jsp").forward(request, response);
         }

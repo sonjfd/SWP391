@@ -83,10 +83,10 @@ public class ApproveCancelAppointmetn extends HttpServlet {
                             appointment.getPet().getName(), 
                             new SimpleDateFormat("dd/MM/yyyy").format(appointment.getAppointmentDate()),
                             appointment.getStartTime().toString(), appointment.getEndTime().toString());
-             response.sendRedirect("list-appointment?success=cancel_success");
+             response.sendRedirect("staff-list-appointment?success=cancel_success");
         }else {
       
-        response.sendRedirect("list-appointment?error=cancel_success");
+        response.sendRedirect("staff-list-appointment?error=cancel_success");
     }
     }
 

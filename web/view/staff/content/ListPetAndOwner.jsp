@@ -160,7 +160,7 @@
 
                 <div class="d-flex gap-3 mb-3 flex-wrap" style="max-width: 700px;">
                     <!-- Form lọc chủ -->
-                    <form method="get" action="list-pet-and-owner" class="flex-grow-0" style="min-width: 250px;">
+                    <form method="get" action="staff-list-pet-and-owner" class="flex-grow-0" style="min-width: 250px;">
                         <label for="ownerFilter" class="form-label fw-semibold">Chủ sở hữu:</label>
                         <div class="d-flex gap-2">
                             <select name="ownerId" id="ownerFilter" class="form-select form-select-sm" style="flex-grow: 1;">
@@ -256,17 +256,17 @@
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                        <a class="page-link" href="list-pet-and-owner?page=${currentPage - 1}&ownerId=${selectedOwnerId}">Trước</a>
+                        <a class="page-link" href="staff-list-pet-and-owner?page=${currentPage - 1}&ownerId=${selectedOwnerId}">Trước</a>
                     </li>
 
                     <c:forEach var="i" begin="1" end="${totalPages}">
                         <li class="page-item ${i == currentPage ? 'active' : ''}">
-                            <a class="page-link" href="list-pet-and-owner?page=${i}&ownerId=${selectedOwnerId}">${i}</a>
+                            <a class="page-link" href="staff-list-pet-and-owner?page=${i}&ownerId=${selectedOwnerId}">${i}</a>
                         </li>
                     </c:forEach>
 
                     <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                        <a class="page-link" href="list-pet-and-owner?page=${currentPage + 1}&ownerId=${selectedOwnerId}">Sau</a>
+                        <a class="page-link" href="staff-list-pet-and-owner?page=${currentPage + 1}&ownerId=${selectedOwnerId}">Sau</a>
                     </li>
                 </ul>
             </nav>
@@ -387,7 +387,7 @@
                 if (!newOwnerId)
                     return;
 
-                var url = "change-pet-owner?petId=" + petId + "&newOwnerId=" + newOwnerId;
+                var url = "staff-change-pet-owner?petId=" + petId + "&newOwnerId=" + newOwnerId;
 
                 window.location.href = url;
             }
