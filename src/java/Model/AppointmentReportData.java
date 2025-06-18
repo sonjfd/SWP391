@@ -11,58 +11,59 @@ import java.util.List;
  * @author FPT
  */
 public class AppointmentReportData {
-    private List<String> dates;
-    private List<Integer> counts;
-    private List<String> species;
-    private List<Integer> speciesCounts;
+    private List<String> revenueDates;
+    private List<Double> revenues;
+    private List<String> appointmentDates;
+    private List<Integer> appointmentCounts;
 
     public AppointmentReportData() {
     }
 
-    public AppointmentReportData(List<String> dates, List<Integer> counts, List<String> species, List<Integer> speciesCounts) {
-        this.dates = dates;
-        this.counts = counts;
-        this.species = species;
-        this.speciesCounts = speciesCounts;
+    public AppointmentReportData(List<String> revenueDates, List<Double> revenues, List<String> appointmentDates, List<Integer> appointmentCounts) {
+        this.revenueDates = revenueDates;
+        this.revenues = revenues;
+        this.appointmentDates = appointmentDates;
+        this.appointmentCounts = appointmentCounts;
     }
 
-    public List<String> getDates() {
-        return dates;
+    public List<String> getRevenueDates() {
+        return revenueDates;
     }
 
-    public void setDates(List<String> dates) {
-        this.dates = dates;
+    public void setRevenueDates(List<String> revenueDates) {
+        this.revenueDates = revenueDates;
     }
 
-    public List<Integer> getCounts() {
-        return counts;
+    public List<Double> getRevenues() {
+        return revenues;
     }
 
-    public void setCounts(List<Integer> counts) {
-        this.counts = counts;
+    public void setRevenues(List<Double> revenues) {
+        this.revenues = revenues;
     }
 
-    public List<String> getSpecies() {
-        return species;
+    public List<String> getAppointmentDates() {
+        return appointmentDates;
     }
 
-    public void setSpecies(List<String> species) {
-        this.species = species;
+    public void setAppointmentDates(List<String> appointmentDates) {
+        this.appointmentDates = appointmentDates;
     }
 
-    public List<Integer> getSpeciesCounts() {
-        return speciesCounts;
+    public List<Integer> getAppointmentCounts() {
+        return appointmentCounts;
     }
 
-    public void setSpeciesCounts(List<Integer> speciesCounts) {
-        this.speciesCounts = speciesCounts;
+    public void setAppointmentCounts(List<Integer> appointmentCounts) {
+        this.appointmentCounts = appointmentCounts;
     }
 
     @Override
     public String toString() {
-        return "AppointmentReportData{" + "dates=" + dates + ", counts=" + counts + ", species=" + species + ", speciesCounts=" + speciesCounts + '}';
+        return "AppointmentReportData{" + "revenueDates=" + revenueDates + ", revenues=" + revenues + ", appointmentDates=" + appointmentDates + ", appointmentCounts=" + appointmentCounts + '}';
     }
 
+    
     
     
 }

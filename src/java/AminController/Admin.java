@@ -53,7 +53,7 @@ public class Admin extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        request.getRequestDispatcher("view/admin/content/Admin.jsp").forward(request, response);
+        request.getRequestDispatcher("dashboard").forward(request, response);
     } 
 
     /** 
