@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@WebServlet("/edit-blog")
+@WebServlet("/staff-edit-blog")
 @MultipartConfig
 public class EditBlog extends HttpServlet {
 

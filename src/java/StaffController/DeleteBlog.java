@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author ASUS
  */
 
-@WebServlet("/delete-blog")
+@WebServlet("/staff-delete-blog")
 public class DeleteBlog extends HttpServlet {
    
     /** 
@@ -88,4 +88,27 @@ public class DeleteBlog extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       String blogId = request.getParameter("id");  // Lấy id từ tham số request
+    if (blogId == null || blogId.isEmpty()) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);  // Nếu không có id, trả về lỗi 400
+        return;
+    }
+
+    BlogDAO bdao = new BlogDAO();
+    try {
+        boolean isDeleted = bdao.deleteBlog(blogId);
+        if (isDeleted) {
+            response.setStatus(HttpServletResponse.SC_OK);  // Trả về trạng thái thành công
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // Xóa không thành công
+            response.getWriter().write("Không thể xóa bài viết.");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();  // In ra lỗi để kiểm tra
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // Trả về lỗi server
+        response.getWriter().write("Đã xảy ra lỗi khi xóa bài viết: " + e.getMessage());
+    }
+}
 }
