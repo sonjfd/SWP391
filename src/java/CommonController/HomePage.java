@@ -85,7 +85,7 @@ public class HomePage extends HttpServlet {
         SliderDAO dao = new SliderDAO();
         List<Service> services = new ServiceDAO().getAllServices();
         List<Slider> sliders = dao.getActiveSliders();
-        List<Doctor> doctors = new DoctorDAO().getAllDoctors();
+        List<Doctor> doctors = new DoctorDAO().getDoctorLimit(5);
         try {
             ClinicInfoDAO clinicInfoDAO = new ClinicInfoDAO();
             clinicInfo = clinicInfoDAO.getClinicInfo();  // Lấy thông tin phòng khám từ database

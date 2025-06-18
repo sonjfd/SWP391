@@ -153,8 +153,8 @@ public class AppointmentDAO {
 
     public String insert(Appointment appointment) {
         String sql = "INSERT INTO appointments "
-                + "(id, customer_id, pet_id, doctor_id, appointment_time, start_time, end_time,payment_method, notes, price) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "(id, customer_id, pet_id, doctor_id, appointment_time, start_time, end_time,status,payment_method, notes, price) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
         String generatedId = UUID.randomUUID().toString();
         appointment.setId(generatedId);
@@ -170,12 +170,12 @@ public class AppointmentDAO {
 
             stmt.setTime(6, Time.valueOf(appointment.getStartTime()));
             stmt.setTime(7, Time.valueOf(appointment.getEndTime()));
+            stmt.setString(8, appointment.getStatus());
+            stmt.setString(9, appointment.getPaymentMethod());
 
-            stmt.setString(8, appointment.getPaymentMethod());
+            stmt.setString(10, appointment.getNote() != null ? appointment.getNote() : "");
 
-            stmt.setString(9, appointment.getNote() != null ? appointment.getNote() : "");
-
-            stmt.setDouble(10, appointment.getPrice());
+            stmt.setDouble(11, appointment.getPrice());
 
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
@@ -749,16 +749,15 @@ public class AppointmentDAO {
     }
 
     public boolean updateAppointment(Appointment appointment) {
-        String sql = "UPDATE appointments SET doctor_id = ?, appointment_time = ?, start_time = ?, end_time = ?, status = ?, payment_status = ? WHERE id = ?";
+        String sql = "UPDATE appointments SET doctor_id = ?, appointment_time = ?, start_time = ?, end_time = ?,  payment_status = ? WHERE id = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, appointment.getDoctor().getUser().getId());
             ps.setTimestamp(2, new Timestamp(appointment.getAppointmentDate().getTime()));
             ps.setTime(3, Time.valueOf(appointment.getStartTime()));
             ps.setTime(4, Time.valueOf(appointment.getEndTime()));
-            ps.setString(5, appointment.getStatus());
-            ps.setString(6, appointment.getPaymentStatus());
-            ps.setString(7, appointment.getId());
+            ps.setString(5, appointment.getPaymentStatus());
+            ps.setString(6, appointment.getId());
 
             return ps.executeUpdate() > 0;
 
@@ -767,6 +766,7 @@ public class AppointmentDAO {
             return false;
         }
     }
+    
 
     public boolean updateCheckinStatus(String appointmentId, String status) {
         String sql = "UPDATE appointments SET checkin_status = ? WHERE id = ?";
@@ -1175,6 +1175,22 @@ public class AppointmentDAO {
         }
         return false;
     }
+    
+    
+    public boolean apprpoveBooking(String id) {
+    String sql = "UPDATE appointments SET status = 'canceled' WHERE id = ?";
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+       
+        ps.setString(1, id);
+       int row= ps.executeUpdate();
+       return row>0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+        return false;
+}
+
 
 //    public boolean cancelBooking(String id) {
 //        String sql = "Update appointments set status ='canceled' where id =? ;";

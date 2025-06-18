@@ -35,6 +35,8 @@ Author     : Dell
 
         <!-- Swiper JS -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
@@ -44,7 +46,7 @@ Author     : Dell
     </head>
     <style>
 
-       
+
         .hero-section p {
             color: #e0e0e0;
             font-size: 1rem;
@@ -64,14 +66,14 @@ Author     : Dell
             transform: translateY(-5px);
         }
 
-        /* Ảnh bác sĩ */
+
         .card .card-img-top {
             height: 220px;
             object-fit: cover;
             border-bottom: 1px solid #f1f1f1;
         }
 
-        /* Tên bác sĩ */
+
         .card .card-title {
             font-size: 1.05rem;
             font-weight: 600;
@@ -79,13 +81,13 @@ Author     : Dell
             margin-bottom: 0.4rem;
         }
 
-        /* Chuyên môn + kinh nghiệm */
+
         .card .text-muted.small {
             font-size: 0.85rem;
             color: #666;
         }
 
-        /* Nút đặt lịch */
+
         .btn.btn-green {
             background: linear-gradient(to right, #38b000, #008000);
             border: none;
@@ -103,17 +105,121 @@ Author     : Dell
         }
 
         h4.title {
-            color: #1e3a8a; /* Xanh navy đậm – chuyên nghiệp */
+            color: #1e3a8a;
             font-weight: 700;
             font-size: 1.8rem;
             letter-spacing: 0.3px;
         }
 
         p.text-muted {
-            color: #64748b; /* Xanh dương nhạt ghi – nhẹ nhàng */
+            color: #64748b;
             font-size: 1rem;
             font-style: italic;
         }
+
+        .chat-ai-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1050;
+            width: 56px;
+            height: 56px;
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .chat-ai-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1040;
+            width: 320px;
+            height: 420px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-chat-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .chat-content {
+            font-size: 14px;
+            padding: 10px;
+            overflow-y: auto;
+            height: 75%;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.ai {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f1f1f1;
+            padding: 10px 14px;
+            border-radius: 16px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background-color: #007bff;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message.ai .message-bubble {
+            background-color: #e9ecef;
+            color: #333;
+            border-bottom-left-radius: 0;
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+
 
 
 
@@ -211,21 +317,23 @@ Author     : Dell
                 <div class="container">
                     <div class="section-title text-center mb-5">
                         <h4 class="title">Đội ngũ bác sĩ</h4>
-                        <p class="text-muted">Bác sĩ giàu kinh nghiệm và tận tâm tại Pet24H.</p>
+                        <p class="text-muted">Những bác sĩ nhiều kinh nghiệm nhất ở pet24h.</p>
                     </div>
                     <div class="d-flex gap-4 overflow-auto flex-nowrap">
                         <c:forEach var="doctor" items="${doctors}">
-                            <div style="min-width: 280px;">
-                                <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
-                                    <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${doctor.user.fullName}">
-                                    <div class="card-body d-flex flex-column">
-                                        <h6 class="card-title fw-bold text-dark">${doctor.user.fullName}</h6>
-                                        <p class="text-muted small">${doctor.specialty}</p>
-                                        <p class="text-muted small mb-3">${doctor.yearsOfExperience} năm kinh nghiệm</p>
-                                        <a href="booking-by-doctor?doctorId=${doctor.user.id}" class="btn btn-green mt-auto w-100">Xem lịch & Đặt lịch</a>
+                            
+                                <div style="min-width: 280px;">
+                                    <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
+                                        <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${doctor.user.fullName}">
+                                        <div class="card-body d-flex flex-column">
+                                            <h6 class="card-title fw-bold text-dark">${doctor.user.fullName}</h6>
+                                            <p class="text-muted small">${doctor.specialty}</p>
+                                            <p class="text-muted small mb-3">${doctor.yearsOfExperience} năm kinh nghiệm</p>
+                                            <a href="booking-by-doctor?doctorId=${doctor.user.id}" class="btn btn-green mt-auto w-100">Xem lịch & Đặt lịch</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                           
                         </c:forEach>
                     </div>
                 </div>
@@ -301,10 +409,233 @@ Author     : Dell
 
 
 
+    <!-- Nút AI -->
+    <button id="chatAiBtn" class="chat-ai-btn" title="Trò chuyện với AI">
+        <img src="${pageContext.request.contextPath}/assets/images/ai.png" alt="AI" class="chat-ai-icon">
+    </button>
+
+    <!-- Khung chat -->
+    <div id="chatWindow" style="display:none; position: fixed; bottom: 24px; right: 24px; width: 300px; height: 400px; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1040; flex-direction: column;">
+        <div style="background: #007bff; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
+            Trò chuyện với AI
+            <button id="closeChatBtn" style="float: right; background: none; border: none; color: white;">&times;</button>
+        </div>
+        <div id="chatContent" class="chat-content">
+            <!-- Tin nhắn sẽ hiển thị ở đây -->
+        </div>
+        <div style="display: flex; padding: 10px; border-top: 1px solid #ddd;">
+            <input id="userInput" type="text" placeholder="Nhập tin nhắn..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 20px 0 0 20px;">
+            <button id="sendMessageBtn" style="background: #007bff; color: white; border: none; padding: 0 16px; border-radius: 0 20px 20px 0;">
+                <i class="bi bi-send"></i>
+            </button>
+        </div>
+    </div>
+
+
+
+
+
+
 
 
     <%@include file="../layout/Footer.jsp" %>
     <script>
+        const isLoggedIn = ${not empty sessionScope.user};
+
+        const chatBtn = document.getElementById("chatAiBtn");
+        const chatWindow = document.getElementById("chatWindow");
+        const closeChatBtn = document.getElementById("closeChatBtn");
+        const sendMessageBtn = document.getElementById("sendMessageBtn");
+        const userInput = document.getElementById("userInput");
+        const chatContent = document.getElementById("chatContent");
+
+
+        chatBtn.addEventListener("click", () => {
+            chatWindow.style.display = "flex";
+            chatBtn.style.display = "none";
+
+
+            if (isLoggedIn) {
+                loadChatHistory();
+            }
+        });
+        closeChatBtn.addEventListener("click", () => {
+            chatWindow.style.display = "none";
+            chatBtn.style.display = "block";
+        });
+
+        userInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        sendMessageBtn.addEventListener("click", sendMessage);
+
+
+        function formatAiResponse(text) {
+            text = text.replace(/^Tuyệt vời!.*?\?/, "").trim();
+            text = text
+                    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+                    .replace(/\*(.*?)\*/g, "<i>$1</i>")
+                    .replace(/\n{2,}/g, "<br><br>")
+                    .replace(/\n/g, "<br>");
+            return text;
+        }
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === "")
+                return;
+
+            console.log("Sending message:", message);
+            const userMsg = document.createElement("div");
+            userMsg.style.textAlign = "right";
+            const userBubble = document.createElement("span");
+            userBubble.textContent = message;
+            userBubble.style.cssText = `
+        background: #007bff; 
+        color: white; 
+        padding: 8px 12px; 
+        border-radius: 12px; 
+        display: inline-block; 
+        max-width: 80%; 
+        word-wrap: break-word;
+        margin-bottom: 4px;
+    `;
+            userMsg.appendChild(userBubble);
+            chatContent.appendChild(userMsg);
+
+            userInput.value = "";
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+
+            const aiMsg = document.createElement("div");
+            aiMsg.className = "ai-message";
+            aiMsg.innerHTML = `<div style="margin-top:5px; font-style: italic;">Đang trả lời...</div>`;
+            chatContent.appendChild(aiMsg);
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+
+            fetch("chat-ai", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "message=" + encodeURIComponent(message)
+            })
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log("AI replied:", data);
+
+                        const aiBubble = document.createElement("span");
+                        aiBubble.innerHTML = formatAiResponse(data);
+                        aiBubble.style.cssText = `  background: #f1f1f1; 
+                                                    padding: 8px 12px; 
+                                                    border-radius: 12px; 
+                                                     display: inline-block; 
+                                                    max-width: 80%; 
+                                                    word-wrap: break-word;
+                                                    margin-left: 6px;
+          
+        `;
+
+                        const aiWrapper = document.createElement("div");
+                        aiWrapper.style.display = "flex";
+                        aiWrapper.style.alignItems = "flex-start";
+                        aiWrapper.style.marginTop = "8px";
+
+                        const aiImg = document.createElement("img");
+                        aiImg.src = "${pageContext.request.contextPath}/assets/images/ai.png";
+                        aiImg.alt = "AI";
+                        aiImg.style.cssText = "width: 28px; height: 28px; border-radius: 50%; margin-top: 2px;";
+
+                        aiWrapper.appendChild(aiImg);
+                        aiWrapper.appendChild(aiBubble);
+
+                        aiMsg.innerHTML = "";
+                        aiMsg.appendChild(aiWrapper);
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    })
+                    .catch(err => {
+                        console.error("Lỗi khi gửi hoặc nhận tin nhắn:", err);
+                        aiMsg.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
+                    });
+        }
+
+
+
+
+        function loadChatHistory() {
+            fetch("chat-ai")
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Lỗi HTTP: " + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Data received:", data);
+
+
+                        if (!Array.isArray(data)) {
+                            console.error("Dữ liệu trả về không phải là mảng:", data);
+                            return;
+                        }
+
+                        const chatContent = document.getElementById("chatContent");
+                        if (!chatContent) {
+                            console.error("Không tìm thấy phần tử chat-content");
+                            return;
+                        }
+
+                        chatContent.innerHTML = "";
+
+                        const contextPath = window.location.pathname.split("/")[1];
+                        const baseUrl = window.location.origin + "/" + contextPath;
+
+                        const userAvatar = data[0].user.avatar ? baseUrl + data[0].user.avatar : baseUrl + "/assets/images/default_user.png";
+
+                        console.log(userAvatar);
+                        data.forEach(item => {
+
+
+                            const msgDiv = document.createElement("div");
+                            msgDiv.className = item.senderType === "user" ? "message user" : "message ai";
+
+                            const avatarSrc = item.senderType === "user" ? userAvatar : "assets/images/ai.png";
+                            const messageText = item.senderType === "ai" ? formatAiResponse(item.messageText) : item.messageText;
+
+                            const messageBubbleDiv = document.createElement("div");
+                            messageBubbleDiv.className = "message-bubble";
+                            const avatarImg = document.createElement("img");
+                            avatarImg.src = avatarSrc;
+                            avatarImg.className = "avatar";
+                            const messageSpan = document.createElement("span");
+                            messageSpan.className = "text";
+                            messageSpan.innerHTML = messageText;
+
+                            messageBubbleDiv.appendChild(avatarImg);
+                            messageBubbleDiv.appendChild(messageSpan);
+
+                            msgDiv.appendChild(messageBubbleDiv);
+
+                            chatContent.appendChild(msgDiv);
+                        });
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    })
+                    .catch(err => {
+                        console.error("Lỗi khi load lịch sử:", err);
+
+                    });
+        }
+
+
+
+
+
+
+
         const swiper = new Swiper(".mySwiper-species", {
             slidesPerView: 1.2,
             spaceBetween: 20,

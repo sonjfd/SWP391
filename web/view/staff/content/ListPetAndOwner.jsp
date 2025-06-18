@@ -186,9 +186,9 @@
                             <th scope="col">STT</th>
                             <th scope="col">Tên thú cưng</th>
                             <th scope="col">Giống </th>
-                            
+
                             <th scope="col">Chủ sở hữu</th>
-                          
+
                             <th scope="col">Trạng thái</th>
                             <th class="col">Xem chi tiết</th>
                             <th scope="col">Đổi chủ</th>
@@ -202,11 +202,7 @@
                                 <td>${loop.index + 1}</td>
                                 <td>${p.name}</td>
                                 <td>${p.breed.name}</td> 
-
-                                
-                                <td>${p.user.fullName}</td>
-                                  
-
+                                <td>${p.user.fullName} (${p.user.email})</td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${p.status == 'active'}">

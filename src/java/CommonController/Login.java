@@ -4,6 +4,7 @@
  */
 package CommonController;
 
+import DAO.AIChatboxDAO;
 import DAO.UserDAO;
 import GoogleLogin.PasswordUtils;
 import static GoogleLogin.PasswordUtils.hashPassword;
@@ -76,29 +77,29 @@ public class Login extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    String identifier = request.getParameter("identifier"); // username hoặc email
-    String password = request.getParameter("password");
+        String identifier = request.getParameter("identifier"); // username hoặc email
+        String password = request.getParameter("password");
 
-    // 1. Kiểm tra đầu vào rỗng
-    if (identifier == null || identifier.trim().isEmpty()
-            || password == null || password.trim().isEmpty()) {
-        request.setAttribute("error", "Vui lòng nhập đầy đủ tên tài khoản, email và password");
-        request.getRequestDispatcher("/view/home/content/Login.jsp").forward(request, response);
-        return;
-    }
+        // 1. Kiểm tra đầu vào rỗng
+        if (identifier == null || identifier.trim().isEmpty()
+                || password == null || password.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập đầy đủ tên tài khoản, email và password");
+            request.getRequestDispatcher("/view/home/content/Login.jsp").forward(request, response);
+            return;
+        }
 
-    // 2. Mã hóa mật khẩu
-    String hashedPassword = hashPassword(password);
+        // 2. Mã hóa mật khẩu
+        String hashedPassword = hashPassword(password);
 
-    // 3. Kiểm tra thông tin đăng nhập
-    UserDAO dao = new UserDAO();
-    User user = dao.loginCheck(identifier, hashedPassword);
+        // 3. Kiểm tra thông tin đăng nhập
+        UserDAO dao = new UserDAO();
+        User user = dao.loginCheck(identifier, hashedPassword);
 
-    // 4. Nếu không tìm được hoặc bị khóa
-      if (user == null) {
+        // 4. Nếu không tìm được hoặc bị khóa
+        if (user == null) {
             request.setAttribute("error", "Tên tài khoản, email hoặc mật khẩu không đúng. Vui lòng nhập lại.");
             request.getRequestDispatcher("/view/home/content/Login.jsp")
                     .forward(request, response);
@@ -116,46 +117,47 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             return;
         }
 
-    // 5. Lưu session
-    HttpSession session = request.getSession();
-    session.setAttribute("user", user); 
+        // 5. Lưu session
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
+        String sessionId = session.getId(); // lấy lại sessionId cũ
+        AIChatboxDAO chatDao = new AIChatboxDAO();
+        chatDao.updateMessagesWithUserId(sessionId, user.getId());
+        // 6. Ghi nhớ tài khoản (remember me)
+        String remember = request.getParameter("remember");
+        if ("true".equals(remember)) {
+            Cookie cUser = new Cookie("identifier", identifier);
+            Cookie cPass = new Cookie("password", hashedPassword);
+            cUser.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
+            cPass.setMaxAge(7 * 24 * 60 * 60);
+            response.addCookie(cUser);
+            response.addCookie(cPass);
+        }
 
-    // 6. Ghi nhớ tài khoản (remember me)
-    String remember = request.getParameter("remember");
-    if ("true".equals(remember)) {
-        Cookie cUser = new Cookie("identifier", identifier);
-        Cookie cPass = new Cookie("password", hashedPassword);
-        cUser.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
-        cPass.setMaxAge(7 * 24 * 60 * 60);
-        response.addCookie(cUser);
-        response.addCookie(cPass);
+        // 7. Phân hướng theo vai trò
+        int roleId = user.getRole().getId();
+
+        switch (roleId) {
+            case 1: // customer
+                response.sendRedirect("homepage"); // hoặc profile
+                break;
+            case 2: // admin
+                response.sendRedirect("admin");
+                break;
+            case 3: // doctor
+                response.sendRedirect("homepage");
+                break;
+            case 4: // staff
+                response.sendRedirect("list-pet-and-owner");
+                break;
+            case 5: // nurse
+                response.sendRedirect("homepage");
+                break;
+            default:
+                response.sendRedirect("homepage");
+                break;
+        }
     }
-
-    // 7. Phân hướng theo vai trò
-    int roleId = user.getRole().getId();
-
-    switch (roleId) {
-        case 1: // customer
-            response.sendRedirect("homepage"); // hoặc profile
-            break;
-        case 2: // admin
-            response.sendRedirect("admin");
-            break;
-        case 3: // doctor
-            response.sendRedirect("homepage");
-            break;
-        case 4: // staff
-            response.sendRedirect("list-pet-and-owner");
-            break;
-        case 5: // nurse
-            response.sendRedirect("homepage");
-            break;
-        default:
-            response.sendRedirect("homepage");
-            break;
-    }
-}
-
 
     /**
      * Returns a short description of the servlet.

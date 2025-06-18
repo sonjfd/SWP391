@@ -151,15 +151,6 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="status" class="form-label">Trạng thái:</label>
-                        <select name="status" class="form-select" id="status">
-                            <option value="pending" ${appointment.status == 'pending' ? 'selected' : ''}>Đang xử lí</option>
-                            <option value="completed" ${appointment.status == 'completed' ? 'selected' : ''}>Đã đặt</option>
-                            <option value="canceled" ${appointment.status == 'canceled' ? 'selected' : ''}>Đã hủy</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
                         <label for="paymentStatus" class="form-label">Thanh toán:</label>
                         <select name="paymentStatus" class="form-select" id="paymentStatus">
                             <option value="unpaid" ${appointment.paymentStatus == 'unpaid' ? 'selected' : ''}>Chưa thanh toán</option>

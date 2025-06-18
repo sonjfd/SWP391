@@ -187,7 +187,27 @@
                                                     <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar">
                                                     <div class="flex-1 ms-2">
                                                         <span class="d-block mb-1">${sessionScope.user.fullName}</span>
-                                                        <small class="text-muted">${sessionScope.user.role.name}</small>
+                                                       
+
+                                                        <c:choose>
+                                                            <c:when test="${sessionScope.user.role.id==1}">
+                                                                <span class="badge bg-warning text-dark">Khách Hàng</span>
+                                                            </c:when>
+                                                                <c:when test="${sessionScope.user.role.id==2}">
+                                                                <span class="badge bg-warning text-dark">Admin</span>
+                                                            </c:when>
+                                                                <c:when test="${sessionScope.user.role.id==3}">
+                                                                <span class="badge bg-warning text-dark">Bác sĩ</span>
+                                                            </c:when>
+                                                                <c:when test="${sessionScope.user.role.id==4}">
+                                                                <span class="badge bg-warning text-dark">Nhân Viên</span>
+                                                            </c:when>
+                                                                <c:when test="${sessionScope.user.role.id==5}">
+                                                                <span class="badge bg-warning text-dark">Y tá</span>
+                                                            </c:when>
+                                                            
+
+                                                        </c:choose>
                                                     </div>
                                                 </a>
                                                 <c:if test="${sessionScope.user.role.name == 'customer'}">

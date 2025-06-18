@@ -138,8 +138,9 @@ CREATE TABLE appointments (
   appointment_time DATETIME NOT NULL,
   start_time TIME,
   end_time TIME,
-  status NVARCHAR(50) DEFAULT 'pending' CHECK (status IN ('completed', 'canceled', 'pending')),
-checkin_status NVARCHAR(20) DEFAULT 'noshow' CHECK (checkin_status IN ('noshow', 'checkin')),
+ status NVARCHAR(50) DEFAULT 'booked' CHECK (status IN ('booked','completed','cancel_requested', 'canceled')
+  ),
+  checkin_status NVARCHAR(20) DEFAULT 'noshow' CHECK (checkin_status IN ('noshow', 'checkin')),
   payment_status NVARCHAR(50) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
   payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')),
   notes NVARCHAR(MAX),
@@ -404,78 +405,77 @@ CREATE TABLE appointment_symptoms (
 
 
 
--- =============================
--- 1. DANH MỤC SẢN PHẨM (CATEGORIES)
--- =============================
+
 CREATE TABLE categories (
   category_id INT PRIMARY KEY IDENTITY(1,1),
   category_name NVARCHAR(50) UNIQUE NOT NULL,
   description NVARCHAR(100),
-  status BIT DEFAULT 1  -- 1: hiển thị, 0: ẩn
+  status BIT DEFAULT 1
 );
 
--- =============================
--- 2. NHÀ CUNG CẤP (SUPPLIERS)
--- =============================
-CREATE TABLE suppliers (
-  supplier_id INT PRIMARY KEY IDENTITY(1,1),
-  supplier_name NVARCHAR(100) NOT NULL,
-  contact_name NVARCHAR(100),
-  phone NVARCHAR(20),
-  email NVARCHAR(100),
-  address NVARCHAR(100),
-  created_at DATETIME DEFAULT GETDATE()
+-- Trọng lượng
+CREATE TABLE product_variant_weights (
+  weight_id INT PRIMARY KEY IDENTITY(1,1),
+  weight DECIMAL(10,2) NOT NULL,
 );
 
+-- Hương vị
+CREATE TABLE product_variant_flavors (
+  flavor_id INT PRIMARY KEY IDENTITY(1,1),
+  flavor NVARCHAR(50) NOT NULL,
 
+);
+
+-- Sản phẩm
 CREATE TABLE products (
   product_id INT PRIMARY KEY IDENTITY(1,1),
   category_id INT NOT NULL,
-  supplier_id INT NOT NULL,
   product_name NVARCHAR(100) NOT NULL,
-  description NVARCHAR(100),
-  image NVARCHAR(255),
-  status BIT DEFAULT 1,  -- 1: hiển thị, 0: ẩn
+  description NVARCHAR(255),
+  status BIT DEFAULT 1,
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_products_categories FOREIGN KEY (category_id) REFERENCES categories(category_id),
-  CONSTRAINT FK_products_suppliers FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+  CONSTRAINT FK_products_categories FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
-
+-- Biến thể sản phẩm
 CREATE TABLE product_variants (
   product_variant_id INT PRIMARY KEY IDENTITY(1,1),
   product_id INT NOT NULL,
   variant_name NVARCHAR(100) NOT NULL,
+  weight_id INT NOT NULL,
+  flavor_id INT NOT NULL,
   price DECIMAL(10,2) NOT NULL,
   stock_quantity INT NOT NULL,
-  status BIT DEFAULT 1,  -- 1: hiển thị, 0: ẩn
+  status BIT DEFAULT 1,
+  image NVARCHAR(255),
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_variants_products FOREIGN KEY (product_id) REFERENCES products(product_id)
+  CONSTRAINT FK_variants_products FOREIGN KEY (product_id) REFERENCES products(product_id),
+  CONSTRAINT FK_variants_weights FOREIGN KEY (weight_id) REFERENCES product_variant_weights(weight_id),
+  CONSTRAINT FK_variants_flavors FOREIGN KEY (flavor_id) REFERENCES product_variant_flavors(flavor_id)
 );
 
 
-CREATE TABLE product_variant_weights (
-  weight_id INT PRIMARY KEY IDENTITY(1,1),
-  product_variant_id INT NOT NULL,
-  weight DECIMAL(10,2),
+CREATE TABLE sales_invoices (
+  invoice_id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  staff_id UNIQUEIDENTIFIER NOT NULL,
+  total_amount DECIMAL(10, 2) NOT NULL,
+  payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')) NOT NULL,
+  payment_status NVARCHAR(20) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_weights_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+  CONSTRAINT FK_sales_invoices_staff FOREIGN KEY (staff_id) REFERENCES users(id)
 );
 
-
-CREATE TABLE product_variant_flavors (
-  flavor_id INT PRIMARY KEY IDENTITY(1,1),
+-- 7. Chi tiết hóa đơn
+CREATE TABLE sales_invoice_items (
+  id INT PRIMARY KEY IDENTITY(1,1),
+  invoice_id UNIQUEIDENTIFIER NOT NULL,
   product_variant_id INT NOT NULL,
-  flavor NVARCHAR(50) NOT NULL,
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_flavors_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+  quantity INT NOT NULL CHECK (quantity > 0),
+  price DECIMAL(10, 2) NOT NULL,
+  CONSTRAINT FK_invoice_items_invoice FOREIGN KEY (invoice_id) REFERENCES sales_invoices(invoice_id) ON DELETE CASCADE,
+  CONSTRAINT FK_invoice_items_variant FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
 );
 

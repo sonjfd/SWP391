@@ -163,7 +163,7 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Chứng chỉ</label>
-                                            <input name="certificates" type="text" class="form-control" value="${doctor.certificates}" placeholder="Chứng chỉ" maxlength="50">
+                                            <input name="certificates" type="text" class="form-control" value="${doctor.certificates}" placeholder="Chứng chỉ" maxlength="200">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">

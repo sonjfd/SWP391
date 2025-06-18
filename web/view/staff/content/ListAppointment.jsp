@@ -315,12 +315,11 @@
                             <th scope="col">Ngày khám</th>
                             <th scope="col">Ca khám</th>
                             <th scope="col">Bác sĩ khám</th>
-                            <th scope="col">Thời gian đặt</th>
+
                             <th scope="col">Trạng thái</th> 
                             <th scope="col">Thanh toán</th> 
                             <th scope="col">Check in</th> 
-
-                            <th scope="col">Hoạt động</th>
+                            <th scope="col" style="width: 220px;">Hoạt động</th>
 
 
                         </tr>
@@ -336,14 +335,11 @@
                                 <td>${app.doctor.user.fullName}</td>
                                 <!-- Trạng thái -->
 
-                                <td>
-                                    <fmt:formatDate value="${app.createdAt}" pattern="dd-MM-yyyy HH:mm" />
 
-                                </td>
                                 <td>
                                     <c:choose>
 
-                                        <c:when test="${app.status == 'completed'}">
+                                        <c:when test="${app.status == 'booked'}">
                                             <span class="badge bg-success">Đã Đặt</span>
                                         </c:when>
 
@@ -351,8 +347,13 @@
                                             <span class="badge bg-danger">Đã huỷ</span>
                                         </c:when>
 
-                                        <c:when test="${app.status == 'pending'}">
-                                            <span class="badge bg-success">Đang xử lí</span>
+                                        <c:when test="${app.status == 'cancel_requested'}">
+                                            <span class="badge bg-info text-white">Khách yêu cầu huỷ</span>
+                                        </c:when>
+
+
+                                        <c:when test="${app.status == 'completed'}">
+                                            <span class="badge bg-success">Đã khám xong</span>
                                         </c:when>
 
                                     </c:choose>
@@ -381,23 +382,30 @@
                                         ${app.chekinStatus == 'checkin' ? 'Đã tới khám 👌' : 'Chưa tới khám 👆'}
                                     </a>
                                 </td>
-                                <td>                                  
-                                    <div class="action-buttons">
-
-                                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="staff-appointmentdetail?id=${app.id}" class="btn btn-info btn-sm" title="Xem chi tiết">
                                             <i class="bi bi-info-circle"></i>
-                                        </button>
-
-                                        <button type="button" class="btn btn-success" title="Cập nhật lịch hẹn"   onclick="window.location.href = 'update-appointment?id=${app.id}'">
+                                        </a>
+                                        <a href="update-appointment?id=${app.id}" class="btn btn-success btn-sm" title="Cập nhật lịch hẹn">
                                             <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-dark" title="In phiếu thú cưng"
+                                        </a>
+                                        <button type="button" class="btn btn-outline-dark btn-sm" title="In phiếu thú cưng"
                                                 data-bs-toggle="modal" data-bs-target="#printModal-${app.id}">
                                             <i class="bi bi-printer"></i>
                                         </button>
 
+                                        <c:if test="${app.status == 'cancel_requested'}">
+                                            <form action="staff-approve-cancel-appointment" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="${app.id}" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Duyệt huỷ lịch hẹn">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </form>
+                                        </c:if>
                                     </div>
                                 </td>
+
 
                             </tr>
                         </c:forEach>
@@ -639,121 +647,6 @@
 
                 </c:forEach>
 
-                <c:forEach var="app" items="${appointments}">
-                    <div class="modal fade" id="detailModal-${app.id}" tabindex="-1" aria-labelledby="detailModalLabel-${app.id}" aria-hidden="true">
-                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <div class="modal-header bg-primary text-white">
-                                    <h5 class="modal-title" id="detailModalLabel-${app.id}">Thông tin chi tiết lịch hẹn</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-
-
-                                    <h5>Thông tin thú cưng</h5>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <img src="${pageContext.request.contextPath}/${app.pet.avatar}" alt="Ảnh thú cưng" class="img-fluid rounded">
-                                        </div>
-                                        <div class="col-md-8">
-                                            <p><strong>Mã thú cưng:</strong> ${app.pet.pet_code}</p>
-                                            <p><strong>Tên:</strong> ${app.pet.name}</p>
-                                            <p><strong>Ngày sinh:</strong> <fmt:formatDate value="${app.pet.birthDate}" pattern="dd/MM/yyyy"/></p>
-                                            <p><strong>Giống loài:</strong> ${app.pet.breed.name} (Loài: ${app.pet.breed.specie.name})</p>
-                                            <p><strong>Giới tính:</strong> ${app.pet.gender == 'male' ? 'Đực' : 'Cái'}</p>
-
-
-                                        </div>
-                                    </div>
-
-                                    <hr/>
-
-                                    <!-- Thông tin Chủ sở hữu (User) -->
-                                    <h5>Thông tin chủ sở hữu</h5>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <img src="${pageContext.request.contextPath}/${app.user.avatar}" alt="Ảnh chủ sở hữu" class="img-fluid rounded">
-                                        </div>
-                                        <div class="col-md-8">
-                                            <p><strong>Họ và tên:</strong> ${app.user.fullName}</p>
-                                            <p><strong>Tên đăng nhập:</strong> ${app.user.userName}</p>
-                                            <p><strong>Email:</strong> ${app.user.email}</p>
-                                            <p><strong>Số điện thoại:</strong> ${app.user.phoneNumber}</p>
-                                            <p><strong>Địa chỉ:</strong> ${app.user.address}</p>
-
-                                        </div>
-                                    </div>
-
-                                    <hr/>
-
-                                    <!-- Thông tin Bác sĩ -->
-                                    <h5>Thông tin bác sĩ</h5>
-                                    <c:choose>
-                                        <c:when test="${not empty app.doctor}">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <img src="${pageContext.request.contextPath}/${app.doctor.user.avatar}" alt="Ảnh bác sĩ" class="img-fluid rounded">
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <p><strong>Họ và tên:</strong> ${app.doctor.user.fullName}</p>
-                                                    <p><strong>Chuyên khoa:</strong> ${app.doctor.specialty}</p>
-                                                    <p><strong>Chứng chỉ:</strong> ${app.doctor.certificates}</p>
-                                                    <p><strong>Bằng cấp:</strong> ${app.doctor.qualifications}</p>
-                                                    <p><strong>Kinh nghiệm:</strong> ${app.doctor.yearsOfExperience} năm</p>
-                                                    <p><strong>Tiểu sử:</strong> ${app.doctor.biography}</p>
-                                                </div>
-                                            </div>
-                                        </c:when>
-
-                                    </c:choose>
-
-                                    <hr/>
-
-                                    <h5>Thông tin lịch hẹn</h5>
-                                    <p><strong>Ngày khám:</strong> <fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy"/></p>
-                                    <p><strong>Ca khám:</strong> ${app.startTime} - ${app.endTime}</p>
-                                    <p><strong>Ghi chú:</strong> 
-                                        <c:choose>
-                                            <c:when test="${not empty app.note}">
-                                                ${app.note}
-                                            </c:when>
-                                            <c:otherwise>
-                                                Khách hàng không để lại ghi chú
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
-
-                                    <p><strong>Trạng thái lịch hẹn:</strong>
-                                        <select class="form-select" disabled>
-
-                                            <option value="completed" ${app.status == 'completed' ? 'selected' : ''}>Đặt lịch thành công</option>
-                                            <option value="canceled" ${app.status == 'canceled' ? 'selected' : ''}>Đã huỷ</option>
-                                        </select>
-                                    </p>
-
-                                    <p><strong>Trạng thái thanh toán:</strong>
-                                        <select class="form-select" disabled>
-                                            <option value="unpaid" ${app.paymentStatus == 'unpaid' ? 'selected' : ''}>Chưa thanh toán</option>
-                                            <option value="paid" ${app.paymentStatus == 'paid' ? 'selected' : ''}>Đã thanh toán</option>
-                                        </select>
-                                    </p>
-
-                                    <p><strong>Phương thức thanh toán:</strong>
-                                        <select class="form-select" disabled>
-                                            <option value="cash" ${app.paymentMethod == 'cash' ? 'selected' : ''}>Thanh toán trực tiếp</option>
-                                            <option value="online" ${app.paymentMethod == 'online' ? 'selected' : ''}>Thanh toán online</option>
-                                        </select>
-                                    </p>
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </c:forEach>
-
 
             </div>
         </div>
@@ -823,12 +716,12 @@
 
 
 
-
             if (success === '1') {
-                alert('Thêm thành lịch hẹn thành công');
-            }
-            if (success === 'update_success') {
-                alert('Cập nhật thành công');
+                alert(' Đã thêm lịch hẹn thành công!');
+            } else if (success === 'update_success') {
+                alert(' Đã cập nhật lịch hẹn thành công!');
+            } else if (success === 'cancel_success') {
+                alert(' Lịch hẹn đã được huỷ!');
             }
 
             statusModal.show();

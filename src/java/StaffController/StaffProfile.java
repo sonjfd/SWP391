@@ -137,7 +137,7 @@ public class StaffProfile extends HttpServlet {
         }
         if (ud.updateUser(id, name, address, email, number, filePath)) {
             User updatedUser = ud.getUserById(id);
-            request.getSession().setAttribute("staff", updatedUser);
+            request.getSession().setAttribute("user", updatedUser);
 
             request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
         } else {

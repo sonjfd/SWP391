@@ -69,7 +69,9 @@ public class ajaxServlet extends HttpServlet {
         Appointment appointment = new Appointment();
         appointment.setUser(u);
         appointment.setPrice(amountDouble);
+         appointment.setStatus("pending");
         appointment.setPaymentMethod("online");
+       
         Pet pet = new Pet();
         pet.setId(petId);
         appointment.setPet(pet);
