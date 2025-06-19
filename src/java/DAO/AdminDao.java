@@ -71,7 +71,7 @@ public class AdminDao {
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.status, u.role_id, u.created_at, u.updated_at, r.name " +
-                     "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,3,4)")) {
+                     "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,3,4,5)")) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 User user = new User();
