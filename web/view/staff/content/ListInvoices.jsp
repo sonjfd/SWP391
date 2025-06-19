@@ -220,9 +220,10 @@
                                     </div>
 
                                     <!-- Service Table -->
-                                    <div class="container mb-4">
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
+                                    <div class="service-table-container mb-4">
+                                        <h5 class="fw-bold mb-3 text-uppercase text-center">DANH SÁCH DỊCH VỤ ĐÃ SỬ DỤNG</h5>
+                                        <table class="table table-bordered table-striped service-table">
+                                            <thead class="table-light text-center align-middle">
                                                 <tr>
                                                     <th>STT</th>
                                                     <th>Dịch vụ</th>
@@ -234,22 +235,29 @@
                                             <tbody>
                                                 <c:forEach var="sv" items="${invoice.services}" varStatus="loop">
                                                     <tr>
-                                                        <td>${loop.index + 1}</td>
+                                                        <td class="text-center">${loop.index + 1}</td>
                                                         <td>${sv.name}</td>
-                                                        <td><fmt:formatNumber value="${sv.price}" type="number" groupingUsed="true" /> VNĐ</td>
-                                                        <td>${sv.quantity}</td>
-                                                        <td><fmt:formatNumber value="${sv.total}" type="number" groupingUsed="true" /> VNĐ</td>
+                                                        <td class="text-end">
+                                                            <fmt:formatNumber value="${sv.price}" type="number" groupingUsed="true" /> VNĐ
+                                                        </td>
+                                                        <td class="text-center">${sv.quantity}</td>
+                                                        <td class="text-end">
+                                                            <fmt:formatNumber value="${sv.total}" type="number" groupingUsed="true" /> VNĐ
+                                                        </td>
                                                     </tr>
                                                 </c:forEach>
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="4" class="text-end font-weight-bold">Tổng cộng:</td>
-                                                    <td><fmt:formatNumber value="${invoice.totalAmount}" type="number" groupingUsed="true" /> VNĐ</td>
+                                                    <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                                                    <td class="text-end fw-bold">
+                                                        <fmt:formatNumber value="${invoice.totalAmount}" type="number" groupingUsed="true" /> VNĐ
+                                                    </td>
                                                 </tr>
                                             </tfoot>
                                         </table>
                                     </div>
+
 
                                     <!-- Notes Section -->
                                     <div class="note-section mt-3">
@@ -258,7 +266,7 @@
                                     </div>
 
                                     <!-- Signature Section -->
-                                    <div class="row text-center mt-5">
+                                    <div class="row text-center mt-5 signature-section">
                                         <div class="col-6">
                                             <div>Khách hàng<br><em>(Ký, ghi rõ họ tên)</em></div>
                                         </div>
@@ -266,14 +274,16 @@
                                             <div>Kế toán<br><em>(Ký, ghi rõ họ tên)</em></div>
                                         </div>
                                     </div>
+
                                 </div>
 
-                                <div class="modal-footer">
+                                <div class="modal-footer no-print">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                     <button type="button" class="btn btn-primary" onclick="printDiv('printArea-${invoice.id}')">
                                         <i class="bi bi-printer"></i> In phiếu
                                     </button>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -287,23 +297,59 @@
                     function printDiv(divId) {
                         const printContent = document.getElementById(divId).innerHTML;
 
+                        const styles = `
+                  <style>
+               
+                      h5 {
+                          text-align: center;
+                          text-transform: uppercase;
+                          font-weight: bold;
+                          margin-bottom: 1rem;
+                      }
+                      .table {
+                          width: 100%;
+                          border-collapse: collapse;
+                          font-size: 14px;
+                          margin-bottom: 1.5rem;
+                      }
+        
+                        .signature-section {
+                         margin-top: 80px;
+                         display: flex;
+                         justify-content: space-between;
+                          padding: 0 40px;
+                          }
+
+                       .signature-section > div {
+                          width: 45%;
+                        text-align: center;
+                        font-size: 14px;
+                          line-height: 1.6;
+                         }
+
+                
+                      .note-section {
+                          margin-top: 1rem;
+                          font-style: italic;
+                      }
+         .no-print {
+        display: none !important;
+    }
+                  </style>
+              `;
+
                         const printWindow = window.open('', '', 'width=900,height=1200');
                         printWindow.document.write('<html><head><title>In hóa đơn</title>');
-                        printWindow.document.write('</head><body>');
+                        printWindow.document.write(styles); // chèn CSS in đẹp
+                        printWindow.document.write('</head><body onload="window.print(); setTimeout(() => window.close(), 500);">');
                         printWindow.document.write('<div class="print-section">');
                         printWindow.document.write(printContent);
                         printWindow.document.write('</div>');
                         printWindow.document.write('</body></html>');
-
                         printWindow.document.close();
-                        printWindow.focus();
-
-                        setTimeout(() => {
-                            printWindow.print();
-                            printWindow.close();
-                        }, 500);
                     }
                 </script>
+
 
 
             </div>

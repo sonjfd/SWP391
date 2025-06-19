@@ -234,7 +234,7 @@
                                         </button>
 
 
-                                        <c:if test="${app.chekinStatus == 'noshow'}">
+                                        <c:if test="${app.status == 'booked' and app.chekinStatus == 'noshow'}">
                                             <form action="staff-update-chekin" method="get" style="display:inline;">
                                                 <input type="hidden" name="id" value="${app.id}" />
                                                 <button type="submit" class="btn btn-outline-primary btn-sm" title="Xác nhận đã tới khám">
@@ -242,6 +242,7 @@
                                                 </button>
                                             </form>
                                         </c:if>
+
                                         <c:if test="${app.status == 'cancel_requested'}">
                                             <form action="staff-approve-cancel-appointment" method="post" style="display:inline;">
                                                 <input type="hidden" name="id" value="${app.id}" />
@@ -440,7 +441,7 @@
                 alert(' Đã cập nhật lịch hẹn thành công!');
             } else if (success === 'cancel_success') {
                 alert(' Lịch hẹn đã được huỷ!');
-            }else if(success ==='update_checkin'){
+            } else if (success === 'update_checkin') {
                 alert('Checkin thành công');
             }
 
