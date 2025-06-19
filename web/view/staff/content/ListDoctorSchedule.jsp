@@ -37,7 +37,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
         <style>
-          
+
 
             /* Form Xoá + Tạo lịch nằm song song */
             .form-delete-schedule {
@@ -62,6 +62,8 @@
     </head>
     <body>
         <%@ include file="../layout/Header.jsp" %>
+
+
 
 
 
@@ -177,7 +179,11 @@
                         <script>alert("Bác sĩ không có lịch làm việc trong tháng này!");</script>
                     </c:if>
 
-
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger" role="alert">
+                            ${error}
+                        </div>
+                    </c:if>
 
                     <table class="table table-striped ">
                         <thead class="bg-primary text-white" >

@@ -516,15 +516,26 @@ public class StaffDAO {
     }
 
     public int deleteDoctorWorkShedule(String doctorId, Date date) {
-        String sql = "DELETE FROM doctor_schedule\n"
-                + "WHERE doctor_id = ?\n"
-                + "  AND work_date = ?";
-        Connection conn = null;
-        PreparedStatement stm = null;
+        String sql = """
+        DELETE ds
+        FROM doctor_schedule ds
+        JOIN shift s ON ds.shift_id = s.shift_id
+        WHERE ds.doctor_id = ?
+          AND ds.work_date = ?
+          AND NOT EXISTS (
+              SELECT 1
+              FROM appointments a
+              WHERE a.doctor_id = ds.doctor_id
+                AND CAST(a.appointment_time AS DATE) = ds.work_date
+                AND a.start_time >= s.start_time
+                AND a.start_time < s.end_time
+                AND a.status IN ('booked', 'completed')
+          );
+        """;
+
         int result = -1;
-        try {
-            conn = DBContext.getConnection();
-            stm = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, doctorId);
             stm.setDate(2, date);
             result = stm.executeUpdate();
@@ -666,19 +677,42 @@ public class StaffDAO {
     }
 
     public int deleteSchedulesByDoctorAndMonth(String doctorId, int month) {
-        String deleteDoctorSchedule = "DELETE FROM doctor_schedule WHERE doctor_id = ? AND MONTH(work_date) = ?";
+        String deleteDoctorSchedule = """
+        DELETE ds
+        FROM doctor_schedule ds
+        JOIN shift s ON ds.shift_id = s.shift_id
+        WHERE ds.doctor_id = ?
+          AND MONTH(ds.work_date) = ?
+          AND NOT EXISTS (
+              SELECT 1
+              FROM appointments a
+              WHERE a.doctor_id = ds.doctor_id
+                AND CAST(a.appointment_time AS DATE) = ds.work_date
+                AND a.start_time >= s.start_time
+                AND a.start_time < s.end_time
+                AND a.status IN ('booked', 'completed')
+          );
+    """;
+
+        String deleteTemplate = """
+        DELETE FROM weekly_schedule_template
+        WHERE doctor_id = ?
+    """;
 
         Connection conn = null;
         PreparedStatement psDoctorSchedule = null;
+        PreparedStatement psDeleteTemplate = null;
         int rowsAffected = 0;
 
         try {
             conn = DBContext.getConnection();
-
             psDoctorSchedule = conn.prepareStatement(deleteDoctorSchedule);
             psDoctorSchedule.setString(1, doctorId);
             psDoctorSchedule.setInt(2, month);
             rowsAffected = psDoctorSchedule.executeUpdate();
+            psDeleteTemplate = conn.prepareStatement(deleteTemplate);
+            psDeleteTemplate.setString(1, doctorId);
+            psDeleteTemplate.executeUpdate();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -686,6 +720,9 @@ public class StaffDAO {
             try {
                 if (psDoctorSchedule != null) {
                     psDoctorSchedule.close();
+                }
+                if (psDeleteTemplate != null) {
+                    psDeleteTemplate.close();
                 }
                 if (conn != null) {
                     conn.close();
@@ -727,4 +764,3 @@ public class StaffDAO {
     }
 
 }
-
