@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Dell
  */
-
 public class AddContact extends HttpServlet {
 
     /**

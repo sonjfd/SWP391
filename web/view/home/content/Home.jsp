@@ -31,170 +31,274 @@ Author     : Dell
         <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
         <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
         <!-- SLIDER -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+        <!-- Swiper JS -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/tiny-slider.css"/>
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
-        <style>
-
-            .slider-wrapper {
-                border-radius: 16px;
-                overflow: hidden;
-                box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            }
-
-            .carousel-indicators li {
-                width: 10px;
-                height: 10px;
-                border-radius: 50%;
-                background-color: #fff;
-                opacity: 0.6;
-                margin: 0 5px;
-            }
-
-            .carousel-indicators .active {
-                opacity: 1;
-                background-color: #4CAF50; /* Xanh Pet24h hoặc chọn màu thương hiệu */
-            }
-
-            .carousel-caption {
-                background: rgba(0,0,0,0.5);
-                border-radius: 8px;
-                padding: 12px 16px;
-            }
-
-            .carousel-control-prev-icon,
-            .carousel-control-next-icon {
-                background-size: 50% 50%;
-            }
-
-            .card {
-                border-radius: 12px;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            }
-
-            .card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 20px rgba(0,0,0,0.10);
-            }
-
-            .card-img-top {
-                border-top-left-radius: 12px;
-                border-top-right-radius: 12px;
-            }
-
-            .card-title {
-                font-size: 16px;
-                font-weight: 700;
-                color: #1d1d1d;
-            }
-
-            .btn-green {
-                background-color: #4CAF50; /* màu xanh Pet24h */
-                color: white;
-                padding: 8px 16px;
-                border-radius: 30px;
-                font-weight: 600;
-                font-size: 14px;
-                text-decoration: none;
-                display: inline-block;
-                transition: background-color 0.2s ease;
-                border: none;
-            }
-
-            .btn-green:hover {
-                background-color: #43a047;
-            }
-            /* Optional để bài nổi bật đẹp hơn */
-            .bg-opacity-90 {
-                background-color: rgba(255, 255, 255, 0.9) !important;
-            }
-
-
-        </style>
 
     </head>
+    <style>
 
 
+        .hero-section p {
+            color: #e0e0e0;
+            font-size: 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Thẻ card bác sĩ */
+        .card.border-0.shadow-sm.h-100.rounded-3.overflow-hidden {
+            transition: transform 0.3s ease;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            background: #fff;
+        }
+
+        .card.border-0.shadow-sm.h-100.rounded-3.overflow-hidden:hover {
+            transform: translateY(-5px);
+        }
+
+
+        .card .card-img-top {
+            height: 220px;
+            object-fit: cover;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+
+        .card .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 0.4rem;
+        }
+
+
+        .card .text-muted.small {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+
+        .btn.btn-green {
+            background: linear-gradient(to right, #38b000, #008000);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+
+        .btn.btn-green:hover {
+            background: linear-gradient(to right, #008000, #38b000);
+            color: #fff;
+        }
+
+        h4.title {
+            color: #1e3a8a;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 0.3px;
+        }
+
+        p.text-muted {
+            color: #64748b;
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        .chat-ai-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1050;
+            width: 56px;
+            height: 56px;
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .chat-ai-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1040;
+            width: 320px;
+            height: 420px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-chat-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .chat-content {
+            font-size: 14px;
+            padding: 10px;
+            overflow-y: auto;
+            height: 75%;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.ai {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f1f1f1;
+            padding: 10px 14px;
+            border-radius: 16px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background-color: #007bff;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message.ai .message-bubble {
+            background-color: #e9ecef;
+            color: #333;
+            border-bottom-left-radius: 0;
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+
+
+
+
+    </style>
 
 
     <body>
         <%@include file="../layout/Header.jsp" %>
+        <c:set var="cl" value="${sessionScope.clinicInfo}"></c:set>
+            <!-- Start Hero -->
+            <section class="hero-section d-flex align-items-center"
+                     style="min-height: 30vh; background: linear-gradient(135deg, #0d47a1, #1976d2);"
+                     >
 
+                <div class="container text-center py-4">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <img src="${pageContext.request.contextPath}/${cl.logo}" height="100" class="mb-3 shadow-sm bg-white rounded-circle p-2 border" alt="Logo Phòng Khám">
+                        <h1 class="fw-bold text-dark mb-3 fs-3" style="color: #fff">
+                            Gặp Gỡ Bác Sĩ Thú Y Tốt Nhất
+                        </h1>
+                        <p >
+                            Đội ngũ bác sĩ thú y giàu kinh nghiệm, sẵn sàng hỗ trợ thú cưng của bạn kịp thời với các dịch vụ khám, điều trị và tư vấn chuyên nghiệp.
+                        </p>
 
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End Hero -->
 
-
-        <!-- Start Hero -->
-        <section class="section pt-0 " style="margin-top: 100px ">
-            <div class="container mt-4 " >
+        <!-- Slider Section -->
+        <section class="section pt-5" >
+            <div class="container">
                 <div class="slider-wrapper shadow rounded-4 overflow-hidden">
                     <div id="slider-banner-bootstrap" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
-                        <!-- Indicators -->
                         <ol class="carousel-indicators">
                             <c:forEach var="slider" items="${sliders}" varStatus="status">
                                 <li data-bs-target="#slider-banner-bootstrap" data-bs-slide-to="${status.index}" class="${status.first ? 'active' : ''}"></li>
                                 </c:forEach>
                         </ol>
-
-                        <!-- Slides -->
                         <div class="carousel-inner">
                             <c:forEach var="slider" items="${sliders}" varStatus="status">
                                 <div class="carousel-item ${status.first ? 'active' : ''}">
                                     <a href="${slider.link}" <c:if test="${empty slider.link}">onclick="return false;"</c:if>>
-                                        <img src="${pageContext.request.contextPath}/${slider.imageUrl}" 
-                                             class="d-block w-100" 
-                                             style="max-height:450px; object-fit:cover;" 
-                                             >
-
-
+                                        <img src="${pageContext.request.contextPath}/${slider.imageUrl}" class="d-block w-100" style="max-height:450px; object-fit:cover;">
                                     </a>
                                 </div>
                             </c:forEach>
                         </div>
-
-                        <!-- Controls -->
                         <a class="carousel-control-prev" href="#slider-banner-bootstrap" role="button" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon bg-dark bg-opacity-50 rounded-circle p-2" aria-hidden="true"></span>
+                            <span class="carousel-control-prev-icon bg-dark bg-opacity-50 rounded-circle p-2"></span>
                             <span class="visually-hidden">Previous</span>
                         </a>
                         <a class="carousel-control-next" href="#slider-banner-bootstrap" role="button" data-bs-slide="next">
-                            <span class="carousel-control-next-icon bg-dark bg-opacity-50 rounded-circle p-2" aria-hidden="true"></span>
+                            <span class="carousel-control-next-icon bg-dark bg-opacity-50 rounded-circle p-2"></span>
                             <span class="visually-hidden">Next</span>
                         </a>
                     </div>
                 </div>
             </div>
         </section>
+        <!-- End Slider -->
 
-        <!-- End Hero -->
+        <div class="container">
+            <div class="text-center mb-4">
+                <h4 class="title text-primary fw-bold">Dành cho mọi loài thú cưng</h4>
+                <p class="text-muted">Chăm sóc và điều trị cho mọi loài thú cưng phổ biến.</p>
+            </div>
 
-
-
-        <!-- DANH MỤC THÚ CƯNG Start -->
-        <section class="section bg-light">
-            <div class="container">
-                <div <section class="section bg-light pt-5 pb-5">
-
-                    <h4 class="title mb-3">Dành cho mọi loài thú cưng</h4>
-                    <p class="text-muted">Phòng khám Pet24H chuyên chăm sóc và điều trị cho mọi loài thú cưng phổ biến nhất.</p>
-                </div>
-
-                <div class="row g-4">
+            <div class="swiper mySwiper-species">
+                <div class="swiper-wrapper">
                     <c:forEach var="species" items="${speciesList}">
-                        <div class="col-md-4 col-sm-6">
+                        <div class="swiper-slide" style="max-width:280px;">
                             <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden">
-                                <!-- Ảnh top -->
-                                <img src="${pageContext.request.contextPath}/assets/images/species/${species.name}.png"
-                                     alt="${species.name}" 
-                                     class="card-img-top" 
-                                     style="height:220px; object-fit:cover;">
-
-                                <!-- Nội dung -->
+                                <img src="${pageContext.request.contextPath}/assets/images/species/${species.name}.png" class="card-img-top" style="height:220px; object-fit:cover;" alt="${species.name}">
                                 <div class="card-body">
-                                    <h6 class="card-title mb-2 fw-bold text-dark text-uppercase" style="font-size: 15px;">
-                                        ${species.name}
-                                    </h6>
-                                    <p class="card-text text-muted small" style="font-size: 14px; line-height: 1.5;">
+                                    <h6 class="card-title fw-bold text-dark text-uppercase">${species.name}</h6>
+                                    <p class="card-text text-muted small">
                                         <c:forEach var="breed" items="${species.breeds}" varStatus="status">
                                             <span>${breed.name}</span><c:if test="${!status.last}">, </c:if>
                                         </c:forEach>
@@ -205,135 +309,394 @@ Author     : Dell
                     </c:forEach>
                 </div>
             </div>
-        </section>
-        <!-- DANH MỤC THÚ CƯNG End -->
 
 
-        <!-- ĐỘI NGŨ BÁC SĨ Start -->
-        <section class="section bg-light">
-            <div class="container">
-                <div class="section-title text-center mb-5">
-                    <h4 class="title mb-3">Đội ngũ bác sĩ</h4>
-                    <p class="text-muted">Đội ngũ bác sĩ giàu kinh nghiệm và tận tâm của Pet24H.</p>
-                </div>
 
-                <div class="row g-4">
-                    <c:forEach var="doctor" items="${doctors}">
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
-                                <!-- Ảnh top -->
-                                <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" 
-                                     alt="${doctor.user.fullName}" 
-                                     class="card-img-top" 
-                                     style="height:220px; object-fit:cover;">
-
-                                <!-- Nội dung -->
-                                <div class="card-body d-flex flex-column">
-                                    <h6 class="card-title mb-2 fw-bold text-dark" style="font-size: 16px;">
-                                        ${doctor.user.fullName}
-                                    </h6>
-                                    <p class="text-muted small mb-1" style="font-size: 14px;">
-                                        ${doctor.specialty}
-                                    </p>
-                                    <p class="text-muted small mb-2" style="font-size: 14px;">
-                                        ${doctor.yearsOfExperience} năm kinh nghiệm
-                                    </p>
-
-                                    <!-- Nút -->
-                                    <a href="booking-by-doctor?doctorId=${doctor.user.id}" 
-                                       class="btn btn-green mt-auto w-100">
-                                        Xem lịch & Đặt lịch
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </div>
-            </div>
-        </section>
-
-        <!-- ĐỘI NGŨ BÁC SĨ End -->
-
-        <!-- BLOG / TIN TỨC MỚI NHẤT Start -->
-        <section class="section bg-light">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="title mb-0">Tin tức</h4>
-                    <a href="homeblog" class="text-primary fw-bold">Xem tất cả &gt;</a>
-                </div>
-
-                <div class="row g-4">
-                    <!-- BÀI VIẾT NỔI BẬT BÊN TRÁI -->
-                    <div class="col-lg-6">
-                        <c:if test="${not empty blogs}">
-                            <div class="position-relative rounded-4 overflow-hidden shadow-sm">
-                                <img src="${pageContext.request.contextPath}/${blogs[0].image}" 
-                                     alt="${blogs[0].title}" 
-                                     class="img-fluid w-100" style="height:340px; object-fit:cover;">
-
-                                <!-- Overlay title -->
-                                <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-white bg-opacity-90">
-                                    <h6 class="fw-bold text-dark mb-1" style="font-size: 16px;">
-                                        ${blogs[0].title}
-                                    </h6>
-                                    <p class="text-muted small mb-2" style="font-size: 14px; line-height: 1.4;">
-                                        ${fn:substring(blogs[0].content, 0, 120)}...
-                                    </p>
-                                    <div class="text-muted small">
-                                        <fmt:formatDate value="${blogs[0].publishedAt}" pattern="dd/MM/yyyy"/>
+            <!-- Doctors Section -->
+            <section class="section py-5" id="doctors" >
+                <div class="container">
+                    <div class="section-title text-center mb-5">
+                        <h4 class="title">Đội ngũ bác sĩ</h4>
+                        <p class="text-muted">Những bác sĩ nhiều kinh nghiệm nhất ở pet24h.</p>
+                    </div>
+                    <div class="d-flex gap-4 overflow-auto flex-nowrap">
+                        <c:forEach var="doctor" items="${doctors}">
+                            
+                                <div style="min-width: 280px;">
+                                    <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
+                                        <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${doctor.user.fullName}">
+                                        <div class="card-body d-flex flex-column">
+                                            <h6 class="card-title fw-bold text-dark">${doctor.user.fullName}</h6>
+                                            <p class="text-muted small">${doctor.specialty}</p>
+                                            <p class="text-muted small mb-3">${doctor.yearsOfExperience} năm kinh nghiệm</p>
+                                            <a href="booking-by-doctor?doctorId=${doctor.user.id}" class="btn btn-green mt-auto w-100">Xem lịch & Đặt lịch</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </c:if>
+                           
+                        </c:forEach>
                     </div>
+                </div>
+            </section>
+            <!-- End Doctors Section -->
 
-                    <!-- DANH SÁCH CÁC BÀI VIẾT NHỎ BÊN PHẢI -->
-                    <div class="col-lg-6">
-                        <div class="d-flex flex-column gap-3">
-                            <c:forEach var="blog" items="${blogs}" begin="1" end="4">
-                                <div class="d-flex gap-3 border-bottom pb-3">
-                                    <img src="${pageContext.request.contextPath}/${blog.image}" 
-                                         alt="${blog.title}" 
-                                         style="width: 120px; height: 80px; object-fit: cover; border-radius: 8px; flex-shrink: 0;">
 
-                                    <div class="flex-grow-1">
-                                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 15px;">
-                                            ${blog.title}
-                                        </h6>
-                                        <p class="text-muted small mb-1" style="font-size: 13px;">
-                                            ${fn:substring(blog.content, 0, 80)}...
-                                        </p>
-                                        <div class="text-muted small" style="font-size: 12px;">
-                                            <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy"/>
+            <!-- Testimonials -->
+               <section class="section py-5">
+                <div class="container">
+                    <div class="section-title text-center mb-4">
+                        <h4 class="title">Khách hàng nói gì?</h4>
+                        <p>Chia sẻ của khách hàng giúp Pet24H hoàn thiện hơn mỗi ngày!</p>
+                    </div>
+                    <div class="swiper mySwiper-rating">
+                        <div class="swiper-wrapper">
+                            <c:forEach var="rate" items="${listRate}">
+                                <div class="swiper-slide">
+                                    <div class="testimonial-item text-center p-4 shadow rounded bg-light">
+                                        <i class="fa-solid fa-quote-left quote-icon mb-2"></i>
+                                        <p>${rate.comment}</p>
+                                        <div class="customer-info mt-3">
+                                            <img src="${pageContext.request.contextPath}/${rate.user.avatar}" class="rounded-circle mb-2" width="60" height="60">
+                                            <h5 class="customer-name">${rate.user.fullName}</h5>
+                                            <span class="customer-role">Chủ nuôi</span>
+                                            <div class="rating-stars mt-2">
+                                                <c:forEach begin="1" end="${rate.satisfaction_level}" var="i">
+                                                    <i class="fa fa-star text-warning"></i>
+                                                </c:forEach>
+                                                <c:forEach begin="${rate.satisfaction_level+1}" end="5" var="i">
+                                                    <i class="fa-regular fa-star text-warning"></i>
+                                                </c:forEach>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </c:forEach>
                         </div>
+
                     </div>
                 </div>
+            </section>
+
+            <div class="swiper mySwiper-blogs">
+                <div class="section-title text-center mb-4">
+                    <h4 class="title">Tin nổi bật</h4>
+
+                </div>
+                <div class="swiper-wrapper">
+                    <c:forEach var="blog" items="${blogs}" begin="0" end="7">
+                        <div class="swiper-slide" style="max-width: 280px;">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 blog-card position-relative">
+                                <img src="${pageContext.request.contextPath}/${blog.image}" class="card-img-top" style="height:170px; object-fit:cover;" alt="${blog.title}">
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title fw-semibold text-dark">${blog.title}</h6>
+                                    <p class="text-muted small mb-2">
+                                        ${blog.author.fullName} • <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy"/>
+                                    </p>
+                                    <a href="blog-detail?id=${blog.id}" class="mt-auto text-decoration-none text-primary small fw-bold">
+                                        Đọc tiếp <i class="ri-arrow-right-line align-middle"></i>
+                                    </a>
+                                </div>
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">Mới</span>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
             </div>
-        </section>
-        <!-- BLOG / TIN TỨC MỚI NHẤT End -->
+
+
+        </div>
+    </div>
 
 
 
-        <%@include file="../layout/Footer.jsp" %>
+    <!-- Nút AI -->
+    <button id="chatAiBtn" class="chat-ai-btn" title="Trò chuyện với AI">
+        <img src="${pageContext.request.contextPath}/assets/images/ai.png" alt="AI" class="chat-ai-icon">
+    </button>
 
-        <script>
+    <!-- Khung chat -->
+    <div id="chatWindow" style="display:none; position: fixed; bottom: 24px; right: 24px; width: 300px; height: 400px; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1040; flex-direction: column;">
+        <div style="background: #007bff; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
+            Trò chuyện với AI
+            <button id="closeChatBtn" style="float: right; background: none; border: none; color: white;">&times;</button>
+        </div>
+        <div id="chatContent" class="chat-content">
+            <!-- Tin nhắn sẽ hiển thị ở đây -->
+        </div>
+        <div style="display: flex; padding: 10px; border-top: 1px solid #ddd;">
+            <input id="userInput" type="text" placeholder="Nhập tin nhắn..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 20px 0 0 20px;">
+            <button id="sendMessageBtn" style="background: #007bff; color: white; border: none; padding: 0 16px; border-radius: 0 20px 20px 0;">
+                <i class="bi bi-send"></i>
+            </button>
+        </div>
+    </div>
 
 
-<!-- javascript -->
-               <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-        <!-- SLIDER -->
-        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
-        <!-- Counter -->
-        <script src="${pageContext.request.contextPath}/assets/js/counter.init.js"></script>
-        <!-- Icons -->
-        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-        <!-- Main Js -->
-        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
-    </body>
+
+
+
+
+
+
+    <%@include file="../layout/Footer.jsp" %>
+    <script>
+        const isLoggedIn = ${not empty sessionScope.user};
+
+        const chatBtn = document.getElementById("chatAiBtn");
+        const chatWindow = document.getElementById("chatWindow");
+        const closeChatBtn = document.getElementById("closeChatBtn");
+        const sendMessageBtn = document.getElementById("sendMessageBtn");
+        const userInput = document.getElementById("userInput");
+        const chatContent = document.getElementById("chatContent");
+
+
+        chatBtn.addEventListener("click", () => {
+            chatWindow.style.display = "flex";
+            chatBtn.style.display = "none";
+
+
+            if (isLoggedIn) {
+                loadChatHistory();
+            }
+        });
+        closeChatBtn.addEventListener("click", () => {
+            chatWindow.style.display = "none";
+            chatBtn.style.display = "block";
+        });
+
+        userInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        sendMessageBtn.addEventListener("click", sendMessage);
+
+
+        function formatAiResponse(text) {
+            text = text.replace(/^Tuyệt vời!.*?\?/, "").trim();
+            text = text
+                    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+                    .replace(/\*(.*?)\*/g, "<i>$1</i>")
+                    .replace(/\n{2,}/g, "<br><br>")
+                    .replace(/\n/g, "<br>");
+            return text;
+        }
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === "")
+                return;
+
+            console.log("Sending message:", message);
+            const userMsg = document.createElement("div");
+            userMsg.style.textAlign = "right";
+            const userBubble = document.createElement("span");
+            userBubble.textContent = message;
+            userBubble.style.cssText = `
+        background: #007bff; 
+        color: white; 
+        padding: 8px 12px; 
+        border-radius: 12px; 
+        display: inline-block; 
+        max-width: 80%; 
+        word-wrap: break-word;
+        margin-bottom: 4px;
+    `;
+            userMsg.appendChild(userBubble);
+            chatContent.appendChild(userMsg);
+
+            userInput.value = "";
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+
+            const aiMsg = document.createElement("div");
+            aiMsg.className = "ai-message";
+            aiMsg.innerHTML = `<div style="margin-top:5px; font-style: italic;">Đang trả lời...</div>`;
+            chatContent.appendChild(aiMsg);
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+
+            fetch("chat-ai", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "message=" + encodeURIComponent(message)
+            })
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log("AI replied:", data);
+
+                        const aiBubble = document.createElement("span");
+                        aiBubble.innerHTML = formatAiResponse(data);
+                        aiBubble.style.cssText = `  background: #f1f1f1; 
+                                                    padding: 8px 12px; 
+                                                    border-radius: 12px; 
+                                                     display: inline-block; 
+                                                    max-width: 80%; 
+                                                    word-wrap: break-word;
+                                                    margin-left: 6px;
+          
+        `;
+
+                        const aiWrapper = document.createElement("div");
+                        aiWrapper.style.display = "flex";
+                        aiWrapper.style.alignItems = "flex-start";
+                        aiWrapper.style.marginTop = "8px";
+
+                        const aiImg = document.createElement("img");
+                        aiImg.src = "${pageContext.request.contextPath}/assets/images/ai.png";
+                        aiImg.alt = "AI";
+                        aiImg.style.cssText = "width: 28px; height: 28px; border-radius: 50%; margin-top: 2px;";
+
+                        aiWrapper.appendChild(aiImg);
+                        aiWrapper.appendChild(aiBubble);
+
+                        aiMsg.innerHTML = "";
+                        aiMsg.appendChild(aiWrapper);
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    })
+                    .catch(err => {
+                        console.error("Lỗi khi gửi hoặc nhận tin nhắn:", err);
+                        aiMsg.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
+                    });
+        }
+
+
+
+
+        function loadChatHistory() {
+            fetch("chat-ai")
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Lỗi HTTP: " + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Data received:", data);
+
+
+                        if (!Array.isArray(data)) {
+                            console.error("Dữ liệu trả về không phải là mảng:", data);
+                            return;
+                        }
+
+                        const chatContent = document.getElementById("chatContent");
+                        if (!chatContent) {
+                            console.error("Không tìm thấy phần tử chat-content");
+                            return;
+                        }
+
+                        chatContent.innerHTML = "";
+
+                        const contextPath = window.location.pathname.split("/")[1];
+                        const baseUrl = window.location.origin + "/" + contextPath;
+
+                        const userAvatar = data[0].user.avatar ? baseUrl + data[0].user.avatar : baseUrl + "/assets/images/default_user.png";
+
+                        console.log(userAvatar);
+                        data.forEach(item => {
+
+
+                            const msgDiv = document.createElement("div");
+                            msgDiv.className = item.senderType === "user" ? "message user" : "message ai";
+
+                            const avatarSrc = item.senderType === "user" ? userAvatar : "assets/images/ai.png";
+                            const messageText = item.senderType === "ai" ? formatAiResponse(item.messageText) : item.messageText;
+
+                            const messageBubbleDiv = document.createElement("div");
+                            messageBubbleDiv.className = "message-bubble";
+                            const avatarImg = document.createElement("img");
+                            avatarImg.src = avatarSrc;
+                            avatarImg.className = "avatar";
+                            const messageSpan = document.createElement("span");
+                            messageSpan.className = "text";
+                            messageSpan.innerHTML = messageText;
+
+                            messageBubbleDiv.appendChild(avatarImg);
+                            messageBubbleDiv.appendChild(messageSpan);
+
+                            msgDiv.appendChild(messageBubbleDiv);
+
+                            chatContent.appendChild(msgDiv);
+                        });
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    })
+                    .catch(err => {
+                        console.error("Lỗi khi load lịch sử:", err);
+
+                    });
+        }
+
+
+
+
+
+const swiperRate = new Swiper(".mySwiper-rating", {
+            slidesPerView: 3,
+            spaceBetween: 30,
+            loop: true,
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev"
+            },
+            breakpoints: {
+                0: {slidesPerView: 1},
+                768: {slidesPerView: 2},
+                992: {slidesPerView: 3}
+            }
+        });
+
+        const swiper = new Swiper(".mySwiper-species", {
+            slidesPerView: 1.2,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 2500,
+                disableOnInteraction: false
+            },
+            breakpoints: {
+                576: {slidesPerView: 2.2},
+                768: {slidesPerView: 3.2},
+                992: {slidesPerView: 4}
+            }
+        });
+
+        const swiperBlogs = new Swiper(".mySwiper-blogs", {
+            loop: true,
+            autoplay: {
+                delay: 3500,
+                disableOnInteraction: false
+            },
+            spaceBetween: 20,
+            slidesPerView: 1.2,
+            breakpoints: {
+                576: {slidesPerView: 2.2},
+                768: {slidesPerView: 3.2},
+                992: {slidesPerView: 4}
+            }
+        });
+    </script>
+
+
+
+
+
+
+    <!-- javascript -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+    <!-- SLIDER -->
+    <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
+    <!-- Counter -->
+    <script src="${pageContext.request.contextPath}/assets/js/counter.init.js"></script>
+    <!-- Icons -->
+    <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+    <!-- Main Js -->
+    <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+</body>
 </html>

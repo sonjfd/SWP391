@@ -72,6 +72,7 @@ public class DoctorProfileSetting extends HttpServlet {
         User u = (User) ss.getAttribute("user");
         String uuid = u.getId();
         Doctor d = ddao.getDoctorById(uuid);
+        
         ss.setAttribute("doctor", d);
 
         request.getRequestDispatcher("/view/doctor/content/DoctorProfileSetting.jsp").forward(request, response);

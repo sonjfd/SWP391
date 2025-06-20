@@ -412,7 +412,7 @@ public class StaffDAO {
         }
     }
 
-    public Doctor getDoctorById(String doctorId)  {
+    public Doctor getDoctorById(String doctorId) {
         Doctor doctor = null;
         Connection conn = null;
         PreparedStatement ps = null;
@@ -433,7 +433,7 @@ public class StaffDAO {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-                
+
                 User user = getUserById(rs.getString("user_id"));
                 doctor.setUser(user);
             }
@@ -445,31 +445,67 @@ public class StaffDAO {
 
     public List<DoctorSchedule> getAllDoctorSchedule() {
         List<DoctorSchedule> list = new ArrayList<>();
-        String sql = "SELECT * FROM doctor_schedule";
 
-        Connection conn = null;
-        PreparedStatement stm = null;
-        ResultSet rs = null;
+        String sql = """
+            SELECT ds.schedule_id, ds.work_date, ds.is_available,
+                   s.shift_id, s.name AS shift_name, s.start_time, s.end_time,
+                   u.id AS user_id, u.username, u.email, u.full_name, u.phone, 
+                   u.address, u.avatar, u.status,
+                   r.id AS role_id, r.name AS role_name,
+                   d.specialty, d.certificates, d.qualifications, 
+                   d.years_of_experience, d.biography
+            FROM doctor_schedule ds
+            JOIN shift s ON ds.shift_id = s.shift_id
+            JOIN doctors d ON ds.doctor_id = d.user_id
+            JOIN users u ON d.user_id = u.id
+            JOIN roles r ON u.role_id = r.id
+        """;
 
-        try {
-            conn = DBContext.getConnection();
-            stm = conn.prepareStatement(sql);
-            rs = stm.executeQuery();
+        try (
+                Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql); ResultSet rs = stm.executeQuery()) {
             while (rs.next()) {
-                int scheduleId = rs.getInt("schedule_id");
-                String doctorId = rs.getString("doctor_id");
-                Date workDate = rs.getDate("work_date");
-                int shiftId = rs.getInt("shift_id");
-                int isAvailable = rs.getInt("is_available");
+                // Shift
+                Shift shift = new Shift(
+                        rs.getInt("shift_id"),
+                        rs.getString("shift_name"),
+                        rs.getTime("start_time").toLocalTime(),
+                        rs.getTime("end_time").toLocalTime()
+                );
 
-                Shift shift = getShiftByID(shiftId);
+                // Role
+                Role role = new Role(rs.getInt("role_id"), rs.getString("role_name"));
 
-                User doctor = getUserById(doctorId);
+                // User
+                User user = new User();
+                user.setId(rs.getString("user_id"));
+                user.setUserName(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("full_name"));
+                user.setPhoneNumber(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
+                user.setAvatar(rs.getString("avatar"));
+                user.setStatus(rs.getInt("status"));
+                user.setRole(role);
 
-                Doctor d = getDoctorById(doctor.getId());
-                DoctorSchedule ds = new DoctorSchedule(scheduleId, d, workDate, shift, isAvailable);
+                // Doctor
+                Doctor doctor = new Doctor();
+                doctor.setUser(user);
+                doctor.setSpecialty(rs.getString("specialty"));
+                doctor.setCertificates(rs.getString("certificates"));
+                doctor.setQualifications(rs.getString("qualifications"));
+                doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
+                doctor.setBiography(rs.getString("biography"));
 
-                list.add(ds);
+                // DoctorSchedule
+                DoctorSchedule schedule = new DoctorSchedule(
+                        rs.getInt("schedule_id"),
+                        doctor,
+                        rs.getDate("work_date"),
+                        shift,
+                        rs.getInt("is_available")
+                );
+
+                list.add(schedule);
             }
 
         } catch (Exception e) {
@@ -480,15 +516,26 @@ public class StaffDAO {
     }
 
     public int deleteDoctorWorkShedule(String doctorId, Date date) {
-        String sql = "DELETE FROM doctor_schedule\n"
-                + "WHERE doctor_id = ?\n"
-                + "  AND work_date = ?";
-        Connection conn = null;
-        PreparedStatement stm = null;
+        String sql = """
+        DELETE ds
+        FROM doctor_schedule ds
+        JOIN shift s ON ds.shift_id = s.shift_id
+        WHERE ds.doctor_id = ?
+          AND ds.work_date = ?
+          AND NOT EXISTS (
+              SELECT 1
+              FROM appointments a
+              WHERE a.doctor_id = ds.doctor_id
+                AND CAST(a.appointment_time AS DATE) = ds.work_date
+                AND a.start_time >= s.start_time
+                AND a.start_time < s.end_time
+                AND a.status IN ('booked', 'completed')
+          );
+        """;
+
         int result = -1;
-        try {
-            conn = DBContext.getConnection();
-            stm = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
             stm.setString(1, doctorId);
             stm.setDate(2, date);
             result = stm.executeUpdate();
@@ -630,19 +677,42 @@ public class StaffDAO {
     }
 
     public int deleteSchedulesByDoctorAndMonth(String doctorId, int month) {
-        String deleteDoctorSchedule = "DELETE FROM doctor_schedule WHERE doctor_id = ? AND MONTH(work_date) = ?";
+        String deleteDoctorSchedule = """
+        DELETE ds
+        FROM doctor_schedule ds
+        JOIN shift s ON ds.shift_id = s.shift_id
+        WHERE ds.doctor_id = ?
+          AND MONTH(ds.work_date) = ?
+          AND NOT EXISTS (
+              SELECT 1
+              FROM appointments a
+              WHERE a.doctor_id = ds.doctor_id
+                AND CAST(a.appointment_time AS DATE) = ds.work_date
+                AND a.start_time >= s.start_time
+                AND a.start_time < s.end_time
+                AND a.status IN ('booked', 'completed')
+          );
+    """;
+
+        String deleteTemplate = """
+        DELETE FROM weekly_schedule_template
+        WHERE doctor_id = ?
+    """;
 
         Connection conn = null;
         PreparedStatement psDoctorSchedule = null;
+        PreparedStatement psDeleteTemplate = null;
         int rowsAffected = 0;
 
         try {
             conn = DBContext.getConnection();
-
             psDoctorSchedule = conn.prepareStatement(deleteDoctorSchedule);
             psDoctorSchedule.setString(1, doctorId);
             psDoctorSchedule.setInt(2, month);
             rowsAffected = psDoctorSchedule.executeUpdate();
+            psDeleteTemplate = conn.prepareStatement(deleteTemplate);
+            psDeleteTemplate.setString(1, doctorId);
+            psDeleteTemplate.executeUpdate();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -650,6 +720,9 @@ public class StaffDAO {
             try {
                 if (psDoctorSchedule != null) {
                     psDoctorSchedule.close();
+                }
+                if (psDeleteTemplate != null) {
+                    psDeleteTemplate.close();
                 }
                 if (conn != null) {
                     conn.close();
@@ -662,13 +735,32 @@ public class StaffDAO {
         return rowsAffected;
     }
 
-    
-    
-    
-    
-    
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        
-     
+        StaffDAO dao = new StaffDAO();
+        List<DoctorSchedule> schedules = dao.getAllDoctorSchedule();
+
+        for (DoctorSchedule ds : schedules) {
+            System.out.println("Schedule ID: " + ds.getId());
+            System.out.println("Work Date: " + ds.getWorkDate());
+            System.out.println("Available: " + ds.getIsAvailable());
+
+            Shift shift = ds.getShift();
+            System.out.println("  Shift: " + shift.getName()
+                    + " (" + shift.getStart_time() + " - " + shift.getEnd_time() + ")");
+
+            Doctor doctor = ds.getDoctor();
+            User user = doctor.getUser();
+
+            System.out.println("  Doctor Name: " + user.getFullName());
+            System.out.println("  Specialty: " + doctor.getSpecialty());
+            System.out.println("  Experience: " + doctor.getYearsOfExperience() + " years");
+            System.out.println("  Biography: " + doctor.getBiography());
+            System.out.println("  Email: " + user.getEmail());
+            System.out.println("  Phone: " + user.getPhoneNumber());
+            System.out.println("  Role: " + user.getRole().getName());
+
+            System.out.println("----------------------------");
+        }
     }
+
 }

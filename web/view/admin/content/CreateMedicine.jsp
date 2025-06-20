@@ -46,9 +46,7 @@
             <h5 class="mb-3">Tạo thuốc mới</h5>
             <div class="row">
                 <div class="col-lg-6">
-                    <c:if test="${not empty message}">
-                        <div class="${message.contains('Error') ? 'error-text show' : 'success-message'}">${message}</div>
-                    </c:if>
+                    
                     <form id="createMedicineForm" method="post" action="${pageContext.request.contextPath}/createmedicine">
                         <div class="form-group">
                             <label for="name">Tên thuốc <span style="color: red;">*</span></label>

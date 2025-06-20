@@ -20,7 +20,7 @@ import java.util.Date;
  *
  * @author Dell
  */
-@WebServlet(urlPatterns = {"/updatebookingprice"})
+@WebServlet(urlPatterns = {"/staff-updatebookingprice"})
 
 public class UpdateBokingPrice extends HttpServlet {
 
@@ -93,7 +93,7 @@ public class UpdateBokingPrice extends HttpServlet {
             boolean saved = new AppointmentDAO().updateExaminationPrice(examPrice);
 
             if (saved) {
-                response.sendRedirect("list-appointment");
+                response.sendRedirect("staff-list-appointment");
             } else {
                 request.setAttribute("error", "Cập nhật hoặc thêm giá khám thất bại.");
                 request.getRequestDispatcher("view/staff/content/ListAppointment.jsp").forward(request, response);

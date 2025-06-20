@@ -5,8 +5,8 @@
 package UserController;
 
 
-import DAO.MedicalRecordsDAO;
-import Model.MedicalRecords;
+import DAO.MedicalRecordDAO;
+import Model.MedicalRecord;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -78,8 +78,8 @@ public class SearchRecordByPet extends HttpServlet {
             throws ServletException, IOException {
         String text = (String) request.getParameter("search").trim();
         String id = request.getParameter("id");
-        List<MedicalRecords> ml = null;
-        MedicalRecordsDAO md = new MedicalRecordsDAO();
+        List<MedicalRecord> ml = null;
+        MedicalRecordDAO md = new MedicalRecordDAO();
         if (text.isEmpty() || text.isBlank()) {
             ml = md.getMedicalRecordsByCustomerId(id);
             request.setAttribute("ListPetsMedical", ml);

@@ -92,7 +92,7 @@
         <div class="container mt-4 mb-10">
             <h2 class="text-center mb-4 mt-5">Cập nhật lịch hẹn</h2>
 
-            <form action="update-appointment" method="post">
+            <form action="staff-update-appointment" method="post">
 
                 <input type="hidden" name="id" value="${appointment.id}" />
                 <input type="hidden" name="doctorId" id="doctorId" value="${appointment.doctor.user.id}" />
@@ -151,15 +151,6 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="status" class="form-label">Trạng thái:</label>
-                        <select name="status" class="form-select" id="status">
-                            <option value="pending" ${appointment.status == 'pending' ? 'selected' : ''}>Đang xử lí</option>
-                            <option value="completed" ${appointment.status == 'completed' ? 'selected' : ''}>Đã đặt</option>
-                            <option value="canceled" ${appointment.status == 'canceled' ? 'selected' : ''}>Đã hủy</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
                         <label for="paymentStatus" class="form-label">Thanh toán:</label>
                         <select name="paymentStatus" class="form-select" id="paymentStatus">
                             <option value="unpaid" ${appointment.paymentStatus == 'unpaid' ? 'selected' : ''}>Chưa thanh toán</option>
@@ -170,7 +161,7 @@
 
 
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="list-appointment" class="btn btn-secondary btn-sm">Quay lại</a>
+                    <a href="staff-list-appointment" class="btn btn-secondary btn-sm">Quay lại</a>
                     <button type="submit" class="btn btn-primary btn-sm">Lưu thay đổi</button>
                 </div>
             </form>

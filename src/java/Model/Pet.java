@@ -5,6 +5,7 @@
 package Model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -24,6 +25,7 @@ public class Pet {
     private String status;
     private Date createDate;
     private Date updateDate;
+private List<MedicalRecord> medicalRecords;
 
 
     public Pet() {
@@ -147,6 +149,13 @@ public class Pet {
         this.updateDate = updateDate;
     }
 
+    public List<MedicalRecord> getMedicalRecords() {
+    return medicalRecords;
+}
+
+public void setMedicalRecords(List<MedicalRecord> medicalRecords) {
+    this.medicalRecords = medicalRecords;
+}
     @Override
     public String toString() {
         return "Pet{" + "id=" + id + ", pet_code=" + pet_code + ", user=" + user + ", name=" + name + ", birthDate=" + birthDate + ", breed=" + breed + ", gender=" + gender + ", avatar=" + avatar + ", description=" + description + ", status=" + status + ", createDate=" + createDate + ", updateDate=" + updateDate + '}';

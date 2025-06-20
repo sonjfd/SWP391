@@ -59,82 +59,12 @@
                             </c:forEach>
                         </div>
                     </c:if>
-                    <!-- Reactions -->
-                    <div id="reactions"class="mt-4 d-flex align-items-center">
-                        <form action="toggle-reaction" method="post">
-                            <input type="hidden" name="blogId" value="${blog.id}" />
-                            <button class="btn btn-sm ${hasReacted ? 'btn-danger' : 'btn-outline-danger'} reaction-btn" type="submit">
-                                ${hasReacted ? '💔 Bỏ yêu thích' : '❤️ Yêu thích'} (${blog.reactionCount})
-                            </button>
-                        </form>
-
-                        <form action="toggle-bookmark" method="post">
-                            <input type="hidden" name="blogId" value="${blog.id}" />
-                            <button class="btn btn-sm ${isBookmarked ? 'btn-secondary' : 'btn-outline-secondary'} reaction-btn" type="submit">
-                                ${isBookmarked ? '✅ Đã lưu' : '🔖 Bookmark'}
-                            </button>
-                        </form>
-                    </div>
+                    
 
 
-                    <!-- Bình luận -->
-                    <div class="mt-5">
-                        <h5>Bình luận (${blog.commentCount})</h5>
+                    
 
-                        <!-- Form bình luận -->
-                        <form action="add-comment" method="post" class="mb-4">
-                            <input type="hidden" name="blogId" value="${blog.id}" />
-                            <textarea name="content" class="form-control mb-2" rows="3" required placeholder="Viết bình luận..."></textarea>
-                            <button class="btn btn-primary btn-sm" type="submit">Gửi</button>
-                        </form>
-
-                        <!-- Danh sách bình luận -->
-                        <c:forEach var="comment" items="${comments}">
-                            <div class="border rounded p-3 mb-3 bg-white">
-                                <!-- Comment Header -->
-                                <div class="d-flex justify-content-between">
-                                    <div><strong>${comment.user.fullName}</strong></div>
-                                    <small class="text-muted">
-                                        <fmt:formatDate value="${comment.createdAt}" pattern="dd/MM/yyyy HH:mm" />
-                                    </small>
-                                </div>
-
-                                <!-- Comment Content -->
-                                <div class="mt-2">
-                                    ${comment.content}
-                                    <c:if test="${comment.isEdited == 1}">
-                                        <span class="badge bg-warning text-dark mt-1">Đã chỉnh sửa</span>
-                                    </c:if>
-                                </div>
-
-                                <!-- Edit and Delete Buttons (visible if user is the comment author) -->
-                                <c:if test="${comment.user.id == user.id}">
-                                    <div class="mt-2">
-                                        <!-- Edit Button -->
-                                        <button class="btn btn-sm btn-warning" data-bs-toggle="collapse" data-bs-target="#edit-comment-${comment.id}">
-                                            Sửa
-                                        </button>
-                                        <!-- Delete Button -->
-                                        <form action="delete-comment" method="post" class="d-inline-block ms-2">
-                                            <input type="hidden" name="blogId" value="${blog.id}" />
-
-                                            <input type="hidden" name="commentId" value="${comment.id}" />
-                                            <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này?')">Xóa</button>
-                                        </form>
-                                    </div>
-
-                                    <!-- Edit Form (collapsed by default) -->
-                                    <div id="edit-comment-${comment.id}" class="collapse mt-3">
-                                        <form action="edit-comment" method="post">
-                                            <input type="hidden" name="commentId" value="${comment.id}" />
-                                            <input type="hidden" name="blogId" value="${blog.id}" />
-                                            <textarea name="content" class="form-control mb-2" rows="3" required>${comment.content}</textarea>
-                                            <button class="btn btn-warning btn-sm" type="submit">Lưu chỉnh sửa</button>
-                                        </form>
-                                    </div>
-                                </c:if>
-                            </div>
-                        </c:forEach>
+                        
 
 
                     </div>

@@ -66,6 +66,35 @@ CREATE TABLE species (
   name NVARCHAR(100) UNIQUE NOT NULL
 );
 
+
+-- 11. Breeds (Giống loài)
+CREATE TABLE breeds (
+  id INT PRIMARY KEY IDENTITY(1,1),
+  species_id INT NOT NULL,
+  name NVARCHAR(100) NOT NULL,
+  CONSTRAINT FK_breeds_species FOREIGN KEY (species_id) REFERENCES species(id)
+);
+
+-- 12. Pets (Thú cưng)
+CREATE TABLE pets (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  pet_code NVARCHAR(15) UNIQUE,
+  owner_id UNIQUEIDENTIFIER NOT NULL,
+  name NVARCHAR(100) NOT NULL,
+  birth_date DATE,
+  breeds_id INT NOT NULL,
+  gender NVARCHAR(20),
+  avatar NVARCHAR(255) DEFAULT '/assets/images/default_pet.png',
+  description NVARCHAR(MAX) NULL,
+  status NVARCHAR(50) DEFAULT 'active',
+  created_at DATETIME DEFAULT GETDATE(),
+  updated_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_pets_users FOREIGN KEY (owner_id) REFERENCES users(id),
+  CONSTRAINT FK_pets_breeds FOREIGN KEY (breeds_id) REFERENCES breeds(id)
+);
+
+
 -- 8. Shift (Ca làm việc)
 CREATE TABLE shift (
     shift_id INT PRIMARY KEY IDENTITY(1,1),
@@ -99,32 +128,6 @@ CREATE TABLE doctor_schedule (
     CONSTRAINT UQ_schedule UNIQUE (doctor_id, work_date, shift_id)
 );
 
--- 11. Breeds (Giống loài)
-CREATE TABLE breeds (
-  id INT PRIMARY KEY IDENTITY(1,1),
-  species_id INT NOT NULL,
-  name NVARCHAR(100) NOT NULL,
-  CONSTRAINT FK_breeds_species FOREIGN KEY (species_id) REFERENCES species(id)
-);
-
--- 12. Pets (Thú cưng)
-CREATE TABLE pets (
-  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  pet_code NVARCHAR(15) UNIQUE,
-  owner_id UNIQUEIDENTIFIER NOT NULL,
-  name NVARCHAR(100) NOT NULL,
-  birth_date DATE,
-  breeds_id INT NOT NULL,
-  gender NVARCHAR(20),
-  avatar NVARCHAR(255) DEFAULT '/assets/images/default_pet.png',
-  description NVARCHAR(MAX) NULL,
-  status NVARCHAR(50) DEFAULT 'active',
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_pets_users FOREIGN KEY (owner_id) REFERENCES users(id),
-  CONSTRAINT FK_pets_breeds FOREIGN KEY (breeds_id) REFERENCES breeds(id)
-);
 
 -- 13. Appointments (Cuộc hẹn)
 CREATE TABLE appointments (
@@ -135,8 +138,9 @@ CREATE TABLE appointments (
   appointment_time DATETIME NOT NULL,
   start_time TIME,
   end_time TIME,
-  status NVARCHAR(50) DEFAULT 'pending' CHECK (status IN ('completed', 'canceled', 'pending')),
-checkin_status NVARCHAR(20) DEFAULT 'noshow' CHECK (checkin_status IN ('noshow', 'checkin')),
+ status NVARCHAR(50) DEFAULT 'booked' CHECK (status IN ('booked','completed','cancel_requested', 'canceled','pending')
+  ),
+  checkin_status NVARCHAR(20) DEFAULT 'noshow' CHECK (checkin_status IN ('noshow', 'checkin')),
   payment_status NVARCHAR(50) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
   payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')),
   notes NVARCHAR(MAX),
@@ -149,11 +153,17 @@ checkin_status NVARCHAR(20) DEFAULT 'noshow' CHECK (checkin_status IN ('noshow',
   CONSTRAINT FK_appointments_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(user_id)
 );
 
+
+CREATE TABLE examination_prices (
+    id UNIQUEIDENTIFIER DEFAULT NEWID() PRIMARY KEY,
+    price DECIMAL(10, 2) NOT NULL
+);
+
 -- 11. Services (Dịch vụ)
 CREATE TABLE services (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   department_id INT NOT NULL,
-  name NVARCHAR(255) NOT NULL,
+  name NVARCHAR(255) UNIQUE NOT NULL,
   description NVARCHAR(MAX),
   price DECIMAL(10, 2) NOT NULL,
   status BIT DEFAULT 1,
@@ -201,10 +211,6 @@ CREATE TABLE uploaded_files (
 
 
 
-
-
-
-
 -- 18. Medical Records (Hồ sơ y tế)
 CREATE TABLE medical_records (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
@@ -234,9 +240,8 @@ CREATE TABLE medical_record_files (
 -- 19. Medicines (Thuốc)
 CREATE TABLE medicines (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  name NVARCHAR(255) NOT NULL,
+  name NVARCHAR(255) Unique  NOT NULL,
   description NVARCHAR(MAX),
-  price DECIMAL(10, 2) NOT NULL,
   status BIT DEFAULT 1
 );
 
@@ -268,20 +273,6 @@ CREATE TABLE invoices (
 
   CONSTRAINT FK_invoice_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
-
--- 21. Invoice Medicines (Thuốc trong hóa đơn)
-CREATE TABLE invoice_medicines (
-  invoice_id UNIQUEIDENTIFIER NOT NULL,
-  medicine_id UNIQUEIDENTIFIER NOT NULL,
-  quantity INT NOT NULL CHECK(quantity > 0),
-  price DECIMAL(10, 2) NOT NULL CHECK(price >= 0),
-
-  CONSTRAINT PK_invoice_medicines PRIMARY KEY (invoice_id, medicine_id),
-
-  CONSTRAINT FK_invoice_med FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
-  CONSTRAINT FK_invoice_medicine FOREIGN KEY (medicine_id) REFERENCES medicines(id)
-);
-
 
 
 
@@ -340,8 +331,7 @@ CREATE TABLE blogs (
   published_at DATETIME,               -- Ngày xuất bản
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-  reactions_count INT DEFAULT 0,
-  comments_count INT DEFAULT 0
+  
 );
 --- BẢNG TAG (QH M-T-M với blogs)
 CREATE TABLE tags (
@@ -357,103 +347,135 @@ CREATE TABLE blog_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
+CREATE TABLE [dbo].[tokenForgetPassword](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[token] [varchar](255) NOT NULL,
+	[expiryTime] [datetime] NOT NULL,
+	[isUsed] [bit] NOT NULL,
+	[userId] [uniqueidentifier] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[tokenForgetPassword]  WITH CHECK ADD FOREIGN KEY([userId])
+REFERENCES [dbo].[users] ([id])
+GO
+
+CREATE TABLE ratings (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  appointment_id UNIQUEIDENTIFIER NOT NULL,
+  customer_id UNIQUEIDENTIFIER NOT NULL,
+  doctor_id UNIQUEIDENTIFIER NOT NULL,
+  satisfaction_level INT CHECK (satisfaction_level BETWEEN 1 AND 5),
+  comment NVARCHAR(MAX),
+  status NVARCHAR(50) DEFAULT 'pending' CHECK (status IN ('posted', 'hide', 'pending')),
+  created_at DATETIME DEFAULT GETDATE(),
+
+  CONSTRAINT FK_rating_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+  CONSTRAINT FK_rating_customer FOREIGN KEY (customer_id) REFERENCES users(id),
+  CONSTRAINT FK_rating_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(user_id),
+  CONSTRAINT UQ_rating_appointment UNIQUE (appointment_id) -- mỗi appointment chỉ được đánh giá 1 lần
+);
 
 
--- Danh mục sản phẩm
+CREATE TABLE [dbo].[ChatHistory] (
+    [chat_id] INT IDENTITY(1,1) PRIMARY KEY,
+    [session_id] NVARCHAR(100),            
+    [user_id] UNIQUEIDENTIFIER NULL,       
+    [sender_type] NVARCHAR(10) NOT NULL,   
+    [message_text] NVARCHAR(MAX),
+    [created_at] DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT FK_ChatHistory_User FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+CREATE TABLE appointment_symptoms (
+  id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  appointment_id UNIQUEIDENTIFIER NOT NULL,
+  symptom NVARCHAR(255) NOT NULL,     
+  note NVARCHAR(MAX),
+  created_at DATETIME DEFAULT GETDATE(),
+
+  FOREIGN KEY (appointment_id) REFERENCES appointments(id)
+);
+
+
+
+
 CREATE TABLE categories (
   category_id INT PRIMARY KEY IDENTITY(1,1),
   category_name NVARCHAR(50) UNIQUE NOT NULL,
-  description TEXT
+  description NVARCHAR(100),
+  status BIT DEFAULT 1
 );
 
--- Nhà cung cấp
-CREATE TABLE suppliers (
-  supplier_id INT PRIMARY KEY IDENTITY(1,1),
-  supplier_name NVARCHAR(100) NOT NULL,
-  contact_name NVARCHAR(100),
-  phone NVARCHAR(20),
-  email NVARCHAR(100),
-  address TEXT,
-  created_at DATETIME DEFAULT GETDATE()
+-- Trọng lượng
+CREATE TABLE product_variant_weights (
+  weight_id INT PRIMARY KEY IDENTITY(1,1),
+  weight DECIMAL(10,2) NOT NULL,
+);
+
+-- Hương vị
+CREATE TABLE product_variant_flavors (
+  flavor_id INT PRIMARY KEY IDENTITY(1,1),
+  flavor NVARCHAR(50) NOT NULL,
+
 );
 
 -- Sản phẩm
 CREATE TABLE products (
   product_id INT PRIMARY KEY IDENTITY(1,1),
   category_id INT NOT NULL,
-  supplier_id INT NOT NULL,
   product_name NVARCHAR(100) NOT NULL,
-  description TEXT,
-  image NVARCHAR(255),
+  description NVARCHAR(255),
+  status BIT DEFAULT 1,
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_products_categories FOREIGN KEY (category_id) REFERENCES categories(category_id),
-  CONSTRAINT FK_products_suppliers FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
+  CONSTRAINT FK_products_categories FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
--- Biến thể sản phẩm (ví dụ: size, gói nhỏ/lớn)
+-- Biến thể sản phẩm
 CREATE TABLE product_variants (
   product_variant_id INT PRIMARY KEY IDENTITY(1,1),
   product_id INT NOT NULL,
   variant_name NVARCHAR(100) NOT NULL,
+  weight_id INT NOT NULL,
+  flavor_id INT NOT NULL,
   price DECIMAL(10,2) NOT NULL,
   stock_quantity INT NOT NULL,
+  status BIT DEFAULT 1,
+  image NVARCHAR(255),
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_variants_products FOREIGN KEY (product_id) REFERENCES products(product_id)
+  CONSTRAINT FK_variants_products FOREIGN KEY (product_id) REFERENCES products(product_id),
+  CONSTRAINT FK_variants_weights FOREIGN KEY (weight_id) REFERENCES product_variant_weights(weight_id),
+  CONSTRAINT FK_variants_flavors FOREIGN KEY (flavor_id) REFERENCES product_variant_flavors(flavor_id)
 );
 
--- Trọng lượng cho biến thể
-CREATE TABLE product_variant_weights (
-  weight_id INT PRIMARY KEY IDENTITY(1,1),
-  product_variant_id INT UNIQUE NOT NULL,
-  weight DECIMAL(10,2),
+
+CREATE TABLE sales_invoices (
+  invoice_id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+  staff_id UNIQUEIDENTIFIER NOT NULL,
+  total_amount DECIMAL(10, 2) NOT NULL,
+  payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')) NOT NULL,
+  payment_status NVARCHAR(20) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_weights_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+  CONSTRAINT FK_sales_invoices_staff FOREIGN KEY (staff_id) REFERENCES users(id)
 );
 
--- Hương vị cho biến thể
-CREATE TABLE product_variant_flavors (
-  flavor_id INT PRIMARY KEY IDENTITY(1,1),
-  product_variant_id INT UNIQUE NOT NULL,
-  flavor NVARCHAR(50),
-  created_at DATETIME DEFAULT GETDATE(),
-  updated_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_flavors_variants FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
-);
-
-
--- HOÁ ĐƠN BÁN HÀNG TẠI QUẦY (POS = Point Of Sale)
-CREATE TABLE pos_invoices (
-  pos_invoice_id INT PRIMARY KEY IDENTITY(1,1),
-  customer_id UNIQUEIDENTIFIER NOT NULL, -- users.id (role = 'customer')
-  staff_id UNIQUEIDENTIFIER NOT NULL,    -- users.id (role = 'staff')
-  invoice_date DATETIME DEFAULT GETDATE(),
-  total_amount DECIMAL(10,2) NOT NULL,
-  payment_status NVARCHAR(20) DEFAULT 'Unpaid', -- 'Paid' | 'Unpaid'
-  notes NVARCHAR(255),
-  created_at DATETIME DEFAULT GETDATE(),
-
-  CONSTRAINT FK_pos_invoice_customer FOREIGN KEY (customer_id) REFERENCES users(id),
-  CONSTRAINT FK_pos_invoice_staff FOREIGN KEY (staff_id) REFERENCES users(id),
-  CONSTRAINT chk_pos_payment_status CHECK (payment_status IN ('Paid', 'Unpaid'))
-);
-
--- CHI TIẾT HOÁ ĐƠN BÁN HÀNG
-CREATE TABLE pos_invoice_items (
-  pos_invoice_item_id INT PRIMARY KEY IDENTITY(1,1),
-  pos_invoice_id INT NOT NULL,
+-- 7. Chi tiết hóa đơn
+CREATE TABLE sales_invoice_items (
+  id INT PRIMARY KEY IDENTITY(1,1),
+  invoice_id UNIQUEIDENTIFIER NOT NULL,
   product_variant_id INT NOT NULL,
-  quantity INT NOT NULL,
-  unit_price DECIMAL(10,2) NOT NULL,
-  total_price AS (quantity * unit_price) PERSISTED,
-
-  CONSTRAINT FK_pos_items_invoice FOREIGN KEY (pos_invoice_id) REFERENCES pos_invoices(pos_invoice_id),
-  CONSTRAINT FK_pos_items_variant FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+  quantity INT NOT NULL CHECK (quantity > 0),
+  price DECIMAL(10, 2) NOT NULL,
+  CONSTRAINT FK_invoice_items_invoice FOREIGN KEY (invoice_id) REFERENCES sales_invoices(invoice_id) ON DELETE CASCADE,
+  CONSTRAINT FK_invoice_items_variant FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
 );
 

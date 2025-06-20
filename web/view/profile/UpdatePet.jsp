@@ -150,6 +150,12 @@
 
 
 
+        <c:if test="${not empty sessionScope.FailMessage}">
+            <script>
+                alert('${sessionScope.FailMessage}');
+            </script>
+            <c:remove var="FailMessage" scope="session"/>
+        </c:if>
 
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>

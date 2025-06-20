@@ -143,7 +143,7 @@ z<%--
 
                         <div class="rounded shadow mt-4">
                             <div class="p-4 border-bottom">
-                                <h5 class="mb-0">Thông tin khách hàng</h5>
+                                <h5 class="mb-0">Thông tin của bạn</h5>
                             </div>
                             <form id="updateUserForm" action="updateuserinformation" method="post" enctype="multipart/form-data">
                                 <div class="p-4 border-bottom">

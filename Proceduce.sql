@@ -121,3 +121,60 @@ BEGIN
     JOIN deleted d ON b.id = d.blog_id
 END
 GO
+
+
+
+
+CREATE OR ALTER TRIGGER trg_insert_invoice_on_appointment_services
+ON appointment_services
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Tạo bảng tạm để xử lý nhiều dòng được insert cùng lúc
+    DECLARE @AppointmentId UNIQUEIDENTIFIER;
+
+    -- Duyệt từng appointment_id vừa được insert (tránh trường hợp nhiều dòng khác nhau)
+    DECLARE inserted_cursor CURSOR FOR
+        SELECT DISTINCT appointment_id FROM inserted;
+
+    OPEN inserted_cursor;
+    FETCH NEXT FROM inserted_cursor INTO @AppointmentId;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+  
+        DECLARE @TotalAmount DECIMAL(10,2);
+
+        SELECT @TotalAmount = SUM(price)
+        FROM appointment_services
+        WHERE appointment_id = @AppointmentId;
+
+        IF EXISTS (
+            SELECT 1 FROM invoices WHERE appointment_id = @AppointmentId
+        )
+        BEGIN
+         
+            UPDATE invoices
+            SET total_amount = @TotalAmount,
+                updated_at = GETDATE()
+            WHERE appointment_id = @AppointmentId;
+        END
+        ELSE
+        BEGIN
+            -- Nếu chưa có → tạo mới
+            INSERT INTO invoices (appointment_id, total_amount, payment_status, created_at, updated_at)
+            VALUES (@AppointmentId, @TotalAmount, 'pending', GETDATE(), GETDATE());
+        END
+
+        FETCH NEXT FROM inserted_cursor INTO @AppointmentId;
+    END
+
+    CLOSE inserted_cursor;
+    DEALLOCATE inserted_cursor;
+END;
+
+
+
+

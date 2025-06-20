@@ -141,6 +141,7 @@ public class HomeDoctorSchedule extends HttpServlet {
         appointment.setNote(note);
         appointment.setPaymentMethod("cash");
         appointment.setPaymentStatus("unpaid");
+        appointment.setStatus("booked");
         UserDAO udao = new UserDAO();
         Pet pet;
         try {

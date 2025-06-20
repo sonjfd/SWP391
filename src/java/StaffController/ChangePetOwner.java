@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Dell
  */
-@WebServlet(name="ChangePetOwner", urlPatterns={"/change-pet-owner"})
+@WebServlet(name="ChangePetOwner", urlPatterns={"/staff-change-pet-owner"})
 public class ChangePetOwner extends HttpServlet {
    
     /** 
@@ -61,9 +61,9 @@ public class ChangePetOwner extends HttpServlet {
         UserDAO udao=new UserDAO();
         int result=udao.updateOwner(petId, ownerId);
         if(result>0){
-            response.sendRedirect("list-pet-and-owner?success=true");
+            response.sendRedirect("staff-list-pet-and-owner?success=true");
         }else{
-            response.sendRedirect("list-pet-and-owner?success=false");
+            response.sendRedirect("staff-list-pet-and-owner?success=false");
         }
     } 
 

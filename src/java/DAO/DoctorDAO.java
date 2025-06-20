@@ -76,7 +76,6 @@ public class DoctorDAO {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-                
 
                 // Lấy thông tin người dùng từ bảng users
                 UserDAO udao = new UserDAO();
@@ -113,7 +112,61 @@ public class DoctorDAO {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-               
+
+                // Lấy thông tin người dùng từ bảng users
+                User user = new UserDAO().getUserById(rs.getString("user_id")); // Lấy thông tin người dùng
+                doctor.setUser(user);  // Gán thông tin người dùng vào bác sĩ
+
+                // Thêm bác sĩ vào danh sách
+                doctorList.add(doctor);
+            }
+        } catch (SQLException e) {
+            // In thông báo lỗi ra console khi có ngoại lệ
+            e.printStackTrace();
+        } finally {
+            // Đảm bảo đóng tất cả tài nguyên
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return doctorList;
+    }
+    
+    
+    
+    
+     public List<Doctor> getDoctorLimit(int limit) {
+        List<Doctor> doctorList = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBContext.getConnection();
+            // Truy vấn lấy tất cả bác sĩ từ bảng doctors
+            String sql = "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography "
+                    + "FROM doctors order by years_of_experience desc";
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // Lặp qua kết quả và tạo đối tượng Doctor cho mỗi bản ghi
+            while (rs.next()) {
+                Doctor doctor = new Doctor();
+                doctor.setSpecialty(rs.getString("specialty"));
+                doctor.setCertificates(rs.getString("certificates"));
+                doctor.setQualifications(rs.getString("qualifications"));
+                doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
+                doctor.setBiography(rs.getString("biography"));
 
                 // Lấy thông tin người dùng từ bảng users
                 User user = new UserDAO().getUserById(rs.getString("user_id")); // Lấy thông tin người dùng
@@ -155,8 +208,8 @@ public class DoctorDAO {
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
 
-               java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-        stm.setDate(1, sqlDate);
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            stm.setDate(1, sqlDate);
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
@@ -177,5 +230,5 @@ public class DoctorDAO {
         return doctors;
     }
 
-    
+
 }

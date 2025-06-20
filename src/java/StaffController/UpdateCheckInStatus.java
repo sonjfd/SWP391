@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Dell
  */
-@WebServlet(name = "UpdateCheckingStatus", urlPatterns = {"/update-chekin"})
+@WebServlet(name = "UpdateCheckingStatus", urlPatterns = {"/staff-update-chekin"})
 public class UpdateCheckInStatus extends HttpServlet {
 
     /**
@@ -59,13 +59,12 @@ public class UpdateCheckInStatus extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String appointmentId = request.getParameter("id");
-        String status = request.getParameter("status");
+    
 
         AppointmentDAO dao = new AppointmentDAO();
-        boolean success = dao.updateCheckinStatus(appointmentId, status);
+        boolean success = dao.updateCheckinStatus(appointmentId);
 
-        response.setContentType("text/plain");
-        response.getWriter().write(success ? "success" : "fail");
+        response.sendRedirect("staff-list-appointment?success=update_checkin");
     }
 
     /**

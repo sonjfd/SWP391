@@ -8,11 +8,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <c:if test="${not empty sessionScope.user}">
-
-    </c:if>
-
-
     <head>
         <meta charset="utf-8" />
         <title>Doctris - Doctor Appointment Booking System</title>
@@ -300,14 +295,12 @@
             <c:remove var="SuccessMessage" scope="session"/>
         </c:if>
 
-
         <c:if test="${not empty sessionScope.FailMessage}">
             <script>
                 alert('${sessionScope.FailMessage}');
             </script>
             <c:remove var="FailMessage" scope="session"/>
         </c:if>
-
 
 
         <!-- Navbar STart -->

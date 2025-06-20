@@ -260,6 +260,7 @@
                             <option value="">Tất cả</option>
                             <option value="3">Bác sĩ</option>
                             <option value="4">Nhân viên</option>
+                            <option value="5">Y tá</option>
                         </select>
                     </div>
                     <div>
@@ -274,103 +275,155 @@
                 </div>
             </div>
         </div>
+        <!-- Loader -->
 
-        <table id="accountTable">
-            <tr>
-                <th>STT</th>
-                <th>Tên đăng nhập</th>
-                <th>Email</th>
-                <th>Họ và tên</th>
-                <th>Vai trò</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-            </tr>
-            <c:forEach var="user" items="${users}" varStatus="counter">
-                <tr data-role="${user.role.id}" data-status="${user.status}">
-                    <td>${counter.count}</td>
-                    <td>${user.userName}</td>
-                    <td>${user.email}</td>
-                    <td>${user.fullName}</td>
-                    <td>${user.role.id == 3 ? 'Bác sĩ' : 'Nhân viên'}</td>
-                    <td>
-                        <form method="post" action="updatestatus">
-                            <input type="hidden" name="id" value="${user.id}">
-                            <input type="hidden" name="status" value="${user.status == 1 ? 0 : 1}">
-                            <input type="hidden" name="search" value="${search}">
-                            <label class="switch">
-                                <input type="checkbox" ${user.status == 1 ? 'checked' : ''} onchange="this.form.submit()">
-                                <span class="slider"></span>
-                            </label>
-                        </form>
-                    </td>
-                    <td>
-                        <a href="updateaccount?id=${user.id}" class="action-btn edit-btn">Sửa</a>
-                        <button class="action-btn delete-btn" onclick="confirmDelete('${user.id}')">Xóa</button>
-                    </td>
+        <%@include file="../layout/Header.jsp" %>
+
+        <div class="container">
+            <c:if test="${not empty message}">
+                <div class="message ${messageType}">${message}</div>
+            </c:if>
+            <div class="header">
+                <h2>Danh sách tài khoản nhân viên/bác sĩ</h2>
+            </div>
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <a href="createaccount" class="create-btn">Tạo tài khoản mới</a>
+                </div>
+                <div class="toolbar-right">
+                    <form method="post" action="searchaccount" class="search-form">
+                        <input type="text" name="search" value="${search}" placeholder="Tìm kiếm theo tên">
+                        <button type="submit">Tìm kiếm</button>
+                    </form>
+                    <div class="filter-container">
+                        <div>
+                            <label for="filterRole">Vai trò:</label>
+                            <select id="filterRole" onchange="filterAccounts()">
+                                <option value="">Tất cả</option>
+                                <option value="3">Bác sĩ</option>
+                                <option value="4">Nhân viên</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="filterStatus">Trạng thái:</label>
+                            <select id="filterStatus" onchange="filterAccounts()">
+                                <option value="">Tất cả</option>
+                                <option value="1">Hoạt động</option>
+                                <option value="0">Không hoạt động</option>
+                            </select>
+                        </div>
+                        <a href="listaccount" class="reset-btn" >Tất cả tài khoản</a>
+                    </div>
+                </div>
+            </div>
+
+            <table id="accountTable">
+                <tr>
+                    <th>STT</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Email</th>
+                    <th>Họ và tên</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
                 </tr>
-            </c:forEach>
-        </table>
+                <c:forEach var="user" items="${users}" varStatus="counter">
+                    <tr data-role="${user.role.id}" data-status="${user.status}">
+                        <td>${counter.count}</td>
+                        <td>${user.userName}</td>
+                        <td>${user.email}</td>
+                        <td>${user.fullName}</td>
+                        <c:choose>
+                            <c:when test="${user.role.id == 1}">
+                                <td>Khách hàng</td>
+                            </c:when>
+                            <c:when test="${user.role.id == 3}">
+                                <td>Bác sĩ</td>
+                            </c:when>
+                            <c:when test="${user.role.id == 4}">
+                                <td>Nhân viên</td>
+                            </c:when>
+                           
+                        </c:choose>
+                        <td>
+                            <form method="post" action="updatestatus">
+                                <input type="hidden" name="id" value="${user.id}">
+                                <input type="hidden" name="status" value="${user.status == 1 ? 0 : 1}">
+                                <input type="hidden" name="search" value="${search}">
+                                <label class="switch">
+                                    <input type="checkbox" ${user.status == 1 ? 'checked' : ''} onchange="this.form.submit()">
+                                    <span class="slider"></span>
+                                </label>
+                            </form>
+                        </td>
+                        <td>
+                            <a href="updateaccount?id=${user.id}" class="action-btn edit-btn">Sửa</a>
+                            <button class="action-btn delete-btn" onclick="confirmDelete('${user.id}')">Xóa</button>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
 
-        <c:if test="${empty users}">
-            <p>Không tìm thấy tài khoản nào.</p>
-        </c:if>
-    </div>
+            <c:if test="${empty users}">
+                <p>Không tìm thấy tài khoản nào.</p>
+            </c:if>
+        </div>
 
-    <script>
-        function confirmDelete(id) {
-            if (confirm("Bạn có chắc chắn muốn xóa tài khoản này?")) {
-                window.location.href = "deleteaccount?id=" + id;
+        <script>
+            function confirmDelete(id) {
+                if (confirm("Bạn có chắc chắn muốn xóa tài khoản này?")) {
+                    window.location.href = "deleteaccount?id=" + id;
+                }
             }
-        }
 
-        function filterAccounts() {
-            const roleFilter = document.getElementById('filterRole').value;
-            const statusFilter = document.getElementById('filterStatus').value;
-            const rows = document.querySelectorAll('#accountTable tr[data-role]');
+            function filterAccounts() {
+                const roleFilter = document.getElementById('filterRole').value;
+                const statusFilter = document.getElementById('filterStatus').value;
+                const rows = document.querySelectorAll('#accountTable tr[data-role]');
 
-            rows.forEach(row => {
-                const role = row.getAttribute('data-role');
-                const status = row.getAttribute('data-status');
-                let showRow = true;
+                rows.forEach(row => {
+                    const role = row.getAttribute('data-role');
+                    const status = row.getAttribute('data-status');
+                    let showRow = true;
 
-                if (roleFilter && role !== roleFilter) {
-                    showRow = false;
-                }
-                if (statusFilter && status !== statusFilter) {
-                    showRow = false;
-                }
+                    if (roleFilter && role !== roleFilter) {
+                        showRow = false;
+                    }
+                    if (statusFilter && status !== statusFilter) {
+                        showRow = false;
+                    }
 
-                row.style.display = showRow ? '' : 'none';
-                console.log(`Filter applied: Role=${roleFilter}, Status=${statusFilter}, Row visible=${showRow}`);
-            });
-        }
+                    row.style.display = showRow ? '' : 'none';
+                    console.log(`Filter applied: Role=${roleFilter}, Status=${statusFilter}, Row visible=${showRow}`);
+                });
+            }
 
-        function resetFilters() {
-            const filterRole = document.getElementById('filterRole');
-            const filterStatus = document.getElementById('filterStatus');
-            filterRole.value = '';
-            filterStatus.value = '';
-            filterAccounts();
-            console.log('Filters reset: Showing all accounts');
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const filterRole = document.getElementById('filterRole');
-            const filterStatus = document.getElementById('filterStatus');
-            if (filterRole && filterStatus) {
+            function resetFilters() {
+                const filterRole = document.getElementById('filterRole');
+                const filterStatus = document.getElementById('filterStatus');
+                filterRole.value = '';
+                filterStatus.value = '';
                 filterAccounts();
-            } else {
-                console.error('Filter elements not found');
+                console.log('Filters reset: Showing all accounts');
             }
-        });
-    </script>
 
-    <!-- javascript -->
-    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/columnchart.init.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
-</body>
+            document.addEventListener('DOMContentLoaded', function () {
+                const filterRole = document.getElementById('filterRole');
+                const filterStatus = document.getElementById('filterStatus');
+                if (filterRole && filterStatus) {
+                    filterAccounts();
+                } else {
+                    console.error('Filter elements not found');
+                }
+            });
+        </script>
+
+        <!-- javascript -->
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/columnchart.init.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+    </body>
 </html>

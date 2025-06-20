@@ -1,15 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
 import java.util.Date;
 
-/**
- *
- * @author Admin
- */
 public class MedicalRecordFile {
     private String id;
     private String medicalRecordId;
@@ -17,6 +9,7 @@ public class MedicalRecordFile {
     private String fileUrl;      // Đường dẫn thực tế
     private Date uploadedAt;
 
+    // Constructors
     public MedicalRecordFile() {}
 
     public MedicalRecordFile(String id, String medicalRecordId, String fileName, String fileUrl, Date uploadedAt) {
@@ -72,4 +65,5 @@ public class MedicalRecordFile {
         return "MedicalRecordFile{" + "id=" + id + ", medicalRecordId=" + medicalRecordId + ", fileName=" + fileName + ", fileUrl=" + fileUrl + ", uploadedAt=" + uploadedAt + '}';
     }
 
+    
 }

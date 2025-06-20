@@ -54,11 +54,12 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="list-pet-and-owner"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng Và Thú Cưng</a></li>                       
-                        <li><a href="list-work-schedule"><i class="uil uil-calendar-alt d-inline-block"></i>Lịch Làm Việc Bác Sĩ</a></li>
-                        <li><a href="list-appointment"><i class="uil uil-notes d-inline-block"></i>Cuộc Hẹn</a></li>
-                        <li><a href="contact"><i class="uil uil-envelope me-2 d-inline-block"></i>Liên Hệ</a></li>
-                        <li><a href="list-blog"><i class="uil uil-file-alt me-2 d-inline-block"></i>Quản Lý Blog</a></li>
+                        <li><a href="staff-list-pet-and-owner"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng Và Thú Cưng</a></li>                       
+                        <li><a href="staff-list-work-schedule"><i class="uil uil-calendar-alt d-inline-block"></i>Lịch Làm Việc Bác Sĩ</a></li>
+                        <li><a href="staff-list-appointment"><i class="uil uil-notes d-inline-block"></i>Cuộc Hẹn</a></li>
+                        <li><a href="staff-list-invoice-service"><i class="uil uil-receipt d-inline-block"></i>Hoá Đơn</a></li>
+                        <li><a href="staff-contact"><i class="uil uil-envelope me-2 d-inline-block"></i>Liên Hệ</a></li>
+                        <li><a href="staff-list-blog"><i class="uil uil-file-alt me-2 d-inline-block"></i>Quản Lý Blog</a></li>
                     </ul>
 
                     <!-- sidebar-menu  -->
@@ -126,15 +127,15 @@
                                                 <small class="text-muted">${sessionScope.user.role.name}</small>
                                             </div>
                                         </a>
-                                        <a class="dropdown-item text-dark" href="dashboard">
-                                            <span class="mb-0 d-inline-block me-1"><i class="uil uil-dashboard align-middle h6"></i></span> Dashboard
+                                        <a class="dropdown-item text-dark" href="staff-list-pet-and-owner">
+                                            <span class="mb-0 d-inline-block me-1"><i class="uil uil-dashboard align-middle h6"></i></span> Bảng điều khiển
                                         </a>
                                         <a class="dropdown-item text-dark" href="staff-profile-setting">
-                                            <span class="mb-0 d-inline-block me-1"><i class="uil uil-setting align-middle h6"></i></span> Profile Settings
+                                            <span class="mb-0 d-inline-block me-1"><i class="uil uil-setting align-middle h6"></i></span> Trang cá nhân
                                         </a>
                                         <div class="dropdown-divider border-top"></div>
                                         <a class="dropdown-item text-dark" href="logout">
-                                            <span class="mb-0 d-inline-block me-1"><i class="uil uil-sign-out-alt align-middle h6"></i></span> Logout
+                                            <span class="mb-0 d-inline-block me-1"><i class="uil uil-sign-out-alt align-middle h6"></i></span> Đăng xuất
                                         </a>
                                     </div>
                                 </div>
@@ -147,6 +148,6 @@
 
                 <!-- javascript -->
                 <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-              
+
                 </body>
                 </html>

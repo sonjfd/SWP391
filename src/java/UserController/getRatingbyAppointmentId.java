@@ -68,7 +68,8 @@ public class getRatingbyAppointmentId extends HttpServlet {
         if (rating != null) {
             String json = "{"
                     + "\"satisfaction\":\"" + rating.getSatisfaction_level() + "\","
-                    + "\"comment\":\"" + rating.getComment().replace("\"", "\\\"") + "\""
+                    + "\"comment\":\"" + rating.getComment().replace("\"", "\\\"") + "\","
+                    + "\"status\":\"" + rating.getStatus() + "\""
                     + "}";
             out.print(json);
         } else {

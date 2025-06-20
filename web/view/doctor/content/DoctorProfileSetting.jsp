@@ -14,22 +14,25 @@
         <meta charset="utf-8" />
         <title>Doctris - Doctor Appointment Booking System</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
-        <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
-        <meta name="author" content="Shreethemes" />
-        <meta name="email" content="support@shreethemes.in" />
-        <meta name="website" content="https://shreethemes.in" />
-        <meta name="Version" content="v1.2.0" />
-        <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
-        <!-- Bootstrap -->
+         <!-- Bootstrap -->
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <!-- Select2 -->
+        <link href="${pageContext.request.contextPath}/assets/css/select2.min.css" rel="stylesheet" />
         <!-- Icons -->
         <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
         <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
+        <!-- SLIDER -->
+        <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        
+        <!--CDN-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        
         <style>
             #avatarInput {
                 width: 100%;
@@ -39,14 +42,44 @@
                 border-radius: 0.25rem;
                 box-sizing: border-box;
             }
-            
-      
+
+
             .error-message {
                 color: red;
                 font-size: 0.9rem;
                 margin-top: 4px;
             }
-        
+            .position-relative {
+                position: relative;
+            }
+
+            .toggle-password {
+                position: absolute;
+                top: 50%;
+                right: 12px;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: #666;
+            }
+
+            .password-rules small {
+                display: block;
+                font-size: 0.85rem;
+                margin-top: 4px;
+            }
+
+            .form-control {
+                position: relative;
+            }
+            .form-control-icon {
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+            }
+
+
         </style>
 
     </head>
@@ -58,63 +91,41 @@
 
 
 
-        <%@include file="../../home/layout/Header.jsp" %>
-        <section class="bg-dashboard">
-            <div class="container">
-                <c:if test="${not empty sessionScope.alertMessage}">
-                    <script>
-                        alert("${sessionScope.alertMessage}"); // Hiển thị thông báo
-                        // Xóa thông báo khỏi session sau khi hiển thị
-                        <c:remove var="alertMessage" scope="session"/>
-                        <c:remove var="alertType" scope="session"/><!-- Xóa alertType khỏi session -->
-                    </script>
-                </c:if>
-                <c:set value="${sessionScope.doctor}" var="doctor"></c:set>
-                    <div class="row justify-content-center">
-                        <div class="col-xl-4 col-lg-4 col-md-5 col-12">
-                            <div class="rounded shadow overflow-hidden sticky-bar">
-                                <div class="card border-0">
-                                    <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" class="img-fluid" alt="">
-                            </div>
+        <%@include file="../layout/Header.jsp" %>
+        <div class="container-fluid bg-light">
+    <div class="layout-specing">
+                <div class="row justify-content-center">
+                    <c:if test="${not empty sessionScope.alertMessage}">
+                        <script>
+                            alert("${sessionScope.alertMessage}"); // Hiển thị thông báo
+                            // Xóa thông báo khỏi session sau khi hiển thị
+                            <c:remove var="alertMessage" scope="session"/>
+                            <c:remove var="alertType" scope="session"/><!-- Xóa alertType khỏi session -->
+                        </script>
+                    </c:if>
+                    <c:set value="${sessionScope.doctor}" var="doctor"></c:set>
+            
+                        
 
-                            <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
-                                <h5 class="mt-3 mb-1">${doctor.user.fullName}</h5>
-                                <p class="text-muted mb-0">${doctor.specialty}</p>
-                            </div>
+                <!-- Main Content -->
+                
 
-                            <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="doctor-dashboard" class="navbar-link"><i class="ri-dashboard-line align-middle navbar-icon"></i> Bảng điều khiển</a></li>
-                                <li class="navbar-item"><a href="doctor-assigned-appointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Lịch hẹn</a></li>
-                                <li class="navbar-item"><a href="doctor-record-examination" class="navbar-link"><i class="ri-file-line align-middle navbar-icon"></i> Ghi chép khám bệnh</a></li>
-                                <li class="navbar-item"><a href="doctor-upload-test-result" class="navbar-link"><i class="ri-upload-line align-middle navbar-icon"></i> Tải kết quả xét nghiệm</a></li>
-                                <li class="navbar-item"><a href="doctor-pet-medical-history" class="navbar-link"><i class="ri-history-line align-middle navbar-icon"></i> Lịch sử y tế thú cưng</a></li>
-                                <li class="navbar-item"><a href="doctor-profile-setting" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt hồ sơ</a></li>
-
-                            </ul>
-                        </div>
-                    </div><!--end col-->
-
-                    <div class="col-xl-8 col-lg-8 col-md-7 mt-4 pt-2 mt-sm-0 pt-sm-0">
-
-                        <div class="rounded shadow mt-4">
-                            <div class="p-4 border-bottom">
-                                <h5 class="mb-0">Thông tin bác sĩ</h5>
-                            </div>
-                            <form id="doctorProfileForm" action="doctor-profile-setting" method="post" enctype="multipart/form-data">
+                            <div class="rounded shadow">
                                 <div class="p-4 border-bottom">
-                                    <div class="row align-items-center">
-                                        <div class="col-lg-2 col-md-4">
-                                            <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
+                                    <h5 class="mb-0">Thông tin bác sĩ</h5>
+                                </div>
+                                <form id="doctorProfileForm" action="doctor-profile-setting" method="post" enctype="multipart/form-data">
+                                    <div class="p-4 border-bottom">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-2 col-md-4">
+                                                <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
                                         </div>
                                         <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
                                             <h5>Ảnh đại diện</h5>
                                             <p class="text-muted mb-0">Chọn ảnh vuông tối thiểu 256x256 (.jpg, .png)</p>
                                         </div>
                                         <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
-                                            <!-- Thêm các thuộc tính CSS để chỉnh sửa giao diện input file -->
                                             <input type="file" class="form-control d-inline-block w-100" name="avatar" id="avatarInput" accept=".jpg,.jpeg,.png" onchange="previewAvatar(event)">
-                                            <button type="button" class="btn btn-soft-primary ms-2" onclick="removeAvatar()">Xóa</button>
                                         </div>
                                     </div>
                                 </div>
@@ -122,96 +133,110 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Họ tên</label>
-                                            <input name="fullName" type="text" class="form-control" value="${doctor.user.fullName}" placeholder="Họ tên" required>
+                                            <input name="fullName" type="text" class="form-control" value="${doctor.user.fullName}" placeholder="Họ tên" required maxlength="50">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Email</label>
-                                            <input name="email" type="email" class="form-control" value="${doctor.user.email}" placeholder="Email" readonly>
+                                            <input name="email" type="email" class="form-control" value="${doctor.user.email}" placeholder="Email" readonly maxlength="100">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Số điện thoại</label>
-                                            <input name="phone" type="text" class="form-control" value="${doctor.user.phoneNumber}" placeholder="Số điện thoại">
+                                            <input name="phone" type="text" class="form-control" value="${doctor.user.phoneNumber}" placeholder="Số điện thoại" maxlength="10">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Địa chỉ</label>
-                                            <input name="address" type="text" class="form-control" value="${doctor.user.address}" placeholder="Địa chỉ">
+                                            <input name="address" type="text" class="form-control" value="${doctor.user.address}" placeholder="Địa chỉ" maxlength="100">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Chuyên khoa</label>
-                                            <input name="specialty" type="text" class="form-control" value="${doctor.specialty}" placeholder="Chuyên khoa">
+                                            <input name="specialty" type="text" class="form-control" value="${doctor.specialty}" placeholder="Chuyên khoa" maxlength="50">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Bằng cấp</label>
-                                            <input name="qualifications" type="text" class="form-control" value="${doctor.qualifications}" placeholder="Bằng cấp">
+                                            <input name="qualifications" type="text" class="form-control" value="${doctor.qualifications}" placeholder="Bằng cấp" maxlength="50">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Chứng chỉ</label>
-                                            <input name="certificates" type="text" class="form-control" value="${doctor.certificates}" placeholder="Chứng chỉ">
+                                            <input name="certificates" type="text" class="form-control" value="${doctor.certificates}" placeholder="Chứng chỉ" maxlength="200">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Số năm kinh nghiệm</label>
-                                            <input name="yearsOfExperience" type="number" min="0" class="form-control" value="${doctor.yearsOfExperience}" placeholder="Năm kinh nghiệm">
+                                            <input name="yearsOfExperience" type="number" min="0" max="99" class="form-control" value="${doctor.yearsOfExperience}" placeholder="Năm kinh nghiệm">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label">Tiểu sử giới thiệu</label>
-                                            <textarea name="biography" rows="4" class="form-control" placeholder="Giới thiệu bản thân">${doctor.biography}</textarea>
+                                            <textarea name="biography" rows="4" class="form-control" placeholder="Giới thiệu bản thân" maxlength="500">${doctor.biography}</textarea>
                                             <div class="error-message"></div>
                                         </div>
-
-                                      
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12 text-end">
-                                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                                        </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 text-end">
+                                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                                     </div>
                                 </div>
-                            </form>
                         </div>
+                        </form>
 
-                        <div class="rounded shadow mt-4">
+                    </div>
+
+                    <div class="rounded shadow mt-4">
                             <div class="p-4 border-bottom">
-                                <h5 class="mb-0">Change Password :</h5>
+                                <h5 class="mb-0">Đổi mật khẩu:</h5>
                             </div>
 
                             <div class="p-4">
-                                <form>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Old password :</label>
-                                                <input type="password" class="form-control" placeholder="Old password" required="">
-                                            </div>
-                                        </div><!--end col-->
+                                <form action="change-pass" method="post" onsubmit="return validateChangePass()">
+                                    <!-- Old Password -->
+                                    <div class="mb-3 position-relative">
+                                        <label class="form-label">Mật khẩu cũ</label>
+                                        <div class="position-relative">
+                                            <input type="password" id="oldPassword" name="oldPassword" class="form-control pe-5" required>
+                                            <i class="bi bi-eye-slash position-absolute top-50 translate-middle-y" style="right: 15px; cursor: pointer;" id="toggleOldPass" onclick="togglePassword('oldPassword', 'toggleOldPass')"></i>
+                                        </div>
+                                        <p type="text" name="id" style="color: red"  >${requestScope.errorOldPass}</p>
+                                        <small id="oldPasswordError" class="text-danger"></small>
+                                    </div>
 
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">New password :</label>
-                                                <input type="password" class="form-control" placeholder="New password" required="">
-                                            </div>
-                                        </div><!--end col-->
+                                    <!-- New Password -->
+                                    <div class="mb-3 position-relative">
+                                        <label class="form-label">Mật khẩu mới</label>
+                                        <div class="position-relative">
+                                            <input type="password" id="newPassword" name="newPassword" class="form-control pe-5" onkeyup="checkPasswordStrength()" required>
+                                            <i class="bi bi-eye-slash position-absolute top-50 translate-middle-y" style="right: 15px; cursor: pointer;" id="toggleNewPass" onclick="togglePassword('newPassword', 'toggleNewPass')"></i>
+                                        </div>
+                                        <div id="passwordRules" class="mt-2">
+                                            <small id="lengthRule" class="text-danger">• Ít nhất 8 kí tự, nhiều nhất 20 kí tự</small><br>
+                                            <small id="uppercaseRule" class="text-danger">• Ít nhất 1 kí tự in hoa</small><br>
+                                            <small id="lowercaseRule" class="text-danger">• Ít nhất 1 kí tự in thường</small><br>
+                                            <small id="numberRule" class="text-danger">• Ít nhất 1 số</small><br>
+                                            <small id="specialRule" class="text-danger">• Ít nhất 1 kí tự đặc biệt</small>
+                                        </div>
+                                        <small id="newPasswordError" class="text-danger"></small>
+                                    </div>
 
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Re-type New password :</label>
-                                                <input type="password" class="form-control" placeholder="Re-type New password" required="">
-                                            </div>
-                                        </div><!--end col-->
+                                    <!-- Confirm New Password -->
+                                    <div class="mb-3 position-relative">
+                                        <label class="form-label">Nhập lại mật khẩu mới</label>
+                                        <div class="position-relative">
+                                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                                            <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" id="toggleConfirmPass" style="cursor: pointer;" onclick="togglePassword('confirmPassword', 'toggleConfirmPass')"></i>
+                                        </div>
+                                        <small id="confirmPasswordError" class="text-danger"></small>
+                                    </div>
 
-                                        <div class="col-lg-12 mt-2 mb-0">
-                                            <button class="btn btn-primary">Save password</button>
-                                        </div><!--end col-->
-                                    </div><!--end row-->
+
+                                    <button type="submit" class="btn btn-primary w-100">Đổi mật khẩu</button>
                                 </form>
                             </div>
+
                         </div>
 
 
@@ -219,138 +244,262 @@
 
 
 
-                    </div><!--end col-->
-                </div><!--end row-->
-            </div><!--end container-->
-        </section><!--end section-->
+                </div>
+            </div>
+        </div>
 
 
 
 
 
-                <script>
-    function previewAvatar(event) {
-        const input = event.target;
-        const preview = document.getElementById('avatarPreview');
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
+
+
+
+
+
+
+
+
+                                
+                                    <script>
+// --------- Preview avatar ----------
+function previewAvatar(event) {
+    const input = event.target;
+    const preview = document.getElementById('avatarPreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// --------- Remove avatar -----------
+function removeAvatar() {
+    document.getElementById('avatarInput').value = '';
+    document.getElementById('avatarPreview').src = '${doctor.user.avatar}'; // Reset về ảnh cũ
+}
+
+// --------- Escape HTML (anti-XSS) ----------
+function escapeHtml(e, input) {
+    if (e) e.preventDefault();
+    const html = input.value;
+    const div = document.createElement("div");
+    div.innerText = html;
+    input.value = div.innerHTML;
+}
+
+// --------- Validate fields -----------
+const form = document.getElementById('doctorProfileForm');
+const nameInput = document.querySelector('input[name="fullName"]');
+const phoneInput = document.querySelector('input[name="phone"]');
+const emailInput = document.querySelector('input[name="email"]');
+const descriptionInput = document.querySelector('textarea[name="biography"]');
+
+function createErrorElem(input) {
+    let err = input.nextElementSibling;
+    if (!err || !err.classList.contains('error-message')) {
+        err = document.createElement('div');
+        err.classList.add('error-message');
+        input.parentNode.insertBefore(err, input.nextSibling);
+    }
+    return err;
+}
+
+function validateName() {
+    const val = nameInput.value.trim();
+    const errElem = createErrorElem(nameInput);
+    if (val === '') {
+        errElem.textContent = 'Họ và tên không được để trống.';
+        return false;
+    } else {
+        errElem.textContent = '';
+        return true;
+    }
+}
+
+function validatePhone() {
+    const val = phoneInput.value.trim();
+    const phonePattern = /^0\d{9}$/;
+    const errElem = createErrorElem(phoneInput);
+    if (!phonePattern.test(val)) {
+        errElem.textContent = 'Số điện thoại phải bắt đầu bằng số 0 và có đúng 10 số.';
+        return false;
+    } else {
+        errElem.textContent = '';
+        return true;
+    }
+}
+
+function validateEmail() {
+    const val = emailInput.value.trim();
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const errElem = createErrorElem(emailInput);
+    if (!emailPattern.test(val)) {
+        errElem.textContent = 'Email phải là địa chỉ Gmail hợp lệ, ví dụ: ten@gmail.com.';
+        return false;
+    } else {
+        errElem.textContent = '';
+        return true;
+    }
+}
+
+function validateDescription() {
+    const val = descriptionInput.value.trim();
+    const errElem = createErrorElem(descriptionInput);
+    if (val === '') {
+        errElem.textContent = 'Vui lòng nhập miêu tả.';
+        return false;
+    } else {
+        errElem.textContent = '';
+        return true;
+    }
+}
+function checkPasswordStrength() {
+                let password = document.getElementById("newPassword").value;
+
+                let lengthCheck = password.length >= 8 && password.length <= 20;
+                let uppercaseCheck = /[A-Z]/.test(password);
+                let lowercaseCheck = /[a-z]/.test(password);
+                let numberCheck = /[0-9]/.test(password);
+                let specialCheck = /[\W_]/.test(password);
+
+                document.getElementById("lengthRule").className = lengthCheck ? "text-success" : "text-danger";
+                document.getElementById("uppercaseRule").className = uppercaseCheck ? "text-success" : "text-danger";
+                document.getElementById("lowercaseRule").className = lowercaseCheck ? "text-success" : "text-danger";
+                document.getElementById("numberRule").className = numberCheck ? "text-success" : "text-danger";
+                document.getElementById("specialRule").className = specialCheck ? "text-success" : "text-danger";
             }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
 
-    function removeAvatar() {
-        document.getElementById('avatarInput').value = '';
-        document.getElementById('avatarPreview').src = '${doctor.user.avatar}'; // Reset lại ảnh cũ
-    }
+            function validateChangePass() {
+                let oldPassword = document.getElementById("oldPassword").value.trim();
+                let newPassword = document.getElementById("newPassword").value.trim();
+                let confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-    const form = document.getElementById('doctorProfileForm');
-    const nameInput = document.querySelector('input[name="fullName"]');
-    const phoneInput = document.querySelector('input[name="phone"]');
-    const emailInput = document.querySelector('input[name="email"]');
-    const descriptionInput = document.querySelector('textarea[name="biography"]');
+                // Các phần hiển thị lỗi riêng
+                let oldPasswordError = document.getElementById("oldPasswordError");
+                let newPasswordError = document.getElementById("newPasswordError");
+                let confirmPasswordError = document.getElementById("confirmPasswordError");
 
-    function createErrorElem(input) {
-        let err = input.nextElementSibling;
-        if (!err || !err.classList.contains('error-message')) {
-            err = document.createElement('div');
-            err.classList.add('error-message');
-            input.parentNode.insertBefore(err, input.nextSibling);
-        }
-        return err;
-    }
+                // Reset lỗi cũ
+                oldPasswordError.innerHTML = "";
+                newPasswordError.innerHTML = "";
+                confirmPasswordError.innerHTML = "";
 
-    function validatePhone() {
-        const val = phoneInput.value.trim();
-        const phonePattern = /^0\d{9}$/;
-        const errElem = createErrorElem(phoneInput);
-        if (!phonePattern.test(val)) {
-            errElem.textContent = 'Số điện thoại phải bắt đầu bằng số 0 và có đúng 10 số.';
-            return false;
-        } else {
-            errElem.textContent = '';
-            return true;
-        }
-    }
+                let isValid = true;
 
-    function validateEmail() {
-        const val = emailInput.value.trim();
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        const errElem = createErrorElem(emailInput);
-        if (!emailPattern.test(val)) {
-            errElem.textContent = 'Email phải là địa chỉ Gmail hợp lệ, ví dụ: ten@gmail.com.';
-            return false;
-        } else {
-            errElem.textContent = '';
-            return true;
-        }
-    }
+                // Old Password: kiểm tra độ dài
+                if (oldPassword.length < 8 || oldPassword.length > 20) {
+                    oldPasswordError.innerHTML = "Mật khẩu cũ phải từ 8 đến 20 ký tự.";
+                    isValid = false;
+                }
 
-    function validateName() {
-        const val = nameInput.value.trim();
-        const errElem = createErrorElem(nameInput);
-        if (val === '') {
-            errElem.textContent = 'Họ và tên không được để trống.';
-            return false;
-        } else {
-            errElem.textContent = '';
-            return true;
-        }
-    }
+                // New Password: kiểm tra độ mạnh
+                let lengthCheck = newPassword.length >= 8 && newPassword.length <= 20;
+                let uppercaseCheck = /[A-Z]/.test(newPassword);
+                let lowercaseCheck = /[a-z]/.test(newPassword);
+                let numberCheck = /[0-9]/.test(newPassword);
+                let specialCheck = /[\W_]/.test(newPassword);
 
-    function validateDescription() {
-        const val = descriptionInput.value.trim();
-        const errElem = createErrorElem(descriptionInput);
-        if (val === '') {
-            errElem.textContent = 'Vui lòng nhập miêu tả.';
-            return false;
-        } else {
-            errElem.textContent = '';
-            return true;
-        }
-    }
+                if (!lengthCheck || !uppercaseCheck || !lowercaseCheck || !numberCheck || !specialCheck) {
+                    if (!lengthCheck)
+                        newPasswordError.innerHTML += "• Từ 8 đến 20 ký tự.<br>";
+                    if (!uppercaseCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 chữ hoa.<br>";
+                    if (!lowercaseCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 chữ thường.<br>";
+                    if (!numberCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 số.<br>";
+                    if (!specialCheck)
+                        newPasswordError.innerHTML += "• Ít nhất 1 ký tự đặc biệt.<br>";
+                    isValid = false;
+                }
 
-    nameInput.addEventListener('blur', validateName);
-    phoneInput.addEventListener('blur', validatePhone);
-    emailInput.addEventListener('blur', validateEmail);
-    descriptionInput.addEventListener('blur', validateDescription);
+                // New Password không trùng với Old Password
+                if (newPassword === oldPassword && newPassword.length > 0) {
+                    newPasswordError.innerHTML += "• Mật khẩu mới không được trùng mật khẩu cũ.<br>";
+                    isValid = false;
+                }
 
-    form.addEventListener('submit', function (e) {
-        const validName = validateName();
-        const validPhone = validatePhone();
-        const validEmail = validateEmail();
-        const validDescription = validateDescription();
+                // Confirm Password: kiểm tra độ dài và trùng khớp
+                if (confirmPassword.length < 8 || confirmPassword.length > 20) {
+                    confirmPasswordError.innerHTML += "•Mật khẩu phải từ 8 đến 20 ký tự.<br>";
+                    isValid = false;
+                }
+                if (newPassword !== confirmPassword) {
+                    confirmPasswordError.innerHTML += "• Mật khẩu xác nhận không khớp.<br>";
+                    isValid = false;
+                }
 
-        if (!validName || !validPhone || !validEmail || !validDescription) {
-            e.preventDefault(); // Ngừng gửi form nếu có lỗi
+                return isValid;
+            }
+
+
+
+
+            function togglePassword(inputId, iconId) {
+                let input = document.getElementById(inputId);
+                let icon = document.getElementById(iconId);
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove("bi-eye-slash");
+                    icon.classList.add("bi-eye");
+                } else {
+                    input.type = "password";
+                    icon.classList.remove("bi-eye");
+                    icon.classList.add("bi-eye-slash");
+                }
+            }
+
+
+// --------- Validate khi blur ----------
+nameInput.addEventListener('blur', validateName);
+phoneInput.addEventListener('blur', validatePhone);
+emailInput.addEventListener('blur', validateEmail);
+descriptionInput.addEventListener('blur', validateDescription);
+
+// --------- Escape HTML khi submit + Validate toàn bộ ----------
+form.addEventListener('submit', function (e) {
+    // Escape các trường text
+    const escapeInputs = [
+        document.querySelector('input[name="fullName"]'),
+        document.querySelector('input[name="address"]'),
+        document.querySelector('input[name="specialty"]'),
+        document.querySelector('input[name="qualifications"]'),
+        document.querySelector('input[name="certificates"]'),
+        document.querySelector('textarea[name="biography"]')
+    ];
+    escapeInputs.forEach(function(input) {
+        if (input) {
+            const div = document.createElement("div");
+            div.innerText = input.value;
+            input.value = div.innerHTML;
         }
     });
+
+    // Validate các trường chính
+    const validName = validateName();
+    const validPhone = validatePhone();
+    const validEmail = validateEmail();
+    const validDescription = validateDescription();
+    if (!validName || !validPhone || !validEmail || !validDescription) {
+        e.preventDefault(); // Dừng submit nếu có lỗi
+    }
+});
 </script>
 
+    <a href="#" onclick="topFunction()" id="back-to-top" class="btn btn-icon btn-pills btn-primary back-to-top"><i data-feather="arrow-up" class="icons"></i></a>
+    
+    
+    
 
+   <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+    <!-- Icons -->
+    <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+    <!-- Main Js -->
+    <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+</body>
 
-
-
-
-                     <!--End             -->
-
-
-
-                               
-
-
-        <a href="#" onclick="topFunction()" id="back-to-top" class="btn btn-icon btn-pills btn-primary back-to-top"><i data-feather="arrow-up" class="icons"></i></a>
-        <!-- Back to top 
-
-
-
--->                <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script><!--
-                <!-- Icons -->
-                <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-                <!-- Main Js -->
-                <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
-            </body>
-
-        </html>
+</html>

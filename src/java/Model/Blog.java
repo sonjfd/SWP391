@@ -22,8 +22,7 @@ public class Blog {
     private Date publishedAt;
     private Date createdAt;
     private Date updatedAt;
-    private int reactionCount;
-    private int commentCount;
+    
     private List<String> tagsAsList;
     private List<Tag> tags;
 
@@ -32,7 +31,7 @@ public class Blog {
     public Blog() {
     }
 
-    public Blog(String id, String title, String content, User author, String image, String status, Date publishedAt, Date createdAt, Date updatedAt, int reactionCount, int commentCount, List<String> tagsAsList, List<Tag> tags) {
+    public Blog(String id, String title, String content, User author, String image, String status, Date publishedAt, Date createdAt, Date updatedAt, List<String> tagsAsList, List<Tag> tags) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -42,11 +41,11 @@ public class Blog {
         this.publishedAt = publishedAt;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.reactionCount = reactionCount;
-        this.commentCount = commentCount;
         this.tagsAsList = tagsAsList;
         this.tags = tags;
     }
+
+   
 
     
 
@@ -122,21 +121,7 @@ public class Blog {
         this.updatedAt = updatedAt;
     }
 
-    public int getReactionCount() {
-        return reactionCount;
-    }
-
-    public void setReactionCount(int reactionCount) {
-        this.reactionCount = reactionCount;
-    }
-
-    public int getCommentCount() {
-        return commentCount;
-    }
-
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
-    }
+    
 
     public List<String> getTagsAsList() {
         return tagsAsList;

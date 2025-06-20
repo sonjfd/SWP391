@@ -10,6 +10,7 @@ import Model.Shift;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,9 @@ import java.util.List;
  *
  * @author Dell
  */
+
+
+@WebServlet("/staff-update-work-schedule")
 public class UpdateDoctorWorkSchedule extends HttpServlet {
 
     /**
@@ -105,7 +109,7 @@ public class UpdateDoctorWorkSchedule extends HttpServlet {
         int result = sdao.updateDoctorWorkShedule(id, workDate, shiftId);
 
         if (result > 0) {
-            response.sendRedirect("list-work-schedule?success=2");
+            response.sendRedirect("staff-list-work-schedule?success=2");
         } else {
             request.setAttribute("error", "Cập nhật thất bại. Vui lòng thử lại.");
             request.setAttribute("DoctorSchedule", ds);

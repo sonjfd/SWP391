@@ -6,6 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -158,7 +160,7 @@
 
                 <div class="d-flex gap-3 mb-3 flex-wrap" style="max-width: 700px;">
                     <!-- Form lọc chủ -->
-                    <form method="get" action="list-pet-and-owner" class="flex-grow-0" style="min-width: 250px;">
+                    <form method="get" action="staff-list-pet-and-owner" class="flex-grow-0" style="min-width: 250px;">
                         <label for="ownerFilter" class="form-label fw-semibold">Chủ sở hữu:</label>
                         <div class="d-flex gap-2">
                             <select name="ownerId" id="ownerFilter" class="form-select form-select-sm" style="flex-grow: 1;">
@@ -183,9 +185,10 @@
                         <tr>
                             <th scope="col">STT</th>
                             <th scope="col">Tên thú cưng</th>
-                            <th scope="col">Giống loài</th>
-                            <th scope="col">Giới tính</th>
+                            <th scope="col">Giống </th>
+
                             <th scope="col">Chủ sở hữu</th>
+
                             <th scope="col">Trạng thái</th>
                             <th class="col">Xem chi tiết</th>
                             <th scope="col">Đổi chủ</th>
@@ -199,10 +202,7 @@
                                 <td>${loop.index + 1}</td>
                                 <td>${p.name}</td>
                                 <td>${p.breed.name}</td> 
-
-                                <td>${p.gender }</td>
-                                <td>${p.user.fullName}</td>
-
+                                <td>${p.user.fullName} (${p.user.email})</td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${p.status == 'active'}">
@@ -227,6 +227,13 @@
                                     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#petModal-${p.id}">
                                         <i class="bi bi-eye"></i> 
                                     </button>
+
+                                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#historyModal-${p.id}">
+                                        <i class="bi bi-journal-medical"></i>
+                                    </button>
+
+
+
                                 </td>
                                 <td>
                                     <select class="form-select form-select-sm" style="width: 160px;"
@@ -245,6 +252,72 @@
                 </table>
             </div>
         </div>
+        <c:if test="${totalPages > 0}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="staff-list-pet-and-owner?page=${currentPage - 1}&ownerId=${selectedOwnerId}">Trước</a>
+                    </li>
+
+                    <c:forEach var="i" begin="1" end="${totalPages}">
+                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                            <a class="page-link" href="staff-list-pet-and-owner?page=${i}&ownerId=${selectedOwnerId}">${i}</a>
+                        </li>
+                    </c:forEach>
+
+                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="staff-list-pet-and-owner?page=${currentPage + 1}&ownerId=${selectedOwnerId}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </c:if>
+
+
+
+
+        <c:forEach items="${listpet}" var="p">
+            <div class="modal fade" id="historyModal-${p.id}" tabindex="-1" aria-labelledby="historyModalLabel-${p.id}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title" id="historyModalLabel-${p.id}">Lịch sử khám bệnh - Thú Cưng: ${p.name}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <c:if test="${not empty p.medicalRecords}">
+                                <c:forEach items="${p.medicalRecords}" var="mr">
+                                    <div class="card mb-3 shadow-sm">
+                                        <div class="card-header bg-light fw-semibold">
+                                            Ngày khám: <fmt:formatDate value="${mr.appointment.appointmentDate}" pattern="dd/MM/yyyy HH:mm" />
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>Bác sĩ:</strong> ${mr.doctor.user.fullName} </p>
+                                            <p><strong>Chẩn đoán:</strong> ${mr.diagnosis}</p>
+                                            <p><strong>Điều trị:</strong> ${mr.treatment}</p>
+                                            <p><strong>Ngày tái khám:</strong> 
+                                                <c:choose>
+                                                    <c:when test="${not empty mr.reExamDate}">
+                                                        <fmt:formatDate value="${mr.reExamDate}" pattern="dd/MM/yyyy" />
+                                                    </c:when>
+                                                    <c:otherwise>Không có</c:otherwise>
+                                                </c:choose>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </c:if>
+                            <c:if test="${empty p.medicalRecords}">
+                                <div class="alert alert-warning text-center">
+                                    Không có lịch sử khám bệnh nào cho thú cưng này.
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </c:forEach>
+
+
 
         <c:forEach items="${listpet}" var="p">
             <div class="modal fade" id="petModal-${p.id}" tabindex="-1" aria-labelledby="modalLabel-${p.id}" aria-hidden="true">
@@ -314,7 +387,7 @@
                 if (!newOwnerId)
                     return;
 
-                var url = "change-pet-owner?petId=" + petId + "&newOwnerId=" + newOwnerId;
+                var url = "staff-change-pet-owner?petId=" + petId + "&newOwnerId=" + newOwnerId;
 
                 window.location.href = url;
             }

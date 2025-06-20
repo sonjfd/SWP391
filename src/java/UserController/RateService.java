@@ -94,9 +94,9 @@ public class RateService extends HttpServlet {
 
         RatingDAO rdao = new RatingDAO();
         Rating existingRating = rdao.getRatingByAppId(appointmentId);
-        String rateId = existingRating.getId();
-        if (existingRating != null) {
 
+        if (existingRating != null) {
+            String rateId = existingRating.getId();
             boolean updated = rdao.updateRating(rateId, satisfaction, comment);
             if (updated) {
                 session.setAttribute("SuccessMessage", "Cập nhật đánh giá thành công!");
@@ -107,7 +107,6 @@ public class RateService extends HttpServlet {
             return;
         }
 
-        // Nếu chưa có đánh giá → thêm mới
         Rating rating = new Rating();
         rating.setAppointment(appDAO.getAppointmentById(appointmentId));
         rating.setUser(user);

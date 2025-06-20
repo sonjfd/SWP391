@@ -1,7 +1,6 @@
 package DAO;
 
 import Model.Blog;
-import Model.BlogComment;
 import Model.Tag;
 import Model.User;
 import java.sql.Connection;
@@ -9,10 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
-import java.util.UUID;
-import java.sql.Timestamp;
 
 public class BlogDAO {
 
@@ -66,7 +63,7 @@ public class BlogDAO {
         List<Blog> blogs = new ArrayList<>();
         String sql = "SELECT "
                 + "b.id AS blog_id, b.title, b.content, b.image, b.status, "
-                + "b.published_at, b.created_at, b.updated_at, b.reactions_count, b.comments_count, "
+                + "b.published_at, b.created_at, b.updated_at, "
                 + "u.id AS user_id, u.full_name, u.email, u.avatar "
                 + "FROM blogs b "
                 + "JOIN users u ON b.author_id = u.id "
@@ -84,8 +81,6 @@ public class BlogDAO {
                 b.setPublishedAt(rs.getTimestamp("published_at"));
                 b.setCreatedAt(rs.getTimestamp("created_at"));
                 b.setUpdatedAt(rs.getTimestamp("updated_at"));
-                b.setReactionCount(rs.getInt("reactions_count"));
-                b.setCommentCount(rs.getInt("comments_count"));
 
                 User author = new User();
                 author.setId(rs.getString("user_id"));
@@ -129,8 +124,6 @@ public class BlogDAO {
                     b.setPublishedAt(rs.getTimestamp("published_at"));
                     b.setCreatedAt(rs.getTimestamp("created_at"));
                     b.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    b.setReactionCount(rs.getInt("reactions_count"));
-                    b.setCommentCount(rs.getInt("comments_count"));
 
                     b.setTags(getTagsByBlogId(rs.getString("id")));
                     blogs.add(b);
@@ -178,8 +171,6 @@ public class BlogDAO {
                     b.setPublishedAt(rs.getTimestamp("published_at"));
                     b.setCreatedAt(rs.getTimestamp("created_at"));
                     b.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    b.setReactionCount(rs.getInt("reactions_count"));
-                    b.setCommentCount(rs.getInt("comments_count"));
 
                     b.setTags(getTagsByBlogId(rs.getString("id")));
                     blogs.add(b);
@@ -192,15 +183,12 @@ public class BlogDAO {
     }
 // Lấy blog theo tagId với phân trang
 
-    
 // Đếm blog theo tag
-    
-
     public Blog getBlogById(String id) {
         Blog blog = null;
         String sql = "SELECT "
                 + "b.id AS blog_id, b.title, b.content, b.image, b.status, "
-                + "b.published_at, b.created_at, b.updated_at, b.reactions_count, b.comments_count, "
+                + "b.published_at, b.created_at, b.updated_at, "
                 + "u.id AS user_id, u.full_name, u.email, u.avatar "
                 + "FROM blogs b "
                 + "JOIN users u ON b.author_id = u.id "
@@ -220,8 +208,6 @@ public class BlogDAO {
                     blog.setPublishedAt(rs.getTimestamp("published_at"));
                     blog.setCreatedAt(rs.getTimestamp("created_at"));
                     blog.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    blog.setReactionCount(rs.getInt("reactions_count"));
-                    blog.setCommentCount(rs.getInt("comments_count"));
 
                     User author = new User();
                     author.setId(rs.getString("user_id"));
@@ -238,50 +224,6 @@ public class BlogDAO {
         }
 
         return blog;
-    }
-
-    // get BLOG COMMENT
-    public List<BlogComment> getCommentsByBlogId(String blogId) {
-        List<BlogComment> comments = new ArrayList<>();
-
-        String sql = "SELECT c.id, c.content, c.created_at, c.updated_at, c.is_edited, "
-                + "u.id AS user_id, u.full_name, u.email, u.avatar "
-                + "FROM blog_comments c "
-                + "JOIN users u ON c.user_id = u.id "
-                + "WHERE c.blog_id = ? "
-                + "ORDER BY c.created_at DESC";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, blogId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    BlogComment comment = new BlogComment();
-                    comment.setId(rs.getString("id"));
-                    comment.setContent(rs.getString("content"));
-                    comment.setCreatedAt(rs.getTimestamp("created_at"));
-                    comment.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    comment.setIsEdited(rs.getInt("is_edited"));
-
-                    User user = new User();
-                    user.setId(rs.getString("user_id"));
-                    user.setFullName(rs.getString("full_name"));
-                    user.setEmail(rs.getString("email"));
-                    user.setAvatar(rs.getString("avatar"));
-
-                    comment.setUser(user);
-
-                    comments.add(comment);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Lỗi khi lấy bình luận blog", e);
-        }
-
-        return comments;
     }
 
     // END BLOG COMMENT
@@ -423,203 +365,11 @@ public class BlogDAO {
         return tagIds;
     }
 
-    // ============================== THÊM SỬA XÓA BOOKMARK =====================================
-    public void addBookmark(Blog blog, User user) {
-        String sql = "INSERT INTO blog_bookmarks (blog_id, user_id, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, blog.getId());
-            ps.setString(2, user.getId());
-            ps.setBoolean(3, true); // Khi thêm bookmark là true
-            ps.setTimestamp(4, new java.sql.Timestamp(new Date().getTime()));
-            ps.setTimestamp(5, new java.sql.Timestamp(new Date().getTime()));
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void removeBookmark(Blog blog, User user) {
-        String sql = "UPDATE blog_bookmarks SET is_active = ? WHERE blog_id = ? AND user_id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setBoolean(1, false); // Thay đổi trạng thái bookmark thành false khi bỏ bookmark
-            ps.setString(2, blog.getId());
-            ps.setString(3, user.getId());
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean isBookmarked(Blog blog, User user) {
-        String sql = "SELECT * FROM blog_bookmarks WHERE blog_id = ? AND user_id = ? AND is_active = 1";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, blog.getId());
-            ps.setString(2, user.getId());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // Nếu có dữ liệu thì có bookmark
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // kiểm tra đã từng bookmark chưa 
-    public boolean hasBookmarkRecord(Blog blog, User user) {
-        String sql = "SELECT 1 FROM blog_bookmarks WHERE blog_id = ? AND user_id = ?";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, blog.getId());
-            ps.setString(2, user.getId());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    //khôi phục bookmark
-    public void reactivateBookmark(Blog blog, User user) {
-        String sql = "UPDATE blog_bookmarks SET is_active = 1, updated_at = GETDATE() WHERE blog_id = ? AND user_id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, blog.getId());
-            ps.setString(2, user.getId());
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // toggle bookmark
-    public void toggleBookmark(Blog blog, User user) {
-        if (isBookmarked(blog, user)) {
-            removeBookmark(blog, user);
-        } else {
-            if (hasBookmarkRecord(blog, user)) {
-                reactivateBookmark(blog, user);
-            } else {
-                addBookmark(blog, user);
-            }
-        }
-    }
-
-    // ==========================================================================================
-    // ==================================== THÊM SỬA XÓA REACTION ===============================
-    public void toggleReaction(Blog blog, User user) {
-        String checkSql = "SELECT is_active FROM blog_reactions WHERE blog_id = ? AND user_id = ?";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
-
-            checkStmt.setString(1, blog.getId());
-            checkStmt.setString(2, user.getId());
-            ResultSet rs = checkStmt.executeQuery();
-
-            if (rs.next()) {
-                boolean current = rs.getBoolean("is_active");
-                String updateSql = "UPDATE blog_reactions SET is_active = ?, updated_at = GETDATE() WHERE blog_id = ? AND user_id = ?";
-                try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
-                    ps.setBoolean(1, !current);
-                    ps.setString(2, blog.getId());
-                    ps.setString(3, user.getId());
-                    ps.executeUpdate();
-                }
-            } else {
-                String insertSql = "INSERT INTO blog_reactions (blog_id, user_id, is_active, created_at, updated_at) VALUES (?, ?, 1, GETDATE(), GETDATE())";
-                try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
-                    ps.setString(1, blog.getId());
-                    ps.setString(2, user.getId());
-                    ps.executeUpdate();
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean hasReacted(Blog blog, User user) {
-        String sql = "SELECT * FROM blog_reactions WHERE blog_id = ? AND user_id = ? AND is_active = 1";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, blog.getId());
-            ps.setString(2, user.getId());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // Nếu có dữ liệu thì đã thả tim
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-// ==========================================================================================
-    //================================= COMMENT =============================================
-    public void addComment(BlogComment comment) {
-        String sql = "INSERT INTO blog_comments (id, blog_id, user_id, content, created_at, is_edited) VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, comment.getId());
-            ps.setString(2, comment.getBlog().getId());
-            ps.setString(3, comment.getUser().getId());
-            ps.setString(4, comment.getContent());
-            ps.setTimestamp(5, new java.sql.Timestamp(comment.getCreatedAt().getTime()));
-            ps.setInt(6, comment.getIsEdited());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Lỗi thêm comment", e);
-        }
-    }
-
-    public void updateComment(BlogComment comment) {
-        String sql = "UPDATE blog_comments SET content = ?, updated_at = ?, is_edited = ? WHERE id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, comment.getContent());
-            ps.setTimestamp(2, new java.sql.Timestamp(comment.getUpdatedAt().getTime()));
-            ps.setInt(3, comment.getIsEdited());
-            ps.setString(4, comment.getId());
-
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteComment(String commentId) {
-        String sql = "DELETE FROM blog_comments WHERE id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, commentId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     // ======================================================================================
     public List<Blog> getBlogsByTagId(String tagId) {
         List<Blog> blogs = new ArrayList<>();
         String sql = "SELECT b.id AS blog_id, b.title, b.content, b.image, b.status, "
-                + "b.published_at, b.created_at, b.updated_at, b.reactions_count, b.comments_count, "
+                + "b.published_at, b.created_at, b.updated_at, "
                 + "u.id AS user_id, u.full_name, u.email, u.avatar "
                 + "FROM blogs b "
                 + "JOIN blog_tags bt ON b.id = bt.blog_id "
@@ -640,8 +390,6 @@ public class BlogDAO {
                     b.setPublishedAt(rs.getTimestamp("published_at"));
                     b.setCreatedAt(rs.getTimestamp("created_at"));
                     b.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    b.setReactionCount(rs.getInt("reactions_count"));
-                    b.setCommentCount(rs.getInt("comments_count"));
 
                     User author = new User();
                     author.setId(rs.getString("user_id"));
@@ -659,6 +407,132 @@ public class BlogDAO {
         }
 
         return blogs;
+    }
+
+    // Phương thức lấy danh sách Blog với lọc và phân trang
+    public List<Blog> getBlogsWithFilterAndPagination(String dateFrom, String dateTo, String status, String tag, int page, int pageSize) {
+        List<Blog> listBlogs = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT b.* FROM blogs b "
+                + "JOIN blog_tags bt ON b.id = bt.blog_id "
+                + "JOIN tags t ON bt.tag_id = t.id "
+                + "WHERE 1=1");
+
+        // Thêm các điều kiện lọc vào câu SQL
+        if (dateFrom != null && !dateFrom.isEmpty()) {
+            sql.append(" AND b.published_at >= ?");
+        }
+        if (dateTo != null && !dateTo.isEmpty()) {
+            sql.append(" AND b.published_at <= ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND b.status = ?");
+        }
+        if (tag != null && !tag.isEmpty()) {
+            sql.append(" AND t.id = ?");
+        }
+
+        // Thêm phân trang
+        int offset = (page - 1) * pageSize;
+        sql.append(" ORDER BY b.published_at DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int index = 1;
+            if (dateFrom != null && !dateFrom.isEmpty()) {
+                ps.setString(index++, dateFrom);
+            }
+            if (dateTo != null && !dateTo.isEmpty()) {
+                ps.setString(index++, dateTo);
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (tag != null && !tag.isEmpty()) {
+                ps.setString(index++, tag);
+            }
+            ps.setInt(index++, offset);
+            ps.setInt(index++, pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Blog blog = new Blog();
+                blog.setId(rs.getString("id"));
+                blog.setTitle(rs.getString("title"));
+                blog.setContent(rs.getString("content"));
+                blog.setStatus(rs.getString("status"));
+                blog.setPublishedAt(rs.getDate("published_at"));
+                blog.setImage(rs.getString("image"));
+                listBlogs.add(blog);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listBlogs;
+    }
+
+    // Phương thức để lấy tổng số blog theo các tham số lọc
+    public int getTotalBlogsCount(String dateFrom, String dateTo, String status, String tag) {
+        int count = 0;
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) FROM blogs b "
+                + "JOIN blog_tags bt ON b.id = bt.blog_id "
+                + "JOIN tags t ON bt.tag_id = t.id "
+                + "WHERE 1=1");
+
+        // Thêm các điều kiện lọc vào câu SQL
+        if (dateFrom != null && !dateFrom.isEmpty()) {
+            sql.append(" AND b.published_at >= ?");
+        }
+        if (dateTo != null && !dateTo.isEmpty()) {
+            sql.append(" AND b.published_at <= ?");
+        }
+        if (status != null && !status.isEmpty()) {
+            sql.append(" AND b.status = ?");
+        }
+        if (tag != null && !tag.isEmpty()) {
+            sql.append(" AND t.id = ?");
+        }
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int index = 1;
+            if (dateFrom != null && !dateFrom.isEmpty()) {
+                ps.setString(index++, dateFrom);
+            }
+            if (dateTo != null && !dateTo.isEmpty()) {
+                ps.setString(index++, dateTo);
+            }
+            if (status != null && !status.isEmpty()) {
+                ps.setString(index++, status);
+            }
+            if (tag != null && !tag.isEmpty()) {
+                ps.setString(index++, tag);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public int countAllBlogs() {
+        String sql = "SELECT COUNT(*) FROM blogs";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        BlogDAO dao = new BlogDAO();
+        System.out.println(dao.getAllBlogs());
     }
 
 }

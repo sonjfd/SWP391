@@ -6,9 +6,7 @@
 package UserController;
 
 import DAO.AppointmentDAO;
-import DAO.UserDAO;
 import Model.Appointment;
-import Model.Pet;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,9 +20,9 @@ import java.util.List;
 
 /**
  *
- * @author Admin
+ * @author Dell
  */
-@WebServlet(name="FilterAppointment", urlPatterns={"/filterappointment"})
+@WebServlet("/filterappointment")
 public class FilterAppointment extends HttpServlet {
    
     /** 
@@ -61,10 +59,35 @@ public class FilterAppointment extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
+        throws ServletException, IOException {
 
+        String status = request.getParameter("status");
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String id = user.getId();
+        List<Appointment> appList;
+        AppointmentDAO ad = new AppointmentDAO();
+
+        if (status == null || status.isEmpty()) {
+            appList = ad.getAppointmentByCustomer(id);
+        } else {
+            appList = ad.getAppointmentByStatus(id, status);
+        }
+
+        if (appList.isEmpty()) {
+            request.setAttribute("Message", "Không lọc thấy lịch hẹn tương ứng!");
+        }
+
+        request.setAttribute("appointments", appList);
+        request.setAttribute("status", status);
+        request.getRequestDispatcher("view/profile/Appointment.jsp").forward(request, response);
+    }
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
@@ -75,29 +98,7 @@ public class FilterAppointment extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       String status = (String) request.getParameter("status");
-         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        String id = user.getId(); // Lấy từ session
-        List<Appointment> appList = null;
-        AppointmentDAO ad = new AppointmentDAO();
-
-        if (status.isEmpty() || status.isBlank()) {
-            appList = ad.getAppointmentByCustomer(id);
-            request.setAttribute("appointments", appList);
-
-        } else {
-
-            appList = ad.getAppointmentByStatus(id, status);
-            request.setAttribute("appointments", appList);
-        }
-        if (appList.isEmpty()) {
-            request.setAttribute("Message", "Không lọc thấy lịch hẹn tương ứng!");
-        }
-
-        request.setAttribute("appointments", appList);
-      
-        request.getRequestDispatcher("view/profile/Appointment.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /** 

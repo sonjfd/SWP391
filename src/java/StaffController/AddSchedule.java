@@ -14,6 +14,7 @@ import Model.Shift;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +29,8 @@ import java.util.List;
  *
  * @author Dell
  */
+
+@WebServlet("/staff-add-schedule")
 public class AddSchedule extends HttpServlet {
 
     /**
@@ -135,7 +138,7 @@ public class AddSchedule extends HttpServlet {
                 sdao.generateMonthlySchedule(month, doctorId);
             }
 
-            response.sendRedirect("list-work-schedule?success=1");
+            response.sendRedirect("staff-list-work-schedule?success=1");
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -72,19 +72,30 @@ public class HomeBlog extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         BlogDAO blogDAO = new BlogDAO();
-        
 
         String index_raw = request.getParameter("index");
         String tagId = request.getParameter("tag");
 
         int index = (index_raw == null) ? 1 : Integer.parseInt(index_raw);
-        int pageSize = 6;
+        int pageSize = 7;
+
         int totalBlog = (tagId != null && !tagId.isEmpty())
                 ? blogDAO.countBlogsByTag(tagId)
-                : blogDAO.getAllBlogs().size();
+                : blogDAO.countAllBlogs(); 
 
-        int endP = (totalBlog + pageSize - 1) / pageSize;
+        int endP = (int) Math.ceil((double) totalBlog / pageSize);
+
+   
+        if (index < 1) {
+            index = 1;
+        } else if (index > endP && endP > 0) {
+            index = endP;
+        }
+
+        int start = (index - 1) * pageSize + 1;
+        int end = Math.min(index * pageSize, totalBlog);
 
         List<Blog> blogs = (tagId != null && !tagId.isEmpty())
                 ? blogDAO.getBlogsByTagWithPagination(tagId, index, pageSize)
@@ -93,9 +104,11 @@ public class HomeBlog extends HttpServlet {
         request.setAttribute("blogs", blogs);
         request.setAttribute("endP", endP);
         request.setAttribute("index", index);
+        request.setAttribute("start", start);
+        request.setAttribute("end", end);
+        request.setAttribute("totalBlog", totalBlog);
         request.setAttribute("selectedTag", tagId);
         request.setAttribute("allTags", blogDAO.getAllTags());
-        
 
         request.getRequestDispatcher("/view/home/content/Blog.jsp").forward(request, response);
     }

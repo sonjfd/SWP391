@@ -55,7 +55,14 @@
                 padding: 12px 15px;
                 text-align: center;
             }
-
+            img {
+                border-radius: 8px;
+                object-fit: cover;
+            }
+            .img-fluid {
+                max-height: 300px;
+                border-radius: 10px;
+            }
             /* Dòng bảng */
             .table tbody td {
                 vertical-align: middle;
@@ -268,13 +275,56 @@
                     font-size: 13px;
                 }
             }
+            .action-button {
+                padding: 6px 12px;
+                border-radius: 8px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                gap: 4px;
+            }
+
+            .action-button i {
+                font-size: 16px;
+            }
+
+            .btn-info, .btn-danger, .btn-warning {
+                color: #fff;
+                border: none;
+            }
+
+            .btn-warning {
+                background-color: #ffc107;
+            }
+            .custom-modal {
+                border-radius: 15px;
+            }
+
+            #starRating .star {
+                font-size: 30px;
+                color: #ccc;
+                cursor: pointer;
+                transition: color 0.3s;
+            }
+
+            #starRating .star.selected {
+                color: #ffc107;
+            }
+
+            .star {
+                font-size: 24px;
+                color: #ccc;
+                cursor: pointer;
+            }
+
+            .star.selected {
+                color: #ffc107;
+            }
 
 
 
         </style>
-
-
-
     </head>
 
     <body>
@@ -309,11 +359,9 @@
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
                                 <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
-
-
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i>Danh sách cuộc hẹn</a></li>
                                 <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
                                 <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
                                 <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
@@ -323,16 +371,12 @@
                     </div><!--end col-->
 
                     <div class=" col-9">
-
                         <h4 class="mb-3">Danh sách cuộc hẹn</h4>
-
-
                         <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 gap-2">
                             <form method="post" action="searchapp" class="search-form">
                                 <input type="text" name="search" value="${param.search}" placeholder="Tìm theo tên">
                                 <button type="submit" >Tìm kiếm</button>
                             </form>
-
                             <form id="filterForm" action="filterappbydate" method="post" class="d-flex flex-wrap align-items-center gap-2 mb-0" >
                                 <span>Từ:</span>
                                 <input type="date" class="form-control form-control-sm" style="width: auto;" id="dateFFilter" name="datefrom"
@@ -344,26 +388,21 @@
                                     <i class="bi bi-funnel-fill"></i> Lọc
                                 </button>
                             </form>
-                            <form method="post" action="filterappointment" class="filter-form" style="margin-right: 20px">
+                            <form method="get" action="filterappointment" class="filter-form" style="margin-right: 20px">
                                 <div class="filter-inline">
                                     <label for="status" class="form-label">Lọc theo trạng thái:</label>
                                     <select id="status" name="status" class="form-select" onchange="this.form.submit()">
                                         <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
                                         <option value="canceled" ${status == 'canceled' ? 'selected' : ''}>Đã hủy</option>
-                                        <option value="completed" ${status == 'completed' ? 'selected' : ''}>Đã đặt</option>
+                                        <option value="completed" ${status == 'completed' ? 'selected' : ''}>Hoàn thành</option>
+                                        <option value="booked" ${status == 'booked' ? 'selected' : ''}>Đã đặt</option>
+                                        <option value="cancel_requested" ${status == 'cancel_requested' ? 'selected' : ''}>Yêu cầu hủy</option>
+
                                     </select>
 
                                 </div>
                             </form>
-
-
-
                         </div>
-
-
-
-
-
                         <table class="table table-striped">
                             <thead class="bg-primary text-white">
                                 <tr>
@@ -382,26 +421,27 @@
                             <tbody>
                                 <c:forEach var="app" items="${appointments}" varStatus="status">
                                     <tr>
-                                        <td>${status.index + 1}</td> 
-                                        <td>${app.pet.name}</td> 
-
+                                        <td>${status.index + 1}</td>
+                                        <td>${app.pet.name}</td>
                                         <td><fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy"/></td>
                                         <td>${app.startTime} - ${app.endTime}</td>
                                         <td>${app.doctor.user.fullName}</td>
-                                        <!-- Trạng thái -->
                                         <td>
                                             <c:choose>
                                                 <c:when test="${app.status == 'completed'}">
-                                                    <span class="badge bg-success">Đã đặt</span>
+                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                </c:when>
+                                                <c:when test="${app.status == 'cancel_requested'}">
+                                                    <span class="badge bg-warning text-dark">Yêu cầu hủy</span>
+                                                </c:when>
+                                                <c:when test="${app.status == 'booked'}">
+                                                    <span class="badge bg-danger">Đã đặt</span>
                                                 </c:when>
                                                 <c:when test="${app.status == 'canceled'}">
-                                                    <span class="badge bg-danger">Đã huỷ</span>
+                                                    <span class="badge bg-secondary">Đã huỷ</span>
                                                 </c:when>
-                                               
                                             </c:choose>
                                         </td>
-
-
                                         <td>
                                             <c:choose>
                                                 <c:when test="${app.paymentStatus == 'unpaid'}">
@@ -410,11 +450,8 @@
                                                 <c:when test="${app.paymentStatus == 'paid'}">
                                                     <span class="badge bg-success">Đã thanh toán</span>
                                                 </c:when>
-
                                             </c:choose>
                                         </td>
-
-                                        <!-- Phương thức thanh toán -->
                                         <td>
                                             <c:choose>
                                                 <c:when test="${app.paymentMethod == 'cash'}">
@@ -423,41 +460,51 @@
                                                 <c:when test="${app.paymentMethod == 'online'}">
                                                     <span class="badge bg-info text-dark">Trực tuyến</span>
                                                 </c:when>
-
                                             </c:choose>
                                         </td>
-
                                         <td>
                                             <div class="action-buttons">
-                                                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
-                                                    <i class="fa-solid fa-circle-info"></i>
-                                                </button>
-
-                                                <c:if test="${app.status == 'completed' }">
-                                                    <form action="cancelbooking" method="post" style="display:inline;" 
-                                                          onsubmit="return confirm('Bạn có chắc muốn hủy lịch khám này không?');">
+                                                <c:if test="${app.status == 'booked'}">
+                                                    <button type="button" class="btn btn-info action-button" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                    </button>
+                                                    <fmt:formatDate value="${app.appointmentDate}" pattern="yyyy-MM-dd" var="formattedDate" />
+                                                    <form class="cancel-form"
+                                                          data-app-time="${formattedDate}"
+                                                          data-start-time="${app.startTime}"
+                                                          data-app-id="${app.id}"
+                                                          action="cancelbooking" method="post"
+                                                          onsubmit="return checkTimeBeforeCancel(this)">
                                                         <input type="hidden" name="id" value="${app.id}" />
-                                                        <input type="hidden" name="appTime" value="${app.appointmentDate}" />
-                                                        <input type="hidden" name="startTime" value="${app.startTime}" />
-
-                                                        <button type="submit" class="btn btn-danger">
-                                                            <i class="fa-solid fa-xmark"></i>
-
-                                                        </button>
+                                                        <button type="submit" class="btn btn-danger btn-sm">Huỷ</button>
                                                     </form>
                                                 </c:if>
-
+                                                <c:if test="${app.status == 'completed'}">
+                                                    <button type="button" class="btn btn-info action-button" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-warning action-button rate-button"
+                                                            title="Đánh giá dịch vụ"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#rateModal"
+                                                            data-id="${app.id}"
+                                                            data-apptime="<fmt:formatDate value='${app.appointmentDate}' pattern='yyyy-MM-dd' />"
+                                                            data-starttime="${app.startTime}">
+                                                        <i class="fa-regular fa-star"></i> Rate
+                                                    </button>
+                                                </c:if>
+                                                <c:if test="${app.status == 'cancel_requested'}">
+                                                    <button type="button" class="btn btn-info action-button" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                    </button>
+                                                </c:if>
                                             </div>
                                         </td>
-
-
                                     </tr>
-
-
                                 </c:forEach>
 
                             </tbody>
-
                         </table>
                         <p type="text" name="id" style="color: red"  >${requestScope.Message}</p>
 
@@ -489,9 +536,6 @@
                                             </div>
 
                                             <hr/>
-
-
-
                                             <!-- Thông tin Bác sĩ -->
                                             <h5>Thông tin bác sĩ</h5>
                                             <c:choose>
@@ -559,114 +603,185 @@
                                 </div>
                             </div>
                         </c:forEach>
+                        <div class="modal fade" id="rateModal" tabindex="-1" aria-labelledby="rateModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form action="rateservice" method="post">
+                                    <div class="modal-content custom-modal">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Đánh giá dịch vụ</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
 
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id" id="ratingAppId" />
+                                            <input type="hidden" name="appTime" id="ratingAppTime" />
+                                            <input type="hidden" name="startTime" id="ratingStartTime" />
 
-                    </div>
+                                            <div class="mb-3 text-center">
+                                                <label class="form-label mb-2">Mức độ hài lòng</label>
+                                                <div id="starRating">
+                                                    <i class="fa-regular fa-star star" data-value="1" title="Rất tệ"></i>
+                                                    <i class="fa-regular fa-star star" data-value="2" title="Không hài lòng"></i>
+                                                    <i class="fa-regular fa-star star" data-value="3" title="Bình thường"></i>
+                                                    <i class="fa-regular fa-star star" data-value="4" title="Hài lòng"></i>
+                                                    <i class="fa-regular fa-star star" data-value="5" title="Rất hài lòng"></i>
+                                                </div>
+                                                <input type="hidden" name="satisfaction_level" id="satisfactionLevel" required>
+                                            </div>
 
+                                            <div class="mb-3">
+                                                <label for="comment" class="form-label">Nhận xét</label>
+                                                <textarea class="form-control" name="comment" id="comment" rows="3" placeholder="Nhận xét về dịch vụ..."></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Trạng thái đánh giá</label>
+                                                <div id="ratingStatus"></div>
+                                            </div>
 
+                                            <input type="hidden" name="status" value="active" />
+                                        </div>
 
-
-
-
-                </div><!--end row-->
-        </div><!-- End -->
-    </section><!--end section-->
-
-</div>
-
-<!-- Offcanvas Start -->
-<div class="offcanvas bg-white offcanvas-top" tabindex="-1" id="offcanvasTop">
-    <div class="offcanvas-body d-flex align-items-center align-items-center">
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <div class="text-center">
-                        <h4>Search now.....</h4>
-                        <div class="subcribe-form mt-4">
-                            <form>
-                                <div class="mb-0">
-                                    <input type="text" id="help" name="name" class="border bg-white rounded-pill" required="" placeholder="Search">
-                                    <button type="submit" class="btn btn-pills btn-primary">Search</button>
-                                </div>
-                            </form>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
+
                     </div>
-                </div><!--end col-->
-            </div><!--end row-->
-        </div><!--end container-->
-    </div>
-</div>
-<!-- Offcanvas End -->
+                </div><!--end row-->
+            </section><!--end section-->
+        </div><!-- End -->
 
-<!-- Offcanvas Start -->
-<div class="offcanvas offcanvas-end bg-white shadow" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-    <div class="offcanvas-header p-4 border-bottom">
-        <h5 id="offcanvasRightLabel" class="mb-0">
-            <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="light-version" alt="">
-            <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="dark-version" alt="">
-        </h5>
-        <button type="button" class="btn-close d-flex align-items-center text-dark" data-bs-dismiss="offcanvas" aria-label="Close"><i class="uil uil-times fs-4"></i></button>
-    </div>
-    <div class="offcanvas-body p-4 px-md-5">
-        <div class="row">
-            <div class="col-12">
-                <!-- Style switcher -->
-                <div id="style-switcher">
-                    <div>
-                        <ul class="text-center list-unstyled mb-0">
-                            <li class="d-grid"><a href="javascript:void(0)" class="rtl-version t-rtl-light" onclick="setTheme('style-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                            <li class="d-grid"><a href="javascript:void(0)" class="ltr-version t-ltr-light" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                            <li class="d-grid"><a href="javascript:void(0)" class="dark-rtl-version t-rtl-dark" onclick="setTheme('style-dark-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                            <li class="d-grid"><a href="javascript:void(0)" class="dark-ltr-version t-ltr-dark" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                            <li class="d-grid"><a href="javascript:void(0)" class="dark-version t-dark mt-4" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Dark Version</span></a></li>
-                            <li class="d-grid"><a href="javascript:void(0)" class="light-version t-light mt-4" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Light Version</span></a></li>
-                            <li class="d-grid"><a href="../admin/#" target="_blank" class="mt-4"><img src="${pageContext.request.contextPath}/assets/images/layouts/light-dash.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Admin Dashboard</span></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- end Style switcher -->
-            </div><!--end col-->
-        </div><!--end row-->
-    </div>
 
-    <div class="offcanvas-footer p-4 border-top text-center">
-        <ul class="list-unstyled social-icon mb-0">
-            <li class="list-inline-item mb-0"><a href="https://1.envato.market/doctris-template" target="_blank" class="rounded"><i class="uil uil-shopping-cart align-middle" title="Buy Now"></i></a></li>
-            <li class="list-inline-item mb-0"><a href="https://dribbble.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-dribbble align-middle" title="dribbble"></i></a></li>
-            <li class="list-inline-item mb-0"><a href="https://www.facebook.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-facebook-f align-middle" title="facebook"></i></a></li>
-            <li class="list-inline-item mb-0"><a href="https://www.instagram.com/shreethemes/" target="_blank" class="rounded"><i class="uil uil-instagram align-middle" title="instagram"></i></a></li>
-            <li class="list-inline-item mb-0"><a href="https://twitter.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-twitter align-middle" title="twitter"></i></a></li>
-            <li class="list-inline-item mb-0"><a href="mailto:support@shreethemes.in" class="rounded"><i class="uil uil-envelope align-middle" title="email"></i></a></li>
-            <li class="list-inline-item mb-0"><a href="../#" target="_blank" class="rounded"><i class="uil uil-globe align-middle" title="website"></i></a></li>
-        </ul><!--end icon-->
-    </div>
-</div>
-<!-- Offcanvas End -->
 
-<!-- javascript -->
-<script>
-    // Tự động ẩn thông báo sau 5 giây
-    setTimeout(function () {
-        const successAlert = document.getElementById('successAlert');
-        const failAlert = document.getElementById('failAlert');
-        if (successAlert) {
-            successAlert.style.display = 'none';
-        }
-        if (failAlert) {
-            failAlert.style.display = 'none';
-        }
-    }, 8000);
-</script>
 
-<script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const stars = document.querySelectorAll("#starRating .star");
+                const satisfactionInput = document.getElementById("satisfactionLevel");
+                const commentInput = document.querySelector('textarea[name="comment"]');
+                const rateModal = document.getElementById("rateModal");
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                rateModal.addEventListener("show.bs.modal", function (event) {
+                    const button = event.relatedTarget;
+                    const appointmentId = button.getAttribute("data-id");
 
-<!-- Icons -->
-<script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-<!-- Main Js -->
-<script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
-</body>
+                    // Reset sao, comment, trạng thái
+                    stars.forEach(s => s.classList.remove("selected"));
+                    satisfactionInput.value = "";
+                    commentInput.value = "";
+
+                    const statusDiv = document.getElementById("ratingStatus");
+                    statusDiv.innerHTML = `<span class="text-muted">Chưa có đánh giá</span>`;
+
+                    // Load rating qua ajax
+                    fetch("getratingbyappointmentid?id=" + appointmentId)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.satisfaction) {
+                                    stars.forEach(star => {
+                                        if (star.getAttribute("data-value") <= data.satisfaction) {
+                                            star.classList.add("selected");
+                                        }
+                                    });
+                                    satisfactionInput.value = data.satisfaction;
+                                }
+
+                                if (data.comment) {
+                                    commentInput.value = data.comment;
+                                }
+
+                                
+                                let statusText = "Chưa có đánh giá";
+                                let statusClass = "text-muted";
+
+                                if (data.status) {
+                                    let statusValue = data.status.trim().toLowerCase();
+                                    if (statusValue === "posted") {
+                                        statusText = "Đã duyệt";
+                                        statusClass = "text-success";
+                                    } else if (statusValue === "hide") {
+                                        statusText = "Từ chối";
+                                        statusClass = "text-danger";
+                                    } else {
+                                        statusText = "Chờ duyệt";
+                                        statusClass = "text-secondary";
+                                    }
+                                }
+                                
+                                statusDiv.innerHTML = '<span class="' + statusClass + '">' + statusText + '</span>';
+                                
+                            });
+
+                    // Set hidden input
+                    document.getElementById("ratingAppId").value = appointmentId;
+                    document.getElementById("ratingAppTime").value = button.getAttribute("data-apptime");
+                    document.getElementById("ratingStartTime").value = button.getAttribute("data-starttime");
+                });
+
+                // Click chọn sao
+                stars.forEach((star, index) => {
+                    star.addEventListener("click", () => {
+                        stars.forEach(s => s.classList.remove("selected"));
+                        for (let i = 0; i <= index; i++) {
+                            stars[i].classList.add("selected");
+                        }
+                        satisfactionInput.value = star.getAttribute("data-value");
+                    });
+                });
+            });
+
+
+
+            function checkTimeBeforeCancel(form) {
+                const appDateStr = form.dataset.appTime;     // ví dụ: "2025-06-17"
+                const startTimeStr = form.dataset.startTime; // ví dụ: "08:00"
+
+                if (!appDateStr || !startTimeStr) {
+                    alert("Thiếu dữ liệu thời gian.");
+                    return false;
+                }
+
+                const [year, month, day] = appDateStr.split('-').map(Number); // tháng -1 do JS tính từ 0
+                const [hour, minute] = startTimeStr.split(':').map(Number);
+
+                const appointmentTime = new Date(year, month - 1, day, hour, minute);
+                const now = new Date();
+
+                console.log("📅 Ngày khám:", appointmentTime.toString());
+                console.log("⏱️ Giờ hiện tại:", now.toString());
+
+                const diffInMs = appointmentTime.getTime() - now.getTime();
+                const diffInMinutes = diffInMs / (1000 * 60);
+
+                if (diffInMinutes < 0) {
+                    alert("Không thể huỷ lịch đã qua.");
+                    return false;
+                }
+
+                if (diffInMinutes < 30) {
+                    alert("Không thể huỷ lịch nếu còn dưới 30 phút trước giờ khám.");
+                    return false;
+                }
+
+                return confirm("Bạn có muốn gửi yêu cầu huỷ lịch khám?");
+            }
+
+
+
+
+        
+        </script>
+
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <!-- Icons -->
+        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+        <!-- Main Js -->
+        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+    </body>
 
 </html>

@@ -37,7 +37,7 @@ public class EditComment extends HttpServlet {
 
         // Cập nhật bình luận vào DB
         BlogDAO blogDAO = new BlogDAO();
-        blogDAO.updateComment(comment);
+        
 
         response.sendRedirect("blog-detail?id=" + request.getParameter("blogId")+"#reactions");
     }

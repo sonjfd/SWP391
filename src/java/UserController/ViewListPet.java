@@ -80,8 +80,11 @@ public class ViewListPet extends HttpServlet {
         String uid = user.getId();
 
         List<Pet> listpet = u.getPetsByUser(uid);
-        request.setAttribute("listpet", listpet);
+        if (listpet.isEmpty()) {
+            request.setAttribute("Message", "Bạn chưa thêm thú cưng nào!");
 
+        }
+        request.setAttribute("listpet", listpet);
 
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }

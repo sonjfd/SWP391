@@ -35,7 +35,7 @@ public class ToggleReaction extends HttpServlet {
         Blog blog = blogDAO.getBlogById(blogId);
 
         // Gọi hàm toggleReaction
-        blogDAO.toggleReaction(blog, user);
+      
 
         // Trở lại trang chi tiết bài viết
         response.sendRedirect("blog-detail?id=" + blogId+"#reactions");

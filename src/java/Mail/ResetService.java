@@ -124,4 +124,40 @@ public class ResetService {
             return false;
         }
     }
+    
+    
+    public boolean sendEmailVerifyAccount(String to, String link, String name) {
+        try {
+            Properties props = new Properties();
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+
+            Authenticator auth = new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(from, password);
+                }
+            };
+
+            Session session = Session.getInstance(props, auth);
+
+            MimeMessage msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress(from));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            msg.setSubject("Xác thực tài khoản", "UTF-8");
+
+            String content = "<h2>Xin chào " + name + "</h2>"
+                    + "<p>Vui lòng nhấn vào liên kết sau để xác thực tài khoản:</p>"
+                    + "<a href='" + link + "'>Xác thực ngay</a>";
+
+            msg.setContent(content, "text/html; charset=UTF-8");
+
+            Transport.send(msg);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

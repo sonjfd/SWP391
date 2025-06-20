@@ -27,7 +27,7 @@ public class DeleteComment extends HttpServlet {
 
         // Xóa bình luận khỏi DB
         BlogDAO blogDAO = new BlogDAO();
-        blogDAO.deleteComment(commentId);
+        
 
         response.sendRedirect("blog-detail?id=" + request.getParameter("blogId")+"#reactions");
     }

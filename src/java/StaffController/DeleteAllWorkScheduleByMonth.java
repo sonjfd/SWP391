@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Dell
  */
-@WebServlet(name = "DeleteAllWorkScheduleByMonth", urlPatterns = {"/delete-work-bymonth"})
+@WebServlet(name = "DeleteAllWorkScheduleByMonth", urlPatterns = {"/staff-delete-work-bymonth"})
 public class DeleteAllWorkScheduleByMonth extends HttpServlet {
 
     /**
@@ -87,10 +87,10 @@ public class DeleteAllWorkScheduleByMonth extends HttpServlet {
             int deleted = sdao.deleteSchedulesByDoctorAndMonth(doctorId, month);
 
             if (deleted == 0) {
-                response.sendRedirect("list-work-schedule?msg=none");
+                response.sendRedirect("staff-list-work-schedule?msg=none");
 
             } else {
-                response.sendRedirect("list-work-schedule?msg=deleted");
+                response.sendRedirect("staff-list-work-schedule?msg=deleted");
             }
         }  catch (Exception e) {
             e.printStackTrace();

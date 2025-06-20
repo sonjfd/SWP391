@@ -4,24 +4,26 @@
  */
 package StaffController;
 
+import DAO.StaffDAO;
 import DAO.UserDAO;
+
 import Model.User;
-import UserController.ChangePass;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
- * @author Dell
+ * @author ASUS
  */
+
+
+@WebServlet("/staff-changepass")
 public class StaffChangePass extends HttpServlet {
 
     /**
@@ -41,10 +43,10 @@ public class StaffChangePass extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet StaffChangePass</title>");
+            out.println("<title>Servlet ChangePassword</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet StaffChangePass at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ChangePassword at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,9 +62,34 @@ public class StaffChangePass extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        User staff = (User) session.getAttribute("staff");
+
+        if (staff == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        // Nếu đến đây thì staff != null, mới được gọi getId()
+        String uuid = staff.getId();
+
+        StaffDAO sdao = new StaffDAO();
+        User updatedStaff = sdao.getUserById(uuid);
+
+        session.setAttribute("staff", updatedStaff);
+        request.setAttribute("staff", updatedStaff);
+
+        request.getRequestDispatcher("/view/staff/content/StaffProfile.jsp").forward(request, response);
     }
 
     /**
@@ -76,27 +103,42 @@ public class StaffChangePass extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String oldPassword = request.getParameter("oldPassword");
+        String oldPassword = request.getParameter("oldPassword").trim();
         String newPassword = request.getParameter("newPassword");
+
         HttpSession session = request.getSession(false);
 
-        if (session == null || session.getAttribute("user") == null) {
-
+        // ✅ Đổi từ "user" → "staff"
+        if (session == null || session.getAttribute("staff") == null) {
             response.sendRedirect("login");
             return;
         }
-        User user = (User) session.getAttribute("user");
 
-        if (!user.getPassword().equals(oldPassword)) {
-            request.setAttribute("user", user);
+        // ✅ Lấy "staff" đúng với session hiện tại
+        User staff = (User) session.getAttribute("staff");
+        UserDAO ud = new UserDAO();
+
+        String hashedOldPassword = ud.hashPassword(oldPassword);
+
+        if (!staff.getPassword().equals(hashedOldPassword)) {
+            request.setAttribute("staff", staff); // ✅ Gửi lại staff, không phải user
             request.setAttribute("errorOldPass", "Mật khẩu cũ không đúng.");
-            request.getRequestDispatcher("/view/staff/content/StaffProfile.jsp").forward(request, response);
+            request.getRequestDispatcher("view/staff/content/StaffProfile.jsp").forward(request, response);
             return;
         }
-        UserDAO ud = new UserDAO();
-        ud.updatePassword(user.getId(), newPassword);
-        session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
-        response.sendRedirect("staff-profile-setting");
+
+        String hashedNewPassword = ud.hashPassword(newPassword);
+
+        if (ud.updatePassword(staff.getId(), hashedNewPassword)) {
+            staff.setPassword(hashedNewPassword);
+            session.setAttribute("staff", staff); // ✅ Cập nhật session staff
+
+            session.setAttribute("SuccessMessage", "Đổi mật khẩu thành công.");
+            response.sendRedirect("staff-profile-setting");
+        } else {
+            request.setAttribute("staff", staff);
+            request.getRequestDispatcher("view/staff/content/StaffProfile.jsp").forward(request, response);
+        }
     }
 
     /**

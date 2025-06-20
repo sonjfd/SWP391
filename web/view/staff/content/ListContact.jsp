@@ -99,42 +99,13 @@
                 background-color: #f1faff;
             }
 
-            /* Status dropdown inside table */
+          
             .form-select {
                 font-size: 14px;
                 padding: 6px 10px;
                 border-radius: 6px;
             }
 
-            /* Responsive tweaks */
-            @media (max-width: 768px) {
-                .layout-specing {
-                    padding: 20px 10px;
-                }
-
-                form.d-flex {
-                    flex-direction: column;
-                    gap: 10px;
-                }
-
-                .btn {
-                    width: 100%;
-                }
-            }
-            .toast-container {
-                animation: slideInRight 0.4s ease;
-            }
-
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
 
         </style>
 
@@ -150,12 +121,12 @@
 
 
                 <div class="row">
-                    <form class="d-flex mb-5 col-4" action="search-contact" method="get" >
+                    <form class="d-flex mb-5 col-4" action="staff-search-contact" method="get" >
                         <input type="text" name="name" style="border-radius: 10px " placeholder="Tìm theo Họ và Tên" value="${param.searchName != null ? param.searchName : ''}">
                         <button type="submit" style="border-radius: 10px " class="btn btn-sm btn-primary ms-2">Tìm</button>
                     </form>
 
-                    <form action="filter-contact-status" method="get" class="mb-1 mt-1 col-8">
+                    <form action="staff-filter-contact-status" method="get" class="mb-1 mt-1 col-8">
                         <label for="status">Chọn trạng thái:</label>
                         <select name="status" id="status"  style="border-radius: 10px ">
                             <option value="" ${requestScope.status ==null || requestScope.status=='' ? 'selected' :''}>Tất cả</option> 
@@ -204,6 +175,31 @@
             </div>
         </div>
 
+        <c:if test="${not empty listContact}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="staff-contact?page=${currentPage - 1}">Trước</a>
+                    </li>
+
+                    <c:forEach var="i" begin="1" end="${totalPages}">
+                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                            <a class="page-link" href="staff-contact?page=${i}">${i}</a>
+                        </li>
+                    </c:forEach>
+
+                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="staff-contact?page=${currentPage + 1}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </c:if>
+
+        <c:if test="${empty listContact}">
+            <p class="text-center text-danger mt-3">Không có phản hồi nào.</p>
+        </c:if>
+
+
         <!--       Modal thong bao-->
         <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -225,7 +221,7 @@
 
         <script>
             function updateStatus(id, status) {
-                var url = "update-contact-status?id=" + id + "&status=" + status;
+                var url = "staff-update-contact-status?id=" + id + "&status=" + status;
                 window.location.href = url;
             }
 

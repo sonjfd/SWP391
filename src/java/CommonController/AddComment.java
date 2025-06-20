@@ -47,7 +47,7 @@ public class AddComment extends HttpServlet {
 
         // Thêm comment vào DB
         BlogDAO blogDAO = new BlogDAO();
-        blogDAO.addComment(comment);
+    
 
         // Chuyển hướng về trang chi tiết blog
         response.sendRedirect("blog-detail?id=" + blogId+"#reactions");

@@ -125,6 +125,7 @@ public class Booking extends HttpServlet {
         appointment.setUser(user);
         appointment.setPrice(price);
         appointment.setNote(note);
+        appointment.setStatus("booked");
         appointment.setPaymentMethod("cash");
         appointment.setPaymentStatus("unpaid");
         UserDAO udao = new UserDAO();
