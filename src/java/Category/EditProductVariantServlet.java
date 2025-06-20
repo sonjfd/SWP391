@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet(name = "EditProductVariantServlet", urlPatterns = {"/editProductVariant"})
+@WebServlet(name = "EditProductVariantServlet", urlPatterns = {"/admin-editProductVariant"})
 public class EditProductVariantServlet extends HttpServlet {
 
     private final ProductVariantDAO variantDAO = new ProductVariantDAO();
@@ -36,7 +36,7 @@ public class EditProductVariantServlet extends HttpServlet {
             request.getRequestDispatcher("view/management/content/EditProductVariant.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("productVariant?action=list");
+            response.sendRedirect("admin-productVariant?action=list");
         }
     }
 
@@ -81,7 +81,7 @@ public class EditProductVariantServlet extends HttpServlet {
             }
 
             variantDAO.update(variant);
-            response.sendRedirect("productVariant?action=list");
+            response.sendRedirect("admin-productVariant?action=list");
 
         } catch (Exception e) {
             e.printStackTrace();

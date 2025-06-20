@@ -26,7 +26,7 @@
         <div class="alert alert-danger"><%= error %></div>
         <% } %>
 
-        <form action="${pageContext.request.contextPath}/addProductVariant" method="post" onsubmit="return validateForm();">
+        <form action="${pageContext.request.contextPath}/admin-addProductVariant" method="post" onsubmit="return validateForm();">
 
             <div class="mb-3">
                 <label for="variant_name" class="form-label">Tên Biến Thể</label>
@@ -103,7 +103,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Thêm Biến Thể</button>
-            <a href="${pageContext.request.contextPath}/productVariant" class="btn btn-secondary ms-2">Hủy</a>
+            <a href="${pageContext.request.contextPath}/admin-productVariant" class="btn btn-secondary ms-2">Hủy</a>
         </form>
 
         <script>

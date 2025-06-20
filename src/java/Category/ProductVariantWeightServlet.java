@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "ProductVariantWeightServlet", urlPatterns = {"/productVariantWeight"})
+@WebServlet(name = "ProductVariantWeightServlet", urlPatterns = {"/admin-productVariantWeight"})
 public class ProductVariantWeightServlet extends HttpServlet {
 
     private final ProductVariantWeightDAO weightDAO = new ProductVariantWeightDAO();
@@ -38,10 +38,10 @@ public class ProductVariantWeightServlet extends HttpServlet {
                     request.setAttribute("weight", weight);
                     request.getRequestDispatcher("view/management/content/EditWeight.jsp").forward(request, response);
                 } else {
-                    response.sendRedirect("productVariantWeight");
+                    response.sendRedirect("admin-productVariantWeight");
                 }
             } catch (NumberFormatException e) {
-                response.sendRedirect("productVariantWeight");
+                response.sendRedirect("admin-productVariantWeight");
             }
 
         } else if (action.equals("delete")) {
@@ -51,7 +51,7 @@ public class ProductVariantWeightServlet extends HttpServlet {
             } catch (NumberFormatException e) {
                 // Có thể log lỗi nếu cần
             }
-            response.sendRedirect("productVariantWeight");
+            response.sendRedirect("admin-productVariantWeight");
         }
     }
 
@@ -63,7 +63,7 @@ public class ProductVariantWeightServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
-            response.sendRedirect("productVariantWeight");
+            response.sendRedirect("admin-productVariantWeight");
             return;
         }
 
@@ -87,6 +87,6 @@ public class ProductVariantWeightServlet extends HttpServlet {
             // Có thể redirect lại với thông báo lỗi
         }
 
-        response.sendRedirect("productVariantWeight");
+        response.sendRedirect("admin-productVariantWeight");
     }
 }

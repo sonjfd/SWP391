@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "CategoryServlet", urlPatterns = {"/category"})
+@WebServlet(name = "CategoryServlet", urlPatterns = {"/admin-category"})
 public class CategoryServlet extends HttpServlet {
 
     private CategoryDAO categoryDAO;
@@ -74,7 +74,7 @@ public class CategoryServlet extends HttpServlet {
                 Category c = categoryDAO.getCategoryById(id);
                 if (c == null) {
                     request.getSession().setAttribute("error", "Không tìm thấy danh mục!");
-                    response.sendRedirect("category");
+                    response.sendRedirect("admin-category");
                 } else {
                     request.setAttribute("category", c);
                     request.getRequestDispatcher("/view/management/content/EditCategory.jsp").forward(request, response);
@@ -84,13 +84,13 @@ public class CategoryServlet extends HttpServlet {
                 int id = Integer.parseInt(request.getParameter("id"));
                 categoryDAO.softDeleteCategory(id);
                 request.getSession().setAttribute("message", "Xóa danh mục thành công!");
-                response.sendRedirect("category");
+                response.sendRedirect("admin-category");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             request.getSession().setAttribute("error", "Đã xảy ra lỗi khi xử lý yêu cầu!");
-            response.sendRedirect("category");
+            response.sendRedirect("admin-category");
         }
     }
 
@@ -121,12 +121,12 @@ public class CategoryServlet extends HttpServlet {
                 request.getSession().setAttribute("message", "Cập nhật danh mục thành công!");
             }
 
-            response.sendRedirect("category");
+            response.sendRedirect("admin-category");
 
         } catch (Exception e) {
             e.printStackTrace();
             request.getSession().setAttribute("error", "Có lỗi xảy ra khi xử lý dữ liệu!");
-            response.sendRedirect("category");
+            response.sendRedirect("admin-category");
         }
     }
 }

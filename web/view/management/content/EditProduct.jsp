@@ -29,7 +29,7 @@
 <div class="container mt-5">
     <h2 class="mb-4">Chỉnh sửa sản phẩm</h2>
 
-    <form action="${pageContext.request.contextPath}/product" method="post">
+    <form action="${pageContext.request.contextPath}/admin-product" method="post">
         <input type="hidden" name="action" value="update">
         <input type="hidden" name="id" value="<%= p.getProductId() %>">
 
@@ -68,7 +68,7 @@
 
         <!-- Nút -->
         <button type="submit" class="btn btn-primary">Cập nhật</button>
-        <a href="${pageContext.request.contextPath}/product" class="btn btn-secondary">Huỷ</a>
+        <a href="${pageContext.request.contextPath}/admin-product" class="btn btn-secondary">Huỷ</a>
     </form>
 </div>
 </body>

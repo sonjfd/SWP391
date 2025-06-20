@@ -61,15 +61,15 @@
                                 </ul>
                             </div>
                         </li>-->
-<li><a href="category"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý danh mục</a></li>
+<li><a href="admin-category"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý danh mục</a></li>
 
-<li><a href="product"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý sản phẩm</a></li>
+<li><a href="admin-product"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý sản phẩm</a></li>
 
-<li><a href="productVariantWeight"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý khối lượng sản phẩm</a></li>
+<li><a href="admin-productVariantWeight"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý khối lượng sản phẩm</a></li>
 
-<li><a href="productVariantFlavor"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lí mùi hương sản phẩm</a></li>                  
+<li><a href="admin-productVariantFlavor"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lí mùi hương sản phẩm</a></li>                  
 
-<li><a href="productVariant"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý biến thể sản phẩm</a></li> 
+<li><a href="admin-productVariant"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý biến thể sản phẩm</a></li> 
 
                     </ul>
                     <!-- sidebar-menu  -->

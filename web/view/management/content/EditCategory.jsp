@@ -21,7 +21,7 @@
     <h2 class="mb-4">Chỉnh sửa danh mục</h2>
 
     <!-- Form chỉnh sửa danh mục -->
-    <form method="post" action="category">
+    <form method="post" action="admin-category">
         <input type="hidden" name="action" value="update">
         <input type="hidden" name="id" value="<%= c.getCategoryId() %>">
 
@@ -52,7 +52,7 @@
 
         <!-- Nút -->
         <button type="submit" class="btn btn-warning">Cập nhật</button>
-        <a href="category" class="btn btn-secondary">Quay lại</a>
+        <a href="admin-category" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>
 

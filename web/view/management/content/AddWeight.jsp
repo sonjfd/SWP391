@@ -37,7 +37,7 @@
         </div>
 
         <button type="submit" class="btn btn-success">Thêm</button>
-        <a href="productVariantWeight" class="btn btn-secondary">Quay lại</a>
+        <a href="admin-productVariantWeight" class="btn btn-secondary">Quay lại</a>
     </form>
 
 </body>

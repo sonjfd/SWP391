@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "AddWeightServlet", urlPatterns = {"/addWeight"})
+@WebServlet(name = "AddWeightServlet", urlPatterns = {"/admin-addWeight"})
 public class AddWeightServlet extends HttpServlet {
 
     private final ProductVariantWeightDAO dao = new ProductVariantWeightDAO();

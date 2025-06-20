@@ -22,7 +22,7 @@
     <h2 class="mb-4">Danh sách sản phẩm</h2>
 
     <!-- Nút thêm sản phẩm -->
-    <a href="${pageContext.request.contextPath}/product?action=addForm" class="btn btn-primary mb-3">+ Thêm sản phẩm</a>
+    <a href="${pageContext.request.contextPath}/admin-product?action=addForm" class="btn btn-primary mb-3">+ Thêm sản phẩm</a>
 
     <!-- Bảng danh sách sản phẩm -->
     <table class="table table-bordered table-hover align-middle">
@@ -50,8 +50,8 @@
             <td class="text-center"><%= p.getCreatedAt() %></td>
             <td class="text-center"><%= p.getUpdatedAt() %></td>
             <td class="text-center">
-                <a href="${pageContext.request.contextPath}/product?action=edit&id=<%= p.getProductId() %>" class="btn btn-warning btn-sm">Sửa</a>
-                <a href="${pageContext.request.contextPath}/product?action=delete&id=<%= p.getProductId() %>"
+                <a href="${pageContext.request.contextPath}/admin-product?action=edit&id=<%= p.getProductId() %>" class="btn btn-warning btn-sm">Sửa</a>
+                <a href="${pageContext.request.contextPath}/admin-product?action=delete&id=<%= p.getProductId() %>"
                    class="btn btn-danger btn-sm"
                    onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm không?');">Xóa</a>
             </td>

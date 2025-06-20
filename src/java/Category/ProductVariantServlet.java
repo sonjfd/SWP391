@@ -17,7 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-@WebServlet(name = "ProductVariantServlet", urlPatterns = {"/productVariant"})
+@WebServlet(name = "ProductVariantServlet", urlPatterns = {"/admin-productVariant"})
 public class ProductVariantServlet extends HttpServlet {
 
     private final ProductVariantDAO variantDAO = new ProductVariantDAO();
@@ -48,7 +48,7 @@ public class ProductVariantServlet extends HttpServlet {
                 request.getRequestDispatcher("view/management/content/EditProductVariant.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
-                response.sendRedirect("productVariant?action=list");
+                response.sendRedirect("admin-productVariant?action=list");
             }
 
         } else if (action.equals("delete")) {
@@ -58,7 +58,7 @@ public class ProductVariantServlet extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.sendRedirect("productVariant?action=list");
+            response.sendRedirect("admin-productVariant?action=list");
         }
     }
 
@@ -112,7 +112,7 @@ public class ProductVariantServlet extends HttpServlet {
                 variantDAO.update(variant);
             }
 
-            response.sendRedirect("productVariant?action=list");
+            response.sendRedirect("admin-productVariant?action=list");
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "ProductVariantFlavorServlet", urlPatterns = {"/productVariantFlavor"})
+@WebServlet(name = "ProductVariantFlavorServlet", urlPatterns = {"/admin-productVariantFlavor"})
 public class ProductVariantFlavorServlet extends HttpServlet {
 
     private final ProductVariantFlavorDAO flavorDAO = new ProductVariantFlavorDAO();
@@ -37,10 +37,10 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                     request.setAttribute("flavor", flavor);
                     request.getRequestDispatcher("view/management/content/EditFlavor.jsp").forward(request, response);
                 } else {
-                    response.sendRedirect("productVariantFlavor");
+                    response.sendRedirect("admin-productVariantFlavor");
                 }
             } catch (NumberFormatException e) {
-                response.sendRedirect("productVariantFlavor");
+                response.sendRedirect("admin-productVariantFlavor");
             }
 
         } else if (action.equals("delete")) {
@@ -50,7 +50,7 @@ public class ProductVariantFlavorServlet extends HttpServlet {
             } catch (NumberFormatException e) {
                 // log lỗi nếu muốn
             }
-            response.sendRedirect("productVariantFlavor");
+            response.sendRedirect("admin-productVariantFlavor");
         }
     }
 
@@ -62,7 +62,7 @@ public class ProductVariantFlavorServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
-            response.sendRedirect("productVariantFlavor");
+            response.sendRedirect("admin-productVariantFlavor");
             return;
         }
 
@@ -85,6 +85,6 @@ public class ProductVariantFlavorServlet extends HttpServlet {
             System.err.println("Lỗi doPost(): " + e.getMessage());
         }
 
-        response.sendRedirect("productVariantFlavor");
+        response.sendRedirect("admin-productVariantFlavor");
     }
 }

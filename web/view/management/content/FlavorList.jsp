@@ -12,7 +12,7 @@
     <%@ include file="../layout/Header.jsp" %>
     <body class="container mt-4">
         <h2 class="mb-4">Danh sách Hương vị</h2>
-        <a href="productVariantFlavor?action=add" class="btn btn-success mb-3">Thêm hương vị</a>
+        <a href="admin-productVariantFlavor?action=add" class="btn btn-success mb-3">Thêm hương vị</a>
 
         <table class="table table-bordered">
             <thead>
@@ -32,8 +32,8 @@
                     <td><%= f.getFlavorId() %></td>
                     <td><%= f.getFlavor() %></td>
                     <td>
-                        <a href="productVariantFlavor?action=edit&id=<%= f.getFlavorId() %>" class="btn btn-warning btn-sm">Sửa</a>
-                        <a href="productVariantFlavor?action=delete&id=<%= f.getFlavorId() %>" class="btn btn-danger btn-sm" onclick="return confirm('Xác nhận xoá?')">Xoá</a>
+                        <a href="admin-productVariantFlavor?action=edit&id=<%= f.getFlavorId() %>" class="btn btn-warning btn-sm">Sửa</a>
+                        <a href="admin-productVariantFlavor?action=delete&id=<%= f.getFlavorId() %>" class="btn btn-danger btn-sm" onclick="return confirm('Xác nhận xoá?')">Xoá</a>
                     </td>
                 </tr>
                 <%

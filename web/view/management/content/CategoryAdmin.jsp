@@ -41,9 +41,9 @@
                 %>
 
                 <!-- Form lọc theo trạng thái -->
-                <form method="get" action="category" class="mb-3 d-flex align-items-center justify-content-between w-100">
+                <form method="get" action="admin-category" class="mb-3 d-flex align-items-center justify-content-between w-100">
                     <!-- Bên trái: nút thêm -->
-                    <a href="${pageContext.request.contextPath}/category?action=addForm" class="btn btn-success">+ Thêm danh mục</a>
+                    <a href="${pageContext.request.contextPath}/admin-category?action=addForm" class="btn btn-success">+ Thêm danh mục</a>
 
                     <!-- Bên phải: bộ lọc -->
                     <div class="d-flex align-items-center gap-2">
@@ -79,8 +79,8 @@
                             <td><%= c.getDescription() %></td>
                             <td><%= c.isStatus() ? "Hiển thị" : "Đã ẩn" %></td>
                             <td>
-                                <a href="category?action=edit&id=<%= c.getCategoryId() %>" class="btn btn-warning btn-sm">Sửa</a>
-                                <form method="get" action="category" style="display:inline-block;" 
+                                <a href="admin-category?action=edit&id=<%= c.getCategoryId() %>" class="btn btn-warning btn-sm">Sửa</a>
+                                <form method="get" action="admin-category" style="display:inline-block;" 
                                       onsubmit="return confirm('Bạn có chắc chắn muốn ẩn danh mục này không?');">
                                     <input type="hidden" name="action" value="delete" />
                                     <input type="hidden" name="id" value="<%= c.getCategoryId() %>" />
@@ -112,15 +112,15 @@ if (currentPage != null && totalPage != null && totalPage > 1) {
             <nav aria-label="Page navigation" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <li class="page-item <%= currentPage == 1 ? "disabled" : "" %>">
-                        <a class="page-link" href="category?page=<%= currentPage - 1 %><%= queryStatus %>">Trước</a>
+                        <a class="page-link" href="admin-category?page=<%= currentPage - 1 %><%= queryStatus %>">Trước</a>
                     </li>
                     <% for (int i = 1; i <= totalPage; i++) { %>
                     <li class="page-item <%= (i == currentPage) ? "active" : "" %>">
-                        <a class="page-link" href="category?page=<%= i %><%= queryStatus %>"><%= i %></a>
+                        <a class="page-link" href="admin-category?page=<%= i %><%= queryStatus %>"><%= i %></a>
                     </li>
                     <% } %>
                     <li class="page-item <%= currentPage == totalPage ? "disabled" : "" %>">
-                        <a class="page-link" href="category?page=<%= currentPage + 1 %><%= queryStatus %>">Sau</a>
+                        <a class="page-link" href="admin-category?page=<%= currentPage + 1 %><%= queryStatus %>">Sau</a>
                     </li>
                 </ul>
             </nav>
@@ -130,6 +130,6 @@ if (currentPage != null && totalPage != null && totalPage > 1) {
         <!-- JavaScript -->
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
-        
+
     </body>
 </html>

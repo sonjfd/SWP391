@@ -27,7 +27,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Thêm</button>
-        <a href="productVariantFlavor" class="btn btn-secondary">Quay lại</a>
+        <a href="admin-productVariantFlavor" class="btn btn-secondary">Quay lại</a>
     </form>
 </body>
 </html>

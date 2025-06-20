@@ -22,7 +22,7 @@
     <h2 class="mb-4">Thêm sản phẩm mới</h2>
 
     <!-- Form thêm sản phẩm -->
-    <form action="${pageContext.request.contextPath}/product" method="post">
+    <form action="${pageContext.request.contextPath}/admin-product" method="post">
         <input type="hidden" name="action" value="add">
 
         <!-- Danh mục -->
@@ -60,7 +60,7 @@
 
                 <!-- Nút -->
         <button type="submit" class="btn btn-success">Lưu</button>
-        <a href="${pageContext.request.contextPath}/product" class="btn btn-secondary">Huỷ</a>
+        <a href="${pageContext.request.contextPath}/admin-product" class="btn btn-secondary">Huỷ</a>
     </form>
    
 </div>

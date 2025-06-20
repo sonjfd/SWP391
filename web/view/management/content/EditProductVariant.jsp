@@ -26,7 +26,7 @@
         <div class="alert alert-danger"><%= error %></div>
     <% } %>
 
-    <form action="editProductVariant" method="post">
+    <form action="admin-editProductVariant" method="post">
         <input type="hidden" name="variant_id" value="<%= variant.getProductVariantId() %>" />
 
         <div class="mb-3">
@@ -91,7 +91,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Cập Nhật</button>
-        <a href="productVariant?action=list" class="btn btn-secondary">Quay Lại</a>
+        <a href="admin-productVariant?action=list" class="btn btn-secondary">Quay Lại</a>
     </form>
 
 </body>

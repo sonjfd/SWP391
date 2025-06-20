@@ -11,7 +11,7 @@
         <h2 class="mb-4">Thêm danh mục mới</h2>
 
         <!-- Form thêm danh mục -->
-        <form method="post" action="category">
+        <form method="post" action="admin-category">
             <input type="hidden" name="action" value="add">
 
             <!-- Tên danh mục -->
@@ -39,7 +39,7 @@
 
             <!-- Nút -->
             <button type="submit" class="btn btn-success">Thêm</button>
-            <a href="category" class="btn btn-secondary">Quay lại</a>
+            <a href="admin-category" class="btn btn-secondary">Quay lại</a>
         </form>
     </div>
 
@@ -52,9 +52,8 @@
             const nameError = document.getElementById("nameError");
             const descError = document.getElementById("descError");
 
-            const nameRegex = /^[\\p{L}\\d\\s\\-]+$/u; // Cho phép chữ cái Unicode, số, khoảng trắng, dấu gạch
+            const nameRegex = /^[^<>"]{1,50}$/u; // Cho phép chữ cái Unicode, số, khoảng trắng, dấu gạch
 
-            // Khi blur khỏi ô tên
             nameInput.addEventListener("blur", function () {
                 const nameValue = nameInput.value.trim();
                 nameError.textContent = "";
@@ -68,19 +67,17 @@
                 }
             });
 
-            // Khi blur khỏi ô mô tả
             descInput.addEventListener("blur", function () {
                 const descValue = descInput.value.trim();
                 descError.textContent = "";
 
-                if (descValue.length > 200) {
+                if (descValue === "") {
+                    descError.textContent = "Mô tả không được để trống!";
+                } else if (descValue.length > 200) {
                     descError.textContent = "Mô tả không được vượt quá 200 ký tự!";
-                }else if(descValue === ""){
-                    descError.textContent = "Mô tả không được để trống!"
                 }
             });
 
-            // Kiểm tra khi submit
             document.querySelector("form").addEventListener("submit", function (e) {
                 let valid = true;
                 nameError.textContent = "";
@@ -103,13 +100,13 @@
                     valid = false;
                 }
 
-                if (descValue.length > 200) {
-                    descError.textContent = "Mô tả không được vượt quá 200 ký tự!";
+                if (descValue === "") {
+                    descError.textContent = "Mô tả không được để trống!";
                     if (valid) descInput.focus();
                     valid = false;
-                }else if (decsValue === "") {
-                    descError.textContent = "Mô tả không được để trống!";
-                     if (valid) descInput.focus();
+                } else if (descValue.length > 200) {
+                    descError.textContent = "Mô tả không được vượt quá 200 ký tự!";
+                    if (valid) descInput.focus();
                     valid = false;
                 }
 

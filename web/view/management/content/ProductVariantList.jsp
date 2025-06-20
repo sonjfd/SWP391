@@ -28,7 +28,7 @@
                 <div class="alert alert-danger">${error}</div>
             </c:if>
 
-            <a href="${pageContext.request.contextPath}/addProductVariant" class="btn btn-primary mb-3">+ Thêm biến thể</a>
+            <a href="${pageContext.request.contextPath}/admin-addProductVariant" class="btn btn-primary mb-3">+ Thêm biến thể</a>
 
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
@@ -79,9 +79,9 @@
                                     <td>${v.updatedAt}</td>
                                     <td>
                                         <!-- ✅ Đã sửa đúng -->
-                                        <a href="${pageContext.request.contextPath}/editProductVariant?action=edit&id=${v.productVariantId}" class="btn btn-sm btn-warning">Sửa</a>
+                                        <a href="${pageContext.request.contextPath}/admin-editProductVariant?action=edit&id=${v.productVariantId}" class="btn btn-sm btn-warning">Sửa</a>
 
-                                        <a href="${pageContext.request.contextPath}/productVariant?action=delete&id=${v.productVariantId}"
+                                        <a href="${pageContext.request.contextPath}/admin-productVariant?action=delete&id=${v.productVariantId}"
                                            class="btn btn-sm btn-danger"
                                            onclick="return confirm('Bạn có chắc chắn muốn xoá không?')">Xoá</a>
                                            

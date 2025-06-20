@@ -16,7 +16,7 @@
 
     <h2 class="mb-4">Danh sách trọng lượng</h2>
 
-    <a href="productVariantWeight?action=add" class="btn btn-primary mb-3">+ Thêm trọng lượng</a>
+    <a href="admin-productVariantWeight?action=add" class="btn btn-primary mb-3">+ Thêm trọng lượng</a>
 
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
@@ -37,8 +37,8 @@
                 <td><%= w.getWeightId() %></td>
                 <td><%= df.format(w.getWeight()) %> g</td>
                 <td>
-                    <a href="productVariantWeight?action=edit&id=<%= w.getWeightId() %>" class="btn btn-sm btn-warning">Sửa</a>
-                    <a href="productVariantWeight?action=delete&id=<%= w.getWeightId() %>"
+                    <a href="admin-productVariantWeight?action=edit&id=<%= w.getWeightId() %>" class="btn btn-sm btn-warning">Sửa</a>
+                    <a href="admin-productVariantWeight?action=delete&id=<%= w.getWeightId() %>"
                        class="btn btn-sm btn-danger"
                        onclick="return confirm('Bạn có chắc chắn muốn xoá không?');">Xoá</a>
                 </td>

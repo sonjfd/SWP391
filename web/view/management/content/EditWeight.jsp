@@ -46,7 +46,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Cập nhật</button>
-        <a href="productVariantWeight" class="btn btn-secondary">Quay lại</a>
+        <a href="admin-productVariantWeight" class="btn btn-secondary">Quay lại</a>
     </form>
 
 </body>

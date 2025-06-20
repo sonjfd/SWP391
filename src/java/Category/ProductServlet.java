@@ -10,7 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-@WebServlet(name = "ProductServlet", urlPatterns = {"/product"})
+@WebServlet(name = "ProductServlet", urlPatterns = {"/admin-product"})
 public class ProductServlet extends HttpServlet {
 
     private ProductDAO productDAO;
@@ -44,7 +44,7 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("editProduct", p);
                     request.getRequestDispatcher("/view/management/content/EditProduct.jsp").forward(request, response);
                 } else {
-                    response.sendRedirect("product");
+                    response.sendRedirect("admin-product");
                 }
                 return;
             }
@@ -118,7 +118,7 @@ public class ProductServlet extends HttpServlet {
                 }
             }
 
-            response.sendRedirect("product");
+            response.sendRedirect("admin-product");
 
         } catch (Exception e) {
             System.out.println("❌ Exception trong doPost:");

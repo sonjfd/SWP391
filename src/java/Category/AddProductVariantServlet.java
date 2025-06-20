@@ -72,7 +72,7 @@ public class AddProductVariantServlet extends HttpServlet {
             variantDAO.add(variant);
 
             // Chuyển hướng về danh sách biến thể
-            response.sendRedirect("productVariant?action=list");
+            response.sendRedirect("admin-productVariant?action=list");
 
         } catch (Exception e) {
             e.printStackTrace();
