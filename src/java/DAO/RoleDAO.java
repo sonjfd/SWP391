@@ -8,6 +8,8 @@ import Model.Role;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -47,6 +49,28 @@ public class RoleDAO {
             return Doctor;
         }
         return null;
+    }
+    
+    public List<Role> getAllRoles() {
+        List<Role> roles = new ArrayList<>();
+        String sql = "SELECT id, name FROM roles";
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Role role = new Role();
+                role.setId(rs.getInt("id"));
+                role.setName(rs.getString("name"));
+                roles.add(role);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return roles;
     }
     
 }

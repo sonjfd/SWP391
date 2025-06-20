@@ -16,7 +16,7 @@ public class MedicineDAO {
 
     public List<Medicine> getAllMedicines() {
         List<Medicine> medicineList = new ArrayList<>();
-        String sql = "SELECT id, name, description, price, status FROM medicines";
+        String sql = "SELECT id, name, description, status FROM medicines";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -25,7 +25,6 @@ public class MedicineDAO {
                 medicine.setId(rs.getString("id"));
                 medicine.setName(rs.getString("name"));
                 medicine.setDescripton(rs.getString("description"));
-                medicine.setPrice(rs.getDouble("price"));
                 medicine.setStatus(rs.getInt("status"));
                 medicineList.add(medicine);
             }
@@ -37,13 +36,12 @@ public class MedicineDAO {
     }
 
     public boolean addMedicine(Medicine medicine) {
-        String sql = "INSERT INTO medicines (id, name, description, price, status) VALUES (NEWID(), ?, ?, ?, ?)";
+        String sql = "INSERT INTO medicines (id, name, description, status) VALUES (NEWID(), ?, ?, ?)";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, medicine.getName());
             ps.setString(2, medicine.getDescripton());
-            ps.setDouble(3, medicine.getPrice());
-            ps.setInt(4, medicine.getStatus());
+            ps.setInt(3, medicine.getStatus());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error in addMedicine: " + e.getMessage());
@@ -53,7 +51,7 @@ public class MedicineDAO {
     }
 
     public Medicine getMedicineById(String id) {
-        String sql = "SELECT id, name, description, price, status FROM medicines WHERE id = ?";
+        String sql = "SELECT id, name, description, status FROM medicines WHERE id = ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
@@ -63,7 +61,6 @@ public class MedicineDAO {
                     medicine.setId(rs.getString("id"));
                     medicine.setName(rs.getString("name"));
                     medicine.setDescripton(rs.getString("description"));
-                    medicine.setPrice(rs.getDouble("price"));
                     medicine.setStatus(rs.getInt("status"));
                     return medicine;
                 }
@@ -76,14 +73,13 @@ public class MedicineDAO {
     }
 
     public boolean updateMedicine(Medicine medicine) {
-        String sql = "UPDATE medicines SET name = ?, description = ?, price = ?, status = ? WHERE id = ?";
+        String sql = "UPDATE medicines SET name = ?, description = ?, status = ? WHERE id = ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, medicine.getName());
             ps.setString(2, medicine.getDescripton());
-            ps.setDouble(3, medicine.getPrice());
-            ps.setInt(4, medicine.getStatus());
-            ps.setString(5, medicine.getId());
+            ps.setInt(3, medicine.getStatus());
+            ps.setString(4, medicine.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error in updateMedicine: " + e.getMessage());
@@ -116,7 +112,6 @@ public class MedicineDAO {
                 System.out.println("ID: " + m.getId());
                 System.out.println("Tên thuốc: " + m.getName());
                 System.out.println("Mô tả: " + m.getDescripton());
-                System.out.println("Giá: " + m.getPrice());
                 System.out.println("Trạng thái: " + (m.getStatus() == 1 ? "Đang bán" : "Ngừng bán"));
                 System.out.println("----------------------------");
             }

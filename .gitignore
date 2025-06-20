@@ -1,9 +1,9 @@
 /build/
 /dist/
-/SWP/nbproject/private/
-/SWP/build/
+/SWP391/nbproject/private/
+/SWP391/build/
 **/WEB-INF/web.xml
-SWP/src/java/DAO/DBcontext.java
+SWP391/src/java/DAO/DBcontext.java
 
 
 

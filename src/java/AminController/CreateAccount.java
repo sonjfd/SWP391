@@ -6,7 +6,10 @@
 package AminController;
 
 import DAO.AdminDao;
+import DAO.DepartmentDAO;
+import Model.Department;
 import Model.Doctor;
+import Model.Nurse;
 import Model.Role;
 import Model.User;
 import java.io.IOException;
@@ -16,6 +19,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -58,6 +62,9 @@ public class CreateAccount extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        DepartmentDAO departmentDAO = new DepartmentDAO();
+        List<Department> departments = departmentDAO.getAllDepartments();
+        request.setAttribute("departments", departments);
         request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
     } 
 
@@ -71,76 +78,185 @@ public class CreateAccount extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        
-        int roleId = Integer.parseInt(request.getParameter("role_id"));
+//        // Lấy dữ liệu từ form
+//        int roleId;
+//        try {
+//            roleId = Integer.parseInt(request.getParameter("role_id"));
+//            if (roleId != 3 && roleId != 5 && roleId != 4) {
+//                request.setAttribute("message", "Vui lòng chọn vai trò hợp lệ.");
+//                request.setAttribute("messageType", "error");
+//                request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+//                return;
+//            }
+//        } catch (NumberFormatException e) {
+//            request.setAttribute("message", "Vui lòng chọn vai trò.");
+//            request.setAttribute("messageType", "error");
+//            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+//            return;
+//        }
+//
+//        String userName = request.getParameter("userName");
+//        String email = request.getParameter("email");
+//        String password = request.getParameter("password");
+//        String fullName = request.getParameter("fullName");
+//        String phoneNumber = request.getParameter("phoneNumber");
+//
+//        // Kiểm tra các trường bắt buộc
+//        if (userName == null || userName.trim().isEmpty() || email == null || email.trim().isEmpty() ||
+//                password == null || password.trim().isEmpty() || fullName == null || fullName.trim().isEmpty()) {
+//            request.setAttribute("message", "Vui lòng điền đầy đủ các trường bắt buộc.");
+//            request.setAttribute("messageType", "error");
+//            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+//            return;
+//        }
+//
+//        AdminDao accountDAO = new AdminDao();
+//
+//        // Kiểm tra username và email đã tồn tại
+//        if (accountDAO.isUsernameTaken(userName)) {
+//            request.setAttribute("message", "Tên đăng nhập đã được sử dụng.");
+//            request.setAttribute("messageType", "error");
+//            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+//            return;
+//        }
+//        if (accountDAO.isEmailTaken(email)) {
+//            request.setAttribute("message", "Email đã được sử dụng.");
+//            request.setAttribute("messageType", "error");
+//            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+//            return;
+//        }
+//
+//        // Tạo đối tượng User
+//        User user = new User();
+//        user.setUserName(userName);
+//        user.setEmail(email);
+//        user.setPassword(password); // TODO: Mã hóa password
+//        user.setFullName(fullName);
+//        user.setPhoneNumber(phoneNumber);
+//        user.setStatus(1); // Mặc định active
+//        Role role = new Role(roleId, roleId == 3 ? "doctor" : roleId == 5 ? "nurse" : "staff");
+//        user.setRole(role);
+//        user.setCreateDate(new Date());
+//        user.setUpdateDate(new Date());
+//
+//        Nurse nurse = null;
+//        Integer departmentId = null;
+//
+//        // Xử lý cho Nurse (role_id = 5)
+//        if (roleId == 5) {
+//            try {
+//                departmentId = Integer.parseInt(request.getParameter("department_id"));
+//            } catch (NumberFormatException e) {
+//                request.setAttribute("message", "Vui lòng chọn phòng ban cho y tá.");
+//                request.setAttribute("messageType", "error");
+//                request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+//                return;
+//            }
+//            nurse = new Nurse();
+//            nurse.setDepartmentId(departmentId);
+//        }
+//
+//        // Gọi AccountDAO để tạo tài khoản
+//        boolean success = accountDAO.createAccount(user, null, nurse, departmentId);
+//        if (success) {
+//            request.setAttribute("message", "Tạo tài khoản thành công!");
+//            request.setAttribute("messageType", "success");
+//            response.sendRedirect("listaccount");
+//        } else {
+//            request.setAttribute("message", "Tạo tài khoản thất bại. Vui lòng thử lại.");
+//            request.setAttribute("messageType", "error");
+//            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+//        }
+
+    // Lấy dữ liệu từ form
+        int roleId;
+        try {
+            roleId = Integer.parseInt(request.getParameter("role_id"));
+            if (roleId != 3 && roleId != 5 && roleId != 4) {
+                request.setAttribute("message", "Vui lòng chọn vai trò hợp lệ.");
+                request.setAttribute("messageType", "error");
+                request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("message", "Vui lòng chọn vai trò.");
+            request.setAttribute("messageType", "error");
+            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+            return;
+        }
+
         String userName = request.getParameter("userName");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String fullName = request.getParameter("fullName");
         String phoneNumber = request.getParameter("phoneNumber");
-        String address = request.getParameter("address");
-        String avatar = request.getParameter("avatar");
-//        int status = Integer.parseInt(request.getParameter("status"));
 
-
-
-        AdminDao adminDAO = new AdminDao();
-        if (adminDAO.isUsernameTaken(userName)) {
-            request.setAttribute("message", "Username is already taken.");
-            
-            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
-            return;
-        }
-        if (adminDAO.isEmailTaken(email)) {
-            request.setAttribute("message", "Email is already taken.");
-            
+        // Kiểm tra các trường bắt buộc
+        if (userName == null || userName.trim().isEmpty() || email == null || email.trim().isEmpty() ||
+                password == null || password.trim().isEmpty() || fullName == null || fullName.trim().isEmpty()) {
+            request.setAttribute("message", "Vui lòng điền đầy đủ các trường bắt buộc.");
+            request.setAttribute("messageType", "error");
             request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
             return;
         }
 
-        
+        AdminDao accountDAO = new AdminDao();
 
+        // Kiểm tra trùng username và email
+        if (accountDAO.isUsernameTaken(userName)) {
+            request.setAttribute("usernameError", "Tên đăng nhập đã tồn tại.");
+            request.setAttribute("messageType", "error");
+            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+            return;
+        }
+        if (accountDAO.isEmailTaken(email)) {
+            request.setAttribute("emailError", "Email đã tồn tại.");
+            request.setAttribute("messageType", "error");
+            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+            return;
+        }
 
+        // Kiểm tra department_id cho Nurse
+        Nurse nurse = null;
+        Integer departmentId = null;
+        if (roleId == 5) {
+            try {
+                departmentId = Integer.parseInt(request.getParameter("department_id"));
+            } catch (NumberFormatException e) {
+                request.setAttribute("message", "Vui lòng chọn phòng ban cho y tá.");
+                request.setAttribute("messageType", "error");
+                request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
+                return;
+            }
+            nurse = new Nurse();
+            nurse.setDepartmentId(departmentId);
+        }
+
+        // Tạo đối tượng User
         User user = new User();
         user.setUserName(userName);
         user.setEmail(email);
-        user.setPassword(password); // Nên mã hóa password
+        user.setPassword(password); // TODO: Mã hóa password
         user.setFullName(fullName);
         user.setPhoneNumber(phoneNumber);
-        user.setAddress(address);
-        user.setAvatar(avatar != null && !avatar.isEmpty() ? avatar : "/assets/images/default_user.png");
-//        user.setStatus(status);
-        Role role = new Role();
-        role.setId(roleId);
+        user.setStatus(1); // Mặc định active
+        Role role = new Role(roleId, roleId == 3 ? "doctor" : roleId == 5 ? "nurse" : "staff");
         user.setRole(role);
         user.setCreateDate(new Date());
         user.setUpdateDate(new Date());
 
-        Doctor doctor = null;
-        if (roleId == 3) {
-            doctor = new Doctor();
-            doctor.setUser(user);
-            doctor.setSpecialty(request.getParameter("specialty"));
-            doctor.setCertificates(request.getParameter("certificates"));
-            doctor.setQualifications(request.getParameter("qualifications"));
-            String yearsOfExperience = request.getParameter("yearsOfExperience");
-            doctor.setYearsOfExperience(yearsOfExperience != null ? Integer.parseInt(yearsOfExperience) : 0);
-            doctor.setBiography(request.getParameter("biography"));
-            
-        }
-
-
-
-        boolean success = adminDAO.createAccount(user, doctor);
+        // Gọi AdminDao để tạo tài khoản
+        boolean success = accountDAO.createAccount(user, null, nurse, departmentId);
         if (success) {
-            request.setAttribute("message", "Account created successfully!");
-//            request.setAttribute("messageType", "success");
+            request.setAttribute("message", "Tạo tài khoản thành công!");
+            request.setAttribute("messageType", "success");
             response.sendRedirect("listaccount");
         } else {
-            request.setAttribute("message", "Failed to create account. Please try again.");
-//            request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("createaccount").forward(request, response);
+            request.setAttribute("message", "Tạo tài khoản thất bại. Vui lòng thử lại.");
+            request.setAttribute("messageType", "error");
+            request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
         }
+        
     }
     
 

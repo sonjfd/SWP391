@@ -11,18 +11,17 @@ package Model;
 public class Medicine {
     private String id;
     private String name;
-    private String descripton;
-    private double price;
+    private String descripton;    
     private int status;
 
     public Medicine() {
     }
 
-    public Medicine(String id, String name, String descripton, double price, int status) {
+    public Medicine(String id, String name, String descripton, int status) {
         this.id = id;
         this.name = name;
         this.descripton = descripton;
-        this.price = price;
+        
         this.status = status;
     }
 
@@ -50,13 +49,6 @@ public class Medicine {
         this.descripton = descripton;
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
 
     public int getStatus() {
         return status;
@@ -68,8 +60,10 @@ public class Medicine {
 
     @Override
     public String toString() {
-        return "Medicine{" + "id=" + id + ", name=" + name + ", descripton=" + descripton + ", price=" + price + ", status=" + status + '}';
+        return "Medicine{" + "id=" + id + ", name=" + name + ", descripton=" + descripton + ", status=" + status + '}';
     }
+
+    
 
     
     

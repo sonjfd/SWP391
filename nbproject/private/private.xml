@@ -3,25 +3,49 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/E:/ky%205/SWP391/src/java/DAO/DBContext.java</file>
+            <file>file:/E:/ky%205/SWP391/web/WEB-INF/web.xml</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/Department.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/DeleteMedicine.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/ListMedicine.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateMedicine.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/DAO/DepartmentDAO.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/Admin.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/DAO/RoleDAO.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/Dashboard.jsp</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/CreateMedicine.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/AppointmentReport.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/CreateAccount.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateShift.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/Medicine.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/User.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/AminController/Admin.java</file>
             <file>file:/E:/ky%205/SWP391/web/view/admin/content/CreateSpecie.jsp</file>
-            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateMedicine.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/ListAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/Role.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/Model/AppointmentReportData.java</file>
-            <file>file:/E:/ky%205/SWP391/web/view/admin/content/ListMedicine.jsp</file>
-            <file>file:/E:/ky%205/SWP391/web/view/admin/content/Admin.jsp</file>
-            <file>file:/E:/ky%205/SWP391/web/view/admin/content/Dashboard.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/DAO/BlogDAO.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/DAO/MedicineDAO.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/Model/DashboardData.java</file>
-            <file>file:/E:/ky%205/SWP391/src/java/AminController/AppointmentReport.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/UpdateAccount.jsp</file>
             <file>file:/E:/ky%205/SWP391/web/view/admin/layout/Header.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateBreed.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateSlider.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateSlider.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/ShowClinicInformation.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/DAO/AdminDao.java</file>
-            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateShift.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/DAO/SliderDAO.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/UpdateMedicine.jsp</file>
+            <file>file:/E:/ky%205/SWP391/src/java/Model/Nurse.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/AminController/ListMedicine.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/CreateService.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/DAO/DoctorDAO.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/DAO/ShiftDAO.java</file>
             <file>file:/E:/ky%205/SWP391/src/java/DAO/DashboardDAO.java</file>
+            <file>file:/E:/ky%205/SWP391/src/java/AminController/UpdateAccount.java</file>
+            <file>file:/E:/ky%205/SWP391/web/view/admin/content/ListAccount.jsp</file>
             <file>file:/E:/ky%205/SWP391/src/java/AminController/Dashboard.java</file>
         </group>
     </open-files>
