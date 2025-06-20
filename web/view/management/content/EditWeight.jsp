@@ -18,7 +18,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Chỉnh sửa trọng lượng biến thể</title>
+    <title>Chỉnh sửa trọng lượng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
         function validateForm() {
@@ -33,17 +33,11 @@
 </head>
 <body class="container mt-4">
 
-    <h2 class="mb-4">Chỉnh sửa trọng lượng biến thể</h2>
+    <h2 class="mb-4">Chỉnh sửa trọng lượng</h2>
 
     <form action="productVariantWeight" method="post" onsubmit="return validateForm();">
         <input type="hidden" name="action" value="edit">
         <input type="hidden" name="weightId" value="<%= weight.getWeightId() %>">
-        <input type="hidden" name="variantId" value="<%= weight.getProductVariantId() %>">
-
-        <div class="mb-3">
-            <label class="form-label">Mã biến thể sản phẩm</label>
-            <input type="text" class="form-control" value="<%= weight.getProductVariantId() %>" disabled>
-        </div>
 
         <div class="mb-3">
             <label for="weight" class="form-label">Trọng lượng (gram)</label>

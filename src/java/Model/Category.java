@@ -12,14 +12,16 @@ public class Category {
     private int CategoryId;
     private String CategoryName;
     private String description;
+    private boolean status;
 
     public Category() {
     }
 
-    public Category(int CategoryId, String CategoryName, String description) {
+    public Category(int CategoryId, String CategoryName, String description,boolean status) {
         this.CategoryId = CategoryId;
         this.CategoryName = CategoryName;
         this.description = description;
+        this.status = status;
     }
 
     public int getCategoryId() {
@@ -46,10 +48,20 @@ public class Category {
         this.description = description;
     }
 
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "Category{" + "CategoryId=" + CategoryId + ", CategoryName=" + CategoryName + ", description=" + description + '}';
+        return "Category{" + "CategoryId=" + CategoryId + ", CategoryName=" + CategoryName + ", description=" + description + ", status=" + status + '}';
     }
+
+   
     
     
 }

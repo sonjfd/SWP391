@@ -1,10 +1,9 @@
 package Category;
 
-import DAO.ProductVariantDAO;
 import DAO.ProductVariantWeightDAO;
-import Model.ProductVariant;
 import Model.ProductVariantWeight;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ProductVariantWeightServlet extends HttpServlet {
 
     private final ProductVariantWeightDAO weightDAO = new ProductVariantWeightDAO();
-    private final ProductVariantDAO variantDAO = new ProductVariantDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,9 +28,6 @@ public class ProductVariantWeightServlet extends HttpServlet {
             request.getRequestDispatcher("view/management/content/WeightList.jsp").forward(request, response);
 
         } else if (action.equals("add")) {
-            // Lấy danh sách biến thể để hiển thị trong dropdown
-            List<ProductVariant> variantList = variantDAO.getAllVariants();
-            request.setAttribute("variantList", variantList);
             request.getRequestDispatcher("view/management/content/AddWeight.jsp").forward(request, response);
 
         } else if (action.equals("edit")) {
@@ -40,8 +35,6 @@ public class ProductVariantWeightServlet extends HttpServlet {
                 int weightId = Integer.parseInt(request.getParameter("id"));
                 ProductVariantWeight weight = weightDAO.getByWeightId(weightId);
                 if (weight != null) {
-                    List<ProductVariant> variantList = variantDAO.getAllVariants();
-                    request.setAttribute("variantList", variantList);
                     request.setAttribute("weight", weight);
                     request.getRequestDispatcher("view/management/content/EditWeight.jsp").forward(request, response);
                 } else {
@@ -56,7 +49,7 @@ public class ProductVariantWeightServlet extends HttpServlet {
                 int weightId = Integer.parseInt(request.getParameter("id"));
                 weightDAO.deleteByWeightId(weightId);
             } catch (NumberFormatException e) {
-                // Có thể log lỗi
+                // Có thể log lỗi nếu cần
             }
             response.sendRedirect("productVariantWeight");
         }
@@ -75,11 +68,10 @@ public class ProductVariantWeightServlet extends HttpServlet {
         }
 
         try {
-            int variantId = Integer.parseInt(request.getParameter("variantId"));
-            double weightValue = Double.parseDouble(request.getParameter("weight"));
+            String weightStr = request.getParameter("weight");
+            BigDecimal weightValue = new BigDecimal(weightStr); // Dùng BigDecimal
 
             ProductVariantWeight w = new ProductVariantWeight();
-            w.setProductVariantId(variantId);
             w.setWeight(weightValue);
 
             if (action.equals("add")) {
@@ -91,7 +83,7 @@ public class ProductVariantWeightServlet extends HttpServlet {
                 weightDAO.update(w);
             }
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             // Có thể redirect lại với thông báo lỗi
         }
 

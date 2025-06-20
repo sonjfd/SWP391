@@ -1,32 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package Category;
 
-import DAO.ProductVariantDAO;
 import DAO.ProductVariantFlavorDAO;
-import Model.ProductVariant;
 import Model.ProductVariantFlavor;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
 
-/**
- *
- * @author Admin
- */
-@WebServlet(name="ProductVariantFlavorServlet", urlPatterns={"/productVariantFlavor"})
+@WebServlet(name = "ProductVariantFlavorServlet", urlPatterns = {"/productVariantFlavor"})
 public class ProductVariantFlavorServlet extends HttpServlet {
-   
+
     private final ProductVariantFlavorDAO flavorDAO = new ProductVariantFlavorDAO();
-    private final ProductVariantDAO variantDAO = new ProductVariantDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -40,8 +27,6 @@ public class ProductVariantFlavorServlet extends HttpServlet {
             request.getRequestDispatcher("view/management/content/FlavorList.jsp").forward(request, response);
 
         } else if (action.equals("add")) {
-            List<ProductVariant> variantList = variantDAO.getAllVariants();
-            request.setAttribute("variantList", variantList);
             request.getRequestDispatcher("view/management/content/AddFlavor.jsp").forward(request, response);
 
         } else if (action.equals("edit")) {
@@ -49,8 +34,6 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                 int flavorId = Integer.parseInt(request.getParameter("id"));
                 ProductVariantFlavor flavor = flavorDAO.getById(flavorId);
                 if (flavor != null) {
-                    List<ProductVariant> variantList = variantDAO.getAllVariants();
-                    request.setAttribute("variantList", variantList);
                     request.setAttribute("flavor", flavor);
                     request.getRequestDispatcher("view/management/content/EditFlavor.jsp").forward(request, response);
                 } else {
@@ -65,7 +48,7 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                 int flavorId = Integer.parseInt(request.getParameter("id"));
                 flavorDAO.deleteById(flavorId);
             } catch (NumberFormatException e) {
-                // Có thể log lỗi
+                // log lỗi nếu muốn
             }
             response.sendRedirect("productVariantFlavor");
         }
@@ -84,11 +67,9 @@ public class ProductVariantFlavorServlet extends HttpServlet {
         }
 
         try {
-            int variantId = Integer.parseInt(request.getParameter("variantId"));
             String flavorName = request.getParameter("flavor");
 
             ProductVariantFlavor f = new ProductVariantFlavor();
-            f.setProductVariantId(variantId);
             f.setFlavor(flavorName);
 
             if (action.equals("add")) {
@@ -100,8 +81,8 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                 flavorDAO.update(f);
             }
 
-        } catch (NumberFormatException e) {
-            // Có thể redirect lại với thông báo lỗi
+        } catch (Exception e) {
+            System.err.println("Lỗi doPost(): " + e.getMessage());
         }
 
         response.sendRedirect("productVariantFlavor");

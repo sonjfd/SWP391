@@ -1,20 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO;
 
 import Model.ProductVariantFlavor;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.*;
 
-/**
- *
- * @author Admin
- */
 public class ProductVariantFlavorDAO {
-     public List<ProductVariantFlavor> getAll() {
+
+    // Lấy tất cả hương vị
+    public List<ProductVariantFlavor> getAll() {
         List<ProductVariantFlavor> list = new ArrayList<>();
         String sql = "SELECT * FROM product_variant_flavors";
 
@@ -25,10 +19,7 @@ public class ProductVariantFlavorDAO {
             while (rs.next()) {
                 ProductVariantFlavor f = new ProductVariantFlavor();
                 f.setFlavorId(rs.getInt("flavor_id"));
-                f.setProductVariantId(rs.getInt("product_variant_id"));
                 f.setFlavor(rs.getString("flavor"));
-                f.setCreatedAt(rs.getTimestamp("created_at"));
-                f.setUpdatedAt(rs.getTimestamp("updated_at"));
                 list.add(f);
             }
 
@@ -39,21 +30,21 @@ public class ProductVariantFlavorDAO {
         return list;
     }
 
+    // Lấy theo ID
     public ProductVariantFlavor getById(int flavorId) {
         String sql = "SELECT * FROM product_variant_flavors WHERE flavor_id = ?";
+
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, flavorId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                ProductVariantFlavor f = new ProductVariantFlavor();
-                f.setFlavorId(rs.getInt("flavor_id"));
-                f.setProductVariantId(rs.getInt("product_variant_id"));
-                f.setFlavor(rs.getString("flavor"));
-                f.setCreatedAt(rs.getTimestamp("created_at"));
-                f.setUpdatedAt(rs.getTimestamp("updated_at"));
-                return f;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ProductVariantFlavor f = new ProductVariantFlavor();
+                    f.setFlavorId(rs.getInt("flavor_id"));
+                    f.setFlavor(rs.getString("flavor"));
+                    return f;
+                }
             }
 
         } catch (SQLException e) {
@@ -63,14 +54,14 @@ public class ProductVariantFlavorDAO {
         return null;
     }
 
+    // Thêm mới
     public boolean insert(ProductVariantFlavor f) {
-        String sql = "INSERT INTO product_variant_flavors (product_variant_id, flavor) VALUES (?, ?)";
+        String sql = "INSERT INTO product_variant_flavors (flavor) VALUES (?)";
 
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, f.getProductVariantId());
-            ps.setString(2, f.getFlavor());
+            ps.setString(1, f.getFlavor());
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -80,8 +71,9 @@ public class ProductVariantFlavorDAO {
         return false;
     }
 
+    // Cập nhật
     public boolean update(ProductVariantFlavor f) {
-        String sql = "UPDATE product_variant_flavors SET flavor = ?, updated_at = GETDATE() WHERE flavor_id = ?";
+        String sql = "UPDATE product_variant_flavors SET flavor = ? WHERE flavor_id = ?";
 
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -97,6 +89,7 @@ public class ProductVariantFlavorDAO {
         return false;
     }
 
+    // Xoá theo ID
     public boolean deleteById(int flavorId) {
         String sql = "DELETE FROM product_variant_flavors WHERE flavor_id = ?";
 

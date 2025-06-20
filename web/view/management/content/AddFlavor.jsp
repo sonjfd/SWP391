@@ -1,6 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="Model.ProductVariant" %>
-<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,20 +20,6 @@
 
     <form action="productVariantFlavor" method="post" onsubmit="return validateForm();">
         <input type="hidden" name="action" value="add">
-
-        <div class="mb-3">
-            <label for="variantId" class="form-label">Chọn Biến thể</label>
-            <select class="form-select" id="variantId" name="variantId" required>
-                <%
-                    List<ProductVariant> variantList = (List<ProductVariant>) request.getAttribute("variantList");
-                    for (ProductVariant v : variantList) {
-                %>
-                    <option value="<%= v.getProductVariantId() %>"><%= v.getVariantName() %> (ID: <%= v.getProductVariantId() %>)</option>
-                <%
-                    }
-                %>
-            </select>
-        </div>
 
         <div class="mb-3">
             <label for="flavor" class="form-label">Tên hương vị</label>

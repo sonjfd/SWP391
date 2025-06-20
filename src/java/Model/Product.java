@@ -11,27 +11,31 @@ import java.sql.Timestamp;
  * @author Admin
  */
 public class Product {
+
     private int productId;
     private int categoryId;
-    private int supplierId;
     private String productName;
     private String description;
     private String image;
+    private boolean status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+
+    private Category category;
 
     public Product() {
     }
 
-    public Product(int productId, int categoryId, int supplierId, String productName, String description, String image, Timestamp createdAt, Timestamp updatedAt) {
+    public Product(int productId, int categoryId, String productName, String description, String image, boolean status, Timestamp createdAt, Timestamp updatedAt, Category category) {
         this.productId = productId;
         this.categoryId = categoryId;
-        this.supplierId = supplierId;
         this.productName = productName;
         this.description = description;
         this.image = image;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.category = category;
     }
 
     public int getProductId() {
@@ -48,14 +52,6 @@ public class Product {
 
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public int getSupplierId() {
-        return supplierId;
-    }
-
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
     }
 
     public String getProductName() {
@@ -82,6 +78,14 @@ public class Product {
         this.image = image;
     }
 
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -98,9 +102,17 @@ public class Product {
         this.updatedAt = updatedAt;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
-        return "Product{" + "productId=" + productId + ", categoryId=" + categoryId + ", supplierId=" + supplierId + ", productName=" + productName + ", description=" + description + ", image=" + image + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
+        return "Product{" + "productId=" + productId + ", categoryId=" + categoryId + ", productName=" + productName + ", description=" + description + ", image=" + image + ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", category=" + category + '}';
     }
     
     

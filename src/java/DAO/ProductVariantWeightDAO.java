@@ -1,6 +1,7 @@
 package DAO;
 
 import Model.ProductVariantWeight;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,43 +23,12 @@ public class ProductVariantWeightDAO {
             while (rs.next()) {
                 ProductVariantWeight w = new ProductVariantWeight();
                 w.setWeightId(rs.getInt("weight_id"));
-                w.setProductVariantId(rs.getInt("product_variant_id"));
-                w.setWeight(rs.getDouble("weight"));
-                w.setCreatedAt(rs.getTimestamp("created_at"));
-                w.setUpdatedAt(rs.getTimestamp("updated_at"));
+                w.setWeight(rs.getBigDecimal("weight"));
                 list.add(w);
             }
 
         } catch (SQLException e) {
-            System.err.println("Lỗi truy vấn getAllWeights(): " + e.getMessage());
-        }
-
-        return list;
-    }
-
-    // Lấy danh sách trọng lượng theo product_variant_id
-    public List<ProductVariantWeight> getByVariantId(int variantId) {
-        List<ProductVariantWeight> list = new ArrayList<>();
-        String sql = "SELECT * FROM product_variant_weights WHERE product_variant_id = ?";
-
-        try (Connection connection = DBContext.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            ps.setInt(1, variantId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ProductVariantWeight w = new ProductVariantWeight();
-                    w.setWeightId(rs.getInt("weight_id"));
-                    w.setProductVariantId(rs.getInt("product_variant_id"));
-                    w.setWeight(rs.getDouble("weight"));
-                    w.setCreatedAt(rs.getTimestamp("created_at"));
-                    w.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    list.add(w);
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi truy vấn getByVariantId(): " + e.getMessage());
+            System.err.println("Lỗi getAllWeights(): " + e.getMessage());
         }
 
         return list;
@@ -77,10 +47,7 @@ public class ProductVariantWeightDAO {
                 if (rs.next()) {
                     ProductVariantWeight w = new ProductVariantWeight();
                     w.setWeightId(rs.getInt("weight_id"));
-                    w.setProductVariantId(rs.getInt("product_variant_id"));
-                    w.setWeight(rs.getDouble("weight"));
-                    w.setCreatedAt(rs.getTimestamp("created_at"));
-                    w.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    w.setWeight(rs.getBigDecimal("weight"));
                     return w;
                 }
             }
@@ -92,15 +59,14 @@ public class ProductVariantWeightDAO {
         return null;
     }
 
-    // Thêm mới 1 trọng lượng cho product_variant
+    // Thêm mới 1 trọng lượng
     public boolean insert(ProductVariantWeight w) {
-        String sql = "INSERT INTO product_variant_weights (product_variant_id, weight) VALUES (?, ?)";
+        String sql = "INSERT INTO product_variant_weights (weight) VALUES (?)";
 
         try (Connection connection = DBContext.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setInt(1, w.getProductVariantId());
-            ps.setDouble(2, w.getWeight());
+            ps.setBigDecimal(1, w.getWeight());
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -112,12 +78,12 @@ public class ProductVariantWeightDAO {
 
     // Cập nhật trọng lượng theo weight_id
     public boolean update(ProductVariantWeight w) {
-        String sql = "UPDATE product_variant_weights SET weight = ?, updated_at = GETDATE() WHERE weight_id = ?";
+        String sql = "UPDATE product_variant_weights SET weight = ? WHERE weight_id = ?";
 
         try (Connection connection = DBContext.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setDouble(1, w.getWeight());
+            ps.setBigDecimal(1, w.getWeight());
             ps.setInt(2, w.getWeightId());
             return ps.executeUpdate() > 0;
 
@@ -140,23 +106,6 @@ public class ProductVariantWeightDAO {
 
         } catch (SQLException e) {
             System.err.println("Lỗi deleteByWeightId(): " + e.getMessage());
-        }
-
-        return false;
-    }
-
-    // Xoá tất cả trọng lượng theo product_variant_id
-    public boolean deleteAllByVariantId(int variantId) {
-        String sql = "DELETE FROM product_variant_weights WHERE product_variant_id = ?";
-
-        try (Connection connection = DBContext.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            ps.setInt(1, variantId);
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi deleteAllByVariantId(): " + e.getMessage());
         }
 
         return false;

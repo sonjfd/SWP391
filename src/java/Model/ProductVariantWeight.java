@@ -1,31 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
 
-/**
- *
- * @author Admin
- */
 public class ProductVariantWeight {
     private int weightId;
-    private int productVariantId;
-    private double weight;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private BigDecimal weight;
 
     public ProductVariantWeight() {
     }
 
-    public ProductVariantWeight(int weightId, int productVariantId, double weight, Timestamp createdAt, Timestamp updatedAt) {
+    public ProductVariantWeight(int weightId, BigDecimal weight) {
         this.weightId = weightId;
-        this.productVariantId = productVariantId;
         this.weight = weight;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public int getWeightId() {
@@ -36,42 +22,16 @@ public class ProductVariantWeight {
         this.weightId = weightId;
     }
 
-    public int getProductVariantId() {
-        return productVariantId;
-    }
-
-    public void setProductVariantId(int productVariantId) {
-        this.productVariantId = productVariantId;
-    }
-
-    public double getWeight() {
+    public BigDecimal getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(BigDecimal weight) {
         this.weight = weight;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override
     public String toString() {
-        return "ProductVariantWeight{" + "weightId=" + weightId + ", productVariantId=" + productVariantId + ", weight=" + weight + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
+        return "ProductVariantWeight{" + "weightId=" + weightId + ", weight=" + weight + '}';
     }
-    
-    
 }

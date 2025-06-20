@@ -33,12 +33,6 @@
     <form action="productVariantFlavor" method="post" onsubmit="return validateForm();">
         <input type="hidden" name="action" value="edit">
         <input type="hidden" name="flavorId" value="<%= flavor.getFlavorId() %>">
-        <input type="hidden" name="variantId" value="<%= flavor.getProductVariantId() %>">
-
-        <div class="mb-3">
-            <label class="form-label">Variant ID</label>
-            <input type="text" class="form-control" value="<%= flavor.getProductVariantId() %>" disabled>
-        </div>
 
         <div class="mb-3">
             <label for="flavor" class="form-label">Tên hương vị</label>
