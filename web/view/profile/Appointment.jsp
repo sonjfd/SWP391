@@ -394,7 +394,10 @@
                                     <select id="status" name="status" class="form-select" onchange="this.form.submit()">
                                         <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
                                         <option value="canceled" ${status == 'canceled' ? 'selected' : ''}>Đã hủy</option>
-                                        <option value="completed" ${status == 'completed' ? 'selected' : ''}>Đã đặt</option>
+                                        <option value="completed" ${status == 'completed' ? 'selected' : ''}>Hoàn thành</option>
+                                        <option value="booked" ${status == 'booked' ? 'selected' : ''}>Đã đặt</option>
+                                        <option value="cancel_requested" ${status == 'cancel_requested' ? 'selected' : ''}>Yêu cầu hủy</option>
+
                                     </select>
 
                                 </div>
@@ -418,25 +421,25 @@
                             <tbody>
                                 <c:forEach var="app" items="${appointments}" varStatus="status">
                                     <tr>
-                                        <td>${status.index + 1}</td> 
-                                        <td>${app.pet.name}</td> 
-
+                                        <td>${status.index + 1}</td>
+                                        <td>${app.pet.name}</td>
                                         <td><fmt:formatDate value="${app.appointmentDate}" pattern="dd/MM/yyyy"/></td>
                                         <td>${app.startTime} - ${app.endTime}</td>
                                         <td>${app.doctor.user.fullName}</td>
-                                        <!-- Trạng thái -->
                                         <td>
                                             <c:choose>
                                                 <c:when test="${app.status == 'completed'}">
-                                                    <span class="badge bg-success">Đã đặt</span>
+                                                    <span class="badge bg-success">Hoàn thành</span>
                                                 </c:when>
-                                                <c:when test="${app.status == 'pending'}">
-                                                    <span class="badge bg-warning text-dark">Đang xử lí</span>
+                                                <c:when test="${app.status == 'cancel_requested'}">
+                                                    <span class="badge bg-warning text-dark">Yêu cầu hủy</span>
+                                                </c:when>
+                                                <c:when test="${app.status == 'booked'}">
+                                                    <span class="badge bg-danger">Đã đặt</span>
                                                 </c:when>
                                                 <c:when test="${app.status == 'canceled'}">
-                                                    <span class="badge bg-danger">Đã huỷ</span>
+                                                    <span class="badge bg-secondary">Đã huỷ</span>
                                                 </c:when>
-
                                             </c:choose>
                                         </td>
                                         <td>
@@ -444,50 +447,44 @@
                                                 <c:when test="${app.paymentStatus == 'unpaid'}">
                                                     <span class="badge bg-warning text-dark">Chưa thanh toán</span>
                                                 </c:when>
-
                                                 <c:when test="${app.paymentStatus == 'paid'}">
                                                     <span class="badge bg-success">Đã thanh toán</span>
                                                 </c:when>
-
                                             </c:choose>
                                         </td>
-                                        <!-- Phương thức thanh toán -->
                                         <td>
                                             <c:choose>
                                                 <c:when test="${app.paymentMethod == 'cash'}">
                                                     <span class="badge bg-primary">Tiền mặt</span>
                                                 </c:when>
-
                                                 <c:when test="${app.paymentMethod == 'online'}">
                                                     <span class="badge bg-info text-dark">Trực tuyến</span>
                                                 </c:when>
-
                                             </c:choose>
                                         </td>
                                         <td>
                                             <div class="action-buttons">
-                                                <button type="button" class="btn btn-info action-button" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
-                                                    <i class="fa-solid fa-circle-info"></i>
-                                                </button>
-
-                                                <c:if test="${app.status == 'completed'}">
+                                                <c:if test="${app.status == 'booked'}">
+                                                    <button type="button" class="btn btn-info action-button" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                    </button>
                                                     <fmt:formatDate value="${app.appointmentDate}" pattern="yyyy-MM-dd" var="formattedDate" />
-
-                                                    <form class="cancel-form" 
-                                                          data-app-time="${formattedDate}" 
-                                                          data-start-time="${app.startTime}" 
-                                                          data-app-id="${app.id}" 
-                                                          action="cancelbooking" method="post" 
+                                                    <form class="cancel-form"
+                                                          data-app-time="${formattedDate}"
+                                                          data-start-time="${app.startTime}"
+                                                          data-app-id="${app.id}"
+                                                          action="cancelbooking" method="post"
                                                           onsubmit="return checkTimeBeforeCancel(this)">
-
                                                         <input type="hidden" name="id" value="${app.id}" />
                                                         <button type="submit" class="btn btn-danger btn-sm">Huỷ</button>
                                                     </form>
-
-
-
+                                                </c:if>
+                                                <c:if test="${app.status == 'completed'}">
+                                                    <button type="button" class="btn btn-info action-button" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                    </button>
                                                     <button type="button"
-                                                            class="btn btn-warning action-button"
+                                                            class="btn btn-warning action-button rate-button"
                                                             title="Đánh giá dịch vụ"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#rateModal"
@@ -497,8 +494,11 @@
                                                         <i class="fa-regular fa-star"></i> Rate
                                                     </button>
                                                 </c:if>
-
-
+                                                <c:if test="${app.status == 'cancel_requested'}">
+                                                    <button type="button" class="btn btn-info action-button" data-bs-toggle="modal" data-bs-target="#detailModal-${app.id}" title="Xem chi tiết">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                    </button>
+                                                </c:if>
                                             </div>
                                         </td>
                                     </tr>
@@ -602,52 +602,54 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal fade" id="rateModal" tabindex="-1" aria-labelledby="rateModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <form action="rateservice" method="post">
-                                        <div class="modal-content custom-modal">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Đánh giá dịch vụ</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                                <input type="hidden" name="id" id="ratingAppId" />
-                                                <input type="hidden" name="appTime" id="ratingAppTime" />
-                                                <input type="hidden" name="startTime" id="ratingStartTime" />
-
-                                                <div class="mb-3 text-center">
-                                                    <label class="form-label mb-2">Mức độ hài lòng</label>
-                                                    <div id="starRating">
-                                                        <i class="fa-regular fa-star star" data-value="1" title="Rất tệ"></i>
-                                                        <i class="fa-regular fa-star star" data-value="2" title="Không hài lòng"></i>
-                                                        <i class="fa-regular fa-star star" data-value="3" title="Bình thường"></i>
-                                                        <i class="fa-regular fa-star star" data-value="4" title="Hài lòng"></i>
-                                                        <i class="fa-regular fa-star star" data-value="5" title="Rất hài lòng"></i>
-                                                    </div>
-                                                    <input type="hidden" name="satisfaction_level" id="satisfactionLevel" required>
-
-                                                    <input type="hidden" name="satisfaction_level" id="satisfactionLevel" required>
-                                                </div>
-
-
-                                                <div class="mb-3">
-                                                    <label for="comment" class="form-label">Nhận xét</label>
-                                                    <textarea class="form-control" name="comment" rows="3" placeholder="Nhận xét về dịch vụ..."></textarea>
-                                                </div>
-
-                                                <input type="hidden" name="status" value="active" />
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                                <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
                         </c:forEach>
+                        <div class="modal fade" id="rateModal" tabindex="-1" aria-labelledby="rateModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form action="rateservice" method="post">
+                                    <div class="modal-content custom-modal">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Đánh giá dịch vụ</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id" id="ratingAppId" />
+                                            <input type="hidden" name="appTime" id="ratingAppTime" />
+                                            <input type="hidden" name="startTime" id="ratingStartTime" />
+
+                                            <div class="mb-3 text-center">
+                                                <label class="form-label mb-2">Mức độ hài lòng</label>
+                                                <div id="starRating">
+                                                    <i class="fa-regular fa-star star" data-value="1" title="Rất tệ"></i>
+                                                    <i class="fa-regular fa-star star" data-value="2" title="Không hài lòng"></i>
+                                                    <i class="fa-regular fa-star star" data-value="3" title="Bình thường"></i>
+                                                    <i class="fa-regular fa-star star" data-value="4" title="Hài lòng"></i>
+                                                    <i class="fa-regular fa-star star" data-value="5" title="Rất hài lòng"></i>
+                                                </div>
+                                                <input type="hidden" name="satisfaction_level" id="satisfactionLevel" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="comment" class="form-label">Nhận xét</label>
+                                                <textarea class="form-control" name="comment" id="comment" rows="3" placeholder="Nhận xét về dịch vụ..."></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Trạng thái đánh giá</label>
+                                                <div id="ratingStatus"></div>
+                                            </div>
+
+                                            <input type="hidden" name="status" value="active" />
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                     </div>
                 </div><!--end row-->
             </section><!--end section-->
@@ -657,6 +659,83 @@
 
 
         <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const stars = document.querySelectorAll("#starRating .star");
+                const satisfactionInput = document.getElementById("satisfactionLevel");
+                const commentInput = document.querySelector('textarea[name="comment"]');
+                const rateModal = document.getElementById("rateModal");
+
+                rateModal.addEventListener("show.bs.modal", function (event) {
+                    const button = event.relatedTarget;
+                    const appointmentId = button.getAttribute("data-id");
+
+                    // Reset sao, comment, trạng thái
+                    stars.forEach(s => s.classList.remove("selected"));
+                    satisfactionInput.value = "";
+                    commentInput.value = "";
+
+                    const statusDiv = document.getElementById("ratingStatus");
+                    statusDiv.innerHTML = `<span class="text-muted">Chưa có đánh giá</span>`;
+
+                    // Load rating qua ajax
+                    fetch("getratingbyappointmentid?id=" + appointmentId)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.satisfaction) {
+                                    stars.forEach(star => {
+                                        if (star.getAttribute("data-value") <= data.satisfaction) {
+                                            star.classList.add("selected");
+                                        }
+                                    });
+                                    satisfactionInput.value = data.satisfaction;
+                                }
+
+                                if (data.comment) {
+                                    commentInput.value = data.comment;
+                                }
+
+                                
+                                let statusText = "Chưa có đánh giá";
+                                let statusClass = "text-muted";
+
+                                if (data.status) {
+                                    let statusValue = data.status.trim().toLowerCase();
+                                    if (statusValue === "posted") {
+                                        statusText = "Đã duyệt";
+                                        statusClass = "text-success";
+                                    } else if (statusValue === "hide") {
+                                        statusText = "Từ chối";
+                                        statusClass = "text-danger";
+                                    } else {
+                                        statusText = "Chờ duyệt";
+                                        statusClass = "text-secondary";
+                                    }
+                                }
+                                
+                                statusDiv.innerHTML = '<span class="' + statusClass + '">' + statusText + '</span>';
+                                
+                            });
+
+                    // Set hidden input
+                    document.getElementById("ratingAppId").value = appointmentId;
+                    document.getElementById("ratingAppTime").value = button.getAttribute("data-apptime");
+                    document.getElementById("ratingStartTime").value = button.getAttribute("data-starttime");
+                });
+
+                // Click chọn sao
+                stars.forEach((star, index) => {
+                    star.addEventListener("click", () => {
+                        stars.forEach(s => s.classList.remove("selected"));
+                        for (let i = 0; i <= index; i++) {
+                            stars[i].classList.add("selected");
+                        }
+                        satisfactionInput.value = star.getAttribute("data-value");
+                    });
+                });
+            });
+
+
+
             function checkTimeBeforeCancel(form) {
                 const appDateStr = form.dataset.appTime;     // ví dụ: "2025-06-17"
                 const startTimeStr = form.dataset.startTime; // ví dụ: "08:00"
@@ -693,78 +772,12 @@
 
 
 
-            document.addEventListener("DOMContentLoaded", function () {
-                const rateModal = document.getElementById("rateModal");
-                const stars = document.querySelectorAll("#starRating .star");
-                const satisfactionInput = document.getElementById("satisfactionLevel");
-                const commentInput = document.querySelector('textarea[name="comment"]');
 
-                // Khi mở modal
-                rateModal.addEventListener("show.bs.modal", function (event) {
-                    const button = event.relatedTarget;
-                    const appointmentId = button.getAttribute("data-id");
-
-                    // Reset sao và comment
-                    stars.forEach(s => s.classList.remove("selected"));
-                    satisfactionInput.value = "";
-                    commentInput.value = "";
-
-                    // Load rating qua ajax
-                    fetch("getratingbyappointmentid?id=" + appointmentId)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.satisfaction) {
-                                    // Chọn đúng số sao theo giá trị 1-5
-                                    stars.forEach(star => {
-                                        if (star.getAttribute("data-value") <= data.satisfaction) {
-                                            star.classList.add("selected");
-                                        }
-                                    });
-                                    satisfactionInput.value = data.satisfaction;
-                                }
-                                if (data.comment) {
-                                    commentInput.value = data.comment;
-                                }
-                            });
-
-                    // Set hidden input
-                    document.getElementById("ratingAppId").value = appointmentId;
-                    document.getElementById("ratingAppTime").value = button.getAttribute("data-apptime");
-                    document.getElementById("ratingStartTime").value = button.getAttribute("data-starttime");
-                });
-
-                // Click chọn sao
-                stars.forEach((star, index) => {
-                    star.addEventListener("click", () => {
-                        // Reset hết sao
-                        stars.forEach(s => s.classList.remove("selected"));
-                        // Tô sáng các sao từ 0 đến index
-                        for (let i = 0; i <= index; i++) {
-                            stars[i].classList.add("selected");
-                        }
-                        satisfactionInput.value = star.getAttribute("data-value");
-                    });
-                });
-            });
-
-
-            // Tự động ẩn thông báo sau 5 giây
-            setTimeout(function () {
-                const successAlert = document.getElementById('successAlert');
-                const failAlert = document.getElementById('failAlert');
-                if (successAlert) {
-                    successAlert.style.display = 'none';
-                }
-                if (failAlert) {
-                    failAlert.style.display = 'none';
-                }
-            }, 8000);
+        
         </script>
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-
-
         <!-- Icons -->
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <!-- Main Js -->

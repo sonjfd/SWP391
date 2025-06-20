@@ -1159,7 +1159,7 @@ public class AppointmentDAO {
     }
 
     public boolean requestCancelWithAdmin(String id) {
-        String sql = "Update appointments set status ='pending' where id =? ;";
+        String sql = "Update appointments set status ='cancel_requested' where id =? ;";
         try {
             Connection conn = DAO.DBContext.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);

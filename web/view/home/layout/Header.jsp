@@ -150,6 +150,8 @@
                                         </div>
                                     </ul>
                                 </li>
+                                
+                                <li><a href="home-list-product" class="sub-menu-item">Sản Phẩm</a></li>
                                 <li><a href="home-contact" class="sub-menu-item">Liên hệ</a></li>
                             </ul>
                         </div>

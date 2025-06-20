@@ -118,7 +118,7 @@ public class HomeAboutUs extends HttpServlet {
     public List<Doctor> getAllDoctorActive() {
         // Gọi phương thức getAllDoctors để lấy danh sách tất cả bác sĩ
         DoctorDAO doctorDAO = new DoctorDAO();
-        List<Doctor> doctors = doctorDAO.getAllDoctors();
+        List<Doctor> doctors = doctorDAO.getDoctorLimit(5);
 
    
 

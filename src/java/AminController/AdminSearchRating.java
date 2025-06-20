@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package UserController;
+package AminController;
 
 import DAO.RatingDAO;
 import Model.Rating;
@@ -13,13 +13,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "getRatingbyAppointmentId", urlPatterns = {"/getratingbyappointmentid"})
-public class getRatingbyAppointmentId extends HttpServlet {
+@WebServlet(name = "AdminSearchRating", urlPatterns = {"/admin-searchrating"})
+public class AdminSearchRating extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,10 +40,10 @@ public class getRatingbyAppointmentId extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet getRatingbyAppointmentId</title>");
+            out.println("<title>Servlet AdminSearchRating</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet getRatingbyAppointmentId at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AdminSearchRating at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,22 +61,18 @@ public class getRatingbyAppointmentId extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String appointmentId = request.getParameter("id");
+        String namecustomer = request.getParameter("search");
         RatingDAO dao = new RatingDAO();
-        Rating rating = dao.getRatingByAppId(appointmentId);
-
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        if (rating != null) {
-            String json = "{"
-                    + "\"satisfaction\":\"" + rating.getSatisfaction_level() + "\","
-                    + "\"comment\":\"" + rating.getComment().replace("\"", "\\\"") + "\","
-                    + "\"status\":\"" + rating.getStatus() + "\""
-                    + "}";
-            out.print(json);
+        List<Rating> rateList;
+        if (namecustomer==null || namecustomer.isBlank()) {
+            rateList = dao.getAllRatings();
         } else {
-            out.print("{}");
+            rateList = dao.getRatingsByCusName(namecustomer);
+
         }
+        request.setAttribute("RateList", rateList);
+        request.setAttribute("text", namecustomer);
+        request.getRequestDispatcher("view/admin/content/ManageRatings.jsp").forward(request, response);
     }
 
     /**

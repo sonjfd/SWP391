@@ -138,7 +138,7 @@ CREATE TABLE appointments (
   appointment_time DATETIME NOT NULL,
   start_time TIME,
   end_time TIME,
- status NVARCHAR(50) DEFAULT 'booked' CHECK (status IN ('booked','completed','cancel_requested', 'canceled')
+ status NVARCHAR(50) DEFAULT 'booked' CHECK (status IN ('booked','completed','cancel_requested', 'canceled','pending')
   ),
   checkin_status NVARCHAR(20) DEFAULT 'noshow' CHECK (checkin_status IN ('noshow', 'checkin')),
   payment_status NVARCHAR(50) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),

@@ -117,8 +117,8 @@ public class HomePage extends HttpServlet {
             // Thêm setter List<Breed> breeds vào Specie nếu chưa có
             specie.setBreeds(breedsOfThisSpecie);
         }
-        
-        List<Rating> listRate=new RatingDAO().getAllRatings();
+
+        List<Rating> listRate = new RatingDAO().getAllRatingsPosted();
         request.setAttribute("listRate", listRate);
 
         request.setAttribute("speciesList", speciesList);

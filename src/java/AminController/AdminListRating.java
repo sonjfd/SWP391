@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package UserController;
+package AminController;
 
 import DAO.RatingDAO;
 import Model.Rating;
@@ -13,13 +13,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "getRatingbyAppointmentId", urlPatterns = {"/getratingbyappointmentid"})
-public class getRatingbyAppointmentId extends HttpServlet {
+@WebServlet(name = "AdminListRating", urlPatterns = {"/admin-listratings"})
+public class AdminListRating extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,10 +40,10 @@ public class getRatingbyAppointmentId extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet getRatingbyAppointmentId</title>");
+            out.println("<title>Servlet AdminListRating</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet getRatingbyAppointmentId at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AdminListRating at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,22 +61,11 @@ public class getRatingbyAppointmentId extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String appointmentId = request.getParameter("id");
-        RatingDAO dao = new RatingDAO();
-        Rating rating = dao.getRatingByAppId(appointmentId);
-
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        if (rating != null) {
-            String json = "{"
-                    + "\"satisfaction\":\"" + rating.getSatisfaction_level() + "\","
-                    + "\"comment\":\"" + rating.getComment().replace("\"", "\\\"") + "\","
-                    + "\"status\":\"" + rating.getStatus() + "\""
-                    + "}";
-            out.print(json);
-        } else {
-            out.print("{}");
-        }
+        RatingDAO rd = new RatingDAO();
+        List<Rating> rlist = new ArrayList<>();
+        rlist = rd.getAllRatings();
+        request.setAttribute("RateList", rlist);
+        request.getRequestDispatcher("view/admin/content/ManageRatings.jsp").forward(request, response);
     }
 
     /**
@@ -88,7 +79,27 @@ public class getRatingbyAppointmentId extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String namecustomer = request.getParameter("text");
+        String ratingId = request.getParameter("ratingId");
+        String status = request.getParameter("status");
+        
+         RatingDAO dao = new RatingDAO();
+       
+//        if((!namecustomer.isEmpty()|| !namecustomer.isBlank()) && (statusrating.isEmpty()|| statusrating==null)){
+//            rateList = dao.getRatingsByStatus(statusrating);
+//        }else if(!statusrating.isEmpty()|| !statusrating.isBlank() && (namecustomer.isEmpty()||namecustomer==null)){
+//            rateList = dao.getRatingsByStatus(statusrating);
+//        }
+//        request.setAttribute("RateList", rateList);
+        
+        if(dao.updateRatingStatus(ratingId, status)){
+             request.getSession().setAttribute("SuccessMessage", "Cập nhật trạng thái thành công");
+            
+        }else{
+             request.getSession().setAttribute("FailMessage", "Cập nhật trạng thái không thành công");
+            
+        }
+        response.sendRedirect("admin-listratings");
     }
 
     /**

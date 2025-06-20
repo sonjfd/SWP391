@@ -35,7 +35,7 @@
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
 
     </head>
-
+    
     <body>
         <div class="page-wrapper doctris-theme toggled">
             <nav id="sidebar" class="sidebar-wrapper">
@@ -43,38 +43,33 @@
                     <div class="sidebar-brand">
                         <a href="homepage">
                             <!--<a href="index.html">-->
-                            <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="logo-light-mode" alt="">
-                            <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="logo-dark-mode" alt="">
+<!--                            <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="logo-light-mode" alt="">
+                            <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="logo-dark-mode" alt="">-->
                         </a>
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="dashboard"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
+                     
 
-                        <li class="sidebar-dropdown">
-                            <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Quản lý giống loài</a>
+<!--                            <li class="sidebar-dropdown">
+                            <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Quản lý sản phẩm</a>
                             <div class="sidebar-submenu">
                                 <ul>
                                     <li><a href="listspecie">Danh sách loài</a></li>
                                     <li><a href="listbreed">Danh sách giống</a></li>
-
+                                    
                                 </ul>
                             </div>
-                        </li>
+                        </li>-->
+<li><a href="admin-category"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý danh mục</a></li>
 
-                        <li><a href="listmedicine"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý thuốc</a></li>
+<li><a href="admin-product"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý sản phẩm</a></li>
 
-                        <li><a href="listaccount"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý tài khoản</a></li>
+<li><a href="admin-productVariantWeight"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý khối lượng sản phẩm</a></li>
 
-                        <li><a href="listclinicinfo"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Thông tin phòng khám</a></li>                  
+<li><a href="admin-productVariantFlavor"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lí mùi hương sản phẩm</a></li>                  
 
-                        <li><a href="listslider"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý trình chiếu</a></li> 
-
-                        <li><a href="listshift"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý ca làm việc</a></li>
-
-                        <li><a href="listservice"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý dịch vụ</a></li>
-                        <li><a href="admin-listcategories"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lí danh mục</a></li>
-                        <li><a href="admin-listratings"><i class="uil uil-feedback me-2 d-inline-block"></i>Quản lí đánh giá</a></li>
+<li><a href="admin-productVariant"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý biến thể sản phẩm</a></li> 
 
                     </ul>
                     <!-- sidebar-menu  -->
@@ -96,7 +91,7 @@
                     <div class="header-bar d-flex justify-content-between border-bottom">
                         <div class="d-flex align-items-center">
                             <a href="#" class="logo-icon">
-                                <img src="${pageContext.request.contextPath}/assets/images/logo-icon.png" height="30" class="small" alt="">
+<!--                                <img src="${pageContext.request.contextPath}/assets/images/logo-icon.png" height="30" class="small" alt="">-->
                                 <span class="big">
                                     <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="logo-light-mode" alt="">
                                     <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="logo-dark-mode" alt="">
@@ -119,45 +114,7 @@
 
                         <ul class="list-unstyled mb-0">
                             <li class="list-inline-item mb-0">
-                                <div class="dropdown dropdown-primary">
-                                    <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="../assets/images/language/american.png" class="avatar avatar-ex-small rounded-circle p-2" alt=""></button>
-                                    <div class="dropdown-menu dd-menu drop-ups dropdown-menu-end bg-white shadow border-0 mt-3 p-2" data-simplebar style="height: 175px;">
-                                        <a href="javascript:void(0)" class="d-flex align-items-center">
-                                            <img src="${pageContext.request.contextPath}/assets/images/language/chinese.png" class="avatar avatar-client rounded-circle shadow" alt="">
-                                            <div class="flex-1 text-left ms-2 overflow-hidden">
-                                                <small class="text-dark mb-0">Chinese</small>
-                                            </div>
-                                        </a>
-
-                                        <a href="javascript:void(0)" class="d-flex align-items-center mt-2">
-                                            <img src="${pageContext.request.contextPath}/assets/images/language/european.png" class="avatar avatar-client rounded-circle shadow" alt="">
-                                            <div class="flex-1 text-left ms-2 overflow-hidden">
-                                                <small class="text-dark mb-0">European</small>
-                                            </div>
-                                        </a>
-
-                                        <a href="javascript:void(0)" class="d-flex align-items-center mt-2">
-                                            <img src="${pageContext.request.contextPath}/assets/images/language/indian.png" class="avatar avatar-client rounded-circle shadow" alt="">
-                                            <div class="flex-1 text-left ms-2 overflow-hidden">
-                                                <small class="text-dark mb-0">Indian</small>
-                                            </div>
-                                        </a>
-
-                                        <a href="javascript:void(0)" class="d-flex align-items-center mt-2">
-                                            <img src="${pageContext.request.contextPath}/assets/images/language/japanese.png" class="avatar avatar-client rounded-circle shadow" alt="">
-                                            <div class="flex-1 text-left ms-2 overflow-hidden">
-                                                <small class="text-dark mb-0">Japanese</small>
-                                            </div>
-                                        </a>
-
-                                        <a href="javascript:void(0)" class="d-flex align-items-center mt-2">
-                                            <img src="${pageContext.request.contextPath}/assets/images/language/russian.png" class="avatar avatar-client rounded-circle shadow" alt="">
-                                            <div class="flex-1 text-left ms-2 overflow-hidden">
-                                                <small class="text-dark mb-0">Russian</small>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
+                              
                             </li>
 
                             <li class="list-inline-item mb-0 ms-1">
@@ -174,45 +131,20 @@
                                     <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow rounded border-0 mt-3 px-2 py-2" data-simplebar style="height: 320px; width: 300px;">
                                         <a href="#" class="d-flex align-items-center justify-content-between py-2">
                                             <div class="d-inline-flex position-relative overflow-hidden">
-                                                <img src="../assets/images/client/02.jpg" class="avatar avatar-md-sm rounded-circle shadow" alt="">
+                                                
                                                 <small class="text-dark mb-0 d-block text-truncat ms-3">You received a new email from <b>Janalia</b> <small class="text-muted fw-normal d-inline-block">1 hour ago</small></small>
                                             </div>
                                         </a>
 
-                                        <a href="#" class="d-flex align-items-center justify-content-between py-2 border-top">
-                                            <div class="d-inline-flex position-relative overflow-hidden">
-                                                <img src="../assets/images/client/Codepen.svg" class="avatar avatar-md-sm rounded-circle shadow" alt="">
-                                                <small class="text-dark mb-0 d-block text-truncat ms-3">You received a new email from <b>codepen</b>  <small class="text-muted fw-normal d-inline-block">4 hour ago</small></small>
-                                            </div>
-                                        </a>
+                                       
 
-                                        <a href="#" class="d-flex align-items-center justify-content-between py-2 border-top">
-                                            <div class="d-inline-flex position-relative overflow-hidden">
-                                                <img src="../assets/images/client/03.jpg" class="avatar avatar-md-sm rounded-circle shadow" alt="">
-                                                <small class="text-dark mb-0 d-block text-truncat ms-3">You received a new email from <b>Cristina</b> <small class="text-muted fw-normal d-inline-block">5 hour ago</small></small>
-                                            </div>
-                                        </a>
+                                       
 
-                                        <a href="#" class="d-flex align-items-center justify-content-between py-2 border-top">
-                                            <div class="d-inline-flex position-relative overflow-hidden">
-                                                <img src="../assets/images/client/dribbble.svg" class="avatar avatar-md-sm rounded-circle shadow" alt="">
-                                                <small class="text-dark mb-0 d-block text-truncat ms-3">You received a new email from <b>Dribbble</b> <small class="text-muted fw-normal d-inline-block">24 hour ago</small></small>
-                                            </div>
-                                        </a>
+                                        
 
-                                        <a href="#" class="d-flex align-items-center justify-content-between py-2 border-top">
-                                            <div class="d-inline-flex position-relative overflow-hidden">
-                                                <img src="../assets/images/client/06.jpg" class="avatar avatar-md-sm rounded-circle shadow" alt="">
-                                                <small class="text-dark mb-0 d-block text-truncat ms-3">You received a new email from <b>Donald Aghori</b> <small class="text-muted fw-normal d-inline-block">1 day ago</small></small>
-                                            </div>
-                                        </a>
+                                        
 
-                                        <a href="#" class="d-flex align-items-center justify-content-between py-2 border-top">
-                                            <div class="d-inline-flex position-relative overflow-hidden">
-                                                <img src="../assets/images/client/07.jpg" class="avatar avatar-md-sm rounded-circle shadow" alt="">
-                                                <small class="text-dark mb-0 d-block text-truncat ms-3">You received a new email from <b>Calvin</b> <small class="text-muted fw-normal d-inline-block">2 day ago</small></small>
-                                            </div>
-                                        </a>
+                                        
                                     </div>
                                 </div>
                             </li>
@@ -222,7 +154,7 @@
                                     <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="../assets/images/doctors/01.jpg" class="avatar avatar-ex-small rounded-circle" alt=""></button>
                                     <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 py-3" style="min-width: 200px;">
                                         <a class="dropdown-item d-flex align-items-center text-dark" href="https://shreethemes.in/doctris/layouts/admin/profile.html">
-                                            <img src="../assets/images/doctors/01.jpg" class="avatar avatar-md-sm rounded-circle border shadow" alt="">
+                                            
                                             <div class="flex-1 ms-2">
                                                 <span class="d-block mb-1">Calvin Carlo</span>
                                                 <small class="text-muted">Orthopedic</small>
@@ -243,12 +175,12 @@
                 <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
                 <!-- simplebar -->
                 <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
-                <!-- Chart -->
+               Chart 
                 <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
-                <script src="${pageContext.request.contextPath}/assets/js/columnchart.init.js"></script>
-                <!-- Icons -->
+<!--                <script src="${pageContext.request.contextPath}/assets/js/columnchart.init.js"></script>-->
+                 Icons 
                 <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-                <!-- Main Js -->
-                <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+                 Main Js 
+<!--                <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>-->-->
                 </body>
                 </html>

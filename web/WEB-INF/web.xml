@@ -9,11 +9,11 @@
         <servlet-name>HomeContact</servlet-name>
         <servlet-class>CommonController.HomeContact</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>CheckDupalicateSchedule</servlet-name>
-        <servlet-class>StaffController.CheckDupalicateSchedule</servlet-class>
-    </servlet>
-    
+   
+    <servlet-mapping>
+        <servlet-name>HomeContact</servlet-name>
+        <url-pattern>/home-contact</url-pattern>
+    </servlet-mapping>
     
     
     
@@ -22,21 +22,7 @@
         <servlet-class>UserController.Booking</servlet-class>
     </servlet>
     
-    
-    
-    <servlet-mapping>
-        <servlet-name>HomeContact</servlet-name>
-        <url-pattern>/home-contact</url-pattern>
-    </servlet-mapping>
-   
-    
-   
-  
-    <servlet-mapping>
-        <servlet-name>CheckDupalicateSchedule</servlet-name>
-        <url-pattern>/check-dupalicate-schedule</url-pattern>
-    </servlet-mapping>
-    
+
    
     
    

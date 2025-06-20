@@ -342,13 +342,13 @@ Author     : Dell
 
 
             <!-- Testimonials -->
-            <section class="section py-5">
+               <section class="section py-5">
                 <div class="container">
                     <div class="section-title text-center mb-4">
                         <h4 class="title">Khách hàng nói gì?</h4>
                         <p>Chia sẻ của khách hàng giúp Pet24H hoàn thiện hơn mỗi ngày!</p>
                     </div>
-                    <div class="swiper mySwiper">
+                    <div class="swiper mySwiper-rating">
                         <div class="swiper-wrapper">
                             <c:forEach var="rate" items="${listRate}">
                                 <div class="swiper-slide">
@@ -356,7 +356,7 @@ Author     : Dell
                                         <i class="fa-solid fa-quote-left quote-icon mb-2"></i>
                                         <p>${rate.comment}</p>
                                         <div class="customer-info mt-3">
-                                            <img src="${pageContext.request.contextPath}/assets/images/default_user.png" class="rounded-circle mb-2" width="60" height="60">
+                                            <img src="${pageContext.request.contextPath}/${rate.user.avatar}" class="rounded-circle mb-2" width="60" height="60">
                                             <h5 class="customer-name">${rate.user.fullName}</h5>
                                             <span class="customer-role">Chủ nuôi</span>
                                             <div class="rating-stars mt-2">
@@ -634,7 +634,20 @@ Author     : Dell
 
 
 
-
+const swiperRate = new Swiper(".mySwiper-rating", {
+            slidesPerView: 3,
+            spaceBetween: 30,
+            loop: true,
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev"
+            },
+            breakpoints: {
+                0: {slidesPerView: 1},
+                768: {slidesPerView: 2},
+                992: {slidesPerView: 3}
+            }
+        });
 
         const swiper = new Swiper(".mySwiper-species", {
             slidesPerView: 1.2,

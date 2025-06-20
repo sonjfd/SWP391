@@ -1,0 +1,164 @@
+package DAO;
+
+import Model.Category;
+import Model.Product;
+
+import java.sql.*;
+import java.util.*;
+
+public class ProductDAO extends DBContext {
+
+    // Lấy tất cả sản phẩm đang hoạt động (có cả tên danh mục)
+    public List<Product> getAllActiveProducts() {
+        List<Product> list = new ArrayList<>();
+        String sql = """
+            SELECT p.product_id, p.category_id, p.product_name, p.description, 
+                   p.status, p.created_at, p.updated_at,
+                   c.category_name, 
+                   c.description AS category_description, 
+                   c.status AS category_status
+            FROM products p
+            JOIN categories c ON p.category_id = c.category_id
+            WHERE p.status = 1
+        """;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                // Gán category
+                Category category = new Category();
+                category.setCategoryId(rs.getInt("category_id"));
+                category.setCategoryName(rs.getString("category_name"));
+                category.setDescription(rs.getString("category_description"));
+                category.setStatus(rs.getBoolean("category_status"));
+
+                // Gán product
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setProductName(rs.getString("product_name"));
+                product.setDescription(rs.getString("description"));
+                product.setStatus(rs.getBoolean("status"));
+                product.setCreatedAt(rs.getTimestamp("created_at"));
+                product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                product.setCategory(category);
+
+                list.add(product);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Thêm sản phẩm
+    public boolean insertProduct(Product product) {
+        String sql = """
+            INSERT INTO products (category_id, product_name, description, status, created_at, updated_at)
+            VALUES (?, ?, ?, ?, GETDATE(), GETDATE())
+        """;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, product.getCategory().getCategoryId());
+            ps.setString(2, product.getProductName());
+            ps.setString(3, product.getDescription());
+            ps.setBoolean(4, product.isStatus());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Cập nhật sản phẩm
+    public boolean updateProduct(Product product) {
+        String sql = """
+            UPDATE products 
+            SET category_id = ?, product_name = ?, description = ?, status = ?, updated_at = GETDATE()
+            WHERE product_id = ?
+        """;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, product.getCategory().getCategoryId());
+            ps.setString(2, product.getProductName());
+            ps.setString(3, product.getDescription());
+            ps.setBoolean(4, product.isStatus());
+            ps.setInt(5, product.getProductId());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Xóa mềm sản phẩm
+    public boolean softDeleteProduct(int id) {
+        String sql = "UPDATE products SET status = 0, updated_at = GETDATE() WHERE product_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Lấy sản phẩm theo ID (bao gồm tên danh mục)
+    public Product getProductById(int id) {
+        String sql = """
+            SELECT p.product_id, p.category_id, p.product_name, p.description, 
+                   p.status, p.created_at, p.updated_at,
+                   c.category_name, 
+                   c.description AS category_description, 
+                   c.status AS category_status
+            FROM products p
+            JOIN categories c ON p.category_id = c.category_id
+            WHERE p.product_id = ?
+        """;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Category category = new Category();
+                    category.setCategoryId(rs.getInt("category_id"));
+                    category.setCategoryName(rs.getString("category_name"));
+                    category.setDescription(rs.getString("category_description"));
+                    category.setStatus(rs.getBoolean("category_status"));
+
+                    Product product = new Product();
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setProductName(rs.getString("product_name"));
+                    product.setDescription(rs.getString("description"));
+                    product.setStatus(rs.getBoolean("status"));
+                    product.setCreatedAt(rs.getTimestamp("created_at"));
+                    product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    product.setCategory(category);
+
+                    return product;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
