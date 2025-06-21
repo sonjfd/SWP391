@@ -10,6 +10,7 @@ import DAO.MedicalRecordDAO;
 import DAO.ShiftDAO;
 import Model.Appointment;
 import Model.Doctor;
+
 import Model.DoctorSchedule;
 import Model.MedicalRecord;
 import Model.Shift;
@@ -38,35 +39,36 @@ import java.util.logging.Logger;
  *
  * @author ASUS
  */
-@WebServlet("/doctor-time-table")
-public class DoctorTimeTable extends HttpServlet {
+@WebServlet("/doctor-schedule")
+public class DoctorScheduleCalendar extends HttpServlet {
+
+    
 
    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        // Lấy thông tin người dùng (bác sĩ) từ session
         HttpSession ss = request.getSession();
         User u = (User) ss.getAttribute("user");
 
-        if (u == null) {
-            response.sendRedirect("/login"); // Nếu không có người dùng trong session, chuyển hướng về trang đăng nhập
-            return;
-        }
-
-        // Lấy thông tin bác sĩ
         String doctorId = u.getId();
-        
-        // Lấy tuần hiện tại hoặc truyền từ client (nếu có)
-        LocalDate today = LocalDate.now();
-        LocalDate monday = today.with(DayOfWeek.MONDAY);  // Ngày thứ 2 trong tuần
-        LocalDate sunday = monday.plusDays(6);  // Ngày chủ nhật trong tuần
 
-        // Chuyển đổi sang kiểu Date
+        int offset = 0;
+        String offsetParam = request.getParameter("offset");
+        if (offsetParam != null) {
+            try {
+                offset = Integer.parseInt(offsetParam);
+            } catch (NumberFormatException e) {
+                offset = 0;
+            }
+        }
+        // Lấy tuần hiện tại hoặc truyền từ client
+        LocalDate today = LocalDate.now().plusWeeks(offset);
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        LocalDate sunday = monday.plusDays(6);
+
         Date from = java.sql.Date.valueOf(monday);
         Date to = java.sql.Date.valueOf(sunday);
-
-        // Tạo danh sách các ngày trong tuần để hiển thị
         List<Date> weekDates = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             LocalDate day = monday.plusDays(i);
@@ -74,25 +76,18 @@ public class DoctorTimeTable extends HttpServlet {
             weekDates.add(utilDate);
         }
 
-        // Set dữ liệu vào request để JSP có thể sử dụng
         request.setAttribute("weekDates", weekDates);
 
-        // Lấy lịch làm việc của bác sĩ trong tuần
         DoctorScheduleDAO dao = new DoctorScheduleDAO();
-//        List<DoctorSchedule> schedules = dao.getDoctorSchedulesOfDoctorInWeek(doctorId, from, to);
+        List<DoctorSchedule> schedules = dao.getDoctorSchedulesOfDoctorInWeek(doctorId, from, to);
 
-        // Lấy tất cả các ca làm việc (shift)
+        // Lấy tất cả các ca (shift) để làm dòng cho bảng
         ShiftDAO shiftDAO = new ShiftDAO();
         List<Shift> shiftList = shiftDAO.getAllShifts();
 
-        // Set dữ liệu lịch làm việc và ca vào request
-//        request.setAttribute("schedules", schedules);
+        request.setAttribute("schedules", schedules);
         request.setAttribute("shiftList", shiftList);
-
-        // Chuyển tiếp (forward) đến trang JSP để hiển thị
-        request.getRequestDispatcher("/view/doctor/content/DoctorTimeTable.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/doctor/content/DoctorSchedule.jsp").forward(request, response);
     }
-
-    
 
 }

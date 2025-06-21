@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ServiceDAO {
-
+    // CỦA ĐẠI
     // Lấy tất cả dịch vụ
     public List<Service> getAllServices() {
         List<Service> services = new ArrayList<>();
@@ -72,56 +72,7 @@ public class ServiceDAO {
         return null;
     }
 
-    // Thêm dịch vụ mới
-    public boolean addService(Service s) {
-        String sql = "INSERT INTO services (id, name, description, price) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, s.getId());
-            ps.setString(2, s.getName());
-            ps.setString(3, s.getDescription());
-            ps.setDouble(4, s.getPrice());
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Cập nhật dịch vụ
-    public boolean updateService(Service s) {
-        String sql = "UPDATE services SET name = ?, description = ?, price = ? WHERE id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, s.getName());
-            ps.setString(2, s.getDescription());
-            ps.setDouble(3, s.getPrice());
-            ps.setString(4, s.getId());
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Xóa dịch vụ theo ID
-    public boolean deleteService(String id) {
-        String sql = "DELETE FROM services WHERE id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, id);
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+    // HẾT CỦA ĐẠI
 
     public double getServicePrice(String serviceId) {
         double price = 0.0;

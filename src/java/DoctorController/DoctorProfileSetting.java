@@ -8,6 +8,8 @@ import DAO.DoctorDAO;
 import DAO.UserDAO;
 import Model.Doctor;
 import Model.User;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -20,6 +22,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -28,32 +32,6 @@ import java.nio.file.Path;
 @MultipartConfig
 @WebServlet("/doctor-profile-setting")
 public class DoctorProfileSetting extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet DoctorProfileSetting</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet DoctorProfileSetting at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -72,6 +50,7 @@ public class DoctorProfileSetting extends HttpServlet {
         User u = (User) ss.getAttribute("user");
         String uuid = u.getId();
         Doctor d = ddao.getDoctorById(uuid);
+
         ss.setAttribute("doctor", d);
 
         request.getRequestDispatcher("/view/doctor/content/DoctorProfileSetting.jsp").forward(request, response);
@@ -88,7 +67,11 @@ public class DoctorProfileSetting extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Nhận dữ liệu từ form
+        HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("user");
+        String userId = u.getId();
+
+        // Lấy dữ liệu từ form
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
@@ -100,59 +83,72 @@ public class DoctorProfileSetting extends HttpServlet {
         String biography = request.getParameter("biography");
         Part part = request.getPart("avatar");
 
-        // Lấy đường dẫn thư mục lưu ảnh
-        String realPath = request.getServletContext().getRealPath("/assets/images");
-        File uploads = new File(realPath);
-        if (!uploads.exists()) {
-            uploads.mkdirs();
-        }
+        // Cloudinary config
+        Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", "dsqeyweqb",
+                "api_key", "583198628135895",
+                "api_secret", "rgJklktFD-bD-4npUu1WE1IX__o",
+                "secure", true
+        ));
 
-        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-        String filePath = "/assets/images/" + filename;
-        DoctorDAO ddao = new DoctorDAO();
-        HttpSession ss = request.getSession();
-        User u = (User) ss.getAttribute("user");
-        
-        
-        
+        String avatarUrl = null;
+        String newPublicId = null;
 
-        // Nếu không có ảnh mới, giữ ảnh cũ
-        if (filename.isEmpty()) {
-            try {
+        try {
+            if (part != null && part.getSize() > 0) {
+                // Lấy public_id cũ từ DB
                 UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(u.getId());
-                filePath = user.getAvatar(); // Giữ lại ảnh cũ
-            } catch (Exception e) {
-                e.printStackTrace();
+                String oldPublicId = userDao.getCloudinaryPublicIdByUserId(userId);
+                if (oldPublicId != null && !oldPublicId.isEmpty()) {
+                    try {
+                        cloudinary.uploader().destroy(oldPublicId, ObjectUtils.emptyMap());
+                    } catch (Exception e) {
+                        e.printStackTrace(); // Nếu lỗi vẫn tiếp tục
+                    }
+                }
+
+                // Upload ảnh mới
+                File tempFile = File.createTempFile("upload", ".tmp");
+                try (var input = part.getInputStream(); var out = new java.io.FileOutputStream(tempFile)) {
+                    input.transferTo(out);
+                }
+
+                Map uploadResult = cloudinary.uploader().upload(tempFile, ObjectUtils.emptyMap());
+                avatarUrl = (String) uploadResult.get("secure_url");
+                newPublicId = (String) uploadResult.get("public_id");
+                tempFile.delete();
             }
-        } else {
-            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
-            File file = new File(uploads, filename);
-            part.write(file.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        // Cập nhật thông tin người dùng và bác sĩ
         UserDAO userDAO = new UserDAO();
         DoctorDAO doctorDAO = new DoctorDAO();
 
-        boolean isUserUpdated = userDAO.updateUser(u.getId(), fullName, address, email, phone, filePath);
-        boolean isDoctorUpdated = doctorDAO.updateDoctor(u.getId(), specialty, certificates, qualifications, yearsOfExperience, biography);
-
-        if (isUserUpdated && isDoctorUpdated) {
-            // Nếu thành công, set thông báo thành công vào session
-            request.getSession().setAttribute("alertMessage", "Cập nhật thông tin thành công!");
-            request.getSession().setAttribute("alertType", "success");
-            User updatedUser = userDAO.getUserById(u.getId());
-
-        
-            request.getSession().setAttribute("user", updatedUser);
-        } else {
-            // Nếu thất bại, set thông báo thất bại vào session
-            request.getSession().setAttribute("alertMessage", "Cập nhật thông tin không thành công!");
-            request.getSession().setAttribute("alertType", "error");
+        // Nếu không có avatar mới thì dùng avatar cũ
+        if (avatarUrl == null || avatarUrl.isEmpty()) {
+            User userFromDb = userDAO.getUserById(userId);
+            avatarUrl = userFromDb.getAvatar();
+            newPublicId = userDAO.getCloudinaryPublicIdByUserId(userId);
         }
 
-        // Điều hướng lại đến trang chỉnh sửa profile sau khi thực hiện cập nhật
+        // Cập nhật thông tin user và doctor
+        boolean isUserUpdated = userDAO.updateUser(userId, fullName, address, email, phone, avatarUrl);
+        boolean isDoctorUpdated = doctorDAO.updateDoctor(userId, specialty, certificates, qualifications, yearsOfExperience, biography);
+
+        if (isUserUpdated && isDoctorUpdated) {
+            userDAO.updateCloudinaryPublicId(userId, newPublicId);
+
+            session.setAttribute("alertMessage", "Cập nhật thông tin thành công!");
+            session.setAttribute("alertType", "success");
+
+            User updatedUser = userDAO.getUserById(userId);
+            session.setAttribute("user", updatedUser);
+        } else {
+            session.setAttribute("alertMessage", "Cập nhật thông tin không thành công!");
+            session.setAttribute("alertType", "error");
+        }
+
         response.sendRedirect("doctor-profile-setting");
     }
 

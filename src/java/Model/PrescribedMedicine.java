@@ -9,40 +9,63 @@ package Model;
  * @author Dell
  */
 public class PrescribedMedicine {
-    private MedicalRecords medicalRecords;
-    private Medicine medicine;
+    private String medicalRecordId;
+    private String medicineId;
+    private String medicineName;
     private int quantity;
     private String dosage;
     private String duration;
-    private String usageIntructions;
+    private String usageInstructions;
 
     public PrescribedMedicine() {
     }
 
-    public PrescribedMedicine(MedicalRecords medicalRecords, Medicine medicine, int quantity, String dosage, String duration, String usageIntructions) {
-        this.medicalRecords = medicalRecords;
-        this.medicine = medicine;
+    public PrescribedMedicine(String medicalRecordId, String medicineId, int quantity, String dosage, String duration, String usageInstructions) {
+        this.medicalRecordId = medicalRecordId;
+        this.medicineId = medicineId;
         this.quantity = quantity;
         this.dosage = dosage;
         this.duration = duration;
-        this.usageIntructions = usageIntructions;
+        this.usageInstructions = usageInstructions;
+        this.medicineName = getMedicineName();
     }
 
-    public MedicalRecords getMedicalRecords() {
-        return medicalRecords;
+    
+    
+
+    public String getMedicalRecordId() {
+        return medicalRecordId;
     }
 
-    public void setMedicalRecords(MedicalRecords medicalRecords) {
-        this.medicalRecords = medicalRecords;
+    public void setMedicalRecordId(String medicalRecordId) {
+        this.medicalRecordId = medicalRecordId;
     }
 
-    public Medicine getMedicine() {
-        return medicine;
+    public String getMedicineId() {
+        return medicineId;
     }
 
-    public void setMedicine(Medicine medicine) {
-        this.medicine = medicine;
+    public void setMedicineId(String medicineId) {
+        this.medicineId = medicineId;
     }
+
+    public String getMedicineName() {
+        return medicineName;
+    }
+
+    public void setMedicineName(String medicineName) {
+        this.medicineName = medicineName;
+    }
+
+    
+
+    
+
+    
+
+    
+    
+    
 
     public int getQuantity() {
         return quantity;
@@ -68,18 +91,23 @@ public class PrescribedMedicine {
         this.duration = duration;
     }
 
-    public String getUsageIntructions() {
-        return usageIntructions;
+    public String getUsageInstructions() {
+        return usageInstructions;
     }
 
-    public void setUsageIntructions(String usageIntructions) {
-        this.usageIntructions = usageIntructions;
+    public void setUsageInstructions(String usageInstructions) {
+        this.usageInstructions = usageInstructions;
     }
 
-    @Override
-    public String toString() {
-        return "PrescribedMedicine{" + "medicalRecords=" + medicalRecords + ", medicine=" + medicine + ", quantity=" + quantity + ", dosage=" + dosage + ", duration=" + duration + ", usageIntructions=" + usageIntructions + '}';
-    }
+    
+
+    
+
+    
+
+    
+
+    
     
     
 }
