@@ -29,7 +29,7 @@ public class CategoryServlet extends HttpServlet {
 
         try {
             if (action == null || action.isEmpty()) {
-                // ======= PHÂN TRANG + TÌM KIẾM + LỌC TRẠNG THÁI =======
+                // PHÂN TRANG + TÌM KIẾM + LỌC TRẠNG THÁI
                 String pageParam = request.getParameter("page");
                 String statusParam = request.getParameter("status");
                 String keyword = request.getParameter("keyword") != null ? request.getParameter("keyword").trim() : "";
@@ -37,37 +37,27 @@ public class CategoryServlet extends HttpServlet {
                 int page = (pageParam == null || pageParam.isEmpty()) ? 1 : Integer.parseInt(pageParam);
                 int pageSize = 5;
 
-                List<Category> list;
-                int totalCategories;
-                int totalPage;
-
-                if (!keyword.isEmpty()) {
-                    // ✅ Có tìm kiếm tên
-                    list = categoryDAO.searchCategoriesByName(keyword, page, pageSize);
-                    totalCategories = categoryDAO.countCategoriesByName(keyword);
-                } else if (statusParam != null && !statusParam.isEmpty()) {
-                    // ✅ Có lọc trạng thái
-                    boolean status = "1".equals(statusParam);
-                    list = categoryDAO.getCategoriesByStatusAndPage(status, page, pageSize);
-                    totalCategories = categoryDAO.getTotalCategoriesByStatus(status);
-                } else {
-                    // ✅ Không có lọc gì cả
-                    list = categoryDAO.getCategoriesByPage(page, pageSize);
-                    totalCategories = categoryDAO.getTotalCategories();
+                Boolean status = null;
+                if ("1".equals(statusParam)) {
+                    status = true;
+                } else if ("0".equals(statusParam)) {
+                    status = false;
                 }
 
-                totalPage = (int) Math.ceil((double) totalCategories / pageSize);
+                List<Category> list = categoryDAO.searchCategories(keyword, status, page, pageSize);
+                int total = categoryDAO.countSearchCategories(keyword, status);
+                int totalPage = (int) Math.ceil((double) total / pageSize);
 
                 request.setAttribute("list", list);
                 request.setAttribute("currentPage", page);
                 request.setAttribute("totalPage", totalPage);
-                request.setAttribute("status", statusParam);
                 request.setAttribute("keyword", keyword);
+                request.setAttribute("status", statusParam);
 
-                request.getRequestDispatcher("/view/management/content/CategoryAdmin.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/admin/content/Category.jsp").forward(request, response);
 
             } else if (action.equals("addForm")) {
-                request.getRequestDispatcher("/view/management/content/AddCategory.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/admin/content/AddCategory.jsp").forward(request, response);
 
             } else if (action.equals("edit")) {
                 int id = Integer.parseInt(request.getParameter("id"));
@@ -77,13 +67,13 @@ public class CategoryServlet extends HttpServlet {
                     response.sendRedirect("admin-category");
                 } else {
                     request.setAttribute("category", c);
-                    request.getRequestDispatcher("/view/management/content/EditCategory.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/admin/content/EditCategory.jsp").forward(request, response);
                 }
 
-            } else if (action.equals("delete")) {
+            } else if (action.equals("hide")) { 
                 int id = Integer.parseInt(request.getParameter("id"));
-                categoryDAO.softDeleteCategory(id);
-                request.getSession().setAttribute("message", "Xóa danh mục thành công!");
+                categoryDAO.softHiddenCategory(id); // set status = 0
+                request.getSession().setAttribute("message", "Ẩn danh mục thành công!");
                 response.sendRedirect("admin-category");
             }
 
@@ -105,7 +95,6 @@ public class CategoryServlet extends HttpServlet {
         String desc = request.getParameter("description");
 
         try {
-            // ✅ Chuyển status từ string ("0"/"1") sang boolean an toàn
             int statusInt = Integer.parseInt(request.getParameter("status"));
             boolean status = (statusInt == 1);
 

@@ -1,6 +1,5 @@
 package Model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class ProductVariant {
@@ -8,7 +7,7 @@ public class ProductVariant {
     // --- Trường chính từ bảng product_variants ---
     private int productVariantId;
     private int productId;
-    private String variantName;
+    
     private int weightId;
     private int flavorId;
     private double price;
@@ -20,18 +19,16 @@ public class ProductVariant {
 
     // --- Trường hiển thị phụ ---
     private String productName;
-    private BigDecimal weight;
+    private double weight;
     private String flavorName;
+    private String categoryName;
 
-    // --- Constructors ---
+   
     public ProductVariant() {}
 
-    public ProductVariant(int productVariantId, int productId, String variantName,
-                          int weightId, int flavorId, double price, int stockQuantity,
-                          boolean status, String image, Date createdAt, Date updatedAt) {
+    public ProductVariant(int productVariantId, int productId, int weightId, int flavorId, double price, int stockQuantity, boolean status, String image, Date createdAt, Date updatedAt, String productName, double weight, String flavorName, String categoryName) {
         this.productVariantId = productVariantId;
         this.productId = productId;
-        this.variantName = variantName;
         this.weightId = weightId;
         this.flavorId = flavorId;
         this.price = price;
@@ -40,9 +37,14 @@ public class ProductVariant {
         this.image = image;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.productName = productName;
+        this.weight = weight;
+        this.flavorName = flavorName;
+        this.categoryName = categoryName;
     }
 
-    // --- Getter & Setter chính ---
+   
+    
     public int getProductVariantId() {
         return productVariantId;
     }
@@ -59,13 +61,7 @@ public class ProductVariant {
         this.productId = productId;
     }
 
-    public String getVariantName() {
-        return variantName;
-    }
-
-    public void setVariantName(String variantName) {
-        this.variantName = variantName;
-    }
+   
 
     public int getWeightId() {
         return weightId;
@@ -83,13 +79,15 @@ public class ProductVariant {
         this.flavorId = flavorId;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
+
+    
 
     public int getStockQuantity() {
         return stockQuantity;
@@ -140,11 +138,11 @@ public class ProductVariant {
         this.productName = productName;
     }
 
-    public BigDecimal getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(BigDecimal weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
@@ -156,6 +154,16 @@ public class ProductVariant {
         this.flavorName = flavorName;
     }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+    
+    
+
     // --- Hiển thị tên trạng thái ---
     public String getStatusName() {
         return status ? "Đang bán" : "Ngừng bán";
@@ -163,8 +171,12 @@ public class ProductVariant {
 
     @Override
     public String toString() {
-        return "ProductVariant{" + "productVariantId=" + productVariantId + ", productId=" + productId + ", variantName=" + variantName + ", weightId=" + weightId + ", flavorId=" + flavorId + ", price=" + price + ", stockQuantity=" + stockQuantity + ", status=" + status + ", image=" + image + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", productName=" + productName + ", weight=" + weight + ", flavorName=" + flavorName + '}';
+        return "ProductVariant{" + "productVariantId=" + productVariantId + ", productId=" + productId + ", weightId=" + weightId + ", flavorId=" + flavorId + ", price=" + price + ", stockQuantity=" + stockQuantity + ", status=" + status + ", image=" + image + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", productName=" + productName + ", weight=" + weight + ", flavorName=" + flavorName + ", categoryName=" + categoryName + '}';
     }
+
+   
+    
+    
 
     
 }

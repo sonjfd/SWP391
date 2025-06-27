@@ -25,16 +25,23 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
+        String keyword = request.getParameter("keyword") != null ? request.getParameter("keyword").trim() : "";
+        String pageParam = request.getParameter("page");
+        int page = (pageParam == null || pageParam.isEmpty()) ? 1 : Integer.parseInt(pageParam);
+        int pageSize = 5;
 
         try {
+            // ========================= ADD FORM =========================
             if ("addForm".equalsIgnoreCase(action)) {
                 List<Category> categories = categoryDAO.getCategoriesByStatus(true);
                 request.setAttribute("categories", categories);
-                request.getRequestDispatcher("/view/management/content/AddProduct.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/admin/content/AddProduct.jsp").forward(request, response);
                 return;
             }
 
+            // ========================= EDIT FORM ========================
             if ("edit".equalsIgnoreCase(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 Product p = productDAO.getProductById(id);
@@ -42,25 +49,44 @@ public class ProductServlet extends HttpServlet {
                     List<Category> categories = categoryDAO.getCategoriesByStatus(true);
                     request.setAttribute("categories", categories);
                     request.setAttribute("editProduct", p);
-                    request.getRequestDispatcher("/view/management/content/EditProduct.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/admin/content/EditProduct.jsp").forward(request, response);
                 } else {
-                    response.sendRedirect("admin-product");
+                    // Nếu không tìm thấy product, quay lại trang chính
+                    response.sendRedirect("admin-product?page=" + page);
                 }
                 return;
             }
 
+            // ========================= DELETE ============================
             if ("delete".equalsIgnoreCase(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 productDAO.softDeleteProduct(id);
+                // Sau khi xóa xong vẫn hiển thị danh sách phía dưới
             }
 
-            List<Product> list = productDAO.getAllActiveProducts();
+            // ========================= HIỂN THỊ DANH SÁCH SẢN PHẨM =========================
+            List<Product> list;
+            int total;
+            if (!keyword.isEmpty()) {
+                list = productDAO.searchProductsByName(keyword, page, pageSize);
+                total = productDAO.countProductsByName(keyword);
+            } else {
+                list = productDAO.getProductsByPage(page, pageSize);
+                total = productDAO.countAllProducts();
+            }
+
+            int totalPages = (int) Math.ceil((double) total / pageSize);
+
             request.setAttribute("list", list);
-            request.getRequestDispatcher("/view/management/content/Product.jsp").forward(request, response);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("keyword", keyword);
+
+            request.getRequestDispatcher("/view/admin/content/Product.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ServletException("Lỗi xử lý GET trong ProductServlet", e);
+            throw new ServletException("❌ Lỗi xử lý GET trong ProductServlet", e);
         }
     }
 
@@ -76,13 +102,6 @@ public class ProductServlet extends HttpServlet {
             String name = request.getParameter("productName");
             String desc = request.getParameter("description");
 
-            // DEBUG
-            System.out.println("=== DỮ LIỆU GỬI TỪ FORM ===");
-            System.out.println("Action: " + action);
-            System.out.println("Category ID: " + categoryId);
-            System.out.println("Tên SP: " + name);
-            System.out.println("Mô tả: " + desc);
-
             Category category = new Category();
             category.setCategoryId(categoryId);
 
@@ -90,11 +109,9 @@ public class ProductServlet extends HttpServlet {
                 Product p = new Product();
                 p.setProductName(name);
                 p.setDescription(desc);
-                p.setStatus(true);
                 p.setCategory(category);
 
-                boolean success = productDAO.insertProduct(p);
-                if (!success) {
+                if (!productDAO.insertProduct(p)) {
                     System.out.println("❌ Lỗi khi thêm sản phẩm!");
                 } else {
                     System.out.println("✅ Thêm sản phẩm thành công!");
@@ -107,18 +124,16 @@ public class ProductServlet extends HttpServlet {
                 p.setProductId(id);
                 p.setProductName(name);
                 p.setDescription(desc);
-                p.setStatus(true);
                 p.setCategory(category);
 
-                boolean success = productDAO.updateProduct(p);
-                if (!success) {
+                if (!productDAO.updateProduct(p)) {
                     System.out.println("❌ Lỗi khi cập nhật sản phẩm!");
                 } else {
                     System.out.println("✅ Cập nhật sản phẩm thành công!");
                 }
             }
 
-            response.sendRedirect("admin-product");
+            response.sendRedirect("admin-product?page=1");
 
         } catch (Exception e) {
             System.out.println("❌ Exception trong doPost:");

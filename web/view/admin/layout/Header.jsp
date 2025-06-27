@@ -49,7 +49,7 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="dashboard"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
+                        <li><a href="listmedicine"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
 
                         <li class="sidebar-dropdown">
                             <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Quản lý giống loài</a>
@@ -70,11 +70,20 @@
 
                         <li><a href="listslider"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý trình chiếu</a></li> 
 
-                        <li><a href="listshift"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý ca làm việc</a></li>
+                       
 
-                        <li><a href="listservice"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý dịch vụ</a></li>
-                        <li><a href="admin-listcategories"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lí danh mục</a></li>
-                        <li><a href="admin-listratings"><i class="uil uil-feedback me-2 d-inline-block"></i>Quản lí đánh giá</a></li>
+                        <li class="sidebar-dropdown">
+                            <a href="javascript:void(0)"><i class="uil uil-folder me-2 d-inline-block"></i>Quản lý sản phẩm</a>
+                            <div class="sidebar-submenu">
+                                <ul>
+                                    <li><a href="admin-category">Quản lý danh mục</a></li>
+                                    <li><a href="admin-product">Danh sách sản phẩm</a></li>
+                                    <li><a href="admin-productVariantWeight">Danh sách khối lượng</a></li>
+                                    <li><a href="admin-productVariantFlavor">Danh sách mùi hương</a></li>
+                                    <li><a href="admin-productVariant">Danh sách biến thể</a></li>
+                                </ul>
+                            </div>
+                        </li>
 
                     </ul>
                     <!-- sidebar-menu  -->

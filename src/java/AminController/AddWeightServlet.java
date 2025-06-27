@@ -3,7 +3,6 @@ package AminController;
 import DAO.ProductVariantWeightDAO;
 import Model.ProductVariantWeight;
 import java.io.IOException;
-import java.math.BigDecimal;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,7 +17,7 @@ public class AddWeightServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("view/management/content/AddWeight.jsp").forward(request, response);
+        request.getRequestDispatcher("view/admin/content/AddWeight.jsp").forward(request, response);
     }
 
     @Override
@@ -27,35 +26,35 @@ public class AddWeightServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
         String weightStr = request.getParameter("weight");
+        String statusStr = request.getParameter("status");
 
         try {
-            BigDecimal weight = new BigDecimal(weightStr.trim());
+            double weight = Double.parseDouble(weightStr.trim());
+            boolean status = "1".equals(statusStr); // "1" = đang bán
 
-            if (weight.compareTo(BigDecimal.ZERO) <= 0) {
+            if (weight <= 0) {
                 throw new NumberFormatException("Trọng lượng phải lớn hơn 0.");
             }
 
             ProductVariantWeight w = new ProductVariantWeight();
             w.setWeight(weight);
+            w.setStatus(status);
 
-            boolean success = dao.insert(w);
+            dao.insert(w); // Không cần kiểm tra trả về vì DAO đang dùng void
 
-            if (success) {
-                response.sendRedirect("productVariantWeight");
-            } else {
-                request.setAttribute("error", "Thêm thất bại! Vui lòng thử lại.");
-                request.setAttribute("weight", weightStr);
-                request.getRequestDispatcher("view/management/content/AddWeight.jsp").forward(request, response);
-            }
+            response.sendRedirect("admin-productVariantWeight");
 
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Trọng lượng không hợp lệ! " + e.getMessage());
             request.setAttribute("weight", weightStr);
-            request.getRequestDispatcher("view/management/content/AddWeight.jsp").forward(request, response);
+            request.setAttribute("status", statusStr);
+            request.getRequestDispatcher("view/admin/content/AddWeight.jsp").forward(request, response);
+
         } catch (Exception e) {
             request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
             request.setAttribute("weight", weightStr);
-            request.getRequestDispatcher("view/management/content/AddWeight.jsp").forward(request, response);
+            request.setAttribute("status", statusStr);
+            request.getRequestDispatcher("view/admin/content/AddWeight.jsp").forward(request, response);
         }
     }
 }

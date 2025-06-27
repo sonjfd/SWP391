@@ -23,32 +23,20 @@ public class ProductVariantServlet extends HttpServlet {
     private final ProductDAO productDAO = new ProductDAO();
     private final ProductVariantWeightDAO weightDAO = new ProductVariantWeightDAO();
     private final ProductVariantFlavorDAO flavorDAO = new ProductVariantFlavorDAO();
+    private final int PAGE_SIZE = 5;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
+
         if (action == null || action.equals("list")) {
-            List<ProductVariant> variants = variantDAO.getAllVariants();
-            request.setAttribute("variants", variants);
-            request.getRequestDispatcher("view/management/content/ProductVariantList.jsp").forward(request, response);
+            handleList(request, response);
 
         } else if (action.equals("add")) {
             loadFormData(request);
-            request.getRequestDispatcher("view/management/content/AddProductVariant.jsp").forward(request, response);
-
-        } else if (action.equals("edit")) {
-            try {
-                int id = Integer.parseInt(request.getParameter("id"));
-                ProductVariant variant = variantDAO.getById(id);
-                loadFormData(request);
-                request.setAttribute("variant", variant);
-                request.getRequestDispatcher("view/management/content/EditProductVariant.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendRedirect("admin-productVariant?action=list");
-            }
+            request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);
 
         } else if (action.equals("delete")) {
             try {
@@ -61,6 +49,37 @@ public class ProductVariantServlet extends HttpServlet {
         }
     }
 
+    private void handleList(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String keyword = request.getParameter("keyword");
+        String statusRaw = request.getParameter("status");
+        String pageRaw = request.getParameter("page");
+
+        Boolean status = null;
+        if ("1".equals(statusRaw)) status = true;
+        else if ("0".equals(statusRaw)) status = false;
+
+        int page = 1;
+        if (pageRaw != null) {
+            try {
+                page = Integer.parseInt(pageRaw);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        List<ProductVariant> variants = variantDAO.search(keyword, status, page, PAGE_SIZE);
+        int total = variantDAO.countSearch(keyword, status);
+        int totalPage = (int) Math.ceil((double) total / PAGE_SIZE);
+
+        request.setAttribute("variants", variants);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPage", totalPage);
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("status", statusRaw); // giữ lại lựa chọn trong form lọc
+
+        request.getRequestDispatcher("view/admin/content/ProductVariantList.jsp").forward(request, response);
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -69,7 +88,6 @@ public class ProductVariantServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
-        String name = request.getParameter("variant_name");
         String productIdRaw = request.getParameter("product_id");
         String weightIdRaw = request.getParameter("weight_id");
         String flavorIdRaw = request.getParameter("flavor_id");
@@ -87,7 +105,6 @@ public class ProductVariantServlet extends HttpServlet {
             boolean status = "1".equals(statusRaw);
 
             ProductVariant variant = new ProductVariant();
-            variant.setVariantName(name);
             variant.setProductId(productId);
             variant.setWeightId(weightId);
             variant.setFlavorId(flavorId);
@@ -101,14 +118,6 @@ public class ProductVariantServlet extends HttpServlet {
                     throw new Exception("Biến thể với cùng sản phẩm, trọng lượng và hương vị đã tồn tại.");
                 }
                 variantDAO.add(variant);
-
-            } else if ("edit".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("variant_id"));
-                variant.setProductVariantId(id);
-                if (variantDAO.isDuplicateVariantExcludeId(productId, weightId, flavorId, id)) {
-                    throw new Exception("Biến thể với cùng sản phẩm, trọng lượng và hương vị đã tồn tại.");
-                }
-                variantDAO.update(variant);
             }
 
             response.sendRedirect("admin-productVariant?action=list");
@@ -117,19 +126,7 @@ public class ProductVariantServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi: " + e.getMessage());
             loadFormData(request);
-
-            if ("edit".equals(action)) {
-                try {
-                    int id = Integer.parseInt(request.getParameter("variant_id"));
-                    ProductVariant fallback = variantDAO.getById(id);
-                    request.setAttribute("variant", fallback);
-                } catch (Exception ignored) {
-                }
-                request.getRequestDispatcher("view/management/content/EditProductVariant.jsp").forward(request, response);
-
-            } else {
-                request.getRequestDispatcher("view/management/content/AddProductVariant.jsp").forward(request, response);
-            }
+            request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);
         }
     }
 

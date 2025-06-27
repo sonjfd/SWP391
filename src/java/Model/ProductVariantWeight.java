@@ -1,17 +1,19 @@
 package Model;
 
-import java.math.BigDecimal;
+
 
 public class ProductVariantWeight {
     private int weightId;
-    private BigDecimal weight;
+    private double weight;
+    private boolean status;
 
     public ProductVariantWeight() {
     }
 
-    public ProductVariantWeight(int weightId, BigDecimal weight) {
+    public ProductVariantWeight(int weightId, double weight, boolean status) {
         this.weightId = weightId;
         this.weight = weight;
+        this.status = status;
     }
 
     public int getWeightId() {
@@ -22,16 +24,27 @@ public class ProductVariantWeight {
         this.weightId = weightId;
     }
 
-    public BigDecimal getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(BigDecimal weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     @Override
     public String toString() {
-        return "ProductVariantWeight{" + "weightId=" + weightId + ", weight=" + weight + '}';
+        return "ProductVariantWeight{" + "weightId=" + weightId + ", weight=" + weight + ", status=" + status + '}';
     }
+
+    
+   
 }

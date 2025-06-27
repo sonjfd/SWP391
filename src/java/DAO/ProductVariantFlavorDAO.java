@@ -2,107 +2,204 @@ package DAO;
 
 import Model.ProductVariantFlavor;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ProductVariantFlavorDAO {
 
-    // Lấy tất cả hương vị
+    private ProductVariantFlavor extract(ResultSet rs) throws SQLException {
+        ProductVariantFlavor f = new ProductVariantFlavor();
+        f.setFlavorId(rs.getInt("flavor_id"));
+        f.setFlavor(rs.getString("flavor"));
+        f.setStatus(rs.getBoolean("status"));
+        return f;
+    }
+
+    // ✅ Lấy tất cả
     public List<ProductVariantFlavor> getAll() {
         List<ProductVariantFlavor> list = new ArrayList<>();
         String sql = "SELECT * FROM product_variant_flavors";
-
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) list.add(extract(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-            while (rs.next()) {
-                ProductVariantFlavor f = new ProductVariantFlavor();
-                f.setFlavorId(rs.getInt("flavor_id"));
-                f.setFlavor(rs.getString("flavor"));
-                list.add(f);
+    // ✅ Lấy theo ID
+    public ProductVariantFlavor getById(int flavorId) {
+        String sql = "SELECT * FROM product_variant_flavors WHERE flavor_id = ?";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, flavorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return extract(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // ✅ Thêm mới
+    public boolean insert(ProductVariantFlavor f) {
+        String sql = "INSERT INTO product_variant_flavors (flavor, status) VALUES (?, ?)";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, f.getFlavor());
+            ps.setBoolean(2, f.isStatus());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ✅ Cập nhật
+    public boolean update(ProductVariantFlavor f) {
+        String sql = "UPDATE product_variant_flavors SET flavor = ?, status = ? WHERE flavor_id = ?";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, f.getFlavor());
+            ps.setBoolean(2, f.isStatus());
+            ps.setInt(3, f.getFlavorId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ✅ Xoá cứng
+    public boolean delete(int flavorId) {
+        String sql = "DELETE FROM product_variant_flavors WHERE flavor_id = ?";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, flavorId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ✅ Xoá mềm (ẩn)
+    public boolean softDelete(int flavorId) {
+        String sql = "UPDATE product_variant_flavors SET status = 0 WHERE flavor_id = ?";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, flavorId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ✅ Lấy theo trạng thái
+    public List<ProductVariantFlavor> getByStatus(boolean status) {
+        List<ProductVariantFlavor> list = new ArrayList<>();
+        String sql = "SELECT * FROM product_variant_flavors WHERE status = ?";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setBoolean(1, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(extract(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // ✅ Phân trang
+    public List<ProductVariantFlavor> getByPage(int page, int pageSize) {
+        List<ProductVariantFlavor> list = new ArrayList<>();
+        String sql = "SELECT * FROM product_variant_flavors ORDER BY flavor_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(extract(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // ✅ Phân trang theo trạng thái
+    public List<ProductVariantFlavor> getByStatusAndPage(boolean status, int page, int pageSize) {
+        List<ProductVariantFlavor> list = new ArrayList<>();
+        String sql = "SELECT * FROM product_variant_flavors WHERE status = ? ORDER BY flavor_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setBoolean(1, status);
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(extract(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // ✅ Tìm kiếm + trạng thái + phân trang
+    public List<ProductVariantFlavor> search(String flavor, Boolean status, int page, int pageSize) {
+        List<ProductVariantFlavor> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM product_variant_flavors WHERE 1=1");
+
+        if (flavor != null && !flavor.isEmpty()) sql.append(" AND flavor LIKE ?");
+        if (status != null) sql.append(" AND status = ?");
+        sql.append(" ORDER BY flavor_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            int i = 1;
+            if (flavor != null && !flavor.isEmpty()) ps.setString(i++, "%" + flavor + "%");
+            if (status != null) ps.setBoolean(i++, status);
+            ps.setInt(i++, (page - 1) * pageSize);
+            ps.setInt(i, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(extract(rs));
             }
 
         } catch (SQLException e) {
-            System.err.println("Lỗi getAll(): " + e.getMessage());
+            e.printStackTrace();
         }
 
         return list;
     }
 
-    // Lấy theo ID
-    public ProductVariantFlavor getById(int flavorId) {
-        String sql = "SELECT * FROM product_variant_flavors WHERE flavor_id = ?";
+    // ✅ Đếm kết quả tìm kiếm
+    public int countSearch(String flavor, Boolean status) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM product_variant_flavors WHERE 1=1");
+
+        if (flavor != null && !flavor.isEmpty()) sql.append(" AND flavor LIKE ?");
+        if (status != null) sql.append(" AND status = ?");
 
         try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
 
-            ps.setInt(1, flavorId);
+            int i = 1;
+            if (flavor != null && !flavor.isEmpty()) ps.setString(i++, "%" + flavor + "%");
+            if (status != null) ps.setBoolean(i, status);
+
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    ProductVariantFlavor f = new ProductVariantFlavor();
-                    f.setFlavorId(rs.getInt("flavor_id"));
-                    f.setFlavor(rs.getString("flavor"));
-                    return f;
-                }
+                if (rs.next()) return rs.getInt(1);
             }
 
         } catch (SQLException e) {
-            System.err.println("Lỗi getById(): " + e.getMessage());
+            e.printStackTrace();
         }
 
-        return null;
-    }
-
-    // Thêm mới
-    public boolean insert(ProductVariantFlavor f) {
-        String sql = "INSERT INTO product_variant_flavors (flavor) VALUES (?)";
-
-        try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, f.getFlavor());
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi insert(): " + e.getMessage());
-        }
-
-        return false;
-    }
-
-    // Cập nhật
-    public boolean update(ProductVariantFlavor f) {
-        String sql = "UPDATE product_variant_flavors SET flavor = ? WHERE flavor_id = ?";
-
-        try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, f.getFlavor());
-            ps.setInt(2, f.getFlavorId());
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi update(): " + e.getMessage());
-        }
-
-        return false;
-    }
-
-    // Xoá theo ID
-    public boolean deleteById(int flavorId) {
-        String sql = "DELETE FROM product_variant_flavors WHERE flavor_id = ?";
-
-        try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, flavorId);
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi deleteById(): " + e.getMessage());
-        }
-
-        return false;
+        return 0;
     }
 }

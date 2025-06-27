@@ -14,13 +14,15 @@ import java.sql.Timestamp;
 public class ProductVariantFlavor {
    private int flavorId;
     private String flavor;
+    private boolean status;
 
     public ProductVariantFlavor() {
     }
 
-    public ProductVariantFlavor(int flavorId, String flavor) {
+    public ProductVariantFlavor(int flavorId, String flavor, boolean status) {
         this.flavorId = flavorId;
         this.flavor = flavor;
+        this.status = status;
     }
 
     public int getFlavorId() {
@@ -39,12 +41,19 @@ public class ProductVariantFlavor {
         this.flavor = flavor;
     }
 
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "ProductVariantFlavor{" + "flavorId=" + flavorId + ", flavor=" + flavor + '}';
+        return "ProductVariantFlavor{" + "flavorId=" + flavorId + ", flavor=" + flavor + ", status=" + status + '}';
     }
 
     
-
     
 }

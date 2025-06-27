@@ -29,7 +29,7 @@ public class AddProductVariantServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         loadFormData(request);
-        request.getRequestDispatcher("view/management/content/AddProductVariant.jsp").forward(request, response);
+        request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);
     }
 
     @Override
@@ -40,25 +40,21 @@ public class AddProductVariantServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // Lấy dữ liệu từ form
-            String variantName = request.getParameter("variant_name");
             int productId = Integer.parseInt(request.getParameter("product_id"));
             int weightId = Integer.parseInt(request.getParameter("weight_id"));
             int flavorId = Integer.parseInt(request.getParameter("flavor_id"));
             double price = Double.parseDouble(request.getParameter("price"));
             int stockQuantity = Integer.parseInt(request.getParameter("stock_quantity"));
-            String statusRaw = request.getParameter("status");
-            boolean status = "1".equals(statusRaw);
+            boolean status = "1".equals(request.getParameter("status"));
             String image = request.getParameter("image");
 
-            // Kiểm tra trùng biến thể
+            // Kiểm tra trùng lặp
             if (variantDAO.isDuplicateVariant(productId, weightId, flavorId)) {
                 throw new Exception("Biến thể đã tồn tại với cùng sản phẩm, khối lượng và hương vị.");
             }
 
             // Tạo đối tượng ProductVariant
             ProductVariant variant = new ProductVariant();
-            variant.setVariantName(variantName);
             variant.setProductId(productId);
             variant.setWeightId(weightId);
             variant.setFlavorId(flavorId);
@@ -67,18 +63,15 @@ public class AddProductVariantServlet extends HttpServlet {
             variant.setStatus(status);
             variant.setImage(image);
 
-            // Thêm vào database
+            // Thêm vào DB
             variantDAO.add(variant);
-
-            // Chuyển hướng về danh sách biến thể
             response.sendRedirect("admin-productVariant?action=list");
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi: " + e.getMessage());
 
-            // Gửi lại dữ liệu đã nhập để người dùng không cần nhập lại
-            request.setAttribute("variant_name", request.getParameter("variant_name"));
+            // Giữ lại dữ liệu form
             request.setAttribute("product_id", request.getParameter("product_id"));
             request.setAttribute("weight_id", request.getParameter("weight_id"));
             request.setAttribute("flavor_id", request.getParameter("flavor_id"));
@@ -88,11 +81,10 @@ public class AddProductVariantServlet extends HttpServlet {
             request.setAttribute("image", request.getParameter("image"));
 
             loadFormData(request);
-            request.getRequestDispatcher("view/management/content/AddProductVariant.jsp").forward(request, response);
+            request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);
         }
     }
 
-    // Nạp dữ liệu dropdown
     private void loadFormData(HttpServletRequest request) {
         List<Product> products = productDAO.getAllActiveProducts();
         List<ProductVariantWeight> weights = weightDAO.getAllWeights();

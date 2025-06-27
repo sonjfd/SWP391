@@ -20,37 +20,74 @@ public class ProductVariantFlavorServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
+        if (action == null) action = "list";
 
-        if (action == null || action.equals("list")) {
-            List<ProductVariantFlavor> list = flavorDAO.getAll();
-            request.setAttribute("list", list);
-            request.getRequestDispatcher("view/management/content/FlavorList.jsp").forward(request, response);
+        switch (action) {
+            case "add":
+                request.getRequestDispatcher("view/admin/content/AddFlavor.jsp").forward(request, response);
+                break;
 
-        } else if (action.equals("add")) {
-            request.getRequestDispatcher("view/management/content/AddFlavor.jsp").forward(request, response);
-
-        } else if (action.equals("edit")) {
-            try {
-                int flavorId = Integer.parseInt(request.getParameter("id"));
-                ProductVariantFlavor flavor = flavorDAO.getById(flavorId);
-                if (flavor != null) {
-                    request.setAttribute("flavor", flavor);
-                    request.getRequestDispatcher("view/management/content/EditFlavor.jsp").forward(request, response);
-                } else {
+            case "edit":
+                try {
+                    int flavorId = Integer.parseInt(request.getParameter("id"));
+                    ProductVariantFlavor flavor = flavorDAO.getById(flavorId);
+                    if (flavor != null) {
+                        request.setAttribute("flavor", flavor);
+                        request.getRequestDispatcher("view/admin/content/EditFlavor.jsp").forward(request, response);
+                    } else {
+                        response.sendRedirect("admin-productVariantFlavor");
+                    }
+                } catch (NumberFormatException e) {
                     response.sendRedirect("admin-productVariantFlavor");
                 }
-            } catch (NumberFormatException e) {
-                response.sendRedirect("admin-productVariantFlavor");
-            }
+                break;
 
-        } else if (action.equals("delete")) {
-            try {
-                int flavorId = Integer.parseInt(request.getParameter("id"));
-                flavorDAO.deleteById(flavorId);
-            } catch (NumberFormatException e) {
-                // log lỗi nếu muốn
-            }
-            response.sendRedirect("admin-productVariantFlavor");
+            case "hide":
+                try {
+                    int flavorId = Integer.parseInt(request.getParameter("id"));
+                    flavorDAO.softDelete(flavorId);
+                } catch (NumberFormatException ignored) {}
+                response.sendRedirect("admin-productVariantFlavor");
+                break;
+
+            case "delete":
+                try {
+                    int flavorId = Integer.parseInt(request.getParameter("id"));
+                    flavorDAO.delete(flavorId);
+                } catch (NumberFormatException ignored) {}
+                response.sendRedirect("admin-productVariantFlavor");
+                break;
+
+            case "list":
+            default:
+                String kw = request.getParameter("keyword");
+                String statusStr = request.getParameter("status");
+                String pageStr = request.getParameter("page");
+
+                String flavorName = (kw != null) ? kw.trim() : "";
+                Boolean status = null;
+                int page = 1, pageSize = 5;
+
+                if (statusStr != null && !statusStr.isEmpty()) {
+                    status = statusStr.equals("1");
+                }
+
+                try {
+                    page = (pageStr != null) ? Integer.parseInt(pageStr) : 1;
+                } catch (NumberFormatException ignored) {}
+
+                List<ProductVariantFlavor> list = flavorDAO.search(flavorName, status, page, pageSize);
+                int total = flavorDAO.countSearch(flavorName, status);
+                int totalPage = (int) Math.ceil((double) total / pageSize);
+
+                request.setAttribute("list", list);
+                request.setAttribute("keyword", kw);
+                request.setAttribute("status", statusStr);
+                request.setAttribute("currentPage", page);
+                request.setAttribute("totalPage", totalPage);
+
+                request.getRequestDispatcher("view/admin/content/FlavorList.jsp").forward(request, response);
+                break;
         }
     }
 
@@ -66,25 +103,38 @@ public class ProductVariantFlavorServlet extends HttpServlet {
             return;
         }
 
+        String flavorName = request.getParameter("flavor");
+        String statusStr = request.getParameter("status");
+
         try {
-            String flavorName = request.getParameter("flavor");
+            boolean status = statusStr != null && statusStr.equals("1");
 
             ProductVariantFlavor f = new ProductVariantFlavor();
             f.setFlavor(flavorName);
+            f.setStatus(status);
 
             if (action.equals("add")) {
                 flavorDAO.insert(f);
-
             } else if (action.equals("edit")) {
                 int flavorId = Integer.parseInt(request.getParameter("flavorId"));
                 f.setFlavorId(flavorId);
                 flavorDAO.update(f);
             }
 
-        } catch (Exception e) {
-            System.err.println("Lỗi doPost(): " + e.getMessage());
-        }
+            response.sendRedirect("admin-productVariantFlavor");
 
-        response.sendRedirect("admin-productVariantFlavor");
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi xử lý dữ liệu!");
+            request.setAttribute("flavor", flavorName);
+            request.setAttribute("status", statusStr);
+
+            if (action.equals("edit")) {
+                request.setAttribute("flavorId", request.getParameter("flavorId"));
+                request.getRequestDispatcher("view/admin/content/EditFlavor.jsp").forward(request, response);
+            } else {
+                request.getRequestDispatcher("view/admin/content/AddFlavor.jsp").forward(request, response);
+            }
+        }
     }
 }

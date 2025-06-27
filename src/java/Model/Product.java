@@ -5,7 +5,6 @@
 package Model;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 /**
  *
@@ -23,11 +22,6 @@ public class Product {
     private Timestamp updatedAt;
 
     private Category category;
-    List<ProductVariant> productVariants;
-
-    public Product() {
-    }
-
     public Product(int productId, int categoryId, String productName, String description, String image, boolean status, Timestamp createdAt, Timestamp updatedAt, Category category) {
         this.productId = productId;
         this.categoryId = categoryId;
@@ -110,14 +104,6 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public List<ProductVariant> getProductVariants() {
-        return productVariants;
-    }
-
-    public void setProductVariants(List<ProductVariant> productVariants) {
-        this.productVariants = productVariants;
     }
 
     @Override

@@ -3,7 +3,6 @@ package AminController;
 import DAO.ProductVariantWeightDAO;
 import Model.ProductVariantWeight;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,37 +20,80 @@ public class ProductVariantWeightServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
+        if (action == null) action = "list";
 
-        if (action == null || action.equals("list")) {
-            List<ProductVariantWeight> list = weightDAO.getAllWeights();
-            request.setAttribute("list", list);
-            request.getRequestDispatcher("view/management/content/WeightList.jsp").forward(request, response);
+        switch (action) {
+            case "add":
+                request.getRequestDispatcher("view/admin/content/AddWeight.jsp").forward(request, response);
+                break;
 
-        } else if (action.equals("add")) {
-            request.getRequestDispatcher("view/management/content/AddWeight.jsp").forward(request, response);
-
-        } else if (action.equals("edit")) {
-            try {
-                int weightId = Integer.parseInt(request.getParameter("id"));
-                ProductVariantWeight weight = weightDAO.getByWeightId(weightId);
-                if (weight != null) {
-                    request.setAttribute("weight", weight);
-                    request.getRequestDispatcher("view/management/content/EditWeight.jsp").forward(request, response);
-                } else {
+            case "edit":
+                try {
+                    int weightId = Integer.parseInt(request.getParameter("id"));
+                    ProductVariantWeight weight = weightDAO.getById(weightId);
+                    if (weight != null) {
+                        request.setAttribute("weight", weight);
+                        request.getRequestDispatcher("view/admin/content/EditWeight.jsp").forward(request, response);
+                    } else {
+                        response.sendRedirect("admin-productVariantWeight");
+                    }
+                } catch (NumberFormatException e) {
                     response.sendRedirect("admin-productVariantWeight");
                 }
-            } catch (NumberFormatException e) {
-                response.sendRedirect("admin-productVariantWeight");
-            }
+                break;
 
-        } else if (action.equals("delete")) {
-            try {
-                int weightId = Integer.parseInt(request.getParameter("id"));
-                weightDAO.deleteByWeightId(weightId);
-            } catch (NumberFormatException e) {
-                // Có thể log lỗi nếu cần
-            }
-            response.sendRedirect("admin-productVariantWeight");
+            case "hide":
+                try {
+                    int weightId = Integer.parseInt(request.getParameter("id"));
+                    weightDAO.softDelete(weightId);
+                } catch (NumberFormatException ignored) {}
+                response.sendRedirect("admin-productVariantWeight");
+                break;
+
+            case "delete":
+                try {
+                    int weightId = Integer.parseInt(request.getParameter("id"));
+                    weightDAO.delete(weightId);
+                } catch (NumberFormatException ignored) {}
+                response.sendRedirect("admin-productVariantWeight");
+                break;
+
+            case "list":
+            default:
+                String kw = request.getParameter("keyword");
+                String statusStr = request.getParameter("status");
+                String pageStr = request.getParameter("page");
+
+                Double weight = null;
+                Boolean status = null;
+                int page = 1, pageSize = 5;
+
+                try {
+                    if (kw != null && !kw.trim().isEmpty()) {
+                        weight = Double.parseDouble(kw.trim());
+                    }
+                } catch (NumberFormatException ignored) {}
+
+                if (statusStr != null && !statusStr.isEmpty()) {
+                    status = statusStr.equals("1");
+                }
+
+                try {
+                    page = pageStr != null ? Integer.parseInt(pageStr) : 1;
+                } catch (NumberFormatException ignored) {}
+
+                List<ProductVariantWeight> list = weightDAO.search(weight, status, page, pageSize);
+                int total = weightDAO.countSearch(weight, status);
+                int totalPage = (int) Math.ceil((double) total / pageSize);
+
+                request.setAttribute("list", list);
+                request.setAttribute("keyword", kw);
+                request.setAttribute("status", statusStr);
+                request.setAttribute("currentPage", page);
+                request.setAttribute("totalPage", totalPage);
+
+                request.getRequestDispatcher("view/admin/content/WeightList.jsp").forward(request, response);
+                break;
         }
     }
 
@@ -67,26 +109,42 @@ public class ProductVariantWeightServlet extends HttpServlet {
             return;
         }
 
+        String weightStr = request.getParameter("weight");
+        String statusStr = request.getParameter("status");
+
         try {
-            String weightStr = request.getParameter("weight");
-            BigDecimal weightValue = new BigDecimal(weightStr); // Dùng BigDecimal
+            double weightValue = Double.parseDouble(weightStr.trim());
+            boolean status = statusStr != null && statusStr.equals("1");
+
+            if (weightValue <= 0) {
+                throw new NumberFormatException("Trọng lượng phải lớn hơn 0.");
+            }
 
             ProductVariantWeight w = new ProductVariantWeight();
             w.setWeight(weightValue);
+            w.setStatus(status);
 
             if (action.equals("add")) {
                 weightDAO.insert(w);
-
             } else if (action.equals("edit")) {
                 int weightId = Integer.parseInt(request.getParameter("weightId"));
                 w.setWeightId(weightId);
                 weightDAO.update(w);
             }
 
-        } catch (NumberFormatException | NullPointerException e) {
-            // Có thể redirect lại với thông báo lỗi
-        }
+            response.sendRedirect("admin-productVariantWeight");
 
-        response.sendRedirect("admin-productVariantWeight");
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Trọng lượng không hợp lệ! " + e.getMessage());
+            request.setAttribute("weight", weightStr);
+            request.setAttribute("status", statusStr);
+
+            if (action.equals("edit")) {
+                request.setAttribute("weightId", request.getParameter("weightId"));
+                request.getRequestDispatcher("view/admin/content/EditWeight.jsp").forward(request, response);
+            } else {
+                request.getRequestDispatcher("view/admin/content/AddWeight.jsp").forward(request, response);
+            }
+        }
     }
 }
