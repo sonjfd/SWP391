@@ -22,6 +22,10 @@ public class Product {
     private Timestamp updatedAt;
 
     private Category category;
+
+    public Product() {
+    }
+
     public Product(int productId, int categoryId, String productName, String description, String image, boolean status, Timestamp createdAt, Timestamp updatedAt, Category category) {
         this.productId = productId;
         this.categoryId = categoryId;

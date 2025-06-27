@@ -5,11 +5,9 @@
 
 package CommonController;
 
-import DAO.CategoriesDAO;
 import DAO.ProductDAO;
 import DAO.ProductVariantFlavorDAO;
 import DAO.ProductVariantWeightDAO;
-import Model.Categories;
 import Model.Product;
 import Model.ProductVariantFlavor;
 import Model.ProductVariantWeight;
@@ -64,20 +62,7 @@ public class HomeListProduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        CategoriesDAO cdao=new CategoriesDAO();
-        List<Categories>categories=cdao.getAllCategories();
-        request.setAttribute("categories", categories);
-        ProductVariantWeightDAO wdao=new ProductVariantWeightDAO();
-        List<ProductVariantWeight>weights=wdao.getAllWeights();
-        request.setAttribute("weights", weights);
         
-        ProductVariantFlavorDAO fdao=new ProductVariantFlavorDAO();
-        List<ProductVariantFlavor>flavors=fdao.getAll();
-        request.setAttribute("flavors", flavors);
-        
-        ProductDAO pdao=new ProductDAO();
-        List<Product>products=pdao.getAllActiveProducts();
-        request.setAttribute("products", products);
         
       request.getRequestDispatcher("view/home/content/HomeListProduct.jsp").forward(request, response);
     } 

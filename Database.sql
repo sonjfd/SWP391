@@ -484,3 +484,33 @@ CREATE TABLE sales_invoice_items (
   CONSTRAINT FK_invoice_items_variant FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
 );
 
+
+
+CREATE TABLE conversations (
+    conversation_id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    customer_id UNIQUEIDENTIFIER NOT NULL,
+    staff_id UNIQUEIDENTIFIER NOT NULL,
+    created_at DATETIME DEFAULT GETDATE(),
+    last_message_time DATETIME,
+
+    CONSTRAINT FK_conversations_customer FOREIGN KEY (customer_id) REFERENCES users(id),
+    CONSTRAINT FK_conversations_staff FOREIGN KEY (staff_id) REFERENCES users(id)
+);
+
+CREATE TABLE messages (
+    message_id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    conversation_id UNIQUEIDENTIFIER NOT NULL,
+    sender_id UNIQUEIDENTIFIER NOT NULL,
+    content NVARCHAR(MAX),
+    sent_at DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT FK_messages_conversation FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id),
+    CONSTRAINT FK_messages_sender FOREIGN KEY (sender_id) REFERENCES users(id)
+);
+CREATE TABLE consulting_staff (
+    id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    staff_id UNIQUEIDENTIFIER NOT NULL,
+    assigned_at DATETIME DEFAULT GETDATE(),
+    
+    CONSTRAINT FK_consulting_staff_user FOREIGN KEY (staff_id) REFERENCES users(id)
+);
