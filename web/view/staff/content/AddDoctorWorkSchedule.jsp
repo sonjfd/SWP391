@@ -122,8 +122,6 @@
                                         </c:forEach>
                                     </div>
                                 </div>
-
-                                <!-- Nút submit và nút quay lại -->
                                 <div class="d-flex justify-content-between mt-4">
                                     <a href="staff-list-work-schedule" class="btn btn-secondary px-4">
                                         <i class="bi bi-arrow-left"></i> Quay lại
@@ -151,7 +149,7 @@
                 const shifts = document.getElementById("shift").value;
                 const dayOfWeekCheckboxes = document.querySelectorAll('input[name="day_of_week"]:checked');
                 const monthsCheckboxes = document.querySelectorAll('input[name="months"]:checked');
-                const currentMonth = new Date().getMonth() + 1; // JavaScript: 0 = Jan -> +1
+                const currentMonth = new Date().getMonth() + 1; 
 
                 if (!doctor) {
                     alert("Vui lòng chọn bác sĩ.");
@@ -173,7 +171,6 @@
                     return false;
                 }
 
-                // Kiểm tra có tháng quá khứ nào được chọn không
                 for (let checkbox of monthsCheckboxes) {
                     const selectedMonth = parseInt(checkbox.value, 10);
                     if (selectedMonth < currentMonth) {

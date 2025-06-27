@@ -11,7 +11,7 @@ public class ProductVariant {
     private String variantName;
     private int weightId;
     private int flavorId;
-    private BigDecimal price;
+    private double price;
     private int stockQuantity;
     private boolean status; // true = 1 = Đang bán, false = 0 = Ngừng bán
     private String image;
@@ -27,7 +27,7 @@ public class ProductVariant {
     public ProductVariant() {}
 
     public ProductVariant(int productVariantId, int productId, String variantName,
-                          int weightId, int flavorId, BigDecimal price, int stockQuantity,
+                          int weightId, int flavorId, double price, int stockQuantity,
                           boolean status, String image, Date createdAt, Date updatedAt) {
         this.productVariantId = productVariantId;
         this.productId = productId;
@@ -83,11 +83,11 @@ public class ProductVariant {
         this.flavorId = flavorId;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

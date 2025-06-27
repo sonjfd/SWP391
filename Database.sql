@@ -406,6 +406,7 @@ CREATE TABLE appointment_symptoms (
 
 
 
+-- Danh mục sản phẩm
 CREATE TABLE categories (
   category_id INT PRIMARY KEY IDENTITY(1,1),
   category_name NVARCHAR(50) UNIQUE NOT NULL,
@@ -413,17 +414,18 @@ CREATE TABLE categories (
   status BIT DEFAULT 1
 );
 
--- Trọng lượng
+-- Trọng lượng biến thể
 CREATE TABLE product_variant_weights (
   weight_id INT PRIMARY KEY IDENTITY(1,1),
   weight DECIMAL(10,2) NOT NULL,
+  status BIT DEFAULT 1
 );
 
--- Hương vị
+-- Hương vị biến thể
 CREATE TABLE product_variant_flavors (
   flavor_id INT PRIMARY KEY IDENTITY(1,1),
   flavor NVARCHAR(50) NOT NULL,
-
+  status BIT DEFAULT 1
 );
 
 -- Sản phẩm
@@ -438,11 +440,10 @@ CREATE TABLE products (
   CONSTRAINT FK_products_categories FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
--- Biến thể sản phẩm
+-- Biến thể sản phẩm (bỏ variant_name, dùng category_name để hiển thị)
 CREATE TABLE product_variants (
   product_variant_id INT PRIMARY KEY IDENTITY(1,1),
   product_id INT NOT NULL,
-  variant_name NVARCHAR(100) NOT NULL,
   weight_id INT NOT NULL,
   flavor_id INT NOT NULL,
   price DECIMAL(10,2) NOT NULL,
@@ -451,11 +452,15 @@ CREATE TABLE product_variants (
   image NVARCHAR(255),
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
+
+  -- Khóa ngoại
   CONSTRAINT FK_variants_products FOREIGN KEY (product_id) REFERENCES products(product_id),
   CONSTRAINT FK_variants_weights FOREIGN KEY (weight_id) REFERENCES product_variant_weights(weight_id),
-  CONSTRAINT FK_variants_flavors FOREIGN KEY (flavor_id) REFERENCES product_variant_flavors(flavor_id)
-);
+  CONSTRAINT FK_variants_flavors FOREIGN KEY (flavor_id) REFERENCES product_variant_flavors(flavor_id),
 
+  -- Ràng buộc: mỗi sản phẩm chỉ có 1 biến thể theo weight + flavor
+  CONSTRAINT unique_product_variant UNIQUE (product_id, weight_id, flavor_id)
+);
 
 CREATE TABLE sales_invoices (
   invoice_id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),

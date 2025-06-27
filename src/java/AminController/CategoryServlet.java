@@ -1,4 +1,4 @@
-package Category;
+package AminController;
 
 import DAO.CategoryDAO;
 import Model.Category;

@@ -1,4 +1,4 @@
-package Category;
+package AminController;
 
 import DAO.ProductDAO;
 import DAO.ProductVariantDAO;
@@ -61,7 +61,7 @@ public class EditProductVariantServlet extends HttpServlet {
             int productId = Integer.parseInt(productIdRaw);
             int weightId = Integer.parseInt(weightIdRaw);
             int flavorId = Integer.parseInt(flavorIdRaw);
-            BigDecimal price = new BigDecimal(priceRaw);
+            double price = Double.parseDouble(priceRaw);
             int stock = Integer.parseInt(stockRaw);
             boolean status = "1".equals(statusRaw);
 

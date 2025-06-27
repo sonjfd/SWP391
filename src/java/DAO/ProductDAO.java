@@ -2,6 +2,7 @@ package DAO;
 
 import Model.Category;
 import Model.Product;
+import Model.ProductVariant;
 
 import java.sql.*;
 import java.util.*;
@@ -12,19 +13,21 @@ public class ProductDAO extends DBContext {
     public List<Product> getAllActiveProducts() {
         List<Product> list = new ArrayList<>();
         String sql = """
-            SELECT p.product_id, p.category_id, p.product_name, p.description, 
-                   p.status, p.created_at, p.updated_at,
-                   c.category_name, 
-                   c.description AS category_description, 
-                   c.status AS category_status
-            FROM products p
-            JOIN categories c ON p.category_id = c.category_id
-            WHERE p.status = 1
+                SELECT p.product_id, p.category_id, p.product_name, p.description, 
+                                            p.status, p.created_at, p.updated_at,
+                                            c.category_name, 
+                                            c.description AS category_description, 
+                                            c.status AS category_status,
+                                            pv.product_variant_id, pv.variant_name, pv.image, pv.price, pv.stock_quantity
+                                     FROM products p
+                                     JOIN categories c ON p.category_id = c.category_id
+                                      JOIN product_variants pv ON p.product_id = pv.product_id
+                                     WHERE p.status = 1
+              	
+            			
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 // Gán category
@@ -44,6 +47,18 @@ public class ProductDAO extends DBContext {
                 product.setUpdatedAt(rs.getTimestamp("updated_at"));
                 product.setCategory(category);
 
+                List<ProductVariant> productVariants = new ArrayList<>();
+                if (rs.getInt("product_variant_id") > 0) {
+                    ProductVariant variant = new ProductVariant();
+                    variant.setProductVariantId(rs.getInt("product_variant_id"));
+                    variant.setVariantName(rs.getString("variant_name"));
+                    variant.setImage(rs.getString("image"));
+                    variant.setPrice(rs.getDouble("price"));
+                    variant.setStockQuantity(rs.getInt("stock_quantity"));
+                    productVariants.add(variant);
+                }
+                product.setProductVariants(productVariants);
+
                 list.add(product);
             }
 
@@ -60,8 +75,7 @@ public class ProductDAO extends DBContext {
             VALUES (?, ?, ?, ?, GETDATE(), GETDATE())
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, product.getCategory().getCategoryId());
             ps.setString(2, product.getProductName());
@@ -84,8 +98,7 @@ public class ProductDAO extends DBContext {
             WHERE product_id = ?
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, product.getCategory().getCategoryId());
             ps.setString(2, product.getProductName());
@@ -105,8 +118,7 @@ public class ProductDAO extends DBContext {
     public boolean softDeleteProduct(int id) {
         String sql = "UPDATE products SET status = 0, updated_at = GETDATE() WHERE product_id = ?";
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
@@ -130,8 +142,7 @@ public class ProductDAO extends DBContext {
             WHERE p.product_id = ?
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
 
@@ -160,5 +171,11 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        ProductDAO dao = new ProductDAO();
+        Product p=dao.getProductById(5);
+        System.out.println(p.getProductVariants());
     }
 }

@@ -161,16 +161,7 @@
 
                                         
 
-                                        <div class="col-lg-12 mt-3 text-center">
-                                            <h6 class="text-muted">Hoặc</h6>
-                                        </div>
-
-                                        <div class="col-12 mt-3">
-                                            <div class="d-grid">
-                                                <a href="javascript:void(0)" class="btn btn-soft-danger"><i class="uil uil-google"></i> Google</a>
-                                            </div>
-
-                                        </div><!--end col-->
+                         
 
                                         <div class="mx-auto text-center">
                                             <p class="mb-0 mt-3"><small class="text-dark me-2">Đã có tài khoản ?</small> <a href="login" class="text-dark fw-bold text-decoration-underline">Đăng nhập</a></p>

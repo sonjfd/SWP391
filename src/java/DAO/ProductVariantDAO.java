@@ -39,7 +39,7 @@ public class ProductVariantDAO extends DBContext {
                 pv.setVariantName(rs.getString("variant_name"));
                 pv.setWeight(rs.getBigDecimal("weight"));
                 pv.setFlavorName(rs.getString("flavor"));
-                pv.setPrice(rs.getBigDecimal("price"));
+                pv.setPrice(rs.getDouble("price"));
                 pv.setStockQuantity(rs.getInt("stock_quantity"));
                 pv.setImage(rs.getString("image"));
                 pv.setStatus(rs.getBoolean("status"));
@@ -68,7 +68,7 @@ public class ProductVariantDAO extends DBContext {
             ps.setString(2, pv.getVariantName());
             ps.setInt(3, pv.getWeightId());
             ps.setInt(4, pv.getFlavorId());
-            ps.setBigDecimal(5, pv.getPrice());
+            ps.setDouble(5, pv.getPrice());
             ps.setInt(6, pv.getStockQuantity());
             ps.setBoolean(7, pv.isStatus());
             ps.setString(8, pv.getImage());
@@ -100,7 +100,7 @@ public class ProductVariantDAO extends DBContext {
             ps.setString(2, pv.getVariantName());
             ps.setInt(3, pv.getWeightId());
             ps.setInt(4, pv.getFlavorId());
-            ps.setBigDecimal(5, pv.getPrice());
+            ps.setDouble(5, pv.getPrice());
             ps.setInt(6, pv.getStockQuantity());
             ps.setBoolean(7, pv.isStatus());
             ps.setString(8, pv.getImage());
@@ -148,7 +148,7 @@ public class ProductVariantDAO extends DBContext {
                 pv.setVariantName(rs.getString("variant_name"));
                 pv.setWeightId(rs.getInt("weight_id"));
                 pv.setFlavorId(rs.getInt("flavor_id"));
-                pv.setPrice(rs.getBigDecimal("price"));
+                pv.setPrice(rs.getDouble("price"));
                 pv.setStockQuantity(rs.getInt("stock_quantity"));
                 pv.setStatus(rs.getBoolean("status"));
                 pv.setImage(rs.getString("image"));

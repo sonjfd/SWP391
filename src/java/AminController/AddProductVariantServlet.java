@@ -1,4 +1,4 @@
-package Category;
+package AminController;
 
 import DAO.ProductDAO;
 import DAO.ProductVariantDAO;
@@ -11,7 +11,6 @@ import Model.ProductVariantWeight;
 import Model.ProductVariantFlavor;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -46,7 +45,7 @@ public class AddProductVariantServlet extends HttpServlet {
             int productId = Integer.parseInt(request.getParameter("product_id"));
             int weightId = Integer.parseInt(request.getParameter("weight_id"));
             int flavorId = Integer.parseInt(request.getParameter("flavor_id"));
-            BigDecimal price = new BigDecimal(request.getParameter("price"));
+            double price = Double.parseDouble(request.getParameter("price"));
             int stockQuantity = Integer.parseInt(request.getParameter("stock_quantity"));
             String statusRaw = request.getParameter("status");
             boolean status = "1".equals(statusRaw);

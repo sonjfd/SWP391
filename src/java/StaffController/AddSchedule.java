@@ -71,13 +71,9 @@ public class AddSchedule extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // lấy ra danh sách doctor
         StaffDAO sdao = new StaffDAO();
         List<Doctor> doctors = sdao.getAllDoctors();
         request.setAttribute("doctors", doctors);
-
-        //lấy ra danh sách ca làm việc
-        
         List<Shift> shifts = sdao.getAllShift();
         request.setAttribute("shifts", shifts);
 

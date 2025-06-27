@@ -1,4 +1,4 @@
-package Category;
+package AminController;
 import Model.Supplier;
 import DAO.SupplierDAO;
 import DAO.DBContext; // ✅ Đảm bảo bạn thêm dòng này

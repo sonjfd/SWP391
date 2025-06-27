@@ -1,6 +1,9 @@
 
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -29,11 +32,6 @@
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
         <style>
-            .card {
-                width: 100%;
-                margin-bottom: 20px; /* Thêm khoảng cách dưới mỗi sản phẩm */
-            }
-
             .wrapper {
                 margin-bottom: 30px; /* Khoảng cách giữa các hàng */
                 margin-top: 40px;
@@ -53,32 +51,41 @@
                 gap: 10px;
             }
 
-            .card-body {
-                padding: 15px;
-            }
-
-            .card-title {
-                font-size: 18px;
-            }
-
-            .card-text {
-                font-size: 14px;
-                color: #555;
-            }
-
             .btn-primary {
                 width: 100%;
+                padding: 10px 15px;
+                font-size: 16px;
+                border-radius: 5px;
+                background-color: #007bff; /* Màu nền cho nút */
+                color: white;
+                border: none;
+                transition: background-color 0.3s ease; /* Thêm hiệu ứng khi hover */
             }
 
+            .btn-primary:hover {
+                background-color: #0056b3; /* Màu nền khi hover */
+            }
+
+            /* Button filter */
             .btn-filter {
                 width: 100%;
                 margin-top: 15px;
+                padding: 10px 15px;
+                background-color: #f8f9fa; /* Màu nền sáng cho nút lọc */
+                border: 1px solid #ddd; /* Viền xung quanh nút lọc */
+                font-size: 16px;
             }
 
+            .btn-filter:hover {
+                background-color: #e2e6ea; /* Màu nền khi hover */
+            }
+
+            /* Form control */
             .form-control {
-                margin-bottom: 1rem;
+                margin-bottom: 1rem; /* Khoảng cách dưới các trường input */
             }
 
+            /* Load more link */
             .load-more-link {
                 text-align: center;
                 margin-top: 20px;
@@ -93,6 +100,7 @@
             .load-more-link a:hover {
                 text-decoration: underline;
             }
+
         </style>
 
     <body>
@@ -112,26 +120,28 @@
                                 </button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#categoryAccordion">
-                                <ul class="list-group">
-                                    <li class="list-group-item">Thức Ăn</li>
-                                    <li class="list-group-item">Đồ Chơi</li>
-                                    <li class="list-group-item">Phụ Kiện</li>
-                                    <li class="list-group-item">Sản Phẩm Chăm Sóc</li>
-                                </ul>
+                                <div class="list-group">
+                                    <c:forEach var="cate" items="${categories}">
+                                        <button class="list-group-item list-group-item-action" onclick="filterByCate(${cate.id})">
+                                            ${cate.name} 
+                                        </button>
+                                    </c:forEach>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+
                     <!-- Sorting Section -->
                     <div class="row mt-3">
-                      
+
                         <div class="col-6">
-                                <a href="#" id="sortAscending" class="btn btn-link">Giá Tăng Dần</a>
-                            </div>
+                            <a href="#" id="sortAscending" class="btn btn-link">Giá Tăng Dần</a>
+                        </div>
                         <div class="col-6">
-                                <a href="#" id="sortDescending" class="btn btn-link">Giá Giảm Dần</a>
-                            </div>
-                        
+                            <a href="#" id="sortDescending" class="btn btn-link">Giá Giảm Dần</a>
+                        </div>
+
                     </div>
 
 
@@ -140,32 +150,25 @@
                         <div class="row mt-3">
                             <h5>Lọc Theo Trọng Lượng</h5>
                             <div class="checkbox-container">
-                                <div>
-                                    <input type="checkbox" id="weight1" name="weight" value="low-high" class="form-check-input">
-                                    <label for="weight1" class="form-check-label">Trọng Lượng Nhẹ Đến Nặng</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="weight2" name="weight" value="high-low" class="form-check-input">
-                                    <label for="weight2" class="form-check-label">Trọng Lượng Nặng Đến Nhẹ</label>
-                                </div>
+                                <c:forEach var="w" items="${weights}">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="weight" value="${w.weightId}" class="form-check-input" id="weight${w.weightId}">
+                                        <label class="form-check-label" for="weight${w.weightId}">${w.weight} kg</label>
+                                    </div>
+                                </c:forEach>
                             </div>
                         </div>
+
 
                         <div class="row mt-3">
                             <h5>Lọc Theo Hương Vị</h5>
                             <div class="checkbox-container">
-                                <div>
-                                    <input type="checkbox" id="flavor1" name="flavor" value="chicken" class="form-check-input">
-                                    <label for="flavor1" class="form-check-label">Gà</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="flavor2" name="flavor" value="fish" class="form-check-input">
-                                    <label for="flavor2" class="form-check-label">Cá</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="flavor3" name="flavor" value="beef" class="form-check-input">
-                                    <label for="flavor3" class="form-check-label">Bò</label>
-                                </div>
+                                <c:forEach var="f" items="${flavors}">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="weight" value="${f.flavorId}" class="form-check-input" id="weight${f.flavorId}">
+                                        <label class="form-check-label">${f.flavor} </label>
+                                    </div>
+                                </c:forEach>
                             </div>
                         </div>
 
@@ -191,37 +194,46 @@
                 <!-- Product List Section -->
                 <div class="col-md-9">
                     <div class="row">
-                        <!-- Product Card -->
-                        <div class="col-md-4 col-sm-6 mb-4">
-                            <div class="card">
-                                <img class="card-img-top" src="https://via.placeholder.com/150" alt="Sản phẩm">
-                                <div class="card-body">
-                                    <h5 class="card-title">Sản phẩm 1</h5>
-                                    <p class="card-text">Mô tả ngắn về sản phẩm.</p>
-                                    <p><strong>Giá: 100,000 VND</strong></p>
-                                    <a href="#" class="btn btn-primary">Mua Ngay</a>
+                        <c:forEach items="${products}" var="p">
+                            <div class="col-md-4 col-sm-6 mb-4">
+                                <div class="card h-100 shadow-sm">
+                                    <c:if test="${not empty p.productVariants}">
+                                        <img class="card-img-top img-fluid" 
+                                             src="${pageContext.request.contextPath}${p.productVariants[0].image}" 
+                                             alt="${p.productName}" 
+                                             style="height: 200px; object-fit: cover;">
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <h5 class="card-title text-truncate" title="${p.productName}">
+                                                ${p.productName}
+                                            </h5>
+                                            <p class="card-text text-muted" style="font-size: 0.9rem;">
+                                                ${p.description}
+                                            </p>
+                                            <div class="mb-2">
+                                                <span class="d-block"><strong>Giá:</strong> ${p.productVariants[0].price}₫</span>
+                                                <span class="d-block"><strong>Còn lại:</strong> ${p.productVariants[0].stockQuantity} sản phẩm</span>
+                                            </div>
+                                            <a href="product-detail?id=${p.productId}" class="btn btn-outline-primary btn-sm mt-auto w-100">
+                                                Xem chi tiết
+                                            </a>
+                                        </div>
+                                    </c:if>
                                 </div>
                             </div>
-                        </div>
-
-                       
-                        
+                        </c:forEach>
                     </div>
                 </div>
+
+
+
             </div>
         </div>
 
-
-
-
-
-
-
-
-
-
-
         <%@include file="../layout/Footer.jsp" %>
+
+        <script>
+
+        </script>
 
         <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

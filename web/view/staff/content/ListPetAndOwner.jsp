@@ -189,7 +189,6 @@
 
                             <th scope="col">Chủ sở hữu</th>
 
-                            <th scope="col">Trạng thái</th>
                             <th class="col">Xem chi tiết</th>
                             <th scope="col">Đổi chủ</th>
 
@@ -203,25 +202,7 @@
                                 <td>${p.name}</td>
                                 <td>${p.breed.name}</td> 
                                 <td>${p.user.fullName} (${p.user.email})</td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${p.status == 'active'}">
-                                            <span class="badge bg-success">Hoạt động</span>
-                                        </c:when>
-                                        <c:when test="${p.status == 'inactive'}">
-                                            <span class="badge bg-secondary">Không hoạt động</span>
-                                        </c:when>
-                                        <c:when test="${p.status == 'lost'}">
-                                            <span class="badge bg-warning text-dark">Đã thất lạc</span>
-                                        </c:when>
-                                        <c:when test="${p.status == 'deceased'}">
-                                            <span class="badge bg-danger">Đã chết</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="badge bg-dark">Không rõ</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
+                               
                                 <td>
 
                                     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#petModal-${p.id}">
