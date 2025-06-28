@@ -125,23 +125,12 @@
                                 </form>
                             </div>
                         </div>
-
-
-
-
                         <a href="staff-add-new-booking" class="btn btn-primary btn-sm">
                             <i class="bi bi-plus-circle"></i> Thêm lịch hẹn
                         </a>
-
-
                     </div>
 
                 </div>
-
-
-
-
-
                 <table class="table table-striped">
                     <thead class="bg-primary text-white">
                         <tr>

@@ -4,13 +4,7 @@
  */
 package CommonController;
 
-import DAO.CategoryDAO;
-import DAO.ProductDAO;
 import DAO.ProductVariantDAO;
-import DAO.ProductVariantFlavorDAO;
-import DAO.ProductVariantWeightDAO;
-import Model.Category;
-import Model.Product;
 import Model.ProductVariant;
 import Model.ProductVariantFlavor;
 import Model.ProductVariantWeight;
@@ -21,15 +15,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author Dell
  */
-@WebServlet(name = "HomeListProduct", urlPatterns = {"/home-list-product"})
-public class HomeListProduct extends HttpServlet {
+@WebServlet(name = "ProductDetails", urlPatterns = {"/product-details"})
+public class ProductDetails extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -48,10 +41,10 @@ public class HomeListProduct extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet HomeListProduct</title>");
+            out.println("<title>Servlet ProductDetails</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet HomeListProduct at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ProductDetails at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -67,58 +60,34 @@ public class HomeListProduct extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        int page = 1;
-        int limit = 6;
-
-        String pageParam = request.getParameter("page");
-        if (pageParam != null && !pageParam.isEmpty()) {
-            try {
-                page = Integer.parseInt(pageParam);
-            } catch (NumberFormatException e) {
-                page = 1;
-            }
-        }
-
-        String categoryIdStr = request.getParameter("categoryId");
-        String[] selectedWeights = request.getParameterValues("weight");
-        String[] selectedFlavors = request.getParameterValues("flavor");
-        String[] priceRanges = request.getParameterValues("priceRange");
-        String sort = request.getParameter("sort");
-
-        Integer categoryId = (categoryIdStr != null && !categoryIdStr.isEmpty()) ? Integer.parseInt(categoryIdStr) : null;
-
+    
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    try {
+        int productId = Integer.parseInt(request.getParameter("productid"));
+        int flavorId = request.getParameter("flavorId") != null ? Integer.parseInt(request.getParameter("flavorId")) : -1;
+        int weightId = request.getParameter("weightId") != null ? Integer.parseInt(request.getParameter("weightId")) : -1;
         ProductVariantDAO dao = new ProductVariantDAO();
-        List<ProductVariant> productVariants = dao.filterProductVariants(
-                categoryId, selectedWeights, selectedFlavors, priceRanges, sort, page, limit
-        );
+        List<ProductVariantFlavor> flavors = dao.getFlavorsByProductId(productId);
+        if (flavorId == -1 && !flavors.isEmpty()) {
+            flavorId = flavors.get(0).getFlavorId();
+        }
+        List<ProductVariantWeight> weights = dao.getWeightsByProductIdAndFlavor(productId, flavorId);
+        if (weightId == -1 && !weights.isEmpty()) {
+            weightId = weights.get(0).getWeightId();
+        }
+        ProductVariant selectedVariant = dao.getVariantByProductIdWeightFlavor(productId, weightId, flavorId);
+        request.setAttribute("selectedVariant", selectedVariant);
+        request.setAttribute("flavors", flavors);
+        request.setAttribute("weights", weights);
 
-        int totalRecords = dao.countFilteredVariants(categoryId, selectedWeights, selectedFlavors, priceRanges);
-        int totalPages = (int) Math.ceil((double) totalRecords / limit);
+        request.getRequestDispatcher("/view/home/content/ProductDetails.jsp").forward(request, response);
 
-        request.setAttribute("productVariants", productVariants);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-
-        request.setAttribute("selectedWeights", selectedWeights);
-        request.setAttribute("selectedFlavors", selectedFlavors);
-        request.setAttribute("selectedPriceRanges", priceRanges);
-        request.setAttribute("sort", sort);
-        request.setAttribute("categoryId", categoryId);
-
-        CategoryDAO cdao = new CategoryDAO();
-        request.setAttribute("categories", cdao.getAllCategories());
-
-        ProductVariantWeightDAO wdao = new ProductVariantWeightDAO();
-        request.setAttribute("weights", wdao.getAllWeights());
-
-        ProductVariantFlavorDAO fdao = new ProductVariantFlavorDAO();
-        request.setAttribute("flavors", fdao.getAll());
-
-        request.getRequestDispatcher("/view/home/content/HomeListProduct.jsp").forward(request, response);
-
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
+
 
     /**
      * Handles the HTTP <code>POST</code> method.

@@ -1189,23 +1189,23 @@ public class AppointmentDAO {
         return false;
     }
 
-//    public boolean cancelBooking(String id) {
-//        String sql = "Update appointments set status ='canceled' where id =? ;";
-//        try {
-//            Connection conn = DAO.DBContext.getConnection();
-//            PreparedStatement stmt = conn.prepareStatement(sql);
-//            stmt.setString(1, id);
-//
-//            int check = stmt.executeUpdate();
-//            if (check > 0) {
-//                return true;
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
+public void autoCancelAppointments() {
+    String sql = """
+        UPDATE appointments
+        SET status = 'canceled'
+        WHERE appointment_time < GETDATE()
+          AND status = 'booked'
+          AND checkin_status = 'noshow'
+    """;
+
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
     public static void main(String[] args) {
         AppointmentDAO dao = new AppointmentDAO(); // hoặc tên DAO thật sự bạn đang dùng
         List<Appointment> appointments = dao.getAllAppointment();

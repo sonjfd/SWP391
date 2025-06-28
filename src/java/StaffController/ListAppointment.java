@@ -69,7 +69,6 @@ public class ListAppointment extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -77,16 +76,22 @@ public class ListAppointment extends HttpServlet {
         String dateStr = request.getParameter("date");
         String doctorId = request.getParameter("doctor");
         AppointmentDAO appointmentDAO = new AppointmentDAO();
+        appointmentDAO.autoCancelAppointments();
+
         StaffDAO staffDAO = new StaffDAO();
         ExaminationPrice price = appointmentDAO.getExaminationPrice();
         request.setAttribute("ExaminationPrice", price);
+        
         ClinicInfoDAO clinicdao = new ClinicInfoDAO();
         ClinicInfo clinic = clinicdao.getClinicInfo();
         request.setAttribute("ClinicInfo", clinic);
+        
         List<Shift> shifts = staffDAO.getAllShift();
         List<Doctor> doctors = staffDAO.getAllDoctors();
         request.setAttribute("shifts", shifts);
-        request.setAttribute("doctors", doctors);    
+        request.setAttribute("doctors", doctors);
+        
+        
         int slotId = -1;
         java.sql.Date appointmentDate = null;
 

@@ -29,7 +29,6 @@ public class CategoryServlet extends HttpServlet {
 
         try {
             if (action == null || action.isEmpty()) {
-                // PHÂN TRANG + TÌM KIẾM + LỌC TRẠNG THÁI
                 String pageParam = request.getParameter("page");
                 String statusParam = request.getParameter("status");
                 String keyword = request.getParameter("keyword") != null ? request.getParameter("keyword").trim() : "";

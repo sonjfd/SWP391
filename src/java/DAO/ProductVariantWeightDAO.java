@@ -252,4 +252,10 @@ public class ProductVariantWeightDAO {
         }
         return 0;
     }
+    
+  
+   
+
+  
+
 }

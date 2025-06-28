@@ -22,6 +22,8 @@ public class ProductVariant {
     private double weight;
     private String flavorName;
     private String categoryName;
+    
+   
 
    
     public ProductVariant() {}

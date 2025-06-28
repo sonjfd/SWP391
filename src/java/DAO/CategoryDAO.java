@@ -257,5 +257,8 @@ public class CategoryDAO {
         }
         return 0;
     }
-
+    public static void main(String[] args) {
+        CategoryDAO dao=new CategoryDAO();
+        System.out.println(dao.getAllCategories());
+    }
 }
