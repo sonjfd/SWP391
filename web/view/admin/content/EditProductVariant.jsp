@@ -28,7 +28,7 @@
     <div class="alert alert-danger"><%= error %></div>
 <% } %>
 
-<form action="${pageContext.request.contextPath}/admin-editProductVariant" method="post" onsubmit="return validateForm();">
+<form action="${pageContext.request.contextPath}/admin-editProductVariant" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
 
     <input type="hidden" name="variant_id" value="<%= variant.getProductVariantId() %>"/>
 
@@ -37,11 +37,10 @@
         <label for="product_id" class="form-label">Sản phẩm</label>
         <select class="form-select" name="product_id" id="product_id" required>
             <option value="">-- Chọn sản phẩm --</option>
-            <%
-                for (Product p : products) {
-                    String selected = p.getProductId() == variant.getProductId() ? "selected" : "";
-            %>
-            <option value="<%= p.getProductId() %>" <%= selected %>><%= p.getProductName() %></option>
+            <% for (Product p : products) { %>
+                <option value="<%= p.getProductId() %>" <%= (p.getProductId() == variant.getProductId()) ? "selected" : "" %>>
+                    <%= p.getProductName() %>
+                </option>
             <% } %>
         </select>
     </div>
@@ -51,11 +50,10 @@
         <label for="weight_id" class="form-label">Khối lượng</label>
         <select class="form-select" name="weight_id" id="weight_id" required>
             <option value="">-- Chọn khối lượng --</option>
-            <%
-                for (ProductVariantWeight w : weights) {
-                    String selected = w.getWeightId() == variant.getWeightId() ? "selected" : "";
-            %>
-            <option value="<%= w.getWeightId() %>" <%= selected %>><%= w.getWeight() %> g</option>
+            <% for (ProductVariantWeight w : weights) { %>
+                <option value="<%= w.getWeightId() %>" <%= (w.getWeightId() == variant.getWeightId()) ? "selected" : "" %>>
+                    <%= w.getWeight() %> g
+                </option>
             <% } %>
         </select>
     </div>
@@ -65,11 +63,10 @@
         <label for="flavor_id" class="form-label">Hương vị</label>
         <select class="form-select" name="flavor_id" id="flavor_id" required>
             <option value="">-- Chọn hương vị --</option>
-            <%
-                for (ProductVariantFlavor f : flavors) {
-                    String selected = f.getFlavorId() == variant.getFlavorId() ? "selected" : "";
-            %>
-            <option value="<%= f.getFlavorId() %>" <%= selected %>><%= f.getFlavor() %></option>
+            <% for (ProductVariantFlavor f : flavors) { %>
+                <option value="<%= f.getFlavorId() %>" <%= (f.getFlavorId() == variant.getFlavorId()) ? "selected" : "" %>>
+                    <%= f.getFlavor() %>
+                </option>
             <% } %>
         </select>
     </div>
@@ -88,11 +85,20 @@
                value="<%= variant.getStockQuantity() %>">
     </div>
 
-    <!-- Link hình ảnh -->
+    <!-- Ảnh hiện tại -->
     <div class="mb-3">
-        <label for="image" class="form-label">Link hình ảnh</label>
-        <input type="url" class="form-control" name="image" id="image" required
-               value="<%= variant.getImage() %>">
+        <label class="form-label">Ảnh hiện tại</label><br>
+        <% if (variant.getImage() != null && !variant.getImage().isEmpty()) { %>
+            <img src="<%= variant.getImage() %>" alt="Ảnh sản phẩm" style="height: 100px;">
+        <% } else { %>
+            <p>Chưa có ảnh.</p>
+        <% } %>
+    </div>
+
+    <!-- Upload ảnh mới -->
+    <div class="mb-3">
+        <label for="imageFile" class="form-label">Chọn ảnh mới (nếu muốn thay)</label>
+        <input type="file" class="form-control" name="imageFile" id="imageFile" accept="image/*">
     </div>
 
     <!-- Trạng thái -->

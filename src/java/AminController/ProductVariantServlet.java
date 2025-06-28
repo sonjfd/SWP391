@@ -9,13 +9,21 @@ import Model.ProductVariant;
 import Model.ProductVariantFlavor;
 import Model.ProductVariantWeight;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024,      // 1MB
+    maxFileSize = 1024 * 1024 * 5,        // 5MB
+    maxRequestSize = 1024 * 1024 * 10     // 10MB
+)
 @WebServlet(name = "ProductVariantServlet", urlPatterns = {"/admin-productVariant"})
 public class ProductVariantServlet extends HttpServlet {
 
@@ -75,8 +83,7 @@ public class ProductVariantServlet extends HttpServlet {
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPage", totalPage);
         request.setAttribute("keyword", keyword);
-        request.setAttribute("status", statusRaw); // giữ lại lựa chọn trong form lọc
-
+        request.setAttribute("status", statusRaw);
         request.getRequestDispatcher("view/admin/content/ProductVariantList.jsp").forward(request, response);
     }
 
@@ -88,22 +95,32 @@ public class ProductVariantServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
-        String productIdRaw = request.getParameter("product_id");
-        String weightIdRaw = request.getParameter("weight_id");
-        String flavorIdRaw = request.getParameter("flavor_id");
-        String priceRaw = request.getParameter("price");
-        String stockRaw = request.getParameter("stock_quantity");
-        String statusRaw = request.getParameter("status");
-        String image = request.getParameter("image");
 
         try {
-            int productId = Integer.parseInt(productIdRaw);
-            int weightId = Integer.parseInt(weightIdRaw);
-            int flavorId = Integer.parseInt(flavorIdRaw);
-            double price = Double.parseDouble(priceRaw);
-            int stock = Integer.parseInt(stockRaw);
-            boolean status = "1".equals(statusRaw);
+            int productId = Integer.parseInt(request.getParameter("product_id"));
+            int weightId = Integer.parseInt(request.getParameter("weight_id"));
+            int flavorId = Integer.parseInt(request.getParameter("flavor_id"));
+            double price = Double.parseDouble(request.getParameter("price"));
+            int stock = Integer.parseInt(request.getParameter("stock_quantity"));
+            boolean status = "1".equals(request.getParameter("status"));
 
+            // Lấy file ảnh
+            Part filePart = request.getPart("image");
+            String filename = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+
+            // Tạo thư mục nếu chưa có
+            String uploadPath = "C:/MyUploads/product-variants"; // thay đổi nếu cần
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            // Lưu file ảnh
+            String fullPath = uploadPath + File.separator + filename;
+            filePart.write(fullPath);
+
+            // Đường dẫn ảnh để hiển thị
+            String imagePath = "image-loader/" + filename;
+
+            // Tạo đối tượng biến thể
             ProductVariant variant = new ProductVariant();
             variant.setProductId(productId);
             variant.setWeightId(weightId);
@@ -111,8 +128,9 @@ public class ProductVariantServlet extends HttpServlet {
             variant.setPrice(price);
             variant.setStockQuantity(stock);
             variant.setStatus(status);
-            variant.setImage(image);
+            variant.setImage(imagePath);
 
+            // Nếu là thêm mới
             if ("add".equals(action)) {
                 if (variantDAO.isDuplicateVariant(productId, weightId, flavorId)) {
                     throw new Exception("Biến thể với cùng sản phẩm, trọng lượng và hương vị đã tồn tại.");

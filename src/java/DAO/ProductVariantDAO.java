@@ -87,7 +87,9 @@ public class ProductVariantDAO extends DBContext {
                 ps.setBoolean(index++, status);
             }
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -193,4 +195,32 @@ public class ProductVariantDAO extends DBContext {
             return false;
         }
     }
-} 
+
+    // ➕ 1. Lấy đường dẫn ảnh cũ (để xoá khi upload mới)
+    public String getImagePathById(int variantId) {
+        String sql = "SELECT image FROM product_variants WHERE product_variant_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, variantId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("image");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+// ➕ 2. Cập nhật ảnh mới (khi chỉ muốn thay ảnh)
+    public boolean updateImageById(int variantId, String imagePath) {
+        String sql = "UPDATE product_variants SET image = ?, updated_at = GETDATE() WHERE product_variant_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, imagePath);
+            ps.setInt(2, variantId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}
