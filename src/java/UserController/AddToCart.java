@@ -97,7 +97,7 @@ public class AddToCart extends HttpServlet {
             CartItemDAO itemDao = new CartItemDAO();
 
             int cartId = cardDao.getCartIdByUserId(userId);
-            if (cartId == 0) {
+            if (cartId == -1) {
                 cartId = cardDao.createCartForUser(userId);
             }
 
