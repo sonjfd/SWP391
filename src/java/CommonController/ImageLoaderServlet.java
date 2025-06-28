@@ -1,4 +1,4 @@
-package DoctorController;
+package CommonController;
 
 
 import jakarta.servlet.annotation.WebServlet;

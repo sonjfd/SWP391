@@ -177,7 +177,7 @@ public class EditMedicalRecord extends HttpServlet {
         // Kiểm tra kết quả cập nhật
         if (updateSuccess) {
             request.getSession().setAttribute("message", "Cập nhật hồ sơ y tế thành công!");
-            response.sendRedirect("edit-medical-record?id=" + medicalRecordId);
+            response.sendRedirect("doctor-edit-medical-record?id=" + medicalRecordId);
         } else {
             // Nếu có lỗi, hiển thị thông báo lỗi
             request.setAttribute("errorMessage", "Có lỗi xảy ra, vui lòng thử lại!");

@@ -10,14 +10,17 @@ import Model.ProductVariant;
 import Model.ProductVariantWeight;
 import Model.ProductVariantFlavor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 @WebServlet(name = "AddProductVariantServlet", urlPatterns = {"/admin-addProductVariant"})
+@MultipartConfig
 public class AddProductVariantServlet extends HttpServlet {
 
     private final ProductDAO productDAO = new ProductDAO();
@@ -46,9 +49,28 @@ public class AddProductVariantServlet extends HttpServlet {
             double price = Double.parseDouble(request.getParameter("price"));
             int stockQuantity = Integer.parseInt(request.getParameter("stock_quantity"));
             boolean status = "1".equals(request.getParameter("status"));
-            String image = request.getParameter("image");
 
-            // Kiểm tra trùng lặp
+            Part imagePart = request.getPart("imageFile");
+            String imagePath = null;
+
+            // Tạo thư mục lưu ảnh nếu chưa có
+            String uploadDirPath = "C:/MyUploads/product-variants";
+            File uploadDir = new File(uploadDirPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            // Nếu có file ảnh
+            if (imagePart != null && imagePart.getSize() > 0) {
+                String fileExt = imagePart.getSubmittedFileName()
+                        .substring(imagePart.getSubmittedFileName().lastIndexOf("."));
+                String randomFileName = java.util.UUID.randomUUID().toString() + fileExt;
+                File savedFile = new File(uploadDir, randomFileName);
+                imagePart.write(savedFile.getAbsolutePath());
+
+                // Đường dẫn lưu DB
+                imagePath = request.getContextPath() + "/image-loader/" + randomFileName;
+            }
+
+            // Kiểm tra trùng lặp biến thể
             if (variantDAO.isDuplicateVariant(productId, weightId, flavorId)) {
                 throw new Exception("Biến thể đã tồn tại với cùng sản phẩm, khối lượng và hương vị.");
             }
@@ -61,7 +83,7 @@ public class AddProductVariantServlet extends HttpServlet {
             variant.setPrice(price);
             variant.setStockQuantity(stockQuantity);
             variant.setStatus(status);
-            variant.setImage(image);
+            variant.setImage(imagePath);
 
             // Thêm vào DB
             variantDAO.add(variant);
@@ -71,14 +93,13 @@ public class AddProductVariantServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi: " + e.getMessage());
 
-            // Giữ lại dữ liệu form
+            // Giữ lại dữ liệu người dùng đã nhập
             request.setAttribute("product_id", request.getParameter("product_id"));
             request.setAttribute("weight_id", request.getParameter("weight_id"));
             request.setAttribute("flavor_id", request.getParameter("flavor_id"));
             request.setAttribute("price", request.getParameter("price"));
             request.setAttribute("stock_quantity", request.getParameter("stock_quantity"));
             request.setAttribute("status", request.getParameter("status"));
-            request.setAttribute("image", request.getParameter("image"));
 
             loadFormData(request);
             request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);

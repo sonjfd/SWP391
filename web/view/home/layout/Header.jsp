@@ -198,11 +198,12 @@
                                     <li class="list-inline-item mb-0 ms-1">
                                         <div class="dropdown dropdown-primary">
                                             <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown">
-                                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar">
+                                            <img  src="${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="Avatar">
+
                                             </button>
                                             <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 py-3" style="min-width: 200px;">
                                                 <a class="dropdown-item d-flex align-items-center text-dark" href="#">
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar">
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar">
                                                     <div class="flex-1 ms-2">
                                                         <span class="d-block mb-1">${sessionScope.user.fullName}</span>
 

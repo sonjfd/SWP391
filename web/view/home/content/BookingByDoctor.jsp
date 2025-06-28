@@ -13,6 +13,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 
 <!DOCTYPE html>
@@ -221,7 +222,7 @@
                             <div class="mb-3">
                                 <label for="appointmentDate" class="form-label">Chọn ngày khám:</label>
                                 <input type="date" id="appointmentDate" name="appointmentDate" class="form-control" 
-                                        required />
+                                       required />
                                 <div id="dateError" class="text-danger small mt-1"></div>
                             </div>
 
@@ -322,7 +323,7 @@
                 </div>
 
                 <script>
-                    
+
                     document.getElementById("bookingForm").addEventListener("submit", function (event) {
                         const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
 
@@ -387,7 +388,7 @@
                     });
 
 
-                    
+
                     document.getElementById("petSelect").addEventListener('change', function () {
                         let petId = this.value;
                         if (!petId)

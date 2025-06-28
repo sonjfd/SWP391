@@ -26,7 +26,8 @@
     <div class="alert alert-danger"><%= error %></div>
 <% } %>
 
-<form action="${pageContext.request.contextPath}/admin-addProductVariant" method="post" onsubmit="return validateForm();">
+<form action="${pageContext.request.contextPath}/admin-addProductVariant"
+      method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
 
     <!-- Sản phẩm -->
     <div class="mb-3">
@@ -87,11 +88,15 @@
                value="<%= request.getParameter("stock_quantity") != null ? request.getParameter("stock_quantity") : "" %>">
     </div>
 
-    <!-- Link hình ảnh -->
+    <!-- Upload ảnh -->
     <div class="mb-3">
-        <label for="image" class="form-label">Link hình ảnh</label>
-        <input type="url" class="form-control" name="image" id="image" required
-               value="<%= request.getParameter("image") != null ? request.getParameter("image") : "" %>">
+        <label for="imageFile" class="form-label">Ảnh sản phẩm</label>
+        <input type="file" class="form-control" name="imageFile" id="imageFile" accept="image/*" required>
+    </div>
+
+    <!-- Xem trước ảnh -->
+    <div class="mb-3">
+        <img id="preview" src="#" alt="Xem trước ảnh" style="max-height: 200px; display: none; border: 1px solid #ccc;" />
     </div>
 
     <!-- Trạng thái -->
@@ -108,7 +113,20 @@
     <a href="${pageContext.request.contextPath}/admin-productVariant" class="btn btn-secondary ms-2">Hủy</a>
 </form>
 
+<!-- JS preview ảnh -->
 <script>
+    document.getElementById("imageFile").addEventListener("change", function (event) {
+        const preview = document.getElementById("preview");
+        const file = event.target.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        } else {
+            preview.src = "#";
+            preview.style.display = "none";
+        }
+    });
+
     function validateForm() {
         const price = parseFloat(document.getElementById("price").value);
         const quantity = parseInt(document.getElementById("stock_quantity").value);

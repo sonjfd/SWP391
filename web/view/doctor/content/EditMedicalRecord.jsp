@@ -256,7 +256,7 @@ document.getElementById("editMedicalRecordForm").addEventListener("submit", asyn
     const formData = new FormData(form);
 
     try {
-        const response = await fetch("edit-medical-record", {
+        const response = await fetch("doctor-edit-medical-record", {
             method: "POST",
             body: formData
         });

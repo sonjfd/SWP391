@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(res => res.json())
         .then(data => {
             const appt = data.appointments[0];
-            document.getElementById('petAvatar').src ='./'+ (appt.petAvatar );
+            document.getElementById('petAvatar').src = './' + (appt.petAvatar || 'assets/images/default_pet.png');
             document.getElementById('petCode').innerText = appt.petCode || '-';
             document.getElementById('petName').innerText = appt.petName || '-';
             document.getElementById('petBreed').innerText = appt.petBreed || '-';

@@ -97,7 +97,8 @@
                                         <td>${v.flavorName}</td>
                                         <td><fmt:formatNumber value="${v.price}" type="number" pattern="#,##0.##" /> đ</td>
                                         <td>${v.stockQuantity}</td>
-                                        <td><img src="${v.image}" class="thumbnail" alt="Ảnh sản phẩm" /></td>
+                                        <td><img src="${pageContext.request.contextPath}/image-loader/${v.image}" class="thumbnail" />
+                                        </td>
                                         <td>
                                             <span class="badge bg-${v.status ? 'success' : 'danger'}">
                                                 ${v.status ? 'Đang bán' : 'Ngừng bán'}

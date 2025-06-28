@@ -258,12 +258,12 @@ if (rec.appointmentStatus.toLowerCase() !== 'completed') {
       '<i class="bi bi-check-circle"></i>' +
     '</button>';
 }
-else{
+
 actionButtons +=
   '<a href="doctor-print-medical-record?id=' + rec.id + '" target="_blank" class="me-2 text-secondary" title="In hồ sơ">' +
     '<i class="bi bi-printer"></i>' +
   '</a>';
-}
+
 tr.innerHTML =
   '<td>' + (i + 1) + '</td>' +
   '<td>' + (rec.createdAt ? new Date(rec.createdAt).toLocaleDateString('vi-VN') : '-') + '</td>' +
@@ -368,7 +368,7 @@ tbody.appendChild(tr);
         });
 
         // Gửi AJAX lên backend
-        fetch('add-medical-record', {
+        fetch('doctor-add-medical-record', {
             method: 'POST',
             body: formData
         })

@@ -39,9 +39,7 @@ public class SavePreliminaryDiagnosis extends HttpServlet {
         String symptom = request.getParameter("symptoms");
         String diagnosis = request.getParameter("preliminaryDiagnosis");
         String note = request.getParameter("note");
-        PrintWriter writer = new PrintWriter(new FileWriter("C:\\log\\output.txt", true));
-        writer.println("symptom = " + symptom);
-        writer.close();
+        
 
         // Tạo đối tượng AppointmentSymptom từ dữ liệu form
         AppointmentSymptom symptomObj = new AppointmentSymptom();
