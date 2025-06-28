@@ -150,7 +150,7 @@
                                         </div>
                                     </ul>
                                 </li>
-                                
+
                                 <li><a href="home-list-product" class="sub-menu-item">Sản Phẩm</a></li>
                                 <li><a href="home-contact" class="sub-menu-item">Liên hệ</a></li>
                             </ul>
@@ -170,12 +170,28 @@
                                             Đặt lịch khám
                                         </a>
                                     </c:when>
+
+
                                     <c:otherwise>
                                         <%-- Không hiển thị nút nhưng giữ khoảng trắng để không bị xô --%>
                                         <span style="display:inline-block; width:100%; height:38px;"></span>
                                     </c:otherwise>
                                 </c:choose>
                             </li>
+
+
+                            <c:set var="cartSize" value="${sessionScope.cartSize != null ? sessionScope.cartSize : 0}" />
+                            <c:if test="${sessionScope.user.role.name == 'customer'}">
+                                <li class="list-inline-item mb-0 me-2 ms-3 position-relative">
+                                    <a href="user-cart" class="text-dark position-relative" title="Giỏ hàng">
+                                        <i class="bi bi-cart3 fs-4"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            ${cartSize}
+                                        </span>
+                                    </a>
+                                </li>
+                            </c:if>
+
 
                             <c:choose>
                                 <c:when test="${not empty sessionScope.user}">
@@ -189,25 +205,25 @@
                                                     <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar">
                                                     <div class="flex-1 ms-2">
                                                         <span class="d-block mb-1">${sessionScope.user.fullName}</span>
-                                                       
+
 
                                                         <c:choose>
                                                             <c:when test="${sessionScope.user.role.id==1}">
                                                                 <span class="badge bg-warning text-dark">Khách Hàng</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==2}">
+                                                            <c:when test="${sessionScope.user.role.id==2}">
                                                                 <span class="badge bg-warning text-dark">Admin</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==3}">
+                                                            <c:when test="${sessionScope.user.role.id==3}">
                                                                 <span class="badge bg-warning text-dark">Bác sĩ</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==4}">
+                                                            <c:when test="${sessionScope.user.role.id==4}">
                                                                 <span class="badge bg-warning text-dark">Nhân Viên</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==5}">
+                                                            <c:when test="${sessionScope.user.role.id==5}">
                                                                 <span class="badge bg-warning text-dark">Y tá</span>
                                                             </c:when>
-                                                            
+
 
                                                         </c:choose>
                                                     </div>

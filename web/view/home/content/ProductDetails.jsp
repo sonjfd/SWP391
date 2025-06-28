@@ -92,38 +92,38 @@
                         </c:forEach>
                     </div>
 
-                   
-                   
-                        <form action="buy-product" method="post" class="mb-4">
-                            <input type="hidden" name="variantId" value="${selectedVariant.productVariantId}" />
 
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Số lượng</label>
-                                    <input type="number"
-                                           id="quantityInput"
-                                           name="quantity"
-                                           value="1"
-                                           min="1"                                          
-                                           class="form-control"
-                                           <c:if test="${selectedVariant.stockQuantity == 0}">disabled</c:if> />
-                                           <div class="form-text text-danger d-none" id="quantityError">Số lượng vượt quá tồn kho.</div>
-                                    </div>
+
+                    <form action="user-add-to-cart" method="post" class="mb-4">
+                        <input type="hidden" name="variantId" value="${selectedVariant.productVariantId}" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Số lượng</label>
+                                <input type="number"
+                                       id="quantityInput"
+                                       name="quantity"
+                                       value="1"
+                                       min="1"
+                                       max="${selectedVariant.stockQuantity}"
+                                       class="form-control"
+                                       <c:if test="${selectedVariant.stockQuantity == 0}">disabled</c:if> />
+                                       <div class="form-text text-danger d-none" id="quantityError">
+                                           Số lượng vượt quá tồn kho.
+                                       </div>
                                 </div>
+                            </div>
 
-                                <button type="submit"
-                                        class="btn btn-primary"
-                                <c:if test="${selectedVariant.stockQuantity == 0}">disabled</c:if>>
-                                    Mua hàng
-                                </button>
-                            </form>
-                   
+                            <button type="submit"
+                                    class="btn btn-primary"
+                            <c:if test="${selectedVariant.stockQuantity == 0}">disabled</c:if>>
+                                Thêm vào giỏ hàng
+                            </button>
+                        </form>
 
-
-
+                    </div>
                 </div>
             </div>
-        </div>
 
         <%@include file="../layout/Footer.jsp" %>
 

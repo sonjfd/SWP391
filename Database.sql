@@ -485,6 +485,23 @@ CREATE TABLE sales_invoice_items (
 );
 
 
+CREATE TABLE cart (
+    cart_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id UNIQUEIDENTIFIER NOT NULL,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_cart_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE cart_items (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    cart_id INT NOT NULL,
+    product_variant_id INT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    CONSTRAINT FK_cart_items_cart FOREIGN KEY (cart_id) REFERENCES cart(cart_id) ON DELETE CASCADE,
+    CONSTRAINT FK_cart_items_variant FOREIGN KEY (product_variant_id) REFERENCES product_variants(product_variant_id)
+);
+
 
 CREATE TABLE conversations (
     conversation_id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
