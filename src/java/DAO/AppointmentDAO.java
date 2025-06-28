@@ -881,8 +881,10 @@ public class AppointmentDAO {
         }
         return list;
     }
-    // CỦA ĐẠI
+        // CỦA ĐẠI
+    
 
+    
     //Lấy tổng cuộc họp theo ca của ngày của bác si
     public int getTotalAppointments(String doctorId, Date workDate, int shiftId) {
         int total = 0;
@@ -911,82 +913,13 @@ public class AppointmentDAO {
         return total;
     }
 
-    //DASHBOARD
-    public List<Appointment> getLatestAppointments(String doctorId) {
-        List<Appointment> list = new ArrayList<>();
-        String sql = """
-        SELECT TOP 5 a.id, a.appointment_time, a.status, p.pet_code, p.name as pet_name, p.avatar as pet_avatar
-        FROM appointments a
-        JOIN pets p ON a.pet_id = p.id
-        WHERE a.doctor_id = ? AND a.appointment_time >= CAST(GETDATE() AS DATE)
-        ORDER BY a.appointment_time DESC
-        """;
+    
 
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, doctorId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Appointment appt = new Appointment();
-                appt.setId(rs.getString("id"));
-                appt.setAppointmentDate(rs.getTimestamp("appointment_time"));
-                appt.setStatus(rs.getString("status"));
+    
+   
+    
 
-                Pet pet = new Pet();
-                pet.setPet_code(rs.getString("pet_code"));
-                pet.setName(rs.getString("pet_name"));
-                pet.setAvatar(rs.getString("pet_avatar"));
-
-                appt.setPet(pet);
-                list.add(appt);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // Lấy tổng số cuộc hẹn trong tuần hiện tại
-    public int getAppointmentsCountForWeek(String doctorId) {
-        int count = 0;
-        String sql = "SELECT COUNT(*) AS total FROM appointments "
-                + "WHERE doctor_id = ? "
-                + "AND DATEPART(WEEK, appointment_time) = DATEPART(WEEK, GETDATE()) "
-                + "AND YEAR(appointment_time) = YEAR(GETDATE())";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setString(1, doctorId);
-            ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                count = rs.getInt("total");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count;
-    }
-
-    // Lấy tổng số bệnh nhân trong tuần
-    public int getPatientsCountForWeek(String doctorId) {
-        int count = 0;
-        String sql = "SELECT COUNT(DISTINCT customer_id) AS total FROM appointments "
-                + "WHERE doctor_id = ? "
-                + "AND DATEPART(WEEK, appointment_time) = DATEPART(WEEK, GETDATE()) "
-                + "AND YEAR(appointment_time) = YEAR(GETDATE())";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
-            stm.setString(1, doctorId);
-            ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                count = rs.getInt("total");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count;
-    }
-    //HẾT DASHBOARD
-
-    public List<Appointment> getAppointmentDetailsByDoctorAndAppointment(String appointmentId) {
+    public List<Appointment> getAppointmentDetailsByDoctorAndAppointment( String appointmentId) {
         List<Appointment> list = new ArrayList<>();
         String sql = """
         SELECT
@@ -1042,6 +975,7 @@ public class AppointmentDAO {
                 pet.setDescription(rs.getString("p_desc"));
                 pet.setUser(user);
                 pet.setId(rs.getString("pet_id"));
+                
 
                 // Tạo đối tượng Appointment và gắn thông tin
                 Appointment appt = new Appointment();
@@ -1071,7 +1005,7 @@ public class AppointmentDAO {
         List<Appointment> list = new ArrayList<>();
         String sql = """
         SELECT 
-            a.id as a_id,a.status as a_status,start_time,end_time,notes,appointment_time,a.doctor_id,      
+            a.id as a_id,a.status as a_status,start_time,end_time,notes,appointment_time,a.doctor_id,a.checkin_status,      
             u.id as user_id, u.full_name, u.avatar as user_avatar,address,phone,email,
             p.id as pet_id, p.birth_date as pet_birth, p.avatar as pet_avatar, p.pet_code as pet_code,p.name as pet_name,
             p.gender as pet_gender,p.description as pet_description,
@@ -1124,7 +1058,7 @@ public class AppointmentDAO {
                 appt.setId(rs.getString("a_id"));
                 User doctor = new User();
                 doctor.setId(doctorId);
-                Doctor d = new Doctor();
+                Doctor d =new Doctor();
                 d.setUser(doctor);
                 appt.setDoctor(d);
                 appt.setUser(user);
@@ -1134,6 +1068,7 @@ public class AppointmentDAO {
                 appt.setEndTime(rs.getTime("end_time").toLocalTime());
                 appt.setStatus(rs.getString("a_status"));
                 appt.setNote(rs.getString("notes"));
+                appt.setChekinStatus(rs.getString("checkin_status"));
 
                 // Thêm vào danh sách
                 list.add(appt);
@@ -1142,6 +1077,18 @@ public class AppointmentDAO {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    public boolean updateStatus(String appointmentId, String status) {
+        String sql = "UPDATE appointments SET status = ? WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setString(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 // HẾT CỦA ĐẠI
 

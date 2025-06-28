@@ -22,7 +22,7 @@ import jakarta.servlet.http.Part;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@WebServlet("/edit-medical-record")
+@WebServlet("/doctor-edit-medical-record")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024, // 1MB
         maxFileSize = 1024 * 1024 * 10, // 10MB/file
@@ -124,28 +124,33 @@ public class EditMedicalRecord extends HttpServlet {
         // Lưu trữ các file đã upload từ client
         if (request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/")) {
             Collection<Part> fileParts = request.getParts();
+            // Thư mục lưu ngoài project
+    String uploadDirPath = "C:/MyUploads/medical";
+    File uploadDir = new File(uploadDirPath);
+    if (!uploadDir.exists()) {
+        uploadDir.mkdirs();
+    }
             for (Part part : fileParts) {
                 if ("files".equals(part.getName()) && part.getSize() > 0) {
-                    // Lưu file vào thư mục server
-                    String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
-                    String uploadDir = getServletContext().getRealPath("/uploads/medical/");
-                    File uploadFolder = new File(uploadDir);
-                    if (!uploadFolder.exists()) {
-                        uploadFolder.mkdirs();
-                    }
-                    String filePath = uploadDir + File.separator + fileName;
-                    part.write(filePath);
+                    // Lấy phần mở rộng của file
+            String originalFileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+
+            // Ghi file ra ổ cứng
+            File savedFile = new File(uploadDir, randomFileName);
+            part.write(savedFile.getAbsolutePath());
+
 
                     // Tạo đối tượng MedicalRecordFile để lưu vào cơ sở dữ liệu
                     MedicalRecordFile uf = new MedicalRecordFile();
-                    uf.setFileName(fileName);
-                    uf.setFileUrl("uploads/medical/" + fileName);
+                    uf.setFileName(originalFileName);
+                    uf.setFileUrl(request.getContextPath()+"/image-loader/" + randomFileName); 
                     uf.setUploadedAt(new java.util.Date());
                     files.add(uf);
                 }
             }
         }
-
 
         // Cập nhật thông tin hồ sơ và file đính kèm
         MedicalRecordDAO medicalRecordDAO = new MedicalRecordDAO();
@@ -154,10 +159,19 @@ public class EditMedicalRecord extends HttpServlet {
         try {
             // Cập nhật hồ sơ y tế và file mới (nếu có)
             updateSuccess = medicalRecordDAO.updateMedicalRecordWithFiles(
-                        medicalRecordId, diagnosis, treatment, reExamDate, prescribedList, files, removeFiles
-                );
+                    medicalRecordId, diagnosis, treatment, reExamDate, prescribedList, files, removeFiles
+            );
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (updateSuccess) {
+            response.getWriter().write("{\"success\": true, \"message\": \"Cập nhật thành công\"}");
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"success\": false, \"message\": \"Cập nhật thất bại\"}");
         }
 
         // Kiểm tra kết quả cập nhật

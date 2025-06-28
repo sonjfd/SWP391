@@ -5,12 +5,15 @@
 package DAO;
 
 import Model.Appointment;
+import Model.AppointmentService;
+import Model.AppointmentSymptom;
 import Model.Breed;
 import Model.Doctor;
 import Model.MedicalRecord;
 import Model.MedicalRecordFile;
 import Model.Pet;
 import Model.PrescribedMedicine;
+import Model.Service;
 import Model.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -317,19 +320,23 @@ public class MedicalRecordDAO {
     public List<MedicalRecord> getMedicalRecordsByAppointmentId(String appointmentId) {
         List<MedicalRecord> medicalRecords = new ArrayList<>();
 
-        String query = "SELECT * FROM medical_records WHERE appointment_id = ?";
+        String query = "SELECT mr.id as mr_id,diagnosis,treatment,re_exam_date,mr.created_at as mr_created_at,mr.updated_at as mr_updated_at,a.status FROM medical_records mr,appointments a WHERE appointment_id = ? and mr.appointment_id = a.id";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, appointmentId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
                 MedicalRecord record = new MedicalRecord();
-                record.setId(rs.getString("id"));
+                ///Appointment
+                Appointment appt = new Appointment();
+                appt.setStatus(rs.getString("status"));
+                record.setAppointment(appt);
+                record.setId(rs.getString("mr_id"));
                 record.setDiagnosis(rs.getString("diagnosis"));
                 record.setTreatment(rs.getString("treatment"));
                 record.setReExamDate(rs.getDate("re_exam_date"));
-                record.setCreatedAt(rs.getTimestamp("created_at"));
-                record.setUpdatedAt(rs.getTimestamp("updated_at"));
+                record.setCreatedAt(rs.getTimestamp("mr_created_at"));
+                record.setUpdatedAt(rs.getTimestamp("mr_updated_at"));
 
                 // Lấy file đính kèm
                 String fileQuery = "SELECT * FROM medical_record_files WHERE medical_record_id = ?";
@@ -351,13 +358,14 @@ public class MedicalRecordDAO {
                 }
 
                 // Lấy kê đơn thuốc
-                String medicineQuery = "SELECT * FROM prescribed_medicines WHERE medical_record_id = ?";
+                String medicineQuery = "SELECT pm.medicine_id,pm.quantity,pm.dosage,pm.duration,pm.usage_instructions, m.name as mname FROM prescribed_medicines pm,medicines m WHERE medical_record_id = ? and pm.medicine_id=m.id";
                 try (PreparedStatement psMedicine = conn.prepareStatement(medicineQuery)) {
                     psMedicine.setString(1, record.getId());
                     ResultSet medicineRs = psMedicine.executeQuery();
                     List<PrescribedMedicine> medicines = new ArrayList<>();
                     while (medicineRs.next()) {
                         PrescribedMedicine medicine = new PrescribedMedicine();
+                        medicine.setMedicineName(medicineRs.getString("mname"));
                         medicine.setMedicineId(medicineRs.getString("medicine_id"));
                         medicine.setQuantity(medicineRs.getInt("quantity"));
                         medicine.setDosage(medicineRs.getString("dosage"));
@@ -378,10 +386,10 @@ public class MedicalRecordDAO {
 
         return medicalRecords;
     }
-    
+
     public MedicalRecord getMedicalRecordById(String medicalRecordId) {
-    MedicalRecord medicalRecord = null;
-    String query = """
+        MedicalRecord medicalRecord = null;
+        String query = """
                    SELECT 
                        mr.id AS medical_record_id,
                        diagnosis,appointment_id as appt_id,
@@ -407,118 +415,110 @@ public class MedicalRecordDAO {
                    WHERE mr.id = ?;
                    """;
 
-    try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
-        ps.setString(1, medicalRecordId);
-        ResultSet rs = ps.executeQuery();
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, medicalRecordId);
+            ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
-            medicalRecord = new MedicalRecord();
-            medicalRecord.setId(medicalRecordId);
-            medicalRecord.setDiagnosis(rs.getString("diagnosis"));
-            medicalRecord.setTreatment(rs.getString("treatment"));
-            medicalRecord.setReExamDate(rs.getDate("re_exam_date"));
-            medicalRecord.setCreatedAt(rs.getTimestamp("mr_created_at"));
-            medicalRecord.setUpdatedAt(rs.getTimestamp("mr_updated_at"));
-            User user = new User();
-            user.setFullName(rs.getString("owner_name"));
-            user.setPhoneNumber(rs.getString("owner_phone"));
-            user.setEmail(rs.getString("owner_email"));
-            user.setAddress(rs.getString("owner_address"));
-            Breed breed = new Breed();
-            breed.setName(rs.getString("breed_name"));
-            Pet pet = new Pet();
-            pet.setBirthDate(rs.getDate("birth_date"));
-            pet.setUser(user);
-            pet.setBreed(breed);
-            pet.setPet_code(rs.getString("pet_code"));
-            pet.setGender(rs.getString("gender"));
-            pet.setName(rs.getString("pet_name"));
-            medicalRecord.setPet(pet);
-            Appointment appt = new Appointment();
-            appt.setId(rs.getString("appt_id"));
-            medicalRecord.setAppointment(appt);
-            
-            // Lấy file đính kèm
-            String fileQuery = "SELECT * FROM medical_record_files WHERE medical_record_id = ?";
-            try (PreparedStatement psFile = conn.prepareStatement(fileQuery)) {
-                psFile.setString(1, medicalRecord.getId());
-                ResultSet fileRs = psFile.executeQuery();
-                List<MedicalRecordFile> files = new ArrayList<>();
-                while (fileRs.next()) {
-                    MedicalRecordFile file = new MedicalRecordFile();
-                    file.setId(fileRs.getString("id"));
-                    file.setFileName(fileRs.getString("file_name"));
-                    file.setFileUrl(fileRs.getString("file_url"));
-                    file.setUploadedAt(fileRs.getTimestamp("uploaded_at"));
-                    files.add(file);
-                }
-                medicalRecord.setFiles(files);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            if (rs.next()) {
+                medicalRecord = new MedicalRecord();
+                medicalRecord.setId(medicalRecordId);
+                medicalRecord.setDiagnosis(rs.getString("diagnosis"));
+                medicalRecord.setTreatment(rs.getString("treatment"));
+                medicalRecord.setReExamDate(rs.getDate("re_exam_date"));
+                medicalRecord.setCreatedAt(rs.getTimestamp("mr_created_at"));
+                medicalRecord.setUpdatedAt(rs.getTimestamp("mr_updated_at"));
+                User user = new User();
+                user.setFullName(rs.getString("owner_name"));
+                user.setPhoneNumber(rs.getString("owner_phone"));
+                user.setEmail(rs.getString("owner_email"));
+                user.setAddress(rs.getString("owner_address"));
+                Breed breed = new Breed();
+                breed.setName(rs.getString("breed_name"));
+                Pet pet = new Pet();
+                pet.setBirthDate(rs.getDate("birth_date"));
+                pet.setUser(user);
+                pet.setBreed(breed);
+                pet.setPet_code(rs.getString("pet_code"));
+                pet.setGender(rs.getString("gender"));
+                pet.setName(rs.getString("pet_name"));
+                medicalRecord.setPet(pet);
+                Appointment appt = new Appointment();
+                appt.setId(rs.getString("appt_id"));
+                medicalRecord.setAppointment(appt);
 
-            // Lấy kê đơn thuốc
-            String medicineQuery = "SELECT * FROM prescribed_medicines WHERE medical_record_id = ?";
-            try (PreparedStatement psMedicine = conn.prepareStatement(medicineQuery)) {
-                psMedicine.setString(1, medicalRecord.getId());
-                ResultSet medicineRs = psMedicine.executeQuery();
-                List<PrescribedMedicine> medicines = new ArrayList<>();
-                while (medicineRs.next()) {
-                    PrescribedMedicine medicine = new PrescribedMedicine();
-                    medicine.setMedicineId(medicineRs.getString("medicine_id"));
-                    medicine.setQuantity(medicineRs.getInt("quantity"));
-                    medicine.setDosage(medicineRs.getString("dosage"));
-                    medicine.setDuration(medicineRs.getString("duration"));
-                    medicine.setUsageInstructions(medicineRs.getString("usage_instructions"));
-                    medicines.add(medicine);
+                // Lấy file đính kèm
+                String fileQuery = "SELECT * FROM medical_record_files WHERE medical_record_id = ?";
+                try (PreparedStatement psFile = conn.prepareStatement(fileQuery)) {
+                    psFile.setString(1, medicalRecord.getId());
+                    ResultSet fileRs = psFile.executeQuery();
+                    List<MedicalRecordFile> files = new ArrayList<>();
+                    while (fileRs.next()) {
+                        MedicalRecordFile file = new MedicalRecordFile();
+                        file.setId(fileRs.getString("id"));
+                        file.setFileName(fileRs.getString("file_name"));
+                        file.setFileUrl(fileRs.getString("file_url"));
+                        file.setUploadedAt(fileRs.getTimestamp("uploaded_at"));
+                        files.add(file);
+                    }
+                    medicalRecord.setFiles(files);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                medicalRecord.setPrescribedMedicines(medicines);
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                // Lấy kê đơn thuốc
+                String medicineQuery = "SELECT * FROM prescribed_medicines WHERE medical_record_id = ?";
+                try (PreparedStatement psMedicine = conn.prepareStatement(medicineQuery)) {
+                    psMedicine.setString(1, medicalRecord.getId());
+                    ResultSet medicineRs = psMedicine.executeQuery();
+                    List<PrescribedMedicine> medicines = new ArrayList<>();
+                    while (medicineRs.next()) {
+                        PrescribedMedicine medicine = new PrescribedMedicine();
+                        medicine.setMedicineId(medicineRs.getString("medicine_id"));
+                        medicine.setQuantity(medicineRs.getInt("quantity"));
+                        medicine.setDosage(medicineRs.getString("dosage"));
+                        medicine.setDuration(medicineRs.getString("duration"));
+                        medicine.setUsageInstructions(medicineRs.getString("usage_instructions"));
+                        medicines.add(medicine);
+                    }
+                    medicalRecord.setPrescribedMedicines(medicines);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+
+        return medicalRecord;
     }
 
-    return medicalRecord;
-}
-    
-    public boolean updateMedicalRecordWithFiles(
-        String medicalRecordId, String doctorId, String petId,
-        String diagnosis, String treatment, java.sql.Date reExamDate,
-        List<PrescribedMedicine> prescribedList, List<MedicalRecordFile> files) {
-    
-    boolean result = false;
-    String updateMedicalRecordQuery = "UPDATE medical_records SET diagnosis = ?, treatment = ?, re_exam_date = ?, updated_at = GETDATE() WHERE id = ?";
-    String deletePrescribedMedicinesQuery = "DELETE FROM prescribed_medicines WHERE medical_record_id = ?";
-    String insertPrescribedMedicinesQuery = "INSERT INTO prescribed_medicines (medical_record_id, medicine_id, quantity, dosage, duration, usage_instructions) VALUES (?, ?, ?, ?, ?, ?)";
-    String insertMedicalRecordFileQuery = "INSERT INTO medical_record_files (medical_record_id, file_name, file_url, uploaded_at) VALUES (?, ?, ?, GETDATE())";
+    public boolean updateMedicalRecordWithFiles(String medicalRecordId, String diagnosis, String treatment, java.sql.Date reExamDate,
+            List<PrescribedMedicine> prescribedList, List<MedicalRecordFile> files, List<String> removeFiles) {
+        boolean result = false;
 
-    try (Connection conn = DBContext.getConnection()) {
-        // Disable auto-commit for transaction
-        conn.setAutoCommit(false);
+        // Sử dụng try-with-resources để tự động đóng các tài nguyên
+        String updateRecordQuery = "UPDATE medical_records SET diagnosis = ?, treatment = ?, re_exam_date = ? WHERE id = ?";
+        String deleteMedicineQuery = "DELETE FROM prescribed_medicines WHERE medical_record_id = ?";
+        String insertMedicineQuery = "INSERT INTO prescribed_medicines (medical_record_id, medicine_id, quantity, dosage, duration, usage_instructions) VALUES (?, ?, ?, ?, ?, ?)";
+        String deleteFileQuery = "DELETE FROM medical_record_files WHERE id = ?";
+        String insertFileQuery = "INSERT INTO medical_record_files (medical_record_id, file_name, file_url, uploaded_at) VALUES (?, ?, ?, ?)";
 
-        try (PreparedStatement psUpdate = conn.prepareStatement(updateMedicalRecordQuery)) {
-            // Cập nhật hồ sơ y tế
-            psUpdate.setString(1, diagnosis);
-            psUpdate.setString(2, treatment);
-            psUpdate.setDate(3, reExamDate);
-            psUpdate.setString(4, medicalRecordId);
-            int affectedRows = psUpdate.executeUpdate();
-            if (affectedRows == 0) {
-                throw new Exception("Updating medical record failed, no rows affected.");
-            }
-        }
+        try (
+                Connection conn = DBContext.getConnection(); PreparedStatement psUpdateRecord = conn.prepareStatement(updateRecordQuery); PreparedStatement psDeleteMedicine = conn.prepareStatement(deleteMedicineQuery); PreparedStatement psInsertMedicine = conn.prepareStatement(insertMedicineQuery); PreparedStatement psDeleteFile = conn.prepareStatement(deleteFileQuery); PreparedStatement psInsertFile = conn.prepareStatement(insertFileQuery)) {
+            conn.setAutoCommit(false);  // Bắt đầu transaction
 
-        // Xóa kê đơn thuốc cũ (nếu có)
-        try (PreparedStatement psDelete = conn.prepareStatement(deletePrescribedMedicinesQuery)) {
-            psDelete.setString(1, medicalRecordId);
-            psDelete.executeUpdate();
-        }
+            // 1. Cập nhật thông tin hồ sơ y tế
+            psUpdateRecord.setString(1, diagnosis);
+            psUpdateRecord.setString(2, treatment);
+            psUpdateRecord.setDate(3, reExamDate);
+            psUpdateRecord.setString(4, medicalRecordId);
+            psUpdateRecord.executeUpdate();
 
-        // Thêm kê đơn thuốc mới
-        try (PreparedStatement psInsertMedicine = conn.prepareStatement(insertPrescribedMedicinesQuery)) {
+            // 2. Xóa thuốc cũ
+            psDeleteMedicine.setString(1, medicalRecordId);
+            psDeleteMedicine.executeUpdate();
+
+            // 3. Thêm thuốc mới
             for (PrescribedMedicine pm : prescribedList) {
                 psInsertMedicine.setString(1, medicalRecordId);
                 psInsertMedicine.setString(2, pm.getMedicineId());
@@ -528,114 +528,212 @@ public class MedicalRecordDAO {
                 psInsertMedicine.setString(6, pm.getUsageInstructions());
                 psInsertMedicine.addBatch();
             }
-            psInsertMedicine.executeBatch();
-        }
+            psInsertMedicine.executeBatch();  // Thực thi tất cả các câu lệnh insert thuốc
 
-        // Thêm file đính kèm mới (nếu có)
-        try (PreparedStatement psInsertFile = conn.prepareStatement(insertMedicalRecordFileQuery)) {
+            // 4. Xóa file nếu có (xóa file cũ đã chọn để xóa)
+            if (removeFiles != null && !removeFiles.isEmpty()) {
+                for (String fileId : removeFiles) {
+                    psDeleteFile.setString(1, fileId);
+                    psDeleteFile.executeUpdate();
+                }
+            }
+
+            // 5. Thêm file mới
             for (MedicalRecordFile file : files) {
                 psInsertFile.setString(1, medicalRecordId);
                 psInsertFile.setString(2, file.getFileName());
                 psInsertFile.setString(3, file.getFileUrl());
+                psInsertFile.setTimestamp(4, new java.sql.Timestamp(file.getUploadedAt().getTime()));
                 psInsertFile.addBatch();
             }
-            psInsertFile.executeBatch();
-        }
+            psInsertFile.executeBatch();  // Thực thi tất cả các câu lệnh insert file mới
 
-        // Commit transaction if all operations were successful
-        conn.commit();
-        result = true;
-
-    } catch (Exception e) {
-        // Rollback in case of any errors
-        try (Connection conn = DBContext.getConnection()) {
-            conn.rollback();
-        } catch (Exception rollbackEx) {
-            rollbackEx.printStackTrace();
-        }
-        e.printStackTrace();
-    }
-
-    return result;
-}
-
-public boolean updateMedicalRecordWithFiles(String medicalRecordId, String diagnosis, String treatment, java.sql.Date reExamDate, 
-        List<PrescribedMedicine> prescribedList, List<MedicalRecordFile> files, List<String> removeFiles) {
-    boolean result = false;
-
-    // Sử dụng try-with-resources để tự động đóng các tài nguyên
-    String updateRecordQuery = "UPDATE medical_records SET diagnosis = ?, treatment = ?, re_exam_date = ? WHERE id = ?";
-    String deleteMedicineQuery = "DELETE FROM prescribed_medicines WHERE medical_record_id = ?";
-    String insertMedicineQuery = "INSERT INTO prescribed_medicines (medical_record_id, medicine_id, quantity, dosage, duration, usage_instructions) VALUES (?, ?, ?, ?, ?, ?)";
-    String deleteFileQuery = "DELETE FROM medical_record_files WHERE id = ?";
-    String insertFileQuery = "INSERT INTO medical_record_files (medical_record_id, file_name, file_url, uploaded_at) VALUES (?, ?, ?, ?)";
-
-    try (
-        Connection conn = DBContext.getConnection();
-        PreparedStatement psUpdateRecord = conn.prepareStatement(updateRecordQuery);
-        PreparedStatement psDeleteMedicine = conn.prepareStatement(deleteMedicineQuery);
-        PreparedStatement psInsertMedicine = conn.prepareStatement(insertMedicineQuery);
-        PreparedStatement psDeleteFile = conn.prepareStatement(deleteFileQuery);
-        PreparedStatement psInsertFile = conn.prepareStatement(insertFileQuery)
-    ) {
-        conn.setAutoCommit(false);  // Bắt đầu transaction
-
-        // 1. Cập nhật thông tin hồ sơ y tế
-        psUpdateRecord.setString(1, diagnosis);
-        psUpdateRecord.setString(2, treatment);
-        psUpdateRecord.setDate(3, reExamDate);
-        psUpdateRecord.setString(4, medicalRecordId);
-        psUpdateRecord.executeUpdate();
-
-        // 2. Xóa thuốc cũ
-        psDeleteMedicine.setString(1, medicalRecordId);
-        psDeleteMedicine.executeUpdate();
-
-        // 3. Thêm thuốc mới
-        for (PrescribedMedicine pm : prescribedList) {
-            psInsertMedicine.setString(1, medicalRecordId);
-            psInsertMedicine.setString(2, pm.getMedicineId());
-            psInsertMedicine.setInt(3, pm.getQuantity());
-            psInsertMedicine.setString(4, pm.getDosage());
-            psInsertMedicine.setString(5, pm.getDuration());
-            psInsertMedicine.setString(6, pm.getUsageInstructions());
-            psInsertMedicine.addBatch();
-        }
-        psInsertMedicine.executeBatch();  // Thực thi tất cả các câu lệnh insert thuốc
-
-        // 4. Xóa file nếu có (xóa file cũ đã chọn để xóa)
-        if (removeFiles != null && !removeFiles.isEmpty()) {
-            for (String fileId : removeFiles) {
-                psDeleteFile.setString(1, fileId);
-                psDeleteFile.executeUpdate();
+            conn.commit();  // Commit transaction
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Nếu có lỗi, rollback transaction
+            try (Connection conn = DBContext.getConnection()) {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (Exception rollbackEx) {
+                rollbackEx.printStackTrace();
             }
         }
 
-        // 5. Thêm file mới
-        for (MedicalRecordFile file : files) {
-            psInsertFile.setString(1, medicalRecordId);
-            psInsertFile.setString(2, file.getFileName());
-            psInsertFile.setString(3, file.getFileUrl());
-            psInsertFile.setTimestamp(4, new java.sql.Timestamp(file.getUploadedAt().getTime()));
-            psInsertFile.addBatch();
-        }
-        psInsertFile.executeBatch();  // Thực thi tất cả các câu lệnh insert file mới
-
-        conn.commit();  // Commit transaction
-        result = true;
-    } catch (Exception e) {
-        e.printStackTrace();
-        // Nếu có lỗi, rollback transaction
-        try (Connection conn = DBContext.getConnection()) {
-            if (conn != null) conn.rollback();
-        } catch (Exception rollbackEx) {
-            rollbackEx.printStackTrace();
-        }
+        return result;
     }
 
-    return result;
-}
+    /// In hồ sơ
+     public MedicalRecord getMedicalRecordAndServiceAndSymtompById(String medicalRecordId) {
+        MedicalRecord medicalRecord = null;
+        String query = """
+                   SELECT 
+                       mr.id AS medical_record_id,
+                       diagnosis,appointment_id as appt_id,
+                       treatment,
+                       re_exam_date,
+                       mr.created_at as mr_created_at,
+                       mr.updated_at as mr_updated_at,
+                       b.name as breed_name,
+                       p.pet_code,
+                       p.name AS pet_name,
+                       p.birth_date,
+                       p.gender,
+                       u.full_name AS owner_name,
+                       u.email AS owner_email,
+                       u.phone AS owner_phone,
+                       u.address AS owner_address
+                   FROM medical_records mr
+                   JOIN pets p ON mr.pet_id = p.id
+                   JOIN breeds b on p.breeds_id=b.id
+                   JOIN users u ON p.owner_id = u.id
+                   WHERE mr.id = ?;
+                   """;
 
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, medicalRecordId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                medicalRecord = new MedicalRecord();
+                medicalRecord.setId(medicalRecordId);
+                medicalRecord.setDiagnosis(rs.getString("diagnosis"));
+                medicalRecord.setTreatment(rs.getString("treatment"));
+                medicalRecord.setReExamDate(rs.getDate("re_exam_date"));
+                medicalRecord.setCreatedAt(rs.getTimestamp("mr_created_at"));
+                medicalRecord.setUpdatedAt(rs.getTimestamp("mr_updated_at"));
+
+                User user = new User();
+                user.setFullName(rs.getString("owner_name"));
+                user.setPhoneNumber(rs.getString("owner_phone"));
+                user.setEmail(rs.getString("owner_email"));
+                user.setAddress(rs.getString("owner_address"));
+
+                Breed breed = new Breed();
+                breed.setName(rs.getString("breed_name"));
+
+                Pet pet = new Pet();
+                pet.setBirthDate(rs.getDate("birth_date"));
+                pet.setUser(user);
+                pet.setBreed(breed);
+                pet.setPet_code(rs.getString("pet_code"));
+                pet.setGender(rs.getString("gender"));
+                pet.setName(rs.getString("pet_name"));
+                medicalRecord.setPet(pet);
+
+                String appointmentId = rs.getString("appt_id");
+                Appointment appt = new Appointment();
+                appt.setId(appointmentId);
+                medicalRecord.setAppointment(appt);
+
+                medicalRecord.setFiles(getMedicalRecordFiles(conn, medicalRecordId));
+                medicalRecord.setPrescribedMedicines(getPrescribedMedicines(conn, medicalRecordId));
+                medicalRecord.setAppointmentServices(getAppointmentServices(conn, appointmentId));
+                medicalRecord.setAppointmentSymptoms(getAppointmentSymptoms(conn, appointmentId));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return medicalRecord;
+    }
+
+    private List<MedicalRecordFile> getMedicalRecordFiles(Connection conn, String medicalRecordId) {
+        List<MedicalRecordFile> files = new ArrayList<>();
+        String query = "SELECT * FROM medical_record_files WHERE medical_record_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, medicalRecordId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                MedicalRecordFile file = new MedicalRecordFile();
+                file.setId(rs.getString("id"));
+                file.setFileName(rs.getString("file_name"));
+                file.setFileUrl(rs.getString("file_url"));
+                file.setUploadedAt(rs.getTimestamp("uploaded_at"));
+                files.add(file);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return files;
+    }
+
+    private List<PrescribedMedicine> getPrescribedMedicines(Connection conn, String medicalRecordId) {
+        List<PrescribedMedicine> medicines = new ArrayList<>();
+        String query = "SELECT pm.*, name FROM prescribed_medicines pm , medicines m WHERE medical_record_id = ? and m.id = pm.medicine_id";
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, medicalRecordId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                PrescribedMedicine medicine = new PrescribedMedicine();
+                
+                medicine.setMedicineName(rs.getString("name"));
+                medicine.setMedicineId(rs.getString("medicine_id"));
+                medicine.setQuantity(rs.getInt("quantity"));
+                medicine.setDosage(rs.getString("dosage"));
+                medicine.setDuration(rs.getString("duration"));
+                medicine.setUsageInstructions(rs.getString("usage_instructions"));
+                medicines.add(medicine);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return medicines;
+    }
+
+    private List<AppointmentService> getAppointmentServices(Connection conn, String appointmentId)  {
+        List<AppointmentService> services = new ArrayList<>();
+        String query = """
+            SELECT aps.service_id, s.name, aps.price, aps.status
+            FROM appointment_services aps
+            JOIN services s ON aps.service_id = s.id
+            WHERE aps.appointment_id = ? and aps.status = 'completed'
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                AppointmentService service = new AppointmentService();
+                Service ser = new Service();
+                ser.setId(rs.getString("service_id"));
+                ser.setName(rs.getString("name"));
+                service.setService(ser);
+                service.setPrice(rs.getDouble("price"));
+                service.setStatus(rs.getString("status"));
+                services.add(service);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return services;
+    }
+
+    private List<AppointmentSymptom> getAppointmentSymptoms(Connection conn, String appointmentId)
+    {
+        List<AppointmentSymptom> symptoms = new ArrayList<>();
+        String query = """
+            SELECT symptom, diagnosis, note, created_at
+            FROM appointment_symptoms
+            WHERE appointment_id = ?
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                AppointmentSymptom symptom = new AppointmentSymptom();
+                symptom.setSymptom(rs.getString("symptom"));
+                symptom.setDiagnosis(rs.getString("diagnosis"));
+                symptom.setNote(rs.getString("note"));
+                symptom.setCreated_at(rs.getTimestamp("created_at"));
+                symptoms.add(symptom);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return symptoms;
+    }
 }
 
 

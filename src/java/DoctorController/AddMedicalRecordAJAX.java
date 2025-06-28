@@ -29,43 +29,24 @@ import java.util.stream.Collectors;
  *
  * @author ASUS
  */
-@WebServlet("/add-medical-record")
+
+@WebServlet("/doctor-add-medical-record")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024, // 1MB
         maxFileSize = 1024 * 1024 * 10, // 10MB/file
         maxRequestSize = 1024 * 1024 * 50 // 50MB
 )
-public class AddMedicalRecord extends HttpServlet {
+public class AddMedicalRecordAJAX extends HttpServlet {
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        MedicineDAO mDAO = new MedicineDAO();
-        List<Medicine> medicines = mDAO.getAllMedicines();
-
-// Lọc status = 1
-        List<Medicine> activeMedicines = medicines.stream()
-                .filter(m -> m.getStatus() == 1)
-                .collect(Collectors.toList());
-        request.setAttribute("medicines", activeMedicines);
-
-        request.getRequestDispatcher("/view/doctor/content/AddMedicalRecord.jsp").forward(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("application/json; charset=UTF-8");
+    PrintWriter out = response.getWriter();
 
+    try {
         // 1. Lấy thông tin cơ bản
         String appointmentId = request.getParameter("appointmentId");
         String diagnosis = request.getParameter("diagnosis");
@@ -75,20 +56,17 @@ public class AddMedicalRecord extends HttpServlet {
         if (reExamDateStr != null && !reExamDateStr.isEmpty()) {
             reExamDate = java.sql.Date.valueOf(reExamDateStr);
         }
-
-        // Lấy doctorId, petId theo appointmentId (có thể phải query DB hoặc gửi lên từ client)
         String doctorId = request.getParameter("doctorId");
         String petId = request.getParameter("petId");
+
         MedicalRecordDAO medicalRecordDAO = new MedicalRecordDAO();
         boolean hasMedicalRecord = medicalRecordDAO.checkExistingMedicalRecordForAppointment(appointmentId);
 
         if (hasMedicalRecord) {
-            request.setAttribute("errorMessage", "Cuộc hẹn đã có hồ sơ y tế, không thể thêm mới.");
-            request.getRequestDispatcher("/view/doctor/content/AddMedicalRecord.jsp").forward(request, response);
-            return; // Dừng lại ở đây nếu đã có hồ sơ
+            out.write("{\"status\":\"error\", \"message\":\"Cuộc hẹn đã có hồ sơ y tế, không thể thêm mới.\"}");
+            return;
         }
-        // TODO: Truy vấn DB lấy doctorId, petId từ appointmentId (tùy hệ thống bạn)
-        // Ví dụ: AppointmentDAO.getAppointmentById(appointmentId);
+
         // 2. Lấy danh sách thuốc kê đơn từ form
         List<PrescribedMedicine> prescribedList = new ArrayList<>();
         String[] medIds = request.getParameterValues("medicineId");
@@ -99,9 +77,7 @@ public class AddMedicalRecord extends HttpServlet {
 
         if (medIds != null) {
             for (int i = 0; i < medIds.length; i++) {
-                if (medIds[i] == null || medIds[i].trim().isEmpty()) {
-                    continue;
-                }
+                if (medIds[i] == null || medIds[i].trim().isEmpty()) continue;
                 PrescribedMedicine pm = new PrescribedMedicine();
                 pm.setMedicineId(medIds[i]);
                 pm.setQuantity(Integer.parseInt(quantities[i]));
@@ -116,21 +92,27 @@ public class AddMedicalRecord extends HttpServlet {
         List<MedicalRecordFile> files = new ArrayList<>();
         if (request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/")) {
             Collection<Part> fileParts = request.getParts();
+            // Thư mục lưu ngoài project
+    String uploadDirPath = "C:/MyUploads/medical";
+    File uploadDir = new File(uploadDirPath);
+    if (!uploadDir.exists()) {
+        uploadDir.mkdirs();
+    }
             for (Part part : fileParts) {
                 if ("files".equals(part.getName()) && part.getSize() > 0) {
-                    // Lưu file vào thư mục server
-                    String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
-                    String uploadDir = getServletContext().getRealPath("/uploads/medical/");
-                    File uploadFolder = new File(uploadDir);
-                    if (!uploadFolder.exists()) {
-                        uploadFolder.mkdirs();
-                    }
-                    String filePath = uploadDir + File.separator + fileName;
-                    part.write(filePath);
+                    // Lấy phần mở rộng của file
+            String originalFileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+
+            // Ghi file ra ổ cứng
+            File savedFile = new File(uploadDir, randomFileName);
+            part.write(savedFile.getAbsolutePath());
+
 
                     MedicalRecordFile uf = new MedicalRecordFile();
-                    uf.setFileName(fileName);
-                    uf.setFileUrl("uploads/medical/" + fileName);
+                    uf.setFileName(originalFileName);
+                    uf.setFileUrl(request.getContextPath()+"/image-loader/" + randomFileName); 
                     uf.setUploadedAt(new java.util.Date());
                     files.add(uf);
                 }
@@ -138,28 +120,28 @@ public class AddMedicalRecord extends HttpServlet {
         }
 
         // 4. Gọi DAO thực hiện transaction
-        MedicalRecordDAO dao = new MedicalRecordDAO();
         boolean ok = false;
         try {
-            ok = dao.createFullMedicalRecord(
+            ok = medicalRecordDAO.createFullMedicalRecord(
                     appointmentId, doctorId, petId,
                     diagnosis, treatment, reExamDate,
                     prescribedList, files
             );
         } catch (Exception e) {
             e.printStackTrace();
+            out.write("{\"status\":\"error\", \"message\":\"Có lỗi khi lưu dữ liệu!\"}");
+            return;
         }
 
-        // 5. Chuyển hướng hoặc trả về kết quả
         if (ok) {
-            // Thêm thành công
-            request.getSession().setAttribute("message", "Thêm hồ sơ y tế thành công!");
-            response.sendRedirect("add-medical-record?appointmentId=" + appointmentId);
+            out.write("{\"status\":\"success\", \"message\":\"Thêm hồ sơ y tế thành công!\"}");
         } else {
-            // Lỗi
-            request.setAttribute("errorMessage", "Có lỗi xảy ra, vui lòng thử lại!");
-            request.getRequestDispatcher("/view/doctor/content/AddMedicalRecord.jsp").forward(request, response);
+            out.write("{\"status\":\"error\", \"message\":\"Có lỗi xảy ra, vui lòng thử lại!\"}");
         }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        out.write("{\"status\":\"error\", \"message\":\"Hệ thống gặp lỗi không xác định!\"}");
+    }
     }
 
     /**

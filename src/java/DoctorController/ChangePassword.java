@@ -47,7 +47,7 @@ public class ChangePassword extends HttpServlet {
         if (!user.getPassword().equals(hashedOldPassword)) {
             request.setAttribute("user", user);
             request.setAttribute("errorOldPass", "Mật khẩu cũ không đúng.");
-            request.getRequestDispatcher("view/doctor/content/DoctorProfileSetting.jsp").forward(request, response);
+            request.getRequestDispatcher("view/doctor/content/DoctorProfileSetting.jsp#password").forward(request, response);
             return;
         }
 
