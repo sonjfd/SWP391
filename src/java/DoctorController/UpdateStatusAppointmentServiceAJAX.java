@@ -3,15 +3,16 @@ package DoctorController;
 import DAO.AppointmentServiceDAO;
 import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-//CÓ DÙng
-@WebServlet("/update-status-appointment-service")
-public class UpdateStatusAppointmentServiceServlet extends HttpServlet {
+@MultipartConfig
+@WebServlet("/doctor-update-status-appointment-service")
+public class UpdateStatusAppointmentServiceAJAX extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -51,6 +52,14 @@ if (updated) {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-          
+          String id = request.getParameter("id");
+        String status = request.getParameter("status");
+        boolean success = false;
+        if (id != null && status != null) {
+            AppointmentServiceDAO dao = new AppointmentServiceDAO();
+            success = dao.updateStatus(id, status);
+        }
+        response.setContentType("application/json");
+        response.getWriter().write("{\"success\": " + success + "}");
     }
 }

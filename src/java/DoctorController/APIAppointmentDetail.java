@@ -54,7 +54,7 @@ public class APIAppointmentDetail extends HttpServlet {
                 appointmentObj.addProperty("ownerEmail", appt.getPet().getUser().getEmail());
                 appointmentObj.addProperty("ownerAvatar", appt.getPet().getUser().getAvatar());
                 appointmentObj.addProperty("appointmentNote", appt.getNote());
-                appointmentObj.addProperty("appointmentCheckin", appt.getStatus());
+                appointmentObj.addProperty("appointmentCheckin", appt.getChekinStatus());
                 appointmentObj.addProperty("appointmentStatus", appt.getStatus());
                 appointmentObj.addProperty("appointmentDate", appt.getAppointmentDate().toString());
                 appointmentObj.addProperty("startTime", appt.getStartTime().toString());

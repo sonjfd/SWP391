@@ -24,6 +24,8 @@ public class MedicalRecord {
     private Date updatedAt;
     private List<MedicalRecordFile> files;
     private List<PrescribedMedicine> prescribedMedicines;
+    private List<AppointmentService> appointmentServices;
+    private List<AppointmentSymptom> appointmentSymptoms;
 
     public MedicalRecord() {
     }
@@ -116,6 +118,13 @@ public class MedicalRecord {
         this.updatedAt = updatedAt;
     }
 
+    @Override
+    public String toString() {
+        return "MedicalRecord{" + "appointmentServices=" + appointmentServices + ", appointmentSymptoms=" + appointmentSymptoms + '}';
+    }
+
+    
+
     public List<MedicalRecordFile> getFiles() {
         return files;
     }
@@ -132,19 +141,20 @@ public class MedicalRecord {
         this.prescribedMedicines = prescribedMedicines;
     }
 
-    @Override
-    public String toString() {
-        return "MedicalRecord{" + "id=" + id + ", pet=" + pet + ", doctor=" + doctor + ", appointment=" + appointment + ", diagnosis=" + diagnosis + ", treatment=" + treatment + ", reExamDate=" + reExamDate + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + '}';
+    public List<AppointmentService> getAppointmentServices() {
+        return appointmentServices;
     }
 
-    
-    
+    public void setAppointmentServices(List<AppointmentService> appointmentServices) {
+        this.appointmentServices = appointmentServices;
+    }
 
-    
-    
+    public List<AppointmentSymptom> getAppointmentSymptoms() {
+        return appointmentSymptoms;
+    }
 
-    
-    
-    
-    
+    public void setAppointmentSymptoms(List<AppointmentSymptom> appointmentSymptoms) {
+        this.appointmentSymptoms = appointmentSymptoms;
+    }
+ 
 }

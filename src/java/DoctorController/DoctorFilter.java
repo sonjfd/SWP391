@@ -99,54 +99,79 @@ public class DoctorFilter implements Filter {
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain)
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
         String uri = req.getRequestURI();
-        
-        // Bỏ qua login và public resources
-        if (uri.endsWith("Login.jsp") || uri.contains("/public/") || uri.contains("login")) {
+        String contextPath = req.getContextPath();
+        if (uri.endsWith(".css") || uri.endsWith(".js") || uri.endsWith(".png")
+                || uri.endsWith(".jpg") || uri.endsWith(".jpeg") || uri.endsWith(".gif")
+                || uri.endsWith(".svg") || uri.endsWith(".woff") || uri.endsWith(".woff2")
+                || uri.endsWith(".ttf") || uri.contains("/assets/") || uri.contains("/static/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+        // Cho phép truy cập trang login
+        if (uri.endsWith("Login.jsp") || uri.contains("/login")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Kiểm tra người dùng đã đăng nhập chưa
-        if (session == null || session.getAttribute("user") == null) {
-            res.sendRedirect("login");
+        // Kiểm tra đăng nhập
+        User user = null;
+        if (session != null) {
+            user = (User) session.getAttribute("user");
+        }
+
+//     Nếu chưa đăng nhập, chuyển hướng đến /homepage
+        if (user == null) {
+            // Cho phép truy cập /homepage mà không cần đăng nhập
+            if (uri.contains("/homepage")) {
+                chain.doFilter(request, response);
+                return;
+            }
+            res.sendRedirect(contextPath + "/homepage");
             return;
         }
 
-        // Lấy role_id từ user
-        User user = (User) session.getAttribute("user");
-        int roleId = user.getRole().getId(); // hoặc user.getRole_id();
+        // Lấy role ID
+        int roleId = user.getRole().getId();
 
-        // Phân quyền theo URL
-        if (uri.contains("/admin/") && roleId != 2) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Admin only.");
+        // Nếu cố tình truy cập view/public trực tiếp thì chặn
+        if (uri.contains("/view") || uri.contains("/public")) {
+            res.sendRedirect(contextPath + "/homepage");
             return;
         }
 
-        if (uri.contains("/customer/") && roleId != 1) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Customer only.");
+        if (uri.contains("/admin") && roleId != 2) {
+            req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho quản trị viên.");
+            req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
+            return;
+        }
+
+        if (uri.contains("/customer") && roleId != 1) {
+            req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho khách hàng.");
+            req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
             return;
         }
 
         if (uri.contains("/doctor") && roleId != 3) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Doctor only.");
+            req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho bác sĩ.");
+            req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
             return;
         }
 
-        if (uri.contains("/staff/") && roleId != 4) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Staff only.");
+        if (uri.contains("/staff") && roleId != 4) {
+            req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho nhân viên.");
+            req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
             return;
         }
 
-        // Cho phép tiếp tục nếu hợp lệ
+        // Hợp lệ → tiếp tục
         chain.doFilter(request, response);
-
     }
 
     /**

@@ -39,6 +39,8 @@ public class GetMedicalRecordAPI extends HttpServlet {
             recordObj.addProperty("id", record.getId());
             recordObj.addProperty("diagnosis", record.getDiagnosis());
             recordObj.addProperty("treatment", record.getTreatment());
+            recordObj.addProperty("appointmentStatus", record.getAppointment().getStatus());
+            
             if(record.getReExamDate()!=null){
             recordObj.addProperty("reExamDate", record.getReExamDate().toString());}
             else{
@@ -64,7 +66,7 @@ public class GetMedicalRecordAPI extends HttpServlet {
             List<PrescribedMedicine> prescribedMedicines = record.getPrescribedMedicines(); // Giả sử getPrescribedMedicines() trả về danh sách thuốc kê đơn
             for (PrescribedMedicine medicine : prescribedMedicines) {
                 JsonObject medicineObj = new JsonObject();
-                medicineObj.addProperty("medicineName", medicine.getMedicineId());
+                medicineObj.addProperty("medicineName", medicine.getMedicineName());
                 medicineObj.addProperty("quantity", medicine.getQuantity());
                 medicineObj.addProperty("dosage", medicine.getDosage());
                 medicineObj.addProperty("duration", medicine.getDuration());

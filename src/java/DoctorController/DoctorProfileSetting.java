@@ -8,6 +8,7 @@ import DAO.DoctorDAO;
 import DAO.UserDAO;
 import Model.Doctor;
 import Model.User;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -20,6 +21,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -29,67 +32,36 @@ import java.nio.file.Path;
 @WebServlet("/doctor-profile-setting")
 public class DoctorProfileSetting extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet DoctorProfileSetting</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet DoctorProfileSetting at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DoctorDAO ddao = new DoctorDAO();
         HttpSession ss = request.getSession();
         User u = (User) ss.getAttribute("user");
+        if(u== null){
+            response.sendRedirect("login");
+            return;
+        }
         String uuid = u.getId();
-        Doctor d = ddao.getDoctorById(uuid);
-        
+        Doctor d = ddao.getDoctorById(u, uuid);
+
         ss.setAttribute("doctor", d);
 
         request.getRequestDispatcher("/view/doctor/content/DoctorProfileSetting.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Nhận dữ liệu từ form
+        HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("user");
+        if(u== null){
+            response.sendRedirect("login");
+            return;
+        }
+        String userId = u.getId();
+
+        // Dữ liệu từ form
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
@@ -99,72 +71,69 @@ public class DoctorProfileSetting extends HttpServlet {
         String certificates = request.getParameter("certificates");
         int yearsOfExperience = Integer.parseInt(request.getParameter("yearsOfExperience"));
         String biography = request.getParameter("biography");
+
         Part part = request.getPart("avatar");
 
-        // Lấy đường dẫn thư mục lưu ảnh
-        String realPath = request.getServletContext().getRealPath("/assets/images");
-        File uploads = new File(realPath);
-        if (!uploads.exists()) {
-            uploads.mkdirs();
+        // Thư mục lưu ảnh ngoài project
+        String uploadDirPath = "C:/MyUploads/avatars";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
         }
 
-        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-        String filePath = "/assets/images/" + filename;
-        DoctorDAO ddao = new DoctorDAO();
-        HttpSession ss = request.getSession();
-        User u = (User) ss.getAttribute("user");
-        
-        
-        
+        String avatarPath = null;
+        String randomFileName = null;
 
-        // Nếu không có ảnh mới, giữ ảnh cũ
-        if (filename.isEmpty()) {
-            try {
-                UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(u.getId());
-                filePath = user.getAvatar(); // Giữ lại ảnh cũ
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            // Nếu có ảnh mới, lưu ảnh mới vào thư mục uploads
-            File file = new File(uploads, filename);
-            part.write(file.getAbsolutePath());
-        }
-
-        // Cập nhật thông tin người dùng và bác sĩ
         UserDAO userDAO = new UserDAO();
         DoctorDAO doctorDAO = new DoctorDAO();
 
-        boolean isUserUpdated = userDAO.updateUser(u.getId(), fullName, address, email, phone, filePath);
-        boolean isDoctorUpdated = doctorDAO.updateDoctor(u.getId(), specialty, certificates, qualifications, yearsOfExperience, biography);
+        try {
+            if (part != null && part.getSize() > 0) {
+                // Xóa ảnh cũ nếu có
+                String oldAvatarPath = userDAO.getUserById(userId).getAvatar(); // eg: /image-loader/abc.jpg
+                if (oldAvatarPath != null && oldAvatarPath.contains("/image-loader/")) {
+                    String oldFileName = oldAvatarPath.substring((request.getContextPath()+"/image-loader/").length());
+                    File oldFile = new File(uploadDir, oldFileName);
+                    if (oldFile.exists()) {
+                        oldFile.delete();
+                    }
+                }
 
-        if (isUserUpdated && isDoctorUpdated) {
-            // Nếu thành công, set thông báo thành công vào session
-            request.getSession().setAttribute("alertMessage", "Cập nhật thông tin thành công!");
-            request.getSession().setAttribute("alertType", "success");
-            User updatedUser = userDAO.getUserById(u.getId());
+                // Tạo tên ngẫu nhiên cho file
+                String fileExtension = part.getSubmittedFileName().substring(part.getSubmittedFileName().lastIndexOf("."));
+                randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
 
-        
-            request.getSession().setAttribute("user", updatedUser);
-        } else {
-            // Nếu thất bại, set thông báo thất bại vào session
-            request.getSession().setAttribute("alertMessage", "Cập nhật thông tin không thành công!");
-            request.getSession().setAttribute("alertType", "error");
+                // Ghi file
+                File newFile = new File(uploadDir, randomFileName);
+                part.write(newFile.getAbsolutePath());
+
+                // Gán đường dẫn lưu DB
+                avatarPath = request.getContextPath()+"/image-loader/" + randomFileName;
+            } else {
+                // Không upload ảnh mới → giữ nguyên ảnh cũ
+                avatarPath = userDAO.getUserById(userId).getAvatar();
+            }
+
+            // Cập nhật DB
+            boolean isUserUpdated = userDAO.updateUser(userId, fullName, address, email, phone, avatarPath);
+            boolean isDoctorUpdated = doctorDAO.updateDoctor(userId, specialty, certificates, qualifications, yearsOfExperience, biography);
+
+            if (isUserUpdated && isDoctorUpdated) {
+                session.setAttribute("alertMessage", "Cập nhật thành công!");
+                session.setAttribute("alertType", "success");
+                session.setAttribute("user", userDAO.getUserById(userId));
+            } else {
+                session.setAttribute("alertMessage", "Cập nhật không thành công!");
+                session.setAttribute("alertType", "error");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("alertMessage", "Lỗi: " + e.getMessage());
+            session.setAttribute("alertType", "error");
         }
 
-        // Điều hướng lại đến trang chỉnh sửa profile sau khi thực hiện cập nhật
         response.sendRedirect("doctor-profile-setting");
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }

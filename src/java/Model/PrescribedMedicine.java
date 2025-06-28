@@ -11,6 +11,7 @@ package Model;
 public class PrescribedMedicine {
     private String medicalRecordId;
     private String medicineId;
+    private String medicineName;
     private int quantity;
     private String dosage;
     private String duration;
@@ -26,6 +27,7 @@ public class PrescribedMedicine {
         this.dosage = dosage;
         this.duration = duration;
         this.usageInstructions = usageInstructions;
+        this.medicineName = getMedicineName();
     }
 
     
@@ -45,6 +47,14 @@ public class PrescribedMedicine {
 
     public void setMedicineId(String medicineId) {
         this.medicineId = medicineId;
+    }
+
+    public String getMedicineName() {
+        return medicineName;
+    }
+
+    public void setMedicineName(String medicineName) {
+        this.medicineName = medicineName;
     }
 
     
@@ -89,15 +99,4 @@ public class PrescribedMedicine {
         this.usageInstructions = usageInstructions;
     }
 
-    
-
-    
-
-    
-
-    
-
-    
-    
-    
 }

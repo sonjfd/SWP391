@@ -32,6 +32,7 @@ public class APIAppointmentServiceList extends HttpServlet {
         for (AppointmentService aps : services) {
             JsonObject o = new JsonObject();
             o.addProperty("id", aps.getId());
+            o.addProperty("serid", aps.getService().getId());
             o.addProperty("serviceName", aps.getService().getName());
             o.addProperty("price", aps.getPrice());
             o.addProperty("status", aps.getStatus());
