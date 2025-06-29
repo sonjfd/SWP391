@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý hương vị</title>
+    <title>Đơn vị hương vị</title>
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
 </head>
@@ -14,7 +14,7 @@
 
 <div class="container-fluid">
     <div class="layout-specing">
-        <h5 class="mb-3">Quản lý hương vị</h5>
+        <h5 class="mb-3">Đơn vị hương vị</h5>
 
         <!-- Form tìm kiếm -->
         <form method="get" action="admin-productVariantFlavor" class="mb-3 d-flex align-items-center justify-content-between w-100">

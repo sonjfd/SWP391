@@ -37,7 +37,7 @@
         <input type="hidden" name="action" value="add">
 
         <div class="mb-3">
-            <label for="weight" class="form-label">Trọng lượng (gram)</label>
+            <label for="weight" class="form-label">Trọng lượng (gram) <span class="text-danger">*</span></label>
             <input
                 type="number"
                 step="0.01"
@@ -50,7 +50,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="status" class="form-label">Trạng thái</label>
+            <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
             <select class="form-select" id="status" name="status">
                 <option value="1" ${status == '1' ? 'selected' : ''}>Đang bán</option>
                 <option value="0" ${status == '0' ? 'selected' : ''}>Ngừng bán</option>

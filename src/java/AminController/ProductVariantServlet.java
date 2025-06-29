@@ -109,7 +109,7 @@ public class ProductVariantServlet extends HttpServlet {
             String filename = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
             // Tạo thư mục nếu chưa có
-            String uploadPath = "C:/MyUploads/product-variants"; // thay đổi nếu cần
+            String uploadPath = "C:/MyUploads/avatars"; // thay đổi nếu cần
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 

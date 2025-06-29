@@ -31,7 +31,7 @@
 
     <!-- Sản phẩm -->
     <div class="mb-3">
-        <label for="product_id" class="form-label">Sản phẩm</label>
+        <label for="product_id" class="form-label">Sản phẩm <span class="text-danger">*</span></label>
         <select class="form-select" name="product_id" id="product_id" required>
             <option value="">-- Chọn sản phẩm --</option>
             <%
@@ -46,7 +46,7 @@
 
     <!-- Khối lượng -->
     <div class="mb-3">
-        <label for="weight_id" class="form-label">Khối lượng</label>
+        <label for="weight_id" class="form-label">Khối lượng <span class="text-danger">*</span></label>
         <select class="form-select" name="weight_id" id="weight_id" required>
             <option value="">-- Chọn khối lượng --</option>
             <%
@@ -61,7 +61,7 @@
 
     <!-- Hương vị -->
     <div class="mb-3">
-        <label for="flavor_id" class="form-label">Hương vị</label>
+        <label for="flavor_id" class="form-label">Hương vị <span class="text-danger">*</span></label>
         <select class="form-select" name="flavor_id" id="flavor_id" required>
             <option value="">-- Chọn hương vị --</option>
             <%
@@ -76,21 +76,21 @@
 
     <!-- Giá -->
     <div class="mb-3">
-        <label for="price" class="form-label">Giá (VNĐ)</label>
+        <label for="price" class="form-label">Giá (VNĐ) <span class="text-danger">*</span></label>
         <input type="number" class="form-control" name="price" id="price" required step="0.01" min="0"
                value="<%= request.getParameter("price") != null ? request.getParameter("price") : "" %>">
     </div>
 
     <!-- Tồn kho -->
     <div class="mb-3">
-        <label for="stock_quantity" class="form-label">Số lượng trong kho</label>
+        <label for="stock_quantity" class="form-label">Số lượng trong kho <span class="text-danger">*</span></label>
         <input type="number" class="form-control" name="stock_quantity" id="stock_quantity" required min="0"
                value="<%= request.getParameter("stock_quantity") != null ? request.getParameter("stock_quantity") : "" %>">
     </div>
 
     <!-- Upload ảnh -->
     <div class="mb-3">
-        <label for="imageFile" class="form-label">Ảnh sản phẩm</label>
+        <label for="imageFile" class="form-label">Ảnh sản phẩm <span class="text-danger">*</span></label>
         <input type="file" class="form-control" name="imageFile" id="imageFile" accept="image/*" required>
     </div>
 
@@ -101,7 +101,7 @@
 
     <!-- Trạng thái -->
     <div class="mb-3">
-        <label for="status" class="form-label">Trạng thái</label>
+        <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
         <select class="form-select" name="status" id="status" required>
             <option value="1" <%= "1".equals(request.getParameter("status")) ? "selected" : "" %>>Đang bán</option>
             <option value="0" <%= "0".equals(request.getParameter("status")) ? "selected" : "" %>>Ngừng bán</option>

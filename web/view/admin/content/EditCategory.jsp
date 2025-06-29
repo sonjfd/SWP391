@@ -43,7 +43,7 @@
 
         <!-- Trạng thái -->
         <div class="mb-3">
-            <label class="form-label">Trạng thái</label>
+            <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
             <select name="status" class="form-select">
                 <option value="1" <%= c.isStatus() ? "selected" : "" %>>Đang bán</option>
                 <option value="0" <%= !c.isStatus() ? "selected" : "" %>>Ngừng bán</option>
