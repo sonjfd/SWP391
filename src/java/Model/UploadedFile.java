@@ -16,6 +16,7 @@ public class UploadedFile {
     private String file_url;
     private String file_name;
     private Date uploaded_at;
+    private String uploaderName;
 
     public UploadedFile() {
     }
@@ -68,6 +69,14 @@ public class UploadedFile {
 
     public void setFile_name(String file_name) {
         this.file_name = file_name;
+    }
+
+    public String getUploaderName() {
+        return uploaderName;
+    }
+
+    public void setUploaderName(String uploaderName) {
+        this.uploaderName = uploaderName;
     }
     
     

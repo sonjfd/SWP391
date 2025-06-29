@@ -4,23 +4,26 @@
  */
 package UserController;
 
-import DAO.UserDAO;
-import Model.Pet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.util.UUID;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "FilterPet", urlPatterns = {"/filterpet"})
-public class FilterPet extends HttpServlet {
+@WebServlet(name = "UploadImageServlet", urlPatterns = {"/upload-image"})
+@MultipartConfig
+
+public class UploadImageServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,10 +42,10 @@ public class FilterPet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet FilterPet</title>");
+            out.println("<title>Servlet UploadImageServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet FilterPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet UploadImageServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -71,40 +74,61 @@ public class FilterPet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+   
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String status = (String) request.getParameter("status");
-        String id = request.getParameter("id");
-        List<Pet> petList = null;
-        UserDAO petDAO = new UserDAO();
 
-        if (status.isEmpty() || status.isBlank()) {
-            petList = petDAO.getPetsByUser(id);
-            request.setAttribute("listpet", petList);
+        // Thư mục lưu trữ cố định ngoài project
+        String uploadDirPath = "C:/MyUploads/avatars";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
 
+        // Lấy part ảnh
+        Part part = request.getPart("image");
+        String oldImagePath = request.getParameter("oldImagePath"); // option: xóa ảnh cũ nếu cần
+
+        String avatarPath = null;
+        String randomFileName = null;
+
+        if (part != null && part.getSize() > 0) {
+
+            // Xóa ảnh cũ nếu có
+            if (oldImagePath != null && oldImagePath.contains("/image-loader/")) {
+                String oldFileName = oldImagePath.substring(oldImagePath.lastIndexOf("/") + 1);
+                File oldFile = new File(uploadDirPath, oldFileName);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+
+            // Tạo tên mới ngẫu nhiên
+            String fileExtension = part.getSubmittedFileName()
+                    .substring(part.getSubmittedFileName().lastIndexOf("."));
+            randomFileName = UUID.randomUUID().toString() + fileExtension;
+
+            // Ghi file vào ổ đĩa
+            File newFile = new File(uploadDirPath, randomFileName);
+            part.write(newFile.getAbsolutePath());
+
+            // Tạo đường dẫn URL để lưu vào DB hoặc phản hồi về client
+            avatarPath = request.getContextPath() + "/image-loader/" + randomFileName;
+        }
+
+        // Trả về đường dẫn ảnh nếu thành công
+        if (avatarPath != null) {
+            response.setContentType("text/plain");
+            response.getWriter().write(avatarPath);
         } else {
-
-            petList = petDAO.getPetsByStatus(status, id);
-            request.setAttribute("listpet", petList);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Không nhận được ảnh");
         }
-        if (petList.isEmpty()) {
-            request.setAttribute("Message", "Không lọc thấy pet tương ứng!");
-        }
-
-        request.setAttribute("listpet", petList);
-        request.setAttribute("status", status);
-        request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+        return "Upload image to external folder and return path";
+    }
 
 }

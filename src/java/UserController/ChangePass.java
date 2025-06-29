@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author Admin
  */
-@WebServlet(name = "ChangePass", urlPatterns = {"/changepass"})
+@WebServlet(name = "ChangePass", urlPatterns = {"/customer-changepass"})
 public class ChangePass extends HttpServlet {
 
     /**
@@ -105,7 +105,7 @@ public class ChangePass extends HttpServlet {
 
             user.setPassword(hashedNewPassword);
             session.setAttribute("user", user);
-            response.sendRedirect("viewuserinformation");
+            response.sendRedirect("customer-updateuserinformation");
         } else {
             request.setAttribute("user", user);
             request.getRequestDispatcher("view/profile/UserProfile.jsp").forward(request, response);

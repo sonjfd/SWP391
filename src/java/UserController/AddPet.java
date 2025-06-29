@@ -27,7 +27,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Random;
 
-@WebServlet(name = "AddPet", urlPatterns = {"/addpet"})
+@WebServlet(name = "AddPet", urlPatterns = {"/customer-addpet"})
 @MultipartConfig
 public class AddPet extends HttpServlet {
 
@@ -57,42 +57,49 @@ public class AddPet extends HttpServlet {
         String ownerID = request.getParameter("id");
         String name = request.getParameter("name");
         String gender = request.getParameter("gender");
-        
+
         int breedId = Integer.parseInt(request.getParameter("breed_id"));
         String description = request.getParameter("description");
         Part part = request.getPart("avatar");
-        String realPath = request.getServletContext().getRealPath("/assets/images");
-        File uploads = new File(realPath);
-        if (!uploads.exists()) {
-            uploads.mkdirs();
-        }
-        String filePath;
-        if (part.getSize() > 0) {
-            String originalFilename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String randomFilename = System.currentTimeMillis() + "_" + (int) (Math.random() * 10000) + fileExtension;
 
-            filePath = "/assets/images/" + randomFilename;
-            File file = new File(uploads, randomFilename);
-            part.write(file.getAbsolutePath());
+        // Thư mục lưu ảnh ngoài project
+        String uploadDirPath = "C:/MyUploads/avatars";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        String avatarPath = null;
+        String randomFileName = null;
+        if (part != null && part.getSize() > 0) {
+            // Tạo tên ngẫu nhiên cho file
+            String fileExtension = part.getSubmittedFileName().substring(part.getSubmittedFileName().lastIndexOf("."));
+            randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+
+            // Ghi file
+            File newFile = new File(uploadDir, randomFileName);
+            part.write(newFile.getAbsolutePath());
+
+            // Gán đường dẫn lưu DB
+            avatarPath = request.getContextPath() + "/image-loader/" + randomFileName;
         } else {
-            filePath = "/assets/images/default-avatar.jpg";
+            avatarPath = "/assets/images/species/default_pet.png";
         }
         User user = new User(ownerID);
         Breed breed = new Breed(breedId);
 
         UserDAO dao = new UserDAO();
         Random random = new Random();
-        int randomNumber = random.nextInt(100000); 
-        String pet_code = String.format("PET%05d", randomNumber); 
-        boolean a = dao.addPet(pet_code, ownerID, name, breedId, gender, filePath, description);
+        int randomNumber = random.nextInt(100000);
+        String pet_code = String.format("PET%05d", randomNumber);
+        boolean a = dao.addPet(pet_code, ownerID, name, breedId, gender, avatarPath, description);
         if (a) {
             request.getSession().setAttribute("SuccessMessage", "Thêm Pet thành công!");
 
         } else {
             request.getSession().setAttribute("FailMessage", "Thêm Pet không thành công!");
         }
-        response.sendRedirect("viewlistpet");
+        response.sendRedirect("customer-viewlistpet");
 
     }
 

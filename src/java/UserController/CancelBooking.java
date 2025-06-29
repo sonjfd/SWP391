@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @author Admin
  */
-@WebServlet(name = "CancelBooking", urlPatterns = {"/cancelbooking"})
+@WebServlet(name = "CancelBooking", urlPatterns = {"/customer-cancelbooking"})
 public class CancelBooking extends HttpServlet {
 
     /**
@@ -85,10 +85,10 @@ public class CancelBooking extends HttpServlet {
         AppointmentDAO ad = new AppointmentDAO();
         if (ad.requestCancelWithAdmin(idApp)) {
             request.getSession().setAttribute("SuccessMessage", "Đã Yêu cầu Huỷ Lịch");
-            response.sendRedirect("viewappointment");
+            response.sendRedirect("customer-viewappointment");
         } else {
             request.getSession().setAttribute("FailMessage", "Không giửi được yêu cầu");
-            response.sendRedirect("viewappointment");
+            response.sendRedirect("customer-viewappointment");
         }
     }
 

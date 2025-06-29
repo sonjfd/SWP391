@@ -22,7 +22,6 @@ public class User {
     private String avatar;
     private int status;
     private Role role;
-
     private Date createDate;
     private Date updateDate;
 
@@ -72,7 +71,6 @@ public class User {
         this.id = id;
     }
 
-  
     public String getId() {
         return id;
     }

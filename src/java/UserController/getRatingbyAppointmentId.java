@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Admin
  */
-@WebServlet(name = "getRatingbyAppointmentId", urlPatterns = {"/getratingbyappointmentid"})
+@WebServlet(name = "getRatingbyAppointmentId", urlPatterns = {"/customer-getratingbyappointmentid"})
 public class getRatingbyAppointmentId extends HttpServlet {
 
     /**

@@ -11,34 +11,8 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Y Tá - TRANG LÀM VIỆC CỦA Y TÁ</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
-        <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
-        <meta name="author" content="Shreethemes" />
-        <meta name="email" content="support@shreethemes.in" />
-        <meta name="website" content="${pageContext.request.contextPath}/index.html" />
-        <meta name="Version" content="v1.2.0" />
-        <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
-        <!-- Bootstrap -->
-        <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <!-- simplebar -->
-        <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
-        <!-- Select2 -->
-        <link href="${pageContext.request.contextPath}/assets/css/select2.min.css" rel="stylesheet" />
-        <!-- Icons -->
-        <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
-        <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
-        <!-- SLIDER -->
-        <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
-        <!-- Css -->
-        <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-
-
     </head>
     <body>
         <div class="page-wrapper doctris-theme toggled">
@@ -54,13 +28,9 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="staff-list-pet-and-owner"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng Và Thú Cưng</a></li>                       
-                        <li><a href="staff-list-work-schedule"><i class="uil uil-calendar-alt d-inline-block"></i>Lịch Làm Việc Bác Sĩ</a></li>
-                        <li><a href="staff-list-appointment"><i class="uil uil-notes d-inline-block"></i>Cuộc Hẹn</a></li>
-                        <li><a href="staff-list-invoice-service"><i class="uil uil-receipt d-inline-block"></i>Hoá Đơn</a></li>
-                        <li><a href="staff-contact"><i class="uil uil-envelope me-2 d-inline-block"></i>Liên Hệ</a></li>
-                        <li><a href="staff-list-blog"><i class="uil uil-file-alt me-2 d-inline-block"></i>Quản Lý Blog</a></li>
-                        <li><a href="staff-conversations"><i class="uil uil-file-alt me-2 d-inline-block"></i>Chat</a></li>
+
+                        <li><a href="nurse-list-appointment-service"><i class="uil uil-file-alt me-2 d-inline-block"></i>Quản Lý Kết Quả</a></li>
+                        <li><a href="nurse-viewprofile"><i class="ri-user-settings-line align-middle navbar-icon"></i>Thông tin cá nhân</a></li>
 
                     </ul>
 
@@ -83,11 +53,7 @@
                     <div class="header-bar d-flex justify-content-between border-bottom">
                         <div class="d-flex align-items-center">
                             <a href="#" class="logo-icon">
-                                <img src="${pageContext.request.contextPath}/assets/images/logo-icon.png" height="30" class="small" alt="">
-                                <span class="big">
-                                    <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="logo-light-mode" alt="">
-                                    <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="logo-dark-mode" alt="">
-                                </span>
+
                             </a>
                             <a id="close-sidebar" class="btn btn-icon btn-pills btn-soft-primary ms-2" href="#">
                                 <i class="uil uil-bars"></i>
@@ -107,10 +73,10 @@
                                     <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <c:choose>
                                             <c:when test="${not empty sessionScope.user.avatar}">
-                                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
+                                                <img src="${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
                                             </c:when>
                                             <c:otherwise>
-                                                <img src="../assets/images/default-avatar.png" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
+                                                <img src="../assets/images/default_user.png" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
                                             </c:otherwise>
                                         </c:choose>
                                     </button>
@@ -118,10 +84,10 @@
                                         <a class="dropdown-item d-flex align-items-center text-dark" href="profile">
                                             <c:choose>
                                                 <c:when test="${not empty sessionScope.user.avatar}">
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
                                                 </c:otherwise>
                                             </c:choose>
                                             <div class="flex-1 ms-2">
@@ -129,10 +95,10 @@
                                                 <small class="text-muted">${sessionScope.user.role.name}</small>
                                             </div>
                                         </a>
-                                        <a class="dropdown-item text-dark" href="staff-list-pet-and-owner">
+                                        <a class="dropdown-item text-dark" href="nurse-list-appointment-service">
                                             <span class="mb-0 d-inline-block me-1"><i class="uil uil-dashboard align-middle h6"></i></span> Bảng điều khiển
                                         </a>
-                                        <a class="dropdown-item text-dark" href="staff-profile-setting">
+                                        <a class="dropdown-item text-dark" href="nurse-profile-setting">
                                             <span class="mb-0 d-inline-block me-1"><i class="uil uil-setting align-middle h6"></i></span> Trang cá nhân
                                         </a>
                                         <div class="dropdown-divider border-top"></div>

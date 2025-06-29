@@ -145,7 +145,7 @@ public class UserDAO {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-              User user = new User();
+                User user = new User();
                 user.setId(rs.getString("id"));
                 user.setUserName(rs.getString("username"));
                 user.setEmail(rs.getString("email"));
@@ -184,8 +184,7 @@ public class UserDAO {
 
     public List<Pet> getPetsByUser(String userId) {
         List<Pet> petList = new ArrayList<>();
-        String sql = "SELECT * FROM pets WHERE owner_id = ?";
-
+        String sql = "SELECT * FROM pets WHERE owner_id = ? and isDelete = 0";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, userId);
@@ -217,6 +216,100 @@ public class UserDAO {
             e.printStackTrace();
         }
         return petList;
+    }
+
+    public List<Pet> getPetsByUser(String userId, String petName, String status, int page, int pageSize) {
+        List<Pet> petList = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM pets WHERE owner_id = ? AND isDelete = 0");
+
+        // Thêm điều kiện động
+        if (petName != null && !petName.trim().isEmpty()) {
+            sql.append(" AND name LIKE ?");
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND status = ?");
+        }
+
+        sql.append(" ORDER BY created_at DESC"); // Sắp xếp theo ngày tạo
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"); // Phân trang
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            ps.setString(paramIndex++, userId);
+
+            if (petName != null && !petName.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + petName.trim() + "%");
+            }
+            if (status != null && !status.trim().isEmpty()) {
+                ps.setString(paramIndex++, status);
+            }
+
+            int offset = (page - 1) * pageSize;
+            ps.setInt(paramIndex++, offset);
+            ps.setInt(paramIndex++, pageSize);
+
+            ResultSet rs = ps.executeQuery();
+
+            UserDAO userDao = new UserDAO();
+
+            while (rs.next()) {
+                User user = userDao.getUserById(rs.getString("owner_id"));
+                Breed breed = userDao.getBreedById(rs.getInt("breeds_id"));
+
+                Pet pet = new Pet(
+                        rs.getString("id"),
+                        rs.getString("pet_code"),
+                        user,
+                        rs.getString("name"),
+                        rs.getDate("birth_date"),
+                        breed,
+                        rs.getString("gender"),
+                        rs.getString("avatar"),
+                        rs.getString("description"),
+                        rs.getString("status"),
+                        rs.getDate("created_at"),
+                        rs.getDate("updated_at")
+                );
+                petList.add(pet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return petList;
+    }
+
+    public int countPetsByUser(String userId, String petName, String status) {
+        int count = 0;
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM pets WHERE owner_id = ? AND isDelete = 0");
+
+        if (petName != null && !petName.trim().isEmpty()) {
+            sql.append(" AND name LIKE ?");
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append(" AND status = ?");
+        }
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            ps.setString(paramIndex++, userId);
+
+            if (petName != null && !petName.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + petName.trim() + "%");
+            }
+            if (status != null && !status.trim().isEmpty()) {
+                ps.setString(paramIndex++, status);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 
     public Pet getPetsById(String petId) throws SQLException, ClassNotFoundException {
@@ -338,6 +431,7 @@ public class UserDAO {
         Role Customer = getRoleByName("customer");
         Role Staff = getRoleByName("staff");
         Role Doctor = getRoleByName("doctor");
+        Role Nurse = getRoleByName("nurse");
         if (id == Admin.getId()) {
             return Admin;
         } else if (id == Customer.getId()) {
@@ -346,6 +440,8 @@ public class UserDAO {
             return Staff;
         } else if (id == Doctor.getId()) {
             return Doctor;
+        } else if (id == Nurse.getId()) {
+            return Nurse;
         }
         return null;
     }
@@ -530,7 +626,7 @@ public class UserDAO {
         return list;
     }
 
- public boolean addPet(String pet_code, String ownerid, String name,  int breedid, String gender, String avatar, String desc) {
+    public boolean addPet(String pet_code, String ownerid, String name, int breedid, String gender, String avatar, String desc) {
         Connection con = null;
         PreparedStatement ps = null;
         int rowsAffected = 0;
@@ -548,7 +644,6 @@ public class UserDAO {
             ps.setString(5, gender);
             ps.setString(6, avatar);
             ps.setString(7, desc);
-            
 
             rowsAffected = ps.executeUpdate();
 
@@ -568,8 +663,9 @@ public class UserDAO {
         }
         return rowsAffected > 0;
     }
+
     public boolean deletePet(String id) {
-        String sql = "Delete pets where id =? ;";
+        String sql = "Update pets set isDelete = 1 where id =? ;";
         try {
             Connection conn = DAO.DBContext.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -656,7 +752,7 @@ public class UserDAO {
 
     public List<Pet> getPetsByStatus(String status, String userId) {
         List<Pet> petList = new ArrayList<>();
-        String sql = "SELECT * FROM Pets WHERE status = ? and owner_id =?";
+        String sql = "SELECT * FROM Pets WHERE status = ? and owner_id =? and isDelete = 0";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setString(2, userId);
@@ -691,7 +787,7 @@ public class UserDAO {
 
     public List<Pet> getPetsByName(String keyWord, String userId) {
         List<Pet> petList = new ArrayList<>();
-        String sql = "SELECT * FROM Pets WHERE name LIKE ? and owner_id =?";
+        String sql = "SELECT * FROM Pets WHERE name LIKE ? and owner_id =? and isDelete = 0";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyWord + "%");
             ps.setString(2, userId);
@@ -793,6 +889,38 @@ public class UserDAO {
         return list;
     }
 
+    public List<User> getAllStaff() {
+        String sql = "select * from users\n"
+                + "where role_id=4";
+        List<User> list = new ArrayList<>();
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stm = conn.prepareStatement(sql);) {
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                Role role = new Role();
+                role.setId(rs.getInt("role_id"));
+
+                User user = new User(
+                        rs.getString("id"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("full_Name"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        rs.getString("avatar"),
+                        rs.getInt("status"),
+                        role,
+                        rs.getDate("created_at"),
+                        rs.getDate("updated_at"));
+                list.add(user);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public int updateOwner(String petId, String ownerId) {
         String sql = "update pets\n"
                 + "set owner_id=?\n"
@@ -837,20 +965,8 @@ public class UserDAO {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         UserDAO dao = new UserDAO();
-        String testEmail = "sondnhe180400@fpt.edu.vn";
-
-        User user = dao.getUserByEmail(testEmail);
-
-        if (user != null) {
-            System.out.println("ID: " + user.getId());
-            System.out.println("Email: " + user.getEmail());
-            System.out.println("Full Name: " + user.getFullName());
-            System.out.println("Avatar: " + user.getAvatar());
-            System.out.println("Status: " + user.getStatus()); // ❗Quan trọng
-            System.out.println("Role: " + user.getRole().getName());
-        } else {
-            System.out.println("Không tìm thấy user với email: " + testEmail);
-        }
+        String ps = dao.hashPassword("hashed_pw");
+        System.out.println(ps);
     }
 
 }

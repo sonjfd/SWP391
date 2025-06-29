@@ -2,11 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package UserController;
 
+package StaffController;
 
-import DAO.MedicalRecordDAO;
-import Model.MedicalRecord;
+import DAO.ChatDAO;
+import Model.Conversation;
+import Model.User;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,60 +16,69 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "SearchRecordByPet", urlPatterns = {"/searchrecordbypet"})
-public class SearchRecordByPet extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+@WebServlet(name="StaffConversationsServlet", urlPatterns={"/staff-conversations"})
+public class StaffConversationsServlet extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SearchRecordByPet</title>");
+            out.println("<title>Servlet StaffConversationsServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SearchRecordByPet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet StaffConversationsServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+   @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String keyword = req.getParameter("keyword");
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+
+        String staffId = user.getId();
+        ChatDAO dao = new ChatDAO();
+        List<Conversation> list = dao.getConversationsForStaff(staffId, keyword);
+
+        req.setAttribute("conversations", list);
+        req.getRequestDispatcher("view/staff/content/ChatList.jsp").forward(req, resp);
     }
 
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -75,32 +86,12 @@ public class SearchRecordByPet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String text = (String) request.getParameter("search").trim();
-        String id = request.getParameter("id");
-        List<MedicalRecord> ml = null;
-        MedicalRecordDAO md = new MedicalRecordDAO();
-        if (text.isEmpty() || text.isBlank()) {
-            ml = md.getMedicalRecordsByCustomerId(id);
-            request.setAttribute("ListPetsMedical", ml);
-
-        } else {
-
-            ml = md.getMedicalRecordsByCustomerIdAndPetName(id, text);
-            request.setAttribute("ListPetsMedical", ml);
-        }
-        if (ml.isEmpty()) {
-            request.setAttribute("Message", "Không tìm thấy lịch sử khám bệnh tương ứng!");
-        }
-
-        request.setAttribute("ListPetsMedical", ml);
-        request.setAttribute("text", text);
-        request.getRequestDispatcher("view/profile/ListMedicalHistory.jsp").forward(request, response);
+    throws ServletException, IOException {
+        processRequest(request, response);
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

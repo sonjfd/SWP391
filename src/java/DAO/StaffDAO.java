@@ -734,6 +734,7 @@ public class StaffDAO {
 
         return rowsAffected;
     }
+    
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         StaffDAO dao = new StaffDAO();

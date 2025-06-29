@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Admin
  */
-@WebServlet(name = "DeletePet", urlPatterns = {"/deletepet"})
+@WebServlet(name = "DeletePet", urlPatterns = {"/customer-deletepet"})
 public class DeletePet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -29,17 +29,16 @@ public class DeletePet extends HttpServlet {
             throws ServletException, IOException {
         String idpet = (String) request.getParameter("id");
         if (idpet == null) {
-            response.sendRedirect("viewlistpet");
+            response.sendRedirect("customer-viewlistpet");
             return;
         }
-
         UserDAO ud = new UserDAO();
         if (ud.deletePet(idpet)) {
             request.getSession().setAttribute("SuccessMessage", "Xóa Pet thành công");
-            response.sendRedirect("viewlistpet");
+            response.sendRedirect("customer-viewlistpet");
         } else {
             request.getSession().setAttribute("FailMessage", "Xóa Pet thất bại");
-            response.sendRedirect("viewlistpet");
+            response.sendRedirect("customer-viewlistpet");
         }
     }
 

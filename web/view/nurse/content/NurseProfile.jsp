@@ -1,41 +1,49 @@
-<%-- 
-    Document   : UserProfile
-    Created on : May 21, 2025, 9:18:11 PM
-    Author     : Admin
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <!DOCTYPE html>
-<html lang="en">
-    <c:if test="${not empty sessionScope.user}">
-
-    </c:if>
-
+<html lang="vi">
     <head>
-        <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
-        <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
-        <meta name="author" content="Shreethemes" />
-        <meta name="email" content="support@shreethemes.in" />
-        <meta name="website" content="https://shreethemes.in" />
-        <meta name="Version" content="v1.2.0" />
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
-        <!-- Bootstrap -->
-
-        <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <!-- Icons -->
-        <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
-        <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
-        <!-- Css -->
-        <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
+        <meta charset="UTF-8">
+        <title>Nhập kết quả xét nghiệm - Y tá</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <style>
+            body {
+                background: #f8f9fa;
+            }
+            .table-hover tbody tr:hover {
+                background-color: #e7f3fa;
+            }
+            .nurse-header {
+                background: #0d6efd;
+                color: white;
+            }
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+            .icon-btn {
+                border: none;
+                background: none;
+                color: #0d6efd;
+                font-size: 1.2rem;
+                transition: color 0.15s;
+            }
+            .icon-btn:hover {
+                color: #0a58ca;
+            }
+            .form-control, .form-select {
+                min-height: 34px !important;
+                height: 34px !important;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                font-size: 0.98rem;
+            }
+
             body {
                 margin: 0;
                 padding: 0;
@@ -89,12 +97,27 @@
             }
 
 
+
         </style>
+        <!-- Bootstrap -->
+        <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <!-- simplebar -->
+        <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
+        <!-- Select2 -->
+        <link href="${pageContext.request.contextPath}/assets/css/select2.min.css" rel="stylesheet" />
+        <!-- Icons -->
+        <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
+        <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
+        <!-- SLIDER -->
+        <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
+        <!-- Css -->
+        <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     </head>
-
     <body>
-        <c:if test="${not empty sessionScope.SuccessMessage}">
+          <c:if test="${not empty sessionScope.SuccessMessage}">
             <script>
                 alert('${sessionScope.SuccessMessage}');
             </script>
@@ -107,12 +130,7 @@
             </script>
             <c:remove var="FailMessage" scope="session"/>
         </c:if>
-
-
-
-        <!-- Navbar STart -->
-        <%@include file="../home/layout/Header.jsp" %>
-        <!-- Navbar End -->
+        <%@include file="../layout/Header.jsp" %>
         <section class="bg-dashboard">
             <div class="container">
 
@@ -128,13 +146,7 @@
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
 
                             </div>
-                              <ul class="list-unstyled sidebar-nav mb-0">
-                                    <li class="navbar-item"><a href="customer-viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
-                                    <li class="navbar-item"><a href="customer-viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                    <li class="navbar-item"><a href="customer-viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                    <li class="navbar-item"><a href="customer-updateuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
-                                    <li class="navbar-item"><a href="customer-chat" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat với nhân viên hỗ trợ</a></li>
-                                </ul>
+                            
 
                         </div>
                     </div><!--end col-->
@@ -145,7 +157,7 @@
                             <div class="p-4 border-bottom">
                                 <h5 class="mb-0">Thông tin của bạn</h5>
                             </div>
-                            <form id="updateUserForm" action="customer-updateuserinformation" method="post" enctype="multipart/form-data">
+                            <form id="updateUserForm" action="nurse-viewprofile" method="post" enctype="multipart/form-data">
                                 <div class="p-4 border-bottom">
                                     <div class="row align-items-center">
                                         <div class="col-lg-2 col-md-4">
@@ -208,7 +220,7 @@
                             </div>
 
                             <div class="p-4">
-                                <form action="customer-changepass" method="post" onsubmit="return validateChangePass()">
+                                <form action="nurse-changepass" method="post" onsubmit="return validateChangePass()">
                                     <!-- Old Password -->
                                     <div class="mb-3 position-relative">
                                         <label class="form-label">Mật khẩu cũ</label>
@@ -274,7 +286,7 @@
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         preview.src = e.target.result;
-                    }
+                    };
                     reader.readAsDataURL(input.files[0]);
                 }
             }
@@ -527,11 +539,14 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- simplebar -->
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
 
         <!-- Icons -->
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <!-- Main Js -->
         <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
     </body>
-
 </html>

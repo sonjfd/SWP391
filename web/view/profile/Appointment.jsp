@@ -36,6 +36,7 @@
         <!-- Css -->
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
         <style>
             /* Tổng thể bảng */
@@ -321,6 +322,43 @@
             .star.selected {
                 color: #ffc107;
             }
+            .filter-container {
+                display: flex;
+                align-items: center;
+                gap: 10px; /* Khoảng cách giữa các thành phần */
+                flex-wrap: wrap;
+                margin-bottom: 20px;
+            }
+
+            .filter-container input[type="text"],
+            .filter-container select,
+            .filter-container input[type="date"] {
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                font-size: 14px;
+                min-width: 150px;
+            }
+
+            .filter-container label {
+                margin: 0 5px;
+                font-weight: 500;
+            }
+
+            .filter-container .btn-filter {
+                padding: 6px 15px;
+                background-color: #3B5998;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .filter-container .btn-filter:hover {
+                background-color: #2d4373;
+            }
+
 
 
 
@@ -354,55 +392,49 @@
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
+                                <img src="${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
+                                <img src="${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
+
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i>Danh sách cuộc hẹn</a></li>
-                                <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
-                                <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
+                                <li class="navbar-item"><a href="customer-viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                <li class="navbar-item"><a href="customer-viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                <li class="navbar-item"><a href="customer-viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="customer-updateuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="customer-chat" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat với nhân viên hỗ trợ</a></li>
                             </ul>
+
                         </div>
                     </div><!--end col-->
 
                     <div class=" col-9">
                         <h4 class="mb-3">Danh sách cuộc hẹn</h4>
-                        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 gap-2">
-                            <form method="post" action="searchapp" class="search-form">
-                                <input type="text" name="search" value="${param.search}" placeholder="Tìm theo tên">
-                                <button type="submit" >Tìm kiếm</button>
-                            </form>
-                            <form id="filterForm" action="filterappbydate" method="post" class="d-flex flex-wrap align-items-center gap-2 mb-0" >
-                                <span>Từ:</span>
-                                <input type="date" class="form-control form-control-sm" style="width: auto;" id="dateFFilter" name="datefrom"
-                                       value="${param.datefrom}"/>
-                                <span>Đến:</span>
-                                <input type="date" class="form-control form-control-sm" style="width: auto;" id="dateTFilter" name="dateto"
-                                       value="${param.dateto}"/>
-                                <button type="submit" class="btn btn-secondary btn-sm">
-                                    <i class="bi bi-funnel-fill"></i> Lọc
-                                </button>
-                            </form>
-                            <form method="get" action="filterappointment" class="filter-form" style="margin-right: 20px">
-                                <div class="filter-inline">
-                                    <label for="status" class="form-label">Lọc theo trạng thái:</label>
-                                    <select id="status" name="status" class="form-select" onchange="this.form.submit()">
-                                        <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
-                                        <option value="canceled" ${status == 'canceled' ? 'selected' : ''}>Đã hủy</option>
-                                        <option value="completed" ${status == 'completed' ? 'selected' : ''}>Hoàn thành</option>
-                                        <option value="booked" ${status == 'booked' ? 'selected' : ''}>Đã đặt</option>
-                                        <option value="cancel_requested" ${status == 'cancel_requested' ? 'selected' : ''}>Yêu cầu hủy</option>
+                        <form method="get" action="customer-viewappointment" class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
 
-                                    </select>
+                            <div class="filter-container">
+                                <input type="text" name="search" placeholder="Tìm theo tên thú cưng" value="${petName}">
 
-                                </div>
-                            </form>
-                        </div>
+                                <select name="status">
+                                    <option value="">-- Trạng thái --</option>
+                                    <option value="booked" ${status == 'booked' ? 'selected' : ''}>Đã đặt</option>
+                                    <option value="completed" ${status == 'completed' ? 'selected' : ''}>Hoàn thành</option>
+                                    <option value="cancel_requested" ${status == 'cancel_requested' ? 'selected' : ''}>Yêu cầu hủy</option>
+                                    <option value="cancelled" ${status == 'cancelled' ? 'selected' : ''}>Đã hủy</option>
+                                </select>
+
+                                <label for="fromDate">Từ:</label>
+                                <input type="date" name="datefrom" value="${fromDate}">
+
+                                <label for="toDate">Đến:</label>
+                                <input type="date" name="dateto" value="${toDate}">
+
+                                <button type="submit" class="btn-filter">Lọc</button>
+                            </div>
+
+                        </form>
                         <table class="table table-striped">
                             <thead class="bg-primary text-white">
                                 <tr>
@@ -473,7 +505,7 @@
                                                           data-app-time="${formattedDate}"
                                                           data-start-time="${app.startTime}"
                                                           data-app-id="${app.id}"
-                                                          action="cancelbooking" method="post"
+                                                          action="customer-cancelbooking" method="post"
                                                           onsubmit="return checkTimeBeforeCancel(this)">
                                                         <input type="hidden" name="id" value="${app.id}" />
                                                         <button type="submit" class="btn btn-danger btn-sm">Huỷ</button>
@@ -506,6 +538,48 @@
 
                             </tbody>
                         </table>
+
+                        <!-- PHÂN TRANG -->
+                        <c:if test="${totalPages > 1}">
+                            <nav>
+                                <ul class="pagination justify-content-center">
+
+                                    <c:choose>
+                                        <c:when test="${currentPage > 1}">
+                                            <li class="page-item">
+                                                <a class="page-link" href="customer-viewappointment?page=${currentPage - 1}&search=${petName}&status=${status}&datefrom=${fromDate}&dateto=${toDate}">«</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="page-item disabled">
+                                                <span class="page-link">«</span>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+
+                                    <c:forEach var="i" begin="1" end="${totalPages}">
+                                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                            <a class="page-link" href="customer-viewappointment?page=${i}&search=${petName}&status=${status}&datefrom=${fromDate}&dateto=${toDate}">${i}</a>
+                                        </li>
+                                    </c:forEach>
+
+                                    <c:choose>
+                                        <c:when test="${currentPage < totalPages}">
+                                            <li class="page-item">
+                                                <a class="page-link" href="customer-viewappointment?page=${currentPage + 1}&search=${petName}&status=${status}&datefrom=${fromDate}&dateto=${toDate}">»</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="page-item disabled">
+                                                <span class="page-link">»</span>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+
+                                </ul>
+                            </nav>
+                        </c:if>
+
                         <p type="text" name="id" style="color: red"  >${requestScope.Message}</p>
 
                         <c:forEach var="app" items="${appointments}">
@@ -522,7 +596,7 @@
                                             <h5>Thông tin thú cưng</h5>
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <img src="${pageContext.request.contextPath}/${app.pet.avatar}" alt="Ảnh thú cưng" class="img-fluid rounded">
+                                                    <img src="${app.pet.avatar}" alt="Ảnh thú cưng" class="img-fluid rounded">
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p><strong>Mã thú cưng:</strong> ${app.pet.pet_code}</p>
@@ -542,7 +616,7 @@
                                                 <c:when test="${not empty app.doctor}">
                                                     <div class="row">
                                                         <div class="col-md-4">
-                                                            <img src="${pageContext.request.contextPath}/${app.doctor.user.avatar}" alt="Ảnh bác sĩ" class="img-fluid rounded">
+                                                            <img src="${app.doctor.user.avatar}" alt="Ảnh bác sĩ" class="img-fluid rounded">
                                                         </div>
                                                         <div class="col-md-8">
                                                             <p><strong>Họ và tên:</strong> ${app.doctor.user.fullName}</p>
@@ -605,7 +679,7 @@
                         </c:forEach>
                         <div class="modal fade" id="rateModal" tabindex="-1" aria-labelledby="rateModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
-                                <form action="rateservice" method="post">
+                                <form action="customer-rateservice" method="post">
                                     <div class="modal-content custom-modal">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Đánh giá dịch vụ</h5>
@@ -678,7 +752,7 @@
                     statusDiv.innerHTML = `<span class="text-muted">Chưa có đánh giá</span>`;
 
                     // Load rating qua ajax
-                    fetch("getratingbyappointmentid?id=" + appointmentId)
+                    fetch("customer-getratingbyappointmentid?id=" + appointmentId)
                             .then(response => response.json())
                             .then(data => {
                                 if (data.satisfaction) {
@@ -694,26 +768,24 @@
                                     commentInput.value = data.comment;
                                 }
 
-                                
+
                                 let statusText = "Chưa có đánh giá";
                                 let statusClass = "text-muted";
 
                                 if (data.status) {
                                     let statusValue = data.status.trim().toLowerCase();
                                     if (statusValue === "posted") {
-                                        statusText = "Đã duyệt";
+                                        statusText = "Đã đăng";
                                         statusClass = "text-success";
                                     } else if (statusValue === "hide") {
-                                        statusText = "Từ chối";
+                                        statusText = "Đã bị ẩn";
                                         statusClass = "text-danger";
-                                    } else {
-                                        statusText = "Chờ duyệt";
-                                        statusClass = "text-secondary";
                                     }
+
                                 }
-                                
+
                                 statusDiv.innerHTML = '<span class="' + statusClass + '">' + statusText + '</span>';
-                                
+
                             });
 
                     // Set hidden input
@@ -773,7 +845,7 @@
 
 
 
-        
+
         </script>
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

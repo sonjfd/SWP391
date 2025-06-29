@@ -318,7 +318,7 @@ public class AppointmentServiceDAO {
         List<AppointmentService> list = new ArrayList<>();
         String sql = """
             SELECT aps.id, aps.price, aps.status, 
-                   sv.name AS service_name
+                   sv.id as service_id,sv.name AS service_name
             FROM appointment_services aps
             JOIN services sv ON aps.service_id = sv.id
             WHERE aps.appointment_id = ?
@@ -335,6 +335,7 @@ public class AppointmentServiceDAO {
                 aps.setPrice(rs.getDouble("price"));
                 aps.setStatus(rs.getString("status"));
                 Service s = new Service();
+                s.setId(rs.getString("service_id"));
                 s.setName(rs.getString("service_name"));
                 aps.setService(s);
                 list.add(aps);
@@ -361,6 +362,156 @@ public class AppointmentServiceDAO {
     return false;
 }
 
+     
+     /// PHẦN NÀY CHO NURSE
+     // Hàm lấy danh sách + đếm tổng cho phân trang (SQL Server)
+    public List<AppointmentService> getPendingForNurse(
+        String petName, String ownerName, String serviceId,
+        Date fromDate, Date toDate,
+        int offset, int pageSize,
+        int[] totalCountOut) {
+
+        List<AppointmentService> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT " +
+            "aps.id AS aps_id, aps.price, aps.status, aps.created_at, aps.updated_at, " +
+            "ap.id AS ap_id, ap.appointment_time, ap.created_at AS ap_created_at, " +
+            "p.id AS pet_id, p.pet_code, p.name AS pet_name, p.avatar AS pet_avatar, " +
+            "u.id AS owner_id, u.full_name AS owner_name, " +
+            "s.id AS service_id, s.name AS service_name " +
+            "FROM appointment_services aps " +
+            "JOIN appointments ap ON aps.appointment_id = ap.id " +
+            "JOIN pets p ON ap.pet_id = p.id " +
+            "JOIN users u ON p.owner_id = u.id " +
+            "JOIN services s ON aps.service_id = s.id " +
+            "WHERE aps.status = 'pending' "
+        );
+
+        List<Object> params = new ArrayList<>();
+        if (petName != null && !petName.isEmpty()) {
+            sql.append(" AND p.name LIKE ? ");
+            params.add("%" + petName + "%");
+        }
+        if (ownerName != null && !ownerName.isEmpty()) {
+            sql.append(" AND u.full_name LIKE ? ");
+            params.add("%" + ownerName + "%");
+        }
+        if (serviceId != null && !serviceId.isEmpty()) {
+            sql.append(" AND s.id = ? ");
+            params.add(serviceId);
+        }
+        if (fromDate != null) {
+            sql.append(" AND aps.created_at >= ? ");
+            params.add(fromDate);
+        }
+        if (toDate != null) {
+            sql.append(" AND aps.created_at <= ? ");
+            params.add(toDate);
+        }
+
+        // SQL Server: phân trang bằng OFFSET ... FETCH NEXT
+        sql.append(" ORDER BY aps.created_at DESC ");
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+
+        params.add(offset);
+        params.add(pageSize);
+
+        try (Connection conn = DBContext.getConnection()) {
+            // Query đếm tổng bản ghi (phục vụ phân trang)
+            StringBuilder countSql = new StringBuilder(
+                "SELECT COUNT(*) FROM appointment_services aps " +
+                "JOIN appointments ap ON aps.appointment_id = ap.id " +
+                "JOIN pets p ON ap.pet_id = p.id " +
+                "JOIN users u ON p.owner_id = u.id " +
+                "JOIN services s ON aps.service_id = s.id " +
+                "WHERE aps.status = 'pending' "
+            );
+            List<Object> countParams = new ArrayList<>();
+            if (petName != null && !petName.isEmpty()) {
+                countSql.append(" AND p.name LIKE ? ");
+                countParams.add("%" + petName + "%");
+            }
+            if (ownerName != null && !ownerName.isEmpty()) {
+                countSql.append(" AND u.full_name LIKE ? ");
+                countParams.add("%" + ownerName + "%");
+            }
+            if (serviceId != null && !serviceId.isEmpty()) {
+                countSql.append(" AND s.id = ? ");
+                countParams.add(serviceId);
+            }
+            if (fromDate != null) {
+                countSql.append(" AND aps.created_at >= ? ");
+                countParams.add(fromDate);
+            }
+            if (toDate != null) {
+                countSql.append(" AND aps.created_at <= ? ");
+                countParams.add(toDate);
+            }
+            try (PreparedStatement countSt = conn.prepareStatement(countSql.toString())) {
+                for (int i = 0; i < countParams.size(); i++) {
+                    countSt.setObject(i + 1, countParams.get(i));
+                }
+                try (ResultSet rsCount = countSt.executeQuery()) {
+                    if (rsCount.next()) {
+                        totalCountOut[0] = rsCount.getInt(1);
+                    }
+                }
+            }
+
+            // Query dữ liệu chính
+            try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+                for (int i = 0; i < params.size(); i++) {
+                    ps.setObject(i + 1, params.get(i));
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        // Service
+                        Service service = new Service();
+                        service.setId(rs.getString("service_id"));
+                        service.setName(rs.getString("service_name"));
+
+                        // Owner
+                        User owner = new User();
+                        owner.setId(rs.getString("owner_id"));
+                        owner.setFullName(rs.getString("owner_name"));
+
+                        // Pet
+                        Pet pet = new Pet();
+                        pet.setId(rs.getString("pet_id"));
+                        pet.setPet_code(rs.getString("pet_code"));
+                        pet.setName(rs.getString("pet_name"));
+                        pet.setAvatar(rs.getString("pet_avatar"));
+                        pet.setUser(owner); // mapping owner vào pet
+
+                        // Appointment
+                        Appointment appointment = new Appointment();
+                        appointment.setId(rs.getString("ap_id"));
+                        appointment.setPet(pet);
+                        appointment.setCreatedAt(rs.getTimestamp("ap_created_at"));
+                        appointment.setAppointmentDate(rs.getTimestamp("appointment_time"));
+                        appointment.setUser(owner);
+
+                        // AppointmentService
+                        AppointmentService aps = new AppointmentService();
+                        aps.setId(rs.getString("aps_id"));
+                        aps.setAppointment(appointment);
+                        aps.setService(service);
+                        aps.setPrice(rs.getDouble("price"));
+                        aps.setStatus(rs.getString("status"));
+                        aps.setCreatedAt(rs.getTimestamp("created_at"));
+                        aps.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                        list.add(aps);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    /// HẾT PHẦN NURSE
 }
 
 

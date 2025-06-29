@@ -137,25 +137,26 @@
                         <div class=" col-3">
                             <div class="rounded shadow overflow-hidden sticky-bar">
                                 <div class="card border-0">
-                                    <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
+                                    <img src="${user.avatar}" class="img-fluid" alt="">
                                 </div>
                                 <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                    <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
+                                    <img src="${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                     <h5 class="mt-3 mb-1">${user.fullName}</h5>
 
                                 </div>
                                 <ul class="list-unstyled sidebar-nav mb-0">
-                                    <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i>Danh sách cuộc hẹn </a></li>
-                                    <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                    <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                    <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
-                                    <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
+                                    <li class="navbar-item"><a href="customer-viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                    <li class="navbar-item"><a href="customer-viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                    <li class="navbar-item"><a href="customer-viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                    <li class="navbar-item"><a href="customer-updateuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                    <li class="navbar-item"><a href="customer-chat" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat với nhân viên hỗ trợ</a></li>
                                 </ul>
+
                             </div>
                         </div><!--end col-->
 
                         <div class=" col-9">
-                            <form id="addPetForm" action="addpet" method="post" enctype="multipart/form-data">
+                            <form id="addPetForm" action="customer-addpet" method="post" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <input type="hidden" name="id" value="${user.id}"/>
                                     <label for="name">Tên Pet:</label>
@@ -209,7 +210,7 @@
 
                                 <div class="row align-items-center">
                                     <div class="col-lg-2 col-md-4">
-                                        <img src="${pageContext.request.contextPath}/${pet.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
+                                        <img src="${pet.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
                                     </div>
                                     <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
                                         <h5>Ảnh đại diện</h5>
@@ -225,7 +226,7 @@
                                 <br>
 
                                 <button type="submit" class="btn btn-primary">Thêm Pet</button>
-                                <a href="viewlistpet" class="btn btn-secondary" style="margin-left: 5px">Hủy</a>
+                                <a href="customer-viewlistpet" class="btn btn-secondary" style="margin-left: 5px">Hủy</a>
                                 </form>
                             </div><!--end row-->
                         </div><!-- End -->
@@ -282,7 +283,7 @@
                                                     var specieId = $(this).val();
                                                     if (specieId) {
                                                         $.ajax({
-                                                            url: "getbreedsbyspecie?specieId=" + specieId,
+                                                            url: "customer-getbreedsbyspecie?specieId=" + specieId,
                                                             method: "GET",
                                                             dataType: "json",
                                                             success: function (data) {

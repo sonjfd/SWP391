@@ -1,116 +1,69 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package UserController;
 
 import DAO.UserDAO;
 import Model.Pet;
 import Model.User;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- *
- * @author Admin
- */
-@WebServlet(name = "ViewListPet", urlPatterns = {"/viewlistpet"})
+@WebServlet(name = "ViewListPet", urlPatterns = {"/customer-viewlistpet"})
 public class ViewListPet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ViewListPet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ViewListPet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-
     throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("user") == null) {
-
             response.sendRedirect("login");
             return;
-
         }
+
         User user = (User) session.getAttribute("user");
-        UserDAO u = new UserDAO();
-        String uid = user.getId();
+        UserDAO udao = new UserDAO();
 
-        List<Pet> listpet = u.getPetsByUser(uid);
-        if (listpet.isEmpty()) {
-            request.setAttribute("Message", "Bạn chưa thêm thú cưng nào!");
+        String petName = request.getParameter("search");
+        String status = request.getParameter("status");
+        String pageStr = request.getParameter("page");
 
+        int page = 1;
+        int pageSize = 5; // Số lượng bản ghi mỗi trang
+
+        try {
+            if (pageStr != null) {
+                page = Integer.parseInt(pageStr);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
+
+        List<Pet> listpet = udao.getPetsByUser(user.getId(), petName, status, page, pageSize);
+        int totalRecords = udao.countPetsByUser(user.getId(), petName, status);
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        if (listpet.isEmpty()) {
+            request.setAttribute("Message", "Bạn chưa thêm thú cưng nào hoặc không tìm thấy kết quả phù hợp!");
+        }
+
         request.setAttribute("listpet", listpet);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("petName", petName);
+        request.setAttribute("status", status);
 
         request.getRequestDispatcher("view/profile/ListPet.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    throws ServletException, IOException {
+        doGet(request, response); // Hỗ trợ form method="post" hoạt động
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

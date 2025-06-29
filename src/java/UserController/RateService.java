@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author Admin
  */
-@WebServlet(name = "RateService", urlPatterns = {"/rateservice"})
+@WebServlet(name = "RateService", urlPatterns = {"/customer-rateservice"})
 public class RateService extends HttpServlet {
 
     /**
@@ -103,7 +103,7 @@ public class RateService extends HttpServlet {
             } else {
                 session.setAttribute("FailMessage", "Cập nhật đánh giá thất bại!");
             }
-            response.sendRedirect("viewappointment");
+            response.sendRedirect("customer-viewappointment");
             return;
         }
 
@@ -120,7 +120,7 @@ public class RateService extends HttpServlet {
         } else {
             session.setAttribute("FailMessage", "Đánh giá thất bại!");
         }
-        response.sendRedirect("viewappointment");
+        response.sendRedirect("customer-viewappointment");
     }
 
 }

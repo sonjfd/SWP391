@@ -1,8 +1,9 @@
 <%-- 
-    Document   : ManageRatings
-    Created on : Jun 18, 2025, 5:50:38 PM
+    Document   : AssignConsultingStaff
+    Created on : Jun 26, 2025, 9:22:47 PM
     Author     : Admin
 --%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -83,7 +84,16 @@
             .headtable{
                 background-color: #f8f9fa;
             }
+            .badge {
+                padding: 5px 10px;
+                border-radius: 8px;
+            }
 
+            .img-fluid{
+                max-height: 50px;
+                max-width: 50px;
+
+            }
 
         </style>
 
@@ -105,77 +115,51 @@
         </c:if>
         <div class="container-fluid">
             <div class="layout-specing">
-                <h5 class="mb-0">Quản lý đánh giá</h5>
-
-                <div class="search-filter-container">
-                    <form method="get" action="admin-listratings" class="d-flex gap-2 mb-3">
-                        <input type="text" class="form-control" placeholder="Tìm theo tên khách hàng" name="search" value="${search}">
-                        <select name="status" class="form-select w-auto">
-                            <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
-                            <option value="posted" ${status == 'posted' ? 'selected' : ''}>Đã đăng</option>
-                            <option value="hide" ${status == 'hide' ? 'selected' : ''}>Đã ẩn</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary">Lọc</button>
-                    </form>
-                </div>
+                <h5 class="mb-0">Chỉ định nhân viên đảm nhiệm tư vấn khách hàng</h5>
                 <c:if test="${not empty message}">
                     <div class="${message.contains('successfully') ? 'message' : 'error'}">${message}</div>
                 </c:if>
 
-                <table class="table table-bordered text-center align-middle">
+                <table class="table table-hover table-striped align-middle text-center">
                     <thead class="table-primary">
-                        <tr>
+                        <tr class="headtable">
                             <th>STT</th>
-                            <th>Khách hàng</th>
-                            <th>Nội dung</th>
-                            <th>Độ hài lòng</th>
-                            <th>Trạng thái</th>
+                            <th>Tên nhân viên</th>
+                            <th>Điện thoại</th>
+                            <th>Địa chỉ</th>
+                            <th>Avatar</th>
+                            <th>Hành động</th>
+
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="rate" items="${RateList}" varStatus="counter">
+                        <c:forEach var="staff" items="${STAFFLIST}" varStatus="counter">
                             <tr>
-                                <td>${counter.index + 1 + (currentPage - 1) * 5}</td>
-                                <td>${rate.user.fullName}</td>
-                                <td>${rate.comment}</td>
-                                <td style="color: gold; font-size: 18px;">
-                                    <c:forEach begin="1" end="${rate.satisfaction_level}" var="i">
-                                        ★
-                                    </c:forEach>
-                                </td>
-
-
+                                <td>${counter.count}</td>
+                                <td>${staff.fullName}</td>
+                                <td>${staff.phoneNumber}</td>
+                                <td>${staff.address}</td>
+                                <td><img src="${staff.avatar}" class="img-fluid" alt=""></td>
                                 <td>
-                                    <form method="post" action="admin-listratings" class="d-flex justify-content-center">
-                                        <input type="hidden" name="ratingId" value="${rate.id}">
-                                        <select name="status" class="form-select w-auto me-2">
-                                            <option value="posted" ${rate.status == 'posted' ? 'selected' : ''}>Đã đăng</option>
-                                            <option value="hide" ${rate.status == 'hide' ? 'selected' : ''}>Đã ẩn</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
-                                    </form>
+                                    <c:set value="${requestScope.STAFFASSIGNID}" var="staffid" />
+
+                                    <c:if test="${staff.id == staffid}">
+                                        <span class="badge bg-success">Đang đảm nhiệm</span>
+                                    </c:if>
+
+                                    <c:if test="${staff.id != staffid}">
+                                        <form method="post" action="admin-assignconsultingstaff" onsubmit="return confirm('Bạn có chắc muốn chỉ định nhân viên này làm tư vấn viên?');">
+                                            <input type="hidden" name="staffId" value="${staff.id}" />
+                                            <button type="submit" class="btn btn-primary btn-sm">Chỉ định</button>
+                                        </form>
+
+                                    </c:if>
                                 </td>
+
                             </tr>
                         </c:forEach>
-                        <c:if test="${empty RateList}">
-                            <tr><td colspan="5">Không có dữ liệu đánh giá.</td></tr>
-                        </c:if>
                     </tbody>
                 </table>
-
-                <c:if test="${totalPages > 1}">
-                    <nav>
-                        <ul class="pagination justify-content-center">
-                            <c:forEach begin="1" end="${totalPages}" var="p">
-                                <li class="page-item ${p == currentPage ? 'active' : ''}">
-                                    <a class="page-link"
-                                       href="admin-listratings?page=${p}&search=${search}&status=${status}">${p}</a>
-                                </li>
-                            </c:forEach>
-                        </ul>
-                    </nav>
-                </c:if>
-
 
             </div>
         </div>
