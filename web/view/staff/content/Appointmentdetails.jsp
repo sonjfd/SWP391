@@ -7,6 +7,17 @@
     <head>
         <title>Chi tiết lịch hẹn</title>
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            .avatar-fixed {
+                width: 200px;
+                height: 200px;
+                object-fit: cover;
+                object-position: center;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
     </head>
     <body>
 
@@ -20,7 +31,7 @@
                     <div class="card w-100 d-flex flex-column" style="min-height: 100%;">
                         <div class="card-header">Thông tin thú cưng</div>
                         <div class="card-body">
-                            <img src="${pageContext.request.contextPath}/${appointment.pet.avatar}" alt="Ảnh thú cưng" class="img-fluid rounded mb-3">
+                            <img src="${pageContext.request.contextPath}/${appointment.pet.avatar}" alt="Ảnh thú cưng" class="avatar-fixed rounded mb-3">
                             <p><strong>Mã thú cưng:</strong> ${appointment.pet.pet_code}</p>
                             <p><strong>Tên:</strong> ${appointment.pet.name}</p>
                             <p><strong>Ngày sinh:</strong> <fmt:formatDate value="${appointment.pet.birthDate}" pattern="dd/MM/yyyy"/></p>
@@ -35,7 +46,7 @@
                     <div class="card w-100 d-flex flex-column" style="min-height: 100%;">
                         <div class="card-header">Thông tin chủ sở hữu</div>
                         <div class="card-body">
-                            <img src="${pageContext.request.contextPath}/${appointment.user.avatar}" alt="Ảnh chủ sở hữu" class="img-fluid rounded mb-3">
+                            <img src="${pageContext.request.contextPath}/${appointment.user.avatar}" alt="Ảnh chủ sở hữu" class="avatar-fixed rounded mb-3">
                             <p><strong>Họ và tên:</strong> ${appointment.user.fullName}</p>
                             <p><strong>Tên đăng nhập:</strong> ${appointment.user.userName}</p>
                             <p><strong>Email:</strong> ${appointment.user.email}</p>
@@ -51,7 +62,7 @@
                         <div class="card w-100 d-flex flex-column" style="min-height: 100%;">
                             <div class="card-header">Thông tin bác sĩ</div>
                             <div class="card-body">
-                                <img src="${pageContext.request.contextPath}/${appointment.doctor.user.avatar}" alt="Ảnh bác sĩ" class="img-fluid rounded mb-3">
+                                <img src="${appointment.doctor.user.avatar}" alt="Ảnh bác sĩ" class="avatar-fixed rounded mb-3">
                                 <p><strong>Họ và tên:</strong> ${appointment.doctor.user.fullName}</p>
                                 <p><strong>Chuyên khoa:</strong> ${appointment.doctor.specialty}</p>
                                 <p><strong>Chứng chỉ:</strong> ${appointment.doctor.certificates}</p>

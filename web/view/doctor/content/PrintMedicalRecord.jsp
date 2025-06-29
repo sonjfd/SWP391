@@ -5,30 +5,65 @@
 <head>
   <title>In hồ sơ y tế</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    h3 { margin-top: 40px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-    .section { margin-bottom: 30px; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1, h2, h3 { margin: 0 0 10px; }
+    .section {
+      padding: 15px 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      background-color: #f9f9f9;
+    }
     .label { font-weight: bold; display: inline-block; min-width: 140px; }
     .muted { color: #888; }
     .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .table th, .table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    .table th, .table td {
+      border: 1px solid #bbb;
+      padding: 8px;
+      text-align: left;
+    }
+    .table th {
+      background-color: #f0f0f0;
+    }
+    .clinic-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .clinic-header img {
+      height: 80px;
+      margin-right: 20px;
+    }
+    .clinic-header h1 {
+      margin-bottom: 5px;
+    }
     @media print {
-      .no-print {
-        display: none !important;
-      }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Nút in -->
   <div class="text-end no-print" style="margin-bottom: 20px;">
-    <button onclick="window.print()" class="btn btn-primary">
-      🖨️ In hồ sơ
-    </button>
+    <button onclick="window.print()" class="btn btn-primary">🖨️ In hồ sơ</button>
   </div>
+
+  <!-- Thông tin phòng khám -->
+  <div class="clinic-header">
+    <c:if test="${not empty clinic.logo}">
+      <img src="${clinic.logo}" alt="Logo phòng khám">
+    </c:if>
+    <div>
+      <h1>${clinic.name}</h1>
+      <p>${clinic.address} | ${clinic.phone} | ${clinic.email}</p>
+    </div>
+  </div>
+  <hr>
 
   <h2>Hồ sơ y tế</h2>
 
+  <!-- Thông tin thú cưng -->
   <div class="section">
     <h3>Thông tin thú cưng</h3>
     <p><span class="label">Tên:</span> ${record.pet.name}</p>
@@ -45,6 +80,7 @@
     </p>
   </div>
 
+  <!-- Thông tin chủ nuôi -->
   <div class="section">
     <h3>Thông tin chủ nuôi</h3>
     <p><span class="label">Họ tên:</span> ${record.pet.user.fullName}</p>
@@ -53,6 +89,7 @@
     <p><span class="label">Địa chỉ:</span> ${record.pet.user.address}</p>
   </div>
 
+  <!-- Chi tiết hồ sơ -->
   <div class="section">
     <h3>Chi tiết hồ sơ</h3>
     <p><span class="label">Ngày tạo:</span>
@@ -70,6 +107,7 @@
     </p>
   </div>
 
+  <!-- Thuốc kê đơn -->
   <c:if test="${not empty record.prescribedMedicines}">
     <div class="section">
       <h3>Thuốc kê đơn</h3>
@@ -98,6 +136,7 @@
     </div>
   </c:if>
 
+  <!-- Chuẩn đoán sơ bộ -->
   <c:if test="${not empty record.appointmentSymptoms}">
     <div class="section">
       <h3>Chuẩn đoán sơ bộ</h3>
@@ -131,6 +170,7 @@
     </div>
   </c:if>
 
+  <!-- Dịch vụ chỉ định -->
   <c:if test="${not empty record.appointmentServices}">
     <div class="section">
       <h3>Dịch vụ chỉ định</h3>
@@ -144,33 +184,43 @@
         </thead>
         <tbody>
           <c:forEach var="s" items="${record.appointmentServices}">
-              
-              <tr>
+            <tr>
               <td>${s.service.name}</td>
               <td>
-                  <fmt:formatNumber value="${s.price}" maxFractionDigits="0" type="currency" currencySymbol="₫" groupingUsed="true"/>
+                <fmt:formatNumber value="${s.price}" maxFractionDigits="0" type="currency" currencySymbol="₫" groupingUsed="true"/>
               </td>
-              <td><c:out value="Đã hoàn thành" default="-" /></td>
+              <td>Đã hoàn thành</td>
             </tr>
-              
           </c:forEach>
         </tbody>
       </table>
     </div>
   </c:if>
 
-  <!-- Phần file đính kèm sẽ bị ẩn khi in -->
+  <!-- File đính kèm -->
   <c:if test="${not empty record.files}">
     <div class="section no-print">
       <h3>File đính kèm</h3>
       <ul>
         <c:forEach var="f" items="${record.files}">
           <li>
-            <a href="${f.fileUrl}" target="_blank">${f.fileName}</a>
-            (<fmt:formatDate value="${f.uploadedAt}" pattern="dd/MM/yyyy HH:mm" />)
+            <span class="file-name">${f.fileName}</span>
+            <span class="muted">(<fmt:formatDate value="${f.uploadedAt}" pattern="dd/MM/yyyy HH:mm" />)</span>
+            <span class="no-print"> - <a href="${f.fileUrl}" target="_blank">Xem</a></span>
           </li>
         </c:forEach>
       </ul>
+    </div>
+  </c:if>
+
+  <!-- Chữ ký bác sĩ -->
+  <c:if test="${not empty record.doctor.user.fullName}">
+    <div style="margin-top: 80px;">
+      <div style="float: right; text-align: center;">
+        <p>Bác sĩ điều trị</p>
+        <div style="height: 80px;"></div>
+        <p><strong>${record.doctor.user.fullName}</strong></p>
+      </div>
     </div>
   </c:if>
 

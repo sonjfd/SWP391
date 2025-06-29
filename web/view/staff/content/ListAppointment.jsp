@@ -223,7 +223,7 @@
                                         </button>
 
 
-                                        <c:if test="${app.status == 'booked' and app.chekinStatus == 'noshow'}">
+                                        <c:if test="${ app.chekinStatus == 'noshow'}">
                                             <form action="staff-update-chekin" method="get" style="display:inline;">
                                                 <input type="hidden" name="id" value="${app.id}" />
                                                 <button type="submit" class="btn btn-outline-primary btn-sm" title="Xác nhận đã tới khám">

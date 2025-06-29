@@ -396,13 +396,13 @@ CREATE TABLE [dbo].[ChatHistory] (
 CREATE TABLE appointment_symptoms (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   appointment_id UNIQUEIDENTIFIER NOT NULL,
-  symptom NVARCHAR(255) NOT NULL,     
+  symptom NVARCHAR(255) NOT NULL,     -- Nhập tay
+  diagnosis NVARCHAR(255) NOT NULL,
   note NVARCHAR(MAX),
   created_at DATETIME DEFAULT GETDATE(),
 
   FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
-
 
 
 

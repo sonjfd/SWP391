@@ -74,7 +74,7 @@ public class EditMedicalRecord extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-
+        MedicalRecordDAO medicalRecordDAO = new MedicalRecordDAO();
         // Lấy thông tin từ form
         String medicalRecordId = request.getParameter("medicalRecordId");
         String diagnosis = request.getParameter("diagnosis");
@@ -116,36 +116,47 @@ public class EditMedicalRecord extends HttpServlet {
         List<MedicalRecordFile> files = new ArrayList<>();
         List<String> removeFiles = new ArrayList<>();
         String[] fileIdsToRemove = request.getParameterValues("removeFiles");
-
+        // Thư mục lưu ngoài project
+        String uploadDirPath = "C:/MyUploads/medical";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
         if (fileIdsToRemove != null) {
             removeFiles = Arrays.asList(fileIdsToRemove);
+            // Xóa file cũ
+            for (String removeFile : removeFiles) {
+
+                String oldFilePath = medicalRecordDAO.getMedicalRecordFileLinkById(removeFile);
+                if (oldFilePath != null && oldFilePath.contains("/file-loader/")) {
+                    String oldFileName = oldFilePath.substring((request.getContextPath() + "/file-loader/").length());
+                    File oldFile = new File(uploadDir, oldFileName);
+                    if (oldFile.exists()) {
+                        oldFile.delete();
+                    }
+                }
+            }
         }
 
         // Lưu trữ các file đã upload từ client
         if (request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/")) {
             Collection<Part> fileParts = request.getParts();
-            // Thư mục lưu ngoài project
-    String uploadDirPath = "C:/MyUploads/medical";
-    File uploadDir = new File(uploadDirPath);
-    if (!uploadDir.exists()) {
-        uploadDir.mkdirs();
-    }
+
             for (Part part : fileParts) {
                 if ("files".equals(part.getName()) && part.getSize() > 0) {
                     // Lấy phần mở rộng của file
-            String originalFileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
-            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            String randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+                    String originalFileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+                    String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                    String randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
 
-            // Ghi file ra ổ cứng
-            File savedFile = new File(uploadDir, randomFileName);
-            part.write(savedFile.getAbsolutePath());
-
+                    // Ghi file ra ổ cứng
+                    File savedFile = new File(uploadDir, randomFileName);
+                    part.write(savedFile.getAbsolutePath());
 
                     // Tạo đối tượng MedicalRecordFile để lưu vào cơ sở dữ liệu
                     MedicalRecordFile uf = new MedicalRecordFile();
                     uf.setFileName(originalFileName);
-                    uf.setFileUrl(request.getContextPath()+"/image-loader/" + randomFileName); 
+                    uf.setFileUrl(request.getContextPath() + "/file-loader/" + randomFileName);
                     uf.setUploadedAt(new java.util.Date());
                     files.add(uf);
                 }
@@ -153,7 +164,6 @@ public class EditMedicalRecord extends HttpServlet {
         }
 
         // Cập nhật thông tin hồ sơ và file đính kèm
-        MedicalRecordDAO medicalRecordDAO = new MedicalRecordDAO();
         boolean updateSuccess = false;
 
         try {

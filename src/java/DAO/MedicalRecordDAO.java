@@ -11,10 +11,12 @@ import Model.Breed;
 import Model.Doctor;
 import Model.MedicalRecord;
 import Model.MedicalRecordFile;
+import Model.Medicine;
 import Model.Pet;
 import Model.PrescribedMedicine;
 import Model.Service;
 import Model.User;
+import com.sun.mail.imap.IMAPSSLStore;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Connection;
@@ -69,7 +71,7 @@ public class MedicalRecordDAO {
         }
         return list;
     }
-
+    
     public List<MedicalRecord> getMedicalRecordsByCustomerId(String customerId) {
         List<MedicalRecord> list = new ArrayList<>();
         String sql = """
@@ -101,7 +103,7 @@ public class MedicalRecordDAO {
         ORDER BY 
             m.created_at DESC
     """;
-
+        
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, customerId);
             ResultSet rs = ps.executeQuery();
@@ -137,16 +139,16 @@ public class MedicalRecordDAO {
                 doctor.setUser(user);
                 doctor.setSpecialty(rs.getString("specialty"));
                 mr.setDoctor(doctor);
-
+                
                 list.add(mr);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return list;
     }
-
+    
     public List<MedicalRecord> getMedicalRecordsByCustomerIdAndPetName(String customerId, String petName) {
         List<MedicalRecord> list = new ArrayList<>();
         String sql = """
@@ -179,7 +181,7 @@ public class MedicalRecordDAO {
         ORDER BY 
             m.created_at DESC
     """;
-
+        
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, customerId);
             ps.setString(2, "%" + petName + "%");
@@ -216,13 +218,13 @@ public class MedicalRecordDAO {
                 doctor.setUser(user);
                 doctor.setSpecialty(rs.getString("specialty"));
                 mr.setDoctor(doctor);
-
+                
                 list.add(mr);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return list;
     }
 
@@ -231,12 +233,12 @@ public class MedicalRecordDAO {
 // Kiểm tra xem cuộc hẹn đã có hồ sơ y tế hay chưa
     public boolean checkExistingMedicalRecordForAppointment(String appointmentId) {
         boolean hasMedicalRecord = false;
-
+        
         String sql = "SELECT COUNT(*) FROM medical_records WHERE appointment_id = ?";
-
+        
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, appointmentId);
-
+            
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 hasMedicalRecord = rs.getInt(1) > 0;
@@ -244,8 +246,21 @@ public class MedicalRecordDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return hasMedicalRecord;
+    }
+    
+    public String getMedicalRecordFileLinkById(String id) {
+        String sql = "SELECT file_url FROM medical_record_files WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+            return rs.getString(1);
+            }
+        } catch (Exception e) {
+        }
+        return "";
     }
 
     public boolean createFullMedicalRecord(
@@ -260,7 +275,7 @@ public class MedicalRecordDAO {
                 String medicalRecordId = UUID.randomUUID().toString();
                 conn.setAutoCommit(false);
                 String sql = "INSERT INTO medical_records (id,pet_id, doctor_id, appointment_id, diagnosis, treatment, re_exam_date, created_at) VALUES (?,?, ?, ?, ?, ?, ?, GETDATE())";
-
+                
                 try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                     ps.setString(1, medicalRecordId);
                     ps.setString(2, petId);
@@ -274,7 +289,7 @@ public class MedicalRecordDAO {
                         ps.setNull(7, Types.DATE);
                     }
                     ps.executeUpdate();
-
+                    
                 }
 
                 // Insert các file đính kèm (nếu có)
@@ -284,7 +299,7 @@ public class MedicalRecordDAO {
                         for (MedicalRecordFile uf : files) {
                             psFile.setString(1, medicalRecordId);
                             psFile.setString(2, uf.getFileName());
-                            psFile.setString(3, uf.getFileName());
+                            psFile.setString(3, uf.getFileUrl());
                             psFile.addBatch();
                         }
                         psFile.executeBatch();
@@ -307,7 +322,7 @@ public class MedicalRecordDAO {
                         psMed.executeBatch();
                     }
                 }
-
+                
                 conn.commit();
                 return true;
             } catch (Exception ex) {
@@ -316,15 +331,15 @@ public class MedicalRecordDAO {
             }
         }
     }
-
+    
     public List<MedicalRecord> getMedicalRecordsByAppointmentId(String appointmentId) {
         List<MedicalRecord> medicalRecords = new ArrayList<>();
-
+        
         String query = "SELECT mr.id as mr_id,diagnosis,treatment,re_exam_date,mr.created_at as mr_created_at,mr.updated_at as mr_updated_at,a.status FROM medical_records mr,appointments a WHERE appointment_id = ? and mr.appointment_id = a.id";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, appointmentId);
             ResultSet rs = ps.executeQuery();
-
+            
             while (rs.next()) {
                 MedicalRecord record = new MedicalRecord();
                 ///Appointment
@@ -377,16 +392,16 @@ public class MedicalRecordDAO {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                
                 medicalRecords.add(record);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return medicalRecords;
     }
-
+    
     public MedicalRecord getMedicalRecordById(String medicalRecordId) {
         MedicalRecord medicalRecord = null;
         String query = """
@@ -414,11 +429,11 @@ public class MedicalRecordDAO {
                    JOIN users u ON p.owner_id = u.id
                    WHERE mr.id = ?;
                    """;
-
+        
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, medicalRecordId);
             ResultSet rs = ps.executeQuery();
-
+            
             if (rs.next()) {
                 medicalRecord = new MedicalRecord();
                 medicalRecord.setId(medicalRecordId);
@@ -488,10 +503,10 @@ public class MedicalRecordDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return medicalRecord;
     }
-
+    
     public boolean updateMedicalRecordWithFiles(String medicalRecordId, String diagnosis, String treatment, java.sql.Date reExamDate,
             List<PrescribedMedicine> prescribedList, List<MedicalRecordFile> files, List<String> removeFiles) {
         boolean result = false;
@@ -502,7 +517,7 @@ public class MedicalRecordDAO {
         String insertMedicineQuery = "INSERT INTO prescribed_medicines (medical_record_id, medicine_id, quantity, dosage, duration, usage_instructions) VALUES (?, ?, ?, ?, ?, ?)";
         String deleteFileQuery = "DELETE FROM medical_record_files WHERE id = ?";
         String insertFileQuery = "INSERT INTO medical_record_files (medical_record_id, file_name, file_url, uploaded_at) VALUES (?, ?, ?, ?)";
-
+        
         try (
                 Connection conn = DBContext.getConnection(); PreparedStatement psUpdateRecord = conn.prepareStatement(updateRecordQuery); PreparedStatement psDeleteMedicine = conn.prepareStatement(deleteMedicineQuery); PreparedStatement psInsertMedicine = conn.prepareStatement(insertMedicineQuery); PreparedStatement psDeleteFile = conn.prepareStatement(deleteFileQuery); PreparedStatement psInsertFile = conn.prepareStatement(insertFileQuery)) {
             conn.setAutoCommit(false);  // Bắt đầu transaction
@@ -561,12 +576,12 @@ public class MedicalRecordDAO {
                 rollbackEx.printStackTrace();
             }
         }
-
+        
         return result;
     }
 
     /// In hồ sơ
-     public MedicalRecord getMedicalRecordAndServiceAndSymtompById(String medicalRecordId) {
+    public MedicalRecord getMedicalRecordAndServiceAndSymtompById(String medicalRecordId) {
         MedicalRecord medicalRecord = null;
         String query = """
                    SELECT 
@@ -584,18 +599,20 @@ public class MedicalRecordDAO {
                        u.full_name AS owner_name,
                        u.email AS owner_email,
                        u.phone AS owner_phone,
-                       u.address AS owner_address
+                       u.address AS owner_address,
+                       d.full_name AS doctor_name
                    FROM medical_records mr
                    JOIN pets p ON mr.pet_id = p.id
                    JOIN breeds b on p.breeds_id=b.id
                    JOIN users u ON p.owner_id = u.id
+                   JOIN users d ON d.id = mr.doctor_id
                    WHERE mr.id = ?;
                    """;
-
+        
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, medicalRecordId);
             ResultSet rs = ps.executeQuery();
-
+            
             if (rs.next()) {
                 medicalRecord = new MedicalRecord();
                 medicalRecord.setId(medicalRecordId);
@@ -604,16 +621,22 @@ public class MedicalRecordDAO {
                 medicalRecord.setReExamDate(rs.getDate("re_exam_date"));
                 medicalRecord.setCreatedAt(rs.getTimestamp("mr_created_at"));
                 medicalRecord.setUpdatedAt(rs.getTimestamp("mr_updated_at"));
-
+                
                 User user = new User();
                 user.setFullName(rs.getString("owner_name"));
                 user.setPhoneNumber(rs.getString("owner_phone"));
                 user.setEmail(rs.getString("owner_email"));
                 user.setAddress(rs.getString("owner_address"));
-
+                
                 Breed breed = new Breed();
                 breed.setName(rs.getString("breed_name"));
-
+                
+                User doctor = new User();
+                doctor.setFullName(rs.getString("doctor_name"));
+                Doctor doctor_full = new Doctor();
+                doctor_full.setUser(doctor);
+                medicalRecord.setDoctor(doctor_full);
+                
                 Pet pet = new Pet();
                 pet.setBirthDate(rs.getDate("birth_date"));
                 pet.setUser(user);
@@ -622,12 +645,12 @@ public class MedicalRecordDAO {
                 pet.setGender(rs.getString("gender"));
                 pet.setName(rs.getString("pet_name"));
                 medicalRecord.setPet(pet);
-
+                
                 String appointmentId = rs.getString("appt_id");
                 Appointment appt = new Appointment();
                 appt.setId(appointmentId);
                 medicalRecord.setAppointment(appt);
-
+                
                 medicalRecord.setFiles(getMedicalRecordFiles(conn, medicalRecordId));
                 medicalRecord.setPrescribedMedicines(getPrescribedMedicines(conn, medicalRecordId));
                 medicalRecord.setAppointmentServices(getAppointmentServices(conn, appointmentId));
@@ -636,10 +659,10 @@ public class MedicalRecordDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return medicalRecord;
     }
-
+    
     private List<MedicalRecordFile> getMedicalRecordFiles(Connection conn, String medicalRecordId) {
         List<MedicalRecordFile> files = new ArrayList<>();
         String query = "SELECT * FROM medical_record_files WHERE medical_record_id = ?";
@@ -654,12 +677,12 @@ public class MedicalRecordDAO {
                 file.setUploadedAt(rs.getTimestamp("uploaded_at"));
                 files.add(file);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return files;
     }
-
+    
     private List<PrescribedMedicine> getPrescribedMedicines(Connection conn, String medicalRecordId) {
         List<PrescribedMedicine> medicines = new ArrayList<>();
         String query = "SELECT pm.*, name FROM prescribed_medicines pm , medicines m WHERE medical_record_id = ? and m.id = pm.medicine_id";
@@ -677,13 +700,13 @@ public class MedicalRecordDAO {
                 medicine.setUsageInstructions(rs.getString("usage_instructions"));
                 medicines.add(medicine);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return medicines;
     }
-
-    private List<AppointmentService> getAppointmentServices(Connection conn, String appointmentId)  {
+    
+    private List<AppointmentService> getAppointmentServices(Connection conn, String appointmentId) {
         List<AppointmentService> services = new ArrayList<>();
         String query = """
             SELECT aps.service_id, s.name, aps.price, aps.status
@@ -704,14 +727,13 @@ public class MedicalRecordDAO {
                 service.setStatus(rs.getString("status"));
                 services.add(service);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return services;
     }
-
-    private List<AppointmentSymptom> getAppointmentSymptoms(Connection conn, String appointmentId)
-    {
+    
+    private List<AppointmentSymptom> getAppointmentSymptoms(Connection conn, String appointmentId) {
         List<AppointmentSymptom> symptoms = new ArrayList<>();
         String query = """
             SELECT symptom, diagnosis, note, created_at
@@ -729,11 +751,14 @@ public class MedicalRecordDAO {
                 symptom.setCreated_at(rs.getTimestamp("created_at"));
                 symptoms.add(symptom);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return symptoms;
     }
+    
+    public static void main(String[] args) {
+        MedicalRecord m = new MedicalRecordDAO().getMedicalRecordAndServiceAndSymtompById("EFC874EC-2F21-474D-B8F4-3E4183D21B1F");
+        System.out.println(new MedicalRecordDAO().getMedicalRecordFileLinkById("494E2CFA-0B00-46B7-B168-4953AAAFBFFD"));
+    }
 }
-
-

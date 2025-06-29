@@ -74,12 +74,12 @@ public class GetAppointmentByWeekAPI extends HttpServlet {
         }
 
         // Tạo danh sách các ngày trong tuần từ thứ hai đến chủ nhật
-        List<Date> weekDates = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            LocalDate day = LocalDate.from(startOfWeek.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).plusDays(i);
-            Date utilDate = Date.from(day.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            weekDates.add(utilDate);
-        }
+        List<String> weekDates = new ArrayList<>();
+for (int i = 0; i < 7; i++) {
+    LocalDate day = LocalDate.from(startOfWeek.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).plusDays(i);
+    weekDates.add(day.toString()); // yyyy-MM-dd
+}
+
 
         // Trả về kết quả dưới dạng JSON
         response.setContentType("application/json;charset=UTF-8");

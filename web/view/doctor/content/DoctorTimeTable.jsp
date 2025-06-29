@@ -216,20 +216,11 @@
         <!-- Bảng hiển thị các cuộc hẹn -->
         <table class="table table-bordered">
             <thead>
-                <tr>
-                    <th>Khung giờ</th>
-                    <c:forEach var="day" items="${weekDates}">
-                        <th class="text-center">
-                            <fmt:setLocale value="vi_VN" />
-<fmt:setBundle basename="messages" />
-
-                            <fmt:formatDate value="${day}" pattern="EEEE"  />
-                            <br />
-                            <fmt:formatDate value="${day}" pattern="dd/MM/yyyy" />
-                        </th>
-                    </c:forEach>
-                </tr>
+                <tr id="weekHeaderRow">
+        <!-- JS sẽ đổ dữ liệu thứ + ngày vào đây -->
+                 </tr>
             </thead>
+
             <tbody id="appointmentsTableBody">
                 <!-- JavaScript sẽ điền vào đây -->
             </tbody>
@@ -339,6 +330,24 @@
 
         return { start: startOfWeek, end: endOfWeek };
     }
+    function renderWeekHeader(weekDates) {
+    const headerRow = document.getElementById("weekHeaderRow");
+    headerRow.innerHTML = "<th>Khung giờ</th>"; // reset
+
+    const weekdays = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
+
+    weekDates.forEach(function(dateStr) {
+        const date = new Date(dateStr);
+        const dayOfWeek = weekdays[date.getDay()];
+        const formattedDate = date.toLocaleDateString("vi-VN"); // dd/MM/yyyy
+
+        const th = document.createElement("th");
+        th.classList.add("text-center");
+        th.innerHTML = '<div>' + dayOfWeek + '</div><div>' + formattedDate + '</div>';
+        headerRow.appendChild(th);
+    });
+}
+
         function fetchAppointments() {
             const year = document.getElementById('year').value;
             const week = document.getElementById('week').value;
@@ -360,6 +369,7 @@
                     const appointments = data.appointments;
                     const timeSlots = data.timeSlots;
                     const weekDates = data.weekDates;
+                    renderWeekHeader(weekDates); // <-- Gọi hàm hiển thị THỨ + NGÀY
                     const tableBody = document.getElementById('appointmentsTableBody');
 
                     tableBody.innerHTML = ''; // Clear previous data
