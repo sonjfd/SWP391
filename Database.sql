@@ -89,10 +89,12 @@ CREATE TABLE pets (
   status NVARCHAR(50) DEFAULT 'active',
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
-
+  isDelete BIT DEFAULT 0,
   CONSTRAINT FK_pets_users FOREIGN KEY (owner_id) REFERENCES users(id),
   CONSTRAINT FK_pets_breeds FOREIGN KEY (breeds_id) REFERENCES breeds(id)
 );
+
+
 
 
 -- 8. Shift (Ca làm việc)
