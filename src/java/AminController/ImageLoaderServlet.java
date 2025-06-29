@@ -9,7 +9,7 @@ import java.io.*;
 public class ImageLoaderServlet extends HttpServlet {
 
     // Đường dẫn thư mục ảnh
-    private final String imageBasePath = "C:/MyUploads/product-variants";
+    private final String imageBasePath = "C:/MyUploads/avatars";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

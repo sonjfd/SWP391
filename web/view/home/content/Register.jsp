@@ -154,15 +154,9 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-12 mt-3 text-center">
-                                            <h6 class="text-muted">Hoặc</h6>
-                                        </div>
+                                        
 
-                                        <div class="col-12 mt-3">
-                                            <div class="d-grid">
-                                                <a href="javascript:void(0)" class="btn btn-soft-danger"><i class="uil uil-google"></i> Google</a>
-                                            </div>
-                                        </div><!--end col-->
+                                        <!--end col-->
 
                                         <div class="mx-auto text-center">
                                             <p class="mb-0 mt-3"><small class="text-dark me-2">Đã có tài khoản ?</small> <a href="login" class="text-dark fw-bold text-decoration-underline">Đăng nhập</a></p>
@@ -195,7 +189,7 @@
 
             // Regex kiểm tra số điện thoại: 10 số bắt đầu bằng 0 hoặc +84
             function isValidPhone(phone) {
-                return /^(032|033|034|035|036|037|038|039|096|097|098|086|081|082|083|084|091|090|093|089|070|079|077|076|078)\d{7}$/.test(phone);
+                return /^0\d{9}$/.test(phone);
             }
 
             // Hiển thị lỗi
@@ -319,11 +313,11 @@
             function validatePhone() {
                 const phone = document.getElementById('phone').value.trim();
                 if (!phone) {
-                    showError('phone', 'Số điện thoại không được để trống! số phải thuộc các nhà mạng Viettel, Vinaphone, Mobiphone');
+                    showError('phone', 'Số điện thoại không được để trống! ');
                     return false;
                 }
                 if (!isValidPhone(phone)) {
-                    showError('phone', 'Số điện thoại không hợp lệ!');
+                    showError('phone', 'Số điện thoại phải bắt đầu bằng 0 và gồm đúng 10 chữ số!');
                     return false;
                 }
                 showError('phone', '');

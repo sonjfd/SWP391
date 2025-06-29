@@ -30,6 +30,8 @@ public class EditProductVariantServlet extends HttpServlet {
     private final ProductVariantWeightDAO weightDAO = new ProductVariantWeightDAO();
     private final ProductVariantFlavorDAO flavorDAO = new ProductVariantFlavorDAO();
 
+    private final String UPLOAD_DIR = "C:/MyUploads/avatars";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -68,54 +70,53 @@ public class EditProductVariantServlet extends HttpServlet {
             int stock = Integer.parseInt(request.getParameter("stock_quantity"));
             boolean status = "1".equals(request.getParameter("status"));
 
-            // Lấy ảnh cũ
-            String oldImagePath = variantDAO.getById(id).getImage();
+            ProductVariant oldVariant = variantDAO.getById(id);
+            String oldImagePath = oldVariant.getImage();
 
-            // Lấy file upload mới
+            // Đảm bảo thư mục tồn tại
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            // Xử lý ảnh
             Part imagePart = request.getPart("imageFile");
-
-            String uploadDir = "C:/MyUploads/product-variants";
-            File uploadDirFile = new File(uploadDir);
-            if (!uploadDirFile.exists()) {
-                uploadDirFile.mkdirs();
-            }
-
             String newImagePath;
+
             if (imagePart != null && imagePart.getSize() > 0) {
-                // Xoá ảnh cũ nếu có
+                // Xoá ảnh cũ
                 if (oldImagePath != null && oldImagePath.contains("/image-loader/")) {
                     String oldFileName = oldImagePath.substring(oldImagePath.lastIndexOf("/") + 1);
-                    File oldFile = new File(uploadDir, oldFileName);
+                    File oldFile = new File(UPLOAD_DIR, oldFileName);
                     if (oldFile.exists()) oldFile.delete();
                 }
 
-                // Tạo tên mới
-                String extension = imagePart.getSubmittedFileName().substring(imagePart.getSubmittedFileName().lastIndexOf("."));
-                String newFileName = UUID.randomUUID().toString() + extension;
-                File newFile = new File(uploadDir, newFileName);
+                // Lưu ảnh mới
+                String ext = imagePart.getSubmittedFileName()
+                        .substring(imagePart.getSubmittedFileName().lastIndexOf("."));
+                String newFileName = UUID.randomUUID().toString() + ext;
+                File newFile = new File(UPLOAD_DIR, newFileName);
 
-                // Ghi file
                 try (InputStream input = imagePart.getInputStream();
                      FileOutputStream output = new FileOutputStream(newFile)) {
                     byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = input.read(buffer)) != -1) {
-                        output.write(buffer, 0, bytesRead);
+                    int length;
+                    while ((length = input.read(buffer)) != -1) {
+                        output.write(buffer, 0, length);
                     }
                 }
 
                 newImagePath = request.getContextPath() + "/image-loader/" + newFileName;
 
             } else {
-                // Không chọn ảnh mới → dùng ảnh cũ
+                // Không thay đổi ảnh
                 newImagePath = oldImagePath;
             }
 
-            // Cập nhật dữ liệu
+            // Kiểm tra trùng lặp
             if (variantDAO.isDuplicateVariantExcludeId(productId, weightId, flavorId, id)) {
                 throw new Exception("Biến thể đã tồn tại với cùng sản phẩm, khối lượng và hương vị.");
             }
 
+            // Cập nhật
             ProductVariant variant = new ProductVariant();
             variant.setProductVariantId(id);
             variant.setProductId(productId);

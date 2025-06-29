@@ -38,7 +38,7 @@
         <input type="hidden" name="action" value="add">
 
         <div class="mb-3">
-            <label for="flavor" class="form-label">Tên hương vị</label>
+            <label for="flavor" class="form-label">Tên hương vị <span class="text-danger">*</span></label>
             <input
                 type="text"
                 class="form-control"
@@ -51,7 +51,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="status" class="form-label">Trạng thái</label>
+            <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
             <select class="form-select" id="status" name="status">
                 <option value="1" ${status == '1' ? 'selected' : ''}>Đang bán</option>
                 <option value="0" ${status == '0' ? 'selected' : ''}>Ngừng bán</option>

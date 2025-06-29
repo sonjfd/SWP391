@@ -7,7 +7,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Quản lý trọng lượng biến thể</title>
+        <title>Đơn vị trọng lượng biến thể</title>
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
     </head>
@@ -16,7 +16,7 @@
 
         <div class="container-fluid">
             <div class="layout-specing">
-                <h5 class="mb-3">Quản lý trọng lượng</h5>
+                <h5 class="mb-3">Đơn vị trọng lượng</h5>
 
                 <!-- Form tìm kiếm -->
                 <form method="get" action="admin-productVariantWeight" class="mb-3 d-flex align-items-center justify-content-between w-100">

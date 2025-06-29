@@ -88,13 +88,8 @@
                                         </div>
 
                                         <div class="col-lg-12">
-                                            <div class="d-flex justify-content-between">
-                                                <div class="mb-3">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input align-middle" type="checkbox" value="true" name="remember" id="remember-check">
-                                                        <label class="form-check-label" for="remember-check">Nhớ mật khẩu</label>
-                                                    </div>
-                                                </div>
+                                            <div class="d-flex justify-content-end">
+                                                
                                                 <a href="requestPassword" class="text-dark h6 mb-0 text-decoration-underline">Quên mật khẩu ?</a>
                                             </div>
                                         </div>
@@ -112,7 +107,7 @@
 
                                         <div class="col-12 mt-3">
                                             <div class="d-grid">
-                                                <a href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/SWP391/googleLogin&client_id=119187699944-nkcoopiecro3apg07543e80or1b5cpj5.apps.googleusercontent.com&response_type=code&approval_prompt=force" class="btn btn-soft-danger">
+                                                <a href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/SWP391/googleLogin&client_id=119187699944-nkcoopiecro3apg07543e80or1b5cpj5.apps.googleusercontent.com&response_type=code&approval_prompt=force" class="btn btn-danger">
                                                     <i class="uil uil-google"></i> Google
                                                 </a>
 

@@ -41,14 +41,14 @@
 
         <!-- Trọng lượng -->
         <div class="mb-3">
-            <label for="weight" class="form-label">Trọng lượng (gram)</label>
+            <label for="weight" class="form-label">Trọng lượng (gram) <span class="text-danger">*</span></label>
             <input type="number" step="0.01" class="form-control" id="weight" name="weight"
                    value="<%= weight.getWeight() %>" required>
         </div>
 
         <!-- Trạng thái -->
         <div class="mb-3">
-            <label for="status" class="form-label">Trạng thái</label>
+            <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
             <select class="form-select" name="status" id="status">
                 <option value="1" <%= weight.isStatus() ? "selected" : "" %>>Đang bán</option>
                 <option value="0" <%= !weight.isStatus() ? "selected" : "" %>>Ngừng bán</option>

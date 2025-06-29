@@ -54,7 +54,7 @@ public class AddProductVariantServlet extends HttpServlet {
             String imagePath = null;
 
             // Tạo thư mục lưu ảnh nếu chưa có
-            String uploadDirPath = "C:/MyUploads/product-variants";
+            String uploadDirPath = "C:/MyUploads/avatars";
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
