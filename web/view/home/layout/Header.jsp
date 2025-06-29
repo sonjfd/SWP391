@@ -198,7 +198,7 @@
                                     <li class="list-inline-item mb-0 ms-1">
                                         <div class="dropdown dropdown-primary">
                                             <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown">
-                                            <img  src="${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="Avatar">
+                                                <img  src="${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="Avatar">
 
                                             </button>
                                             <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 py-3" style="min-width: 200px;">
@@ -230,7 +230,7 @@
                                                     </div>
                                                 </a>
                                                 <c:if test="${sessionScope.user.role.name == 'customer'}">
-                                                    <a class="dropdown-item text-dark" href="viewuserinformation"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
+                                                    <a class="dropdown-item text-dark" href="customer-updateuserinformation"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <c:if test="${sessionScope.user.role.name == 'doctor'}">
                                                     <a class="dropdown-item text-dark" href="doctor-schedule"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
@@ -243,6 +243,10 @@
                                                 <c:if test="${sessionScope.user.role.name == 'admin'}">
                                                     <a class="dropdown-item text-dark" href="admin-dashboard"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
                                                     <a class="dropdown-item text-dark" href="admin-profile-setting"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
+                                                </c:if>
+                                                <c:if test="${sessionScope.user.role.name == 'nurse'}">
+                                                    <a class="dropdown-item text-dark" href="nurse-list-appointment-service"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
+                                                    <a class="dropdown-item text-dark" href="nurse-viewprofile"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <div class="dropdown-divider border-top"></div>
                                                 <a class="dropdown-item text-dark" href="logout"><i class="uil uil-sign-out-alt align-middle h6 me-1"></i> Đăng xuất</a>

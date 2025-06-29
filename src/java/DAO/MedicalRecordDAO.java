@@ -757,6 +757,173 @@ public class MedicalRecordDAO {
         return symptoms;
     }
     
+      public List<MedicalRecord> getMedicalRecordsByCustomerId(String customerId, String petName, Date fromDate, Date toDate, int page, int pageSize) {
+        List<MedicalRecord> list = new ArrayList<>();
+
+        String sql = """
+        SELECT p.id AS pet_id, p.pet_code, p.name AS pet_name, p.avatar,
+               m.id AS medical_record_id, m.diagnosis, m.treatment, m.re_exam_date, 
+               m.created_at, m.updated_at,
+               a.id AS appointment_id, a.appointment_time, a.status AS appointment_status,
+               u.id AS doctor_id, u.full_name AS doctor_name, d.specialty
+        FROM pets p
+        JOIN medical_records m ON p.id = m.pet_id
+        JOIN appointments a ON m.appointment_id = a.id
+        JOIN users u ON m.doctor_id = u.id
+        JOIN doctors d ON u.id = d.user_id
+        WHERE p.owner_id = ?
+          AND (? IS NULL OR p.name LIKE ?)
+          AND (? IS NULL OR m.re_exam_date >= ?)
+          AND (? IS NULL OR m.re_exam_date <= ?)
+        ORDER BY m.created_at DESC
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customerId);
+
+            // Pet Name
+            if (petName != null && !petName.trim().isEmpty()) {
+                ps.setString(2, petName);
+                ps.setString(3, "%" + petName + "%");
+            } else {
+                ps.setNull(2, java.sql.Types.VARCHAR);
+                ps.setNull(3, java.sql.Types.VARCHAR);
+            }
+
+            // From Date
+            if (fromDate != null) {
+                ps.setDate(4, new java.sql.Date(fromDate.getTime()));
+                ps.setDate(5, new java.sql.Date(fromDate.getTime()));
+            } else {
+                ps.setNull(4, java.sql.Types.DATE);
+                ps.setNull(5, java.sql.Types.DATE);
+            }
+
+            // To Date
+            if (toDate != null) {
+                ps.setDate(6, new java.sql.Date(toDate.getTime()));
+                ps.setDate(7, new java.sql.Date(toDate.getTime()));
+            } else {
+                ps.setNull(6, java.sql.Types.DATE);
+                ps.setNull(7, java.sql.Types.DATE);
+            }
+
+            ps.setInt(8, (page - 1) * pageSize);
+            ps.setInt(9, pageSize);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                MedicalRecord mr = new MedicalRecord();
+                mr.setId(rs.getString("medical_record_id"));
+                mr.setDiagnosis(rs.getString("diagnosis"));
+                mr.setTreatment(rs.getString("treatment"));
+                mr.setReExamDate(rs.getDate("re_exam_date"));
+                mr.setCreatedAt(rs.getTimestamp("created_at"));
+                mr.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                Pet pet = new Pet();
+                pet.setId(rs.getString("pet_id"));
+                pet.setPet_code(rs.getString("pet_code"));
+                pet.setName(rs.getString("pet_name"));
+                pet.setAvatar(rs.getString("avatar"));
+                mr.setPet(pet);
+
+                Appointment apm = new Appointment();
+                apm.setId(rs.getString("appointment_id"));
+                apm.setAppointmentDate(rs.getTimestamp("appointment_time"));
+                apm.setStatus(rs.getString("appointment_status"));
+                mr.setAppointment(apm);
+
+                Doctor doctor = new Doctor();
+                User user = new User();
+                user.setId(rs.getString("doctor_id"));
+                user.setFullName(rs.getString("doctor_name"));
+                doctor.setUser(user);
+                doctor.setSpecialty(rs.getString("specialty"));
+                mr.setDoctor(doctor);
+
+                mr.setFiles(getFilesByMedicalRecordId(mr.getId()));
+
+                list.add(mr);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+      
+      private List<MedicalRecordFile> getFilesByMedicalRecordId(String recordId) {
+        List<MedicalRecordFile> files = new ArrayList<>();
+        String sql = "SELECT id, file_name, file_url, uploaded_at FROM medical_record_files WHERE medical_record_id = ?";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, recordId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                MedicalRecordFile file = new MedicalRecordFile();
+                file.setId(rs.getString("id"));
+                file.setFileName(rs.getString("file_name"));
+                file.setFileUrl(rs.getString("file_url"));
+                file.setUploadedAt(rs.getTimestamp("uploaded_at"));
+                files.add(file);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return files;
+    }
+
+    public int countMedicalRecordsByCustomer(String customerId, String petName, Date fromDate, Date toDate) {
+        String sql = """
+        SELECT COUNT(*) 
+        FROM pets p
+        JOIN medical_records m ON p.id = m.pet_id
+        WHERE p.owner_id = ?
+          AND (? IS NULL OR p.name LIKE ?)
+          AND (? IS NULL OR m.re_exam_date >= ?)
+          AND (? IS NULL OR m.re_exam_date <= ?)
+    """;
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customerId);
+
+            if (petName != null && !petName.trim().isEmpty()) {
+                ps.setString(2, petName);
+                ps.setString(3, "%" + petName + "%");
+            } else {
+                ps.setNull(2, java.sql.Types.VARCHAR);
+                ps.setNull(3, java.sql.Types.VARCHAR);
+            }
+
+            if (fromDate != null) {
+                ps.setDate(4, new java.sql.Date(fromDate.getTime()));
+                ps.setDate(5, new java.sql.Date(fromDate.getTime()));
+            } else {
+                ps.setNull(4, java.sql.Types.DATE);
+                ps.setNull(5, java.sql.Types.DATE);
+            }
+
+            if (toDate != null) {
+                ps.setDate(6, new java.sql.Date(toDate.getTime()));
+                ps.setDate(7, new java.sql.Date(toDate.getTime()));
+            } else {
+                ps.setNull(6, java.sql.Types.DATE);
+                ps.setNull(7, java.sql.Types.DATE);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
     public static void main(String[] args) {
         MedicalRecord m = new MedicalRecordDAO().getMedicalRecordAndServiceAndSymtompById("EFC874EC-2F21-474D-B8F4-3E4183D21B1F");
         System.out.println(new MedicalRecordDAO().getMedicalRecordFileLinkById("494E2CFA-0B00-46B7-B168-4953AAAFBFFD"));
