@@ -1,371 +1,290 @@
-<%-- 
-    Document   : Admin
-    Created on : May 21, 2025, 8:24:23 PM
-    Author     : Dell
---%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>Doctris - Cập nhật tài khoản nhân viên/bác sĩ</title>
+    <title>Doctris - Cập nhật tài khoản</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
-    <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
-    <meta name="author" content="Shreethemes" />
-    <meta name="email" content="support@shreethemes.in" />
-    <meta name="website" content="${pageContext.request.contextPath}/index.html" />
-    <meta name="Version" content="v1.2.0" />
-    <!-- favicon -->
     <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
-    <!-- Bootstrap -->
-    <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <!-- simplebar -->
-    <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
-    <!-- Select2 -->
-    <link href="${pageContext.request.contextPath}/assets/css/select2.min.css" rel="stylesheet" />
-    <!-- Icons -->
-    <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-    <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" type="text/css" />
-    <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">
-    <!-- SLIDER -->
-    <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
-    <!-- Css -->
-    <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" id="theme-opt" />
+    <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-            background-color: #f4f4f4;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('${pageContext.request.contextPath}/assets/images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
-        .form-container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
+
+        .main-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, select, textarea {
+
+        .form-container {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(6px);
         }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+
+        .form-group {
+            margin-bottom: 18px;
         }
-        button:hover {
-            background-color: #45a049;
-        }
-        .doctor-fields {
-            display: ${user.role.id == 3 ? 'block' : 'none'};
-        }
-        .error {
-            color: red;
-            font-size: 0.9em;
-            display: none;
-            margin-top: 0.25rem;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-        .error.show {
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
             display: block;
-            opacity: 1;
         }
-        .is-invalid {
-            border-color: #dc3545 !important;
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
         }
-        .message {
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 4px;
-            font-size: 0.95rem;
+
+        input:focus, select:focus {
+            border-color: #4CAF50;
+            outline: none;
         }
-        .message.success {
-            background: #dff0d8;
-            color: #3c763d;
+
+        .error-message {
+            display: none;
+            color: #d32f2f;
+            font-size: 0.9em;
+            margin-top: 5px;
         }
-        .message.error {
-            background: #f2dede;
-            color: #a94442;
+
+        .error-message.show {
+            display: block;
         }
+
+        .role-display {
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
         .btn-custom {
-            display: inline-block;
-            margin-left: 10px;
             padding: 10px 20px;
-            background-color: #f44336;
-            color: white;
             border: none;
-            border-radius: 4px;
-            font-weight: 500;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            display: inline-block;
             text-align: center;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: background-color 0.3s ease;
         }
-        .btn-custom:hover {
+
+        .btn-update {
+            background-color: #4CAF50 !important;
+        }
+
+        .btn-update:hover {
+            background-color: #43a047;
+        }
+
+        .btn-back {
+            background-color: #f44336 !important;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
             background-color: #d32f2f;
-            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 25px;
         }
     </style>
 </head>
 <body>
-    <!-- Loader -->
-    <div id="preloader">
-        <div id="status">
-            <div class="spinner">
-                <div class="double-bounce1"></div>
-                <div class="double-bounce2"></div>
+<%@include file="../layout/Header.jsp" %>
+
+<div class="main-wrapper">
+    <div class="form-container">
+        <h3>Cập nhật tài khoản</h3>
+
+        <c:if test="${not empty message}">
+            <div class="error-message show text-center">${message}</div>
+        </c:if>
+
+        <form action="admin-update-account" method="post" id="updateForm" onsubmit="return validateForm()">
+            <input type="hidden" name="id" value="${user.id}">
+            <input type="hidden" name="role_id" id="role_id" value="${user.role.id}">
+
+            <div class="form-group">
+                <label>Vai trò:</label>
+                <div class="role-display">
+                    <c:choose>
+                        <c:when test="${user.role.id == 3}">Bác sĩ</c:when>
+                        <c:when test="${user.role.id == 4}">Nhân viên</c:when>
+                        <c:when test="${user.role.id == 5}">Y tá</c:when>
+                        <c:otherwise>Không xác định</c:otherwise>
+                    </c:choose>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- Loader -->
 
-    <%@include file="../layout/Header.jsp" %>
-    <div class="container-fluid">
-        <div class="layout-specing">
-            <h5 class="mb-0">Cập nhật tài khoản</h5>
-
-            <div class="form-container">
-                <c:if test="${not empty message}">
-                    ${message}
-                </c:if>
-                <form id="updateForm" action="updateaccount" method="post" onsubmit="return validateForm()">
-                    <input type="hidden" name="id" value="${user.id}">
-                    <div class="form-group">
-                        <label for="role_id">Vai trò:</label>
-                        <select id="role_id" name="role_id">
-                            <option value="4" ${user.role.id == 4 ? 'selected' : ''}>Nhân viên</option>
-                            <option value="3" ${user.role.id == 3 ? 'selected' : ''}>Bác sĩ</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="userName">Tên đăng nhập:</label>
-                        <input type="text" id="userName" name="userName" value="${not empty param.userName ? param.userName : user.userName}" required onblur="validateUsername()">
-                        <span id="userNameError" class="error">${requestScope.messagee}</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="fullName">Họ và tên:</label>
-                        <input type="text" id="fullName" name="fullName" value="${not empty param.fullName ? param.fullName : user.fullName}" required onblur="validateFullName()">
-                        <span id="fullNameError" class="error"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="phoneNumber">Số điện thoại:</label>
-                        <input type="text" id="phoneNumber" name="phoneNumber" value="${not empty param.phoneNumber ? param.phoneNumber : user.phoneNumber}" required onblur="validatePhoneNumber()">
-                        <span id="phoneNumberError" class="error"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" value="${not empty param.email ? param.email : user.email}" required onblur="validateEmail()">
-                        <span id="emailError" class="error"></span>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Cập nhật tài khoản</button>
-                        <a href="javascript:history.back()" class="btn-custom">Quay lại</a>
-                    </div>
-                </form>
+            <div class="form-group">
+                <label>Tên đăng nhập:</label>
+                <input type="text" name="userName" id="userName" value="${user.userName}" required>
+                <span class="error-message" id="userNameError">
+                    <c:out value="${usernameError != null ? usernameError : 'Tên đăng nhập phải từ 3 ký tự, chỉ chứa chữ, số, gạch dưới.'}"/>
+                </span>
             </div>
-        </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" name="email" id="email" value="${user.email}" required>
+                <span class="error-message" id="emailError">
+                    <c:out value="${emailError != null ? emailError : 'Email không hợp lệ.'}"/>
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label>Họ và tên:</label>
+                <input type="text" name="fullName" id="fullName" value="${user.fullName}" required>
+                <span class="error-message" id="fullNameError">Họ và tên phải từ 3 ký tự, chỉ chứa chữ tiếng Việt và khoảng trắng.</span>
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại:</label>
+                <input type="text" name="phoneNumber" id="phoneNumber" value="${user.phoneNumber}" required>
+                <span class="error-message" id="phoneNumberError">Số điện thoại phải bắt đầu bằng 0 hoặc +84, đủ 10 số.</span>
+            </div>
+
+            <div id="nurseFields" class="form-group" style="display: ${user.role.id == 5 ? 'block' : 'none'};">
+                <label>Phòng ban:</label>
+                <select name="department_id" id="department_id" ${user.role.id == 5 ? 'required' : ''}>
+                    <option value="">Chọn phòng ban</option>
+                    <c:forEach var="dept" items="${departments}">
+                        <option value="${dept.id}" ${dept.id == dao.getDepartmentIdByUserId(user.id) ? 'selected' : ''}>
+                            ${dept.name}
+                        </option>
+                    </c:forEach>
+                </select>
+                <span class="error-message" id="departmentIdError">Vui lòng chọn phòng ban cho Y tá.</span>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-custom btn-update">Cập nhật</button>
+                <a href="admin-list-account" class="btn-custom btn-back">Quay lại</a>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script>
-        // Hàm thoát HTML để ngăn XSS
-        function escapeHtml(fieldId) {
-            const input = document.getElementById(fieldId);
-            const html = input.value;
-            const div = document.createElement("div");
-            div.innerText = html;
-            return div.innerHTML;
+<script>
+    function validateField(field, regex, errorId, errorMessage) {
+        const value = field.value.trim();
+        const errorElement = document.getElementById(errorId);
+        const hasServerError = errorElement.classList.contains('show');
+        if (!hasServerError && (!value || (regex && !regex.test(value)))) {
+            errorElement.classList.add('show');
+            errorElement.textContent = errorMessage;
+            return false;
+        } else if (!hasServerError) {
+            errorElement.classList.remove('show');
+            return true;
+        }
+        return false;
+    }
+
+    function validateForm() {
+        let isValid = true;
+
+        isValid &= validateField(
+            document.getElementById('userName'),
+            /^[a-zA-Z0-9_]{3,}$/,
+            'userNameError',
+            'Tên đăng nhập phải từ 3 ký tự, chỉ chứa chữ, số, gạch dưới.'
+        );
+        isValid &= validateField(
+            document.getElementById('email'),
+            /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/,
+            'emailError',
+            'Email không hợp lệ.'
+        );
+        isValid &= validateField(
+            document.getElementById('fullName'),
+            /^[\p{L}\s]{3,}$/u,
+            'fullNameError',
+            'Họ và tên phải từ 3 ký tự, chỉ chứa chữ tiếng Việt và khoảng trắng.'
+        );
+        isValid &= validateField(
+            document.getElementById('phoneNumber'),
+            /^(0|\+84)\d{9}$/,
+            'phoneNumberError',
+            'Số điện thoại phải bắt đầu bằng 0 hoặc +84, đủ 10 số.'
+        );
+
+        const roleId = document.getElementById('role_id').value;
+        const departmentId = document.getElementById('department_id');
+        const departmentIdError = document.getElementById('departmentIdError');
+        if (roleId === '5' && (!departmentId || !departmentId.value)) {
+            departmentIdError.classList.add('show');
+            departmentIdError.textContent = 'Vui lòng chọn phòng ban cho Y tá.';
+            isValid = false;
+        } else {
+            departmentIdError.classList.remove('show');
         }
 
-        // Hàm kiểm tra username hợp lệ
-        function isValidUsername(username) {
-            return /^[a-zA-Z0-9_]{3,30}$/.test(username);
+        return isValid;
+    }
+
+    document.getElementById('fullName').addEventListener('input', function(e) {
+        const value = e.target.value;
+        const validValue = value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+        if (value !== validValue) {
+            e.target.value = validValue;
         }
+    });
 
-        // Hàm kiểm tra email hợp lệ
-        function isValidEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email);
-        }
-
-        // Hàm kiểm tra full name hợp lệ
-        function isValidFullName(fullName) {
-            const allowedChars = /^[\p{L}\s,.-]{2,50}$/u;
-            return allowedChars.test(fullName);
-        }
-
-        // Hàm kiểm tra số điện thoại hợp lệ
-        function isValidPhoneNumber(phone) {
-            return /^(0|\+84)\d{9}$/.test(phone); // Bắt đầu bằng 0 hoặc +84, đủ 10 số
-        }
-
-        // Hàm hiển thị lỗi
-        function showError(inputId, message) {
-            const errorElement = document.getElementById(inputId + 'Error');
-            const inputElement = document.getElementById(inputId);
-            if (errorElement && inputElement) {
-                errorElement.textContent = message;
-                errorElement.classList.toggle('show', !!message);
-                inputElement.classList.toggle('is-invalid', !!message);
-            }
-        }
-
-        // Hàm xóa lỗi
-        function clearError(inputId) {
-            const errorElement = document.getElementById(inputId + 'Error');
-            const inputElement = document.getElementById(inputId);
-            if (errorElement && inputElement) {
-                errorElement.textContent = '';
-                errorElement.classList.remove('show');
-                inputElement.classList.remove('is-invalid');
-            }
-        }
-
-        // Hàm kiểm tra username
-        function validateUsername() {
-            clearError('userName');
-            const username = escapeHtml('userName').trim();
-            let isValid = true;
-            if (!username) {
-                showError('userName', 'Tên đăng nhập không được để trống.');
-                isValid = false;
-            } else if (!isValidUsername(username)) {
-                showError('userName', 'Tên đăng nhập phải từ 3 đến 30 ký tự, chỉ chứa chữ, số hoặc dấu gạch dưới.');
-                isValid = false;
-            }
-            console.log(`Blur event triggered for userName: ${isValid ? 'Valid' : 'Invalid'}`);
-            return isValid;
-        }
-
-        // Hàm kiểm tra email
-        function validateEmail() {
-            clearError('email');
-            const email = escapeHtml('email').trim();
-            let isValid = true;
-            if (!email) {
-                showError('email', 'Email không được để trống.');
-                isValid = false;
-            } else if (!isValidEmail(email)) {
-                showError('email', 'Email không hợp lệ, phải có tên miền (VD: .com, .vn).');
-                isValid = false;
-            }
-            console.log(`Blur event triggered for email: ${isValid ? 'Valid' : 'Invalid'}`);
-            return isValid;
-        }
-
-        // Hàm kiểm tra full name
-        function validateFullName() {
-            clearError('fullName');
-            const fullName = escapeHtml('fullName').trim();
-            let isValid = true;
-            if (!fullName) {
-                showError('fullName', 'Họ và tên không được để trống.');
-                isValid = false;
-            } else if (!isValidFullName(fullName)) {
-                showError('fullName', 'Họ và tên phải từ 2 đến 50 ký tự, chỉ chứa chữ, khoảng trắng, dấu phẩy, dấu chấm hoặc dấu gạch ngang.');
-                isValid = false;
-            }
-            console.log(`Blur event triggered for fullName: ${isValid ? 'Valid' : 'Invalid'}`);
-            return isValid;
-        }
-
-        // Hàm kiểm tra phone number
-        function validatePhoneNumber() {
-            clearError('phoneNumber');
-            const phone = escapeHtml('phoneNumber').trim();
-            let isValid = true;
-            if (!phone) {
-                showError('phoneNumber', 'Số điện thoại không được để trống.');
-                isValid = false;
-            } else if (!isValidPhoneNumber(phone)) {
-                showError('phoneNumber', 'Số điện thoại phải bắt đầu bằng 0 hoặc +84 và có đúng 10 số.');
-                isValid = false;
-            }
-            console.log(`Blur event triggered for phoneNumber: ${isValid ? 'Valid' : 'Invalid'}`);
-            return isValid;
-        }
-
-        // Hàm kiểm tra toàn bộ biểu mẫu khi submit
-        function validateForm() {
-            const isUsernameValid = validateUsername();
-            const isEmailValid = validateEmail();
-            const isFullNameValid = validateFullName();
-            const isPhoneNumberValid = validatePhoneNumber();
-            const isValid = isUsernameValid && isEmailValid && isFullNameValid && isPhoneNumberValid;
-            if (!isValid) {
-                const firstInvalid = document.querySelector('.is-invalid');
-                if (firstInvalid) firstInvalid.focus();
-            }
-            return isValid;
-        }
-
-        // Gắn sự kiện khi trang tải
-        document.addEventListener('DOMContentLoaded', function () {
-            const inputs = [
-                { id: 'userName', validate: validateUsername },
-                { id: 'email', validate: validateEmail },
-                { id: 'fullName', validate: validateFullName },
-                { id: 'phoneNumber', validate: validatePhoneNumber }
-            ];
-
-            inputs.forEach(({ id, validate }) => {
-                const input = document.getElementById(id);
-                if (input) {
-                    input.addEventListener('blur', () => {
-                        validate();
-                    });
-                } else {
-                    console.error(`Element with ID ${id} not found`);
-                }
-            });
-
-            // Gắn sự kiện change cho role_id
-            const roleSelect = document.getElementById('role_id');
-            if (roleSelect) {
-                roleSelect.addEventListener('change', toggleDoctorFields);
-            }
-
-            // Gắn sự kiện submit cho form
-            const form = document.getElementById('updateForm');
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    if (!validateForm()) {
-                        e.preventDefault();
-                    }
-                });
+    document.querySelectorAll('input, select').forEach(field => {
+        field.addEventListener('blur', () => {
+            if (field.id === 'userName') {
+                validateField(field, /^[a-zA-Z0-9_]{3,}$/, 'userNameError', 'Tên đăng nhập phải từ 3 ký tự, chỉ chứa chữ, số, gạch dưới.');
+            } else if (field.id === 'email') {
+                validateField(field, /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/, 'emailError', 'Email không hợp lệ.');
+            } else if (field.id === 'fullName') {
+                validateField(field, /^[\p{L}\s]{3,}$/u, 'fullNameError', 'Họ và tên phải từ 3 ký tự, chỉ chứa chữ tiếng Việt và khoảng trắng.');
+            } else if (field.id === 'phoneNumber') {
+                validateField(field, /^(0|\+84)\d{9}$/, 'phoneNumberError', 'Số điện thoại phải bắt đầu bằng 0 hoặc +84, đủ 10 số.');
+            } else if (field.id === 'department_id' && document.getElementById('role_id').value === '5') {
+                validateField(field, null, 'departmentIdError', 'Vui lòng chọn phòng ban cho Y tá.');
             }
         });
+    });
 
-        // Hàm toggleDoctorFields
-        function toggleDoctorFields() {
-            const roleId = document.getElementById('role_id').value;
-            const doctorFields = document.querySelector('.doctor-fields');
-            if (doctorFields) {
-                doctorFields.style.display = roleId === '3' ? 'block' : 'none';
-            }
-        }
-    </script>
+    <c:if test="${not empty usernameError}">
+        document.getElementById('userNameError').classList.add('show');
+    </c:if>
+    <c:if test="${not empty emailError}">
+        document.getElementById('emailError').classList.add('show');
+    </c:if>
+</script>
 
-    <!-- javascript -->
-    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/columnchart.init.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
 </body>
 </html>

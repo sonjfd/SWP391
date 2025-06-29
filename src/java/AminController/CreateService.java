@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author FPT
  */
-@WebServlet(name="CreateService", urlPatterns={"/createservice"})
+@WebServlet(name="CreateService", urlPatterns={"/admin-create-service"})
 public class CreateService extends HttpServlet {
    
     /** 
@@ -90,7 +90,7 @@ public class CreateService extends HttpServlet {
             ServiceDAO serviceDAO = new ServiceDAO();
             if (serviceDAO.addService(service)) {
                 request.getSession().setAttribute("message", "Tạo dịch vụ thành công!");
-                response.sendRedirect(request.getContextPath() + "/listservice");
+                response.sendRedirect(request.getContextPath() + "/admin-list-service");
             } else {
                 request.setAttribute("error", "Lỗi khi tạo dịch vụ!");
                 request.setAttribute("departments", serviceDAO.getAllDepartments());

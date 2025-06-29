@@ -2,11 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package AminController;
 
-import DAO.AdminDao;
-import Model.ClinicInfo;
+import DAO.DepartmentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,42 +12,47 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author FPT
  */
-@WebServlet(name="ListClinicInfo", urlPatterns={"/admin-list-clinic-info"})
-public class ListClinicInfo extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+@WebServlet(name = "DeleteDepartment", urlPatterns = {"/admin-delete-department"})
+public class DeleteDepartment extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListClinicInfo</title>");  
+            out.println("<title>Servlet DeleteDepartment</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListClinicInfo at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet DeleteDepartment at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -57,21 +60,13 @@ public class ListClinicInfo extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        try {
-            AdminDao adminDAO = new AdminDao();
-            List<ClinicInfo> clinics = adminDAO.getAllClinicInfo();
-            request.setAttribute("clinics", clinics);
-            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
-        } catch (Exception e) {
-            request.setAttribute("message", "Error loading clinics: " + e.getMessage());
-            request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
-        }
-    } 
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -79,12 +74,24 @@ public class ListClinicInfo extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
+            throws ServletException, IOException {
+        DepartmentDAO departmentDAO = new DepartmentDAO();
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            departmentDAO.deleteDepartment(id);
+            response.sendRedirect(request.getContextPath() + "/admin-list-department");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Lỗi cơ sở dữ liệu trong quá trình xóa phòng ban.");
+            request.getRequestDispatcher("view/admin/content/ListDepartment.jsp").forward(request, response);
+        }
+
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

@@ -20,7 +20,7 @@ import java.time.LocalTime;
  *
  * @author FPT
  */
-@WebServlet(name="CreateShift", urlPatterns={"/createshift"})
+@WebServlet(name="CreateShift", urlPatterns={"/admin-create-shift"})
 public class CreateShift extends HttpServlet {
    
     /** 
@@ -84,7 +84,7 @@ public class CreateShift extends HttpServlet {
             ShiftDAO shiftDAO = new ShiftDAO();
             if (shiftDAO.addShift(shift)) {
                 request.getSession().setAttribute("message", "Tạo ca thành công!");
-                response.sendRedirect("listshift");
+                response.sendRedirect("admin-list-shift");
             } else {
                 request.setAttribute("error", "Lỗi khi tạo ca làm việc!");
                 request.setAttribute("name", name);

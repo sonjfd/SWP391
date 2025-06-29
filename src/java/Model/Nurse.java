@@ -12,6 +12,9 @@ public class Nurse {
     private User user;
     private Department department;
 
+    private int userId;
+    private int departmentId;
+    
     public Nurse() {
     }
 
@@ -20,6 +23,28 @@ public class Nurse {
         this.department = department;
     }
 
+    public Nurse( int userId, int departmentId) {
+        this.userId = userId;
+        this.departmentId = departmentId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    
     public User getUser() {
         return user;
     }

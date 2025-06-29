@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="ListBreed", urlPatterns={"/listbreed"})
+@WebServlet(name="ListBreed", urlPatterns={"/admin-list-breed"})
 public class ListBreed extends HttpServlet {
    
     /** 

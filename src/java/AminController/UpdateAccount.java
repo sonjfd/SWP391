@@ -6,23 +6,30 @@
 package AminController;
 
 import DAO.AdminDao;
+
+import DAO.RoleDAO;
+import Model.Department;
 import Model.Doctor;
 import Model.Role;
 import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
+import java.sql.SQLException;
 
 /**
  *
  * @author FPT
  */
+@WebServlet("/admin-update-account")
 public class UpdateAccount extends HttpServlet {
-   
+    private final AdminDao dao = new AdminDao();
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -58,14 +65,14 @@ public class UpdateAccount extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        
         String id = request.getParameter("id");
-        AdminDao adminDAO = new AdminDao();
-        User user = adminDAO.getUserById(id);
-        Doctor doctor = adminDAO.getDoctorByUserId(id);
+        User user = dao.getUserById(id);
+        List<Department> departments = dao.getAllDepartments();
+
         request.setAttribute("user", user);
-        request.setAttribute("doctor", doctor);
+        request.setAttribute("departments", departments);
         request.getRequestDispatcher("view/admin/content/UpdateAccount.jsp").forward(request, response);
+        
     } 
 
     /** 
@@ -79,75 +86,92 @@ public class UpdateAccount extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         String id = request.getParameter("id");
-        int roleId = Integer.parseInt(request.getParameter("role_id"));
-        String userName = request.getParameter("userName");
+        String username = request.getParameter("userName");
         String email = request.getParameter("email");
         String fullName = request.getParameter("fullName");
-        String phoneNumber = request.getParameter("phoneNumber");
-        String address = request.getParameter("address");
-        String avatar = request.getParameter("avatar");
-//        int status = Integer.parseInt(request.getParameter("status"));
+        String phone = request.getParameter("phoneNumber");
+        String roleIdStr = request.getParameter("role_id");
+        String departmentIdStr = request.getParameter("department_id");
 
-        AdminDao adminDAO = new AdminDao();
-        User user = adminDAO.getUserById(id);
-        if (user == null) {
-            request.setAttribute("message", "User not found.");
-            request.setAttribute("messageType", "error");
-            response.sendRedirect("listaccount");
+        // Kiểm tra role_id
+        int roleId;
+        try {
+            roleId = roleIdStr != null && !roleIdStr.isEmpty() ? Integer.parseInt(roleIdStr) : 0;
+        } catch (NumberFormatException e) {
+            roleId = 0;
+        }
+        if (roleId != 3 && roleId != 4 && roleId != 5) {
+            request.setAttribute("message", "Vai trò không hợp lệ");
+            forwardToForm(request, response, id, username, email, fullName, phone, roleId);
             return;
         }
 
-        // Kiểm tra username/email trùng (ngoại trừ chính user này)
-        if (!userName.equals(user.getUserName()) && adminDAO.isUsernameTaken(userName)) {
-            request.setAttribute("message", "Username is already taken.");
-            request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("view/admin/content/UpdateAccount.jsp").forward(request, response);
+        // Kiểm tra trùng username và email
+        User currentUser = dao.getUserById(id);
+        if (!username.equals(currentUser.getUserName()) && dao.isUsernameTaken(username)) {
+            request.setAttribute("usernameError", "Tên đăng nhập đã tồn tại");
+            forwardToForm(request, response, id, username, email, fullName, phone, roleId);
             return;
         }
-        if (!email.equals(user.getEmail()) && adminDAO.isEmailTaken(email)) {
-            request.setAttribute("message", "Email is already taken.");
-            request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("view/admin/content/UpdateAccount.jsp").forward(request, response);
+        if (!email.equals(currentUser.getEmail()) && dao.isEmailTaken(email)) {
+            request.setAttribute("emailError", "Email đã tồn tại");
+            forwardToForm(request, response, id, username, email, fullName, phone, roleId);
             return;
         }
 
-        user.setUserName(userName);
+        // Kiểm tra department_id
+        Integer departmentId = null;
+        if (roleId == 5 && departmentIdStr != null && !departmentIdStr.isEmpty()) {
+            try {
+                departmentId = Integer.parseInt(departmentIdStr);
+            } catch (NumberFormatException e) {
+                request.setAttribute("message", "Phòng ban không hợp lệ");
+                forwardToForm(request, response, id, username, email, fullName, phone, roleId);
+                return;
+            }
+        } else if (roleId == 5) {
+            request.setAttribute("message", "Vui lòng chọn phòng ban cho Y tá");
+            forwardToForm(request, response, id, username, email, fullName, phone, roleId);
+            return;
+        }
+
+        User user = new User();
+        user.setId(id);
+        user.setUserName(username);
         user.setEmail(email);
         user.setFullName(fullName);
-        user.setPhoneNumber(phoneNumber);
-        user.setAddress(address);
-        user.setAvatar(avatar != null && !avatar.isEmpty() ? avatar : "/assets/images/default_user.png");
-//        user.setStatus(status);
+        user.setPhoneNumber(phone);
         Role role = new Role();
         role.setId(roleId);
         user.setRole(role);
-        user.setUpdateDate(new Date());
 
-        Doctor doctor = null;
-        if (roleId == 3) {
-            doctor = new Doctor();
-            doctor.setUser(user);
-            doctor.setSpecialty(request.getParameter("specialty"));
-            doctor.setCertificates(request.getParameter("certificates"));
-            doctor.setQualifications(request.getParameter("qualifications"));
-            String yearsOfExperience = request.getParameter("yearsOfExperience");
-            doctor.setYearsOfExperience(yearsOfExperience != null ? Integer.parseInt(yearsOfExperience) : 0);
-            doctor.setBiography(request.getParameter("biography"));
-            
-        }
-
-        boolean success = adminDAO.updateAccount(user, doctor);
+        boolean success = dao.updateAccount(user, departmentId);
         if (success) {
-            request.setAttribute("message", "Account updated successfully!");
-//            request.setAttribute("messageType", "success");
-            response.sendRedirect("listaccount");
+            response.sendRedirect("admin-list-account");
         } else {
-            request.setAttribute("message", "Failed to update account. Please try again.");
-//            request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("updateaccount").forward(request, response);
+            request.setAttribute("message", "Cập nhật thất bại");
+            forwardToForm(request, response, id, username, email, fullName, phone, roleId);
         }
     }
-    
+
+    private void forwardToForm(HttpServletRequest request, HttpServletResponse response, 
+                               String id, String username, String email, String fullName, 
+                               String phone, int roleId) 
+            throws ServletException, IOException {
+        User user = new User();
+        user.setId(id);
+        user.setUserName(username);
+        user.setEmail(email);
+        user.setFullName(fullName);
+        user.setPhoneNumber(phone);
+        Role role = new Role();
+        role.setId(roleId);
+        user.setRole(role);
+
+        request.setAttribute("user", user);
+        request.setAttribute("departments", dao.getAllDepartments());
+        request.getRequestDispatcher("view/admin/content/UpdateAccount.jsp").forward(request, response);
+    }
     
 
     /** 

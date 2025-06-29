@@ -84,7 +84,7 @@
             <h5 class="mb-0">Tạo Slider Mới</h5>
             <div class="row">
                 <div class="col-lg-6">
-                    <form id="createSliderForm" method="post" action="createslider" enctype="multipart/form-data">
+                    <form id="createSliderForm" method="post" action="admin-create-slider" enctype="multipart/form-data">
                         <div class="form-group">
                             <label>Tiêu đề <span style="color: red;">*</span></label>
                             <input type="text" id="title" name="title" placeholder="Nhập tiêu đề slide">

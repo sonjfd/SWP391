@@ -146,11 +146,11 @@ th, td {
             <h5 class="mb-0">Quản lý loài</h5>
             
             <div class="toolbar">
-                <a href="createspecie">Tạo mới</a>
+                <a href="admin-create-specie">Tạo mới</a>
             </div>
             
             <c:if test="${not empty message}">
-                <div class="${message.contains('successfully') ? 'message' : 'error'}">${message}</div>
+                ${message}
             </c:if>
             
             <table>
@@ -158,7 +158,7 @@ th, td {
                     <tr>
                         <th>STT</th>
                         <th>Tên</th>
-                        
+                        <th>Ảnh</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -167,9 +167,10 @@ th, td {
                         <tr>
                             <td>${counter.count}</td>
                             <td>${specie.name}</td>
+                            <td><img src="${specie.imageUrl}"  style="max-height: 80px; border-radius: 6px;"</td>
                             
                             <td>
-                                <a href="updatespecie?id=${specie.id}" class="action-btn edit-btn">Sửa</a>
+                                <a href="admin-update-specie?id=${specie.id}" class="action-btn edit-btn">Sửa</a>
                                 <a href="javascript:confirmDelete(${specie.id})" class="action-btn delete-btn">Xóa</a>
                             </td>
                         </tr>
@@ -183,13 +184,13 @@ th, td {
         </div>
     </div>
 
-    <%@include file="../layout/Footer.jsp" %>
+    
 
     <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
     <script>
         function confirmDelete(id) {
             if (confirm("Bạn chắc chắn muốn xóa loài này?")) {
-                window.location.href = "deletespecie?id=" + id;
+                window.location.href = "admin-delete-specie?id=" + id;
             }
         }
         // Debug: Log số giống

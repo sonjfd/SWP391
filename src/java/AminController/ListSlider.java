@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="ListSlider", urlPatterns={"/listslider"})
+@WebServlet(name="ListSlider", urlPatterns={"/admin-list-slider"})
 public class ListSlider extends HttpServlet {
     private SliderDAO sliderDAO = new SliderDAO();
     /** 

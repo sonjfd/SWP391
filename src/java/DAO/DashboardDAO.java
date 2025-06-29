@@ -18,6 +18,9 @@ import java.util.List;
  * @author FPT
  */
 public class DashboardDAO {
+    public DashboardDAO() {
+        
+    }
     public DashboardData getDashboardData() throws SQLException {
         try (Connection conn = DBContext.getConnection()) {
             // Tổng thú cưng
@@ -78,82 +81,50 @@ public class DashboardDAO {
         }
     }
 
+    // Lấy dữ liệu cho biểu đồ doanh thu và cuộc hẹn
     public AppointmentReportData getAppointmentReportData(int days) throws SQLException {
-        List<String> dates = new ArrayList<>();
-        List<Integer> counts = new ArrayList<>();
-        List<String> species = new ArrayList<>();
-        List<Integer> speciesCounts = new ArrayList<>();
+        List<String> revenueDates = new ArrayList<>();
+        List<Double> revenues = new ArrayList<>();
+        List<String> appointmentDates = new ArrayList<>();
+        List<Integer> appointmentCounts = new ArrayList<>();
 
         try (Connection conn = DBContext.getConnection()) {
-            // Thống kê cuộc hẹn theo ngày
-            String sqlDates = "SELECT CAST(appointment_time AS DATE) AS appointment_date, COUNT(*) AS count " +
-                    "FROM appointments " +
-                    "WHERE appointment_time >= DATEADD(day, ?, GETDATE()) " +
-                    "GROUP BY CAST(appointment_time AS DATE) " +
-                    "ORDER BY appointment_date";
-            PreparedStatement stmt = conn.prepareStatement(sqlDates);
-            stmt.setInt(1, -days);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                dates.add(rs.getString("appointment_date"));
-                counts.add(rs.getInt("count"));
+            // Lấy doanh thu theo ngày, dùng paid_at
+            String revenueQuery = "SELECT CAST(paid_at AS DATE) AS revenue_date, SUM(total_amount) AS revenue " +
+                                 "FROM invoices " +
+                                 "WHERE payment_status = 'paid' AND paid_at >= DATEADD(day, ?, GETDATE()) " +
+                                 "GROUP BY CAST(paid_at AS DATE) " +
+                                 "ORDER BY revenue_date";
+            try (PreparedStatement ps = conn.prepareStatement(revenueQuery)) {
+                ps.setInt(1, -days);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        revenueDates.add(rs.getString("revenue_date"));
+                        revenues.add(rs.getDouble("revenue"));
+                    }
+                }
             }
 
-            // Thống kê thú cưng theo loài (dựa trên các cuộc hẹn)
-            String sqlSpecies = "SELECT s.name, COUNT(DISTINCT p.id) AS count " +
-                    "FROM appointments a " +
-                    "JOIN pets p ON a.pet_id = p.id " +
-                    "JOIN breeds b ON p.breeds_id = b.id " +
-                    "JOIN species s ON b.species_id = s.id " +
-                    "WHERE a.appointment_time >= DATEADD(day, ?, GETDATE()) " +
-                    "GROUP BY s.name";
-            stmt = conn.prepareStatement(sqlSpecies);
-            stmt.setInt(1, -days);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                species.add(rs.getString("name"));
-                speciesCounts.add(rs.getInt("count"));
+            // Lấy số cuộc hẹn theo ngày
+            String appointmentQuery = "SELECT CAST(appointment_time AS DATE) AS appointment_date, COUNT(*) AS count " +
+                                     "FROM appointments " +
+                                     "WHERE appointment_time >= DATEADD(day, ?, GETDATE()) " +
+                                     "GROUP BY CAST(appointment_time AS DATE) " +
+                                     "ORDER BY appointment_date";
+            try (PreparedStatement ps = conn.prepareStatement(appointmentQuery)) {
+                ps.setInt(1, -days);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        appointmentDates.add(rs.getString("appointment_date"));
+                        appointmentCounts.add(rs.getInt("count"));
+                    }
+                }
             }
         }
-        return new AppointmentReportData(dates, counts, species, speciesCounts);
+
+        return new AppointmentReportData(revenueDates, revenues, appointmentDates, appointmentCounts);
     }
+
     
-    public static void main(String[] args) {
-        DashboardDAO dao = new DashboardDAO();
-
-        try {
-            // Test getDashboardData()
-            DashboardData dashboard = dao.getDashboardData();
-            System.out.println("== DASHBOARD DATA ==");
-            System.out.println("Total Pets: " + dashboard.getTotalPets());
-            System.out.println("Total Revenue: " + dashboard.getTotalRevenue());
-            System.out.println("Total Appointments: " + dashboard.getTotalAppointments());
-            System.out.println("Total Users: " + dashboard.getTotalUsers());
-            System.out.println("Total Doctors: " + dashboard.getTotalDoctors());
-            System.out.println("Total Nurses: " + dashboard.getTotalNurses());
-            System.out.println();
-
-            // Test getAppointmentReportData() for last 7 days
-            AppointmentReportData report = dao.getAppointmentReportData(7);
-            System.out.println("== APPOINTMENT REPORT (Last 7 Days) ==");
-
-            List<String> dates = report.getDates();
-            List<Integer> counts = report.getCounts();
-            System.out.println("Date-wise Appointments:");
-            for (int i = 0; i < dates.size(); i++) {
-                System.out.println(dates.get(i) + ": " + counts.get(i));
-            }
-
-            List<String> species = report.getSpecies();
-            List<Integer> speciesCounts = report.getSpeciesCounts();
-            System.out.println("\nSpecies-wise Appointments:");
-            for (int i = 0; i < species.size(); i++) {
-                System.out.println(species.get(i) + ": " + speciesCounts.get(i));
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Database error: " + e.getMessage());
-        }
-    }
     
 }

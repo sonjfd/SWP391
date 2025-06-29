@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author FPT
  */
-@WebServlet(name="DeleteService", urlPatterns={"/deleteservice"})
+@WebServlet(name="DeleteService", urlPatterns={"/admin-delete-service"})
 public class DeleteService extends HttpServlet {
    
     /** 
@@ -67,7 +67,7 @@ public class DeleteService extends HttpServlet {
         } catch (Exception e) {
             request.getSession().setAttribute("message", "Lỗi khi xóa dịch vụ!");
         }
-        response.sendRedirect(request.getContextPath() + "/listservice");
+        response.sendRedirect(request.getContextPath() + "/admin-list-service");
     }
      
 

@@ -49,7 +49,7 @@
             <h5 class="mb-3">Cập nhật giống</h5>
             <div class="row">
                 <div class="col-lg-6">
-                    <form id="updateBreedForm" method="post" action="updatebreed">
+                    <form id="updateBreedForm" method="post" action="admin-update-breed">
                         <input type="hidden" name="id" value="${breed.id}">
                         <div class="form-group">
                             <label>Loài <span style="color: red;">*</span></label>
@@ -67,7 +67,7 @@
                             <div id="nameError" class="error-text"></div>
                         </div>
                         <button type="submit">Cập nhật</button>
-                        <a href="listbreed" class="btn-back">Quay lại</a>
+                        <a href="admin-list-breed" class="btn-back">Quay lại</a>
                     </form>
                 </div>
             </div>

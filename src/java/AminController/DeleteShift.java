@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author FPT
  */
-@WebServlet(name="DeleteShift", urlPatterns={"/deleteshift"})
+@WebServlet(name="DeleteShift", urlPatterns={"/admin-delete-shift"})
 public class DeleteShift extends HttpServlet {
    
     /** 
@@ -67,7 +67,7 @@ public class DeleteShift extends HttpServlet {
         } catch (Exception e) {
             request.getSession().setAttribute("message", "Lỗi khi xóa ca!");
         }
-        response.sendRedirect(request.getContextPath() + "/listshift");
+        response.sendRedirect(request.getContextPath() + "/admin-list-shift");
     
     }
     

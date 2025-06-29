@@ -191,7 +191,7 @@
                     <td>${clinic.phone}</td>
                     <td>${clinic.email}</td>
                     <td>
-                        <a href="updateclinicinfo?id=${clinic.id}" class="btn update-btn">Cập nhật</a>
+                        <a href="admin-update-clinic-info?id=${clinic.id}" class="btn update-btn">Cập nhật</a>
                     </td>
                 </tr>
             </c:forEach>

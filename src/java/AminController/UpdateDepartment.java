@@ -5,8 +5,8 @@
 
 package AminController;
 
-import DAO.AdminDao;
-import Model.ClinicInfo;
+import DAO.DepartmentDAO;
+import Model.Department;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,14 +14,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.sql.SQLException;
 
 /**
  *
  * @author FPT
  */
-@WebServlet(name="ListClinicInfo", urlPatterns={"/admin-list-clinic-info"})
-public class ListClinicInfo extends HttpServlet {
+@WebServlet(name="UpdateDepartment", urlPatterns={"/admin-update-department"})
+public class UpdateDepartment extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,10 +38,10 @@ public class ListClinicInfo extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListClinicInfo</title>");  
+            out.println("<title>Servlet UpdateDepartment</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListClinicInfo at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet UpdateDepartment at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,15 +58,21 @@ public class ListClinicInfo extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        DepartmentDAO departmentDAO = new DepartmentDAO();
         try {
-            AdminDao adminDAO = new AdminDao();
-            List<ClinicInfo> clinics = adminDAO.getAllClinicInfo();
-            request.setAttribute("clinics", clinics);
-            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
-        } catch (Exception e) {
-            request.setAttribute("message", "Error loading clinics: " + e.getMessage());
-            request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
+            int id = Integer.parseInt(request.getParameter("id"));
+            Department department = departmentDAO.getDepartmentById(id);
+            if (department == null) {
+                request.setAttribute("message", "Phòng ban không tồn tại");
+                response.sendRedirect(request.getContextPath() + "admin-list-department");
+                return;
+            }
+            request.setAttribute("department", department);
+            request.getRequestDispatcher("view/admin/content/UpdateDepartment.jsp").forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Lỗi cơ sở dữ liệu");
+            response.sendRedirect(request.getContextPath() + "admin-list-department");
         }
     } 
 
@@ -80,7 +86,25 @@ public class ListClinicInfo extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        DepartmentDAO departmentDAO = new DepartmentDAO();
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+            if (name == null || name.trim().isEmpty() || name.length() > 255 || departmentDAO.isNameExists(name, id)) {
+                request.setAttribute("message", "Tên phòng ban không hợp lệ hoặc đã tồn tại");
+                request.setAttribute("department", new Department(id, name, description));
+                request.getRequestDispatcher("view/admin/content/UpdateDepartment.jsp").forward(request, response);
+                return;
+            }
+            departmentDAO.updateDepartment(id, name, description);
+            response.sendRedirect(request.getContextPath() + "/admin-list-department");
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Lỗi cơ sở dữ liệu");
+            request.getRequestDispatcher("view/admin/content/UpdateDepartment.jsp").forward(request, response);
+        }
     }
 
     /** 

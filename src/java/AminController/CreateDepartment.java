@@ -5,18 +5,24 @@
 
 package AminController;
 
+import DAO.DepartmentDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author FPT
  */
-public class ShowClinicInformation extends HttpServlet {
+@WebServlet(name="CreateDepartment", urlPatterns={"/admin-create-department"})
+public class CreateDepartment extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,10 +39,10 @@ public class ShowClinicInformation extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ShowClinicInformation</title>");  
+            out.println("<title>Servlet CreateDepartment</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ShowClinicInformation at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet CreateDepartment at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -53,7 +59,7 @@ public class ShowClinicInformation extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("view/admin/content/CreateDepartment.jsp").forward(request, response);
     } 
 
     /** 
@@ -66,8 +72,27 @@ public class ShowClinicInformation extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        DepartmentDAO departmentDAO = new DepartmentDAO();
+        String name = request.getParameter("name");
+        String description = request.getParameter("description");
+        try {
+            if (name == null || name.trim().isEmpty() || name.length() > 255 || departmentDAO.isNameExists(name, 0)) {
+                request.setAttribute("message", "Tên phòng ban không hợp lệ hoặc đã tồn tại");
+                request.setAttribute("name", name);
+                request.setAttribute("description", description);
+                request.getRequestDispatcher("view/admin/content/CreateDepartment.jsp").forward(request, response);
+                return;
+            }
+            departmentDAO.addDepartment(name, description);
+            response.sendRedirect(request.getContextPath() + "/admin-list-department");
+            request.setAttribute("message", "Tạo phòng ban thành công!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Lỗi cơ sở dữ liệu");
+            request.getRequestDispatcher("view/admin/content/CreateDepartment.jsp").forward(request, response);
+        } 
     }
+    
 
     /** 
      * Returns a short description of the servlet.

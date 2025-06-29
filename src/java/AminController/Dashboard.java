@@ -20,7 +20,7 @@ import java.sql.SQLException;
  *
  * @author FPT
  */
-@WebServlet(name="Dashboard", urlPatterns={"/dashboard"})
+@WebServlet(name="Dashboard", urlPatterns={"/admin-dashboard"})
 public class Dashboard extends HttpServlet {
     private DashboardDAO dashboardDAO;
 

@@ -111,7 +111,7 @@
         <div class="alert-danger">${error}</div>
     </c:if>
 
-    <form id="createServiceForm" action="${pageContext.request.contextPath}/createservice" method="POST">
+    <form id="createServiceForm" action="${pageContext.request.contextPath}/admin-create-service" method="POST">
         <div class="form-group">
             <label for="department_id">Phòng ban <span style="color: red;">*</span></label>
             <select id="department_id" name="department_id">
@@ -150,7 +150,7 @@
         </div>
 
         <button type="submit">Tạo mới</button>
-        <a href="${pageContext.request.contextPath}/listservice" class="btn-back">Quay lại</a>
+        <a href="${pageContext.request.contextPath}/admin-list-service" class="btn-back">Quay lại</a>
     </form>
 </div>
 

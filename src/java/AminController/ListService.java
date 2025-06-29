@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="ListService", urlPatterns={"/listservice"})
+@WebServlet(name="ListService", urlPatterns={"/admin-list-service"})
 public class ListService extends HttpServlet {
    
     /** 

@@ -85,11 +85,11 @@
             <h5 class="mb-0">Quản lý giống</h5>
             
             <div class="toolbar">
-                <a href="createbreed">Tạo mới</a>
+                <a href="admin-create-breed">Tạo mới</a>
             </div>
             
             <c:if test="${not empty message}">
-                <div class="${message.contains('successfully') ? 'message' : 'error'}">${message}</div>
+                ${message}
             </c:if>
             
             <table>
@@ -108,7 +108,7 @@
                             <td>${breed.name}</td>
                             <td>${breed.specie.name}</td>
                             <td>
-                                <a href="updatebreed?id=${breed.id}" class="action-btn edit-btn">Sửa</a>
+                                <a href="admin-update-breed?id=${breed.id}" class="action-btn edit-btn">Sửa</a>
                                 <a href="javascript:confirmDelete(${breed.id})" class="action-btn delete-btn">Xóa</a>
                             </td>
                         </tr>
@@ -128,7 +128,7 @@
     <script>
         function confirmDelete(id) {
             if (confirm("Bạn chắc chắn muốn xóa giống này?")) {
-                window.location.href = "deletebreed?id=" + id;
+                window.location.href = "admin-delete-breed?id=" + id;
             }
         }
     </script>

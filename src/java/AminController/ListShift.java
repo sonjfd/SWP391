@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="ListShift", urlPatterns={"/listshift"})
+@WebServlet(name="ListShift", urlPatterns={"/admin-list-shift"})
 public class ListShift extends HttpServlet {
    
     /** 

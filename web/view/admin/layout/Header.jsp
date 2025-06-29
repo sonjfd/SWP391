@@ -49,27 +49,36 @@
                     </div>
 
                     <ul class="sidebar-menu pt-3">
-                        <li><a href="listmedicine"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
+                        <li><a href="admin-dashboard"><i class="uil uil-dashboard me-2 d-inline-block"></i>Dashboard</a></li>
 
                         <li class="sidebar-dropdown">
                             <a href="javascript:void(0)"><i class="uil uil-user me-2 d-inline-block"></i>Quản lý giống loài</a>
                             <div class="sidebar-submenu">
                                 <ul>
-                                    <li><a href="listspecie">Danh sách loài</a></li>
-                                    <li><a href="listbreed">Danh sách giống</a></li>
+                                    <li><a href="admin-list-specie">Danh sách loài</a></li>
+                                    <li><a href="admin-list-breed">Danh sách giống</a></li>
 
                                 </ul>
                             </div>
                         </li>
 
-                        <li><a href="listmedicine"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý thuốc</a></li>
+                        <li><a href="admin-list-medicine"><i class="uil uil-capsule me-2 d-inline-block"></i>Quản lý thuốc</a></li>
 
-                        <li><a href="listaccount"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý tài khoản</a></li>
+                        <li><a href="admin-list-account"><i class="uil uil-user-circle me-2 d-inline-block"></i>Quản lý tài khoản</a></li>
 
-                        <li><a href="listclinicinfo"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Thông tin phòng khám</a></li>                  
+                        <li><a href="admin-list-clinic-info"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Thông tin phòng khám</a></li>                  
 
-                        <li><a href="listslider"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý trình chiếu</a></li> 
+                        <li><a href="admin-list-slider"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý trình chiếu</a></li> 
 
+                        <li><a href="admin-list-shift"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý ca làm việc</a></li>
+
+                        <li><a href="admin-list-service"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý dịch vụ</a></li>
+
+                        <li><a href="admin-list-department"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý phòng ban</a></li>
+
+                        <li><a href="admin-list-role"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý vai trò</a></li>
+
+                        
                        
 
                         <li class="sidebar-dropdown">

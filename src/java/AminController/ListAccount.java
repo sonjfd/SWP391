@@ -10,6 +10,7 @@ import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
+@WebServlet("/admin-list-account")
 public class ListAccount extends HttpServlet {
    
     /** 
@@ -58,6 +60,7 @@ public class ListAccount extends HttpServlet {
     throws ServletException, IOException {
         AdminDao adminDAO = new AdminDao();
         List<User> users = adminDAO.getAllAccounts();
+        
         request.setAttribute("users", users);
         request.getRequestDispatcher("view/admin/content/ListAccount.jsp").forward(request, response);
     } 

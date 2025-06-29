@@ -1,64 +1,29 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package AminController;
 
 import DAO.SpecieDAO;
 import Model.Specie;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import jakarta.servlet.http.Part;
 
-/**
- *
- * @author FPT
- */
-@WebServlet(name="CreateSpecie", urlPatterns={"/createspecie"})
+@WebServlet(name = "CreateSpecie", urlPatterns = {"/admin-create-specie"})
+@MultipartConfig
 public class CreateSpecie extends HttpServlet {
-    private SpecieDAO specieDAO = new SpecieDAO();
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet CreateSpecie</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet CreateSpecie at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    private SpecieDAO specieDAO = new SpecieDAO();
+    private static final String UPLOAD_DIR = "C:/MyUploads/avatars";
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        
+            throws ServletException, IOException {
         try {
             request.getRequestDispatcher("view/admin/content/CreateSpecie.jsp").forward(request, response);
         } catch (Exception e) {
@@ -68,46 +33,65 @@ public class CreateSpecie extends HttpServlet {
             request.setAttribute("message", "Failed to load create specie form.");
             request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
         }
-    } 
+    }
 
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        
-        try {
-            Specie specie = new Specie();
-            specie.setName(request.getParameter("name"));
+            throws ServletException, IOException {
+        String name = request.getParameter("name");
+        Part filePart = request.getPart("image");
 
+        String imageUrl = null;
+
+        try {
+            // Kiểm tra và tạo thư mục nếu chưa có
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            if (filePart != null && filePart.getSize() > 0) {
+                String fileName = filePart.getSubmittedFileName().toLowerCase();
+
+                // Kiểm tra định dạng ảnh
+                if (!fileName.endsWith(".png") && !fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg")) {
+                    throw new ServletException("Only PNG, JPG, JPEG files are allowed!");
+                }
+
+                // Kiểm tra dung lượng
+                if (filePart.getSize() > MAX_FILE_SIZE) {
+                    throw new ServletException("File size must be less than 5MB!");
+                }
+
+                // Tạo tên file ngẫu nhiên
+                String extension = fileName.substring(fileName.lastIndexOf("."));
+                String uniqueFileName = java.util.UUID.randomUUID().toString() + extension;
+                File savedFile = new File(uploadDir, uniqueFileName);
+                filePart.write(savedFile.getAbsolutePath());
+
+                // Đường dẫn lưu trong DB (hiển thị thông qua ImageLoaderServlet)
+                imageUrl = request.getContextPath() + "/image-loader/" + uniqueFileName;
+            }
+
+            Specie specie = new Specie(0, name, imageUrl);
             boolean success = specieDAO.addSpecie(specie);
 
             List<Specie> specieList = specieDAO.getAllSpecies();
             request.setAttribute("specieList", specieList);
-            request.setAttribute("message", success ? "Specie created successfully!" : "Failed to create specie.");
-
+            request.setAttribute("message", success ? "Tạo loài mới thành công" : "Tạo loài thất bại");
             request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
+
         } catch (Exception e) {
             e.printStackTrace();
             List<Specie> specieList = specieDAO.getAllSpecies();
             request.setAttribute("specieList", specieList);
-            request.setAttribute("message", "Create failed due to an error.");
+            request.setAttribute("message", "Create failed due to an error: " + e.getMessage());
             request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
         }
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Servlet for creating new Specie with image upload.";
+    }
 }

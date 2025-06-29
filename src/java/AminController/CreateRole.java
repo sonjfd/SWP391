@@ -2,54 +2,52 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+
 package AminController;
 
-import DAO.AdminDao;
-import Model.User;
+import DAO.RoleDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-
+import java.sql.SQLException;
 /**
  *
  * @author FPT
  */
-public class DeleteAccount extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+@WebServlet(name="CreateRole", urlPatterns={"/admin-create-role"})
+public class CreateRole extends HttpServlet {
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteAccount</title>");
+            out.println("<title>Servlet CreateRole</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteAccount at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CreateRole at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -57,33 +55,12 @@ public class DeleteAccount extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
+        request.getRequestDispatcher("view/admin/content/CreateRole.jsp").forward(request, response);
+    } 
 
-
-        String id = request.getParameter("id");
-        AdminDao adminDAO = new AdminDao();
-        boolean success = adminDAO.deleteAccount(id);
-
-        // Lấy danh sách tài khoản mới
-        List<User> users = adminDAO.getAllAccounts();
-        request.setAttribute("users", users);
-
-        // Đặt thông báo vào request
-        if (success) {
-            request.setAttribute("message", "Account deleted successfully!");
-//            request.setAttribute("messageType", "success");
-        } else {
-            request.setAttribute("message", "Failed to delete account. Please try again.");
-//            request.setAttribute("messageType", "error");
-        }
-
-        // Forward về listAccounts.jsp
-        request.getRequestDispatcher("listaccount").forward(request, response);
-    }
-
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -91,13 +68,29 @@ public class DeleteAccount extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    throws ServletException, IOException {
+        RoleDAO roleDAO = new RoleDAO();
+        String name = request.getParameter("name");
+        try {
+            if (name == null || name.trim().isEmpty() || name.length() > 50 || roleDAO.isNameExists(name, 0)) {
+                request.setAttribute("message", "Tên vai trò không hợp lệ hoặc đã tồn tại");
+                request.setAttribute("name", name);
+                request.getRequestDispatcher("view/admin/content/CreateRole.jsp").forward(request, response);
+                return;
+            }
+            roleDAO.addRole(name);
+            request.setAttribute("roles", roleDAO.getAllRoles());
+            request.setAttribute("message", "Thêm vai trò thành công");
+            request.getRequestDispatcher("view/admin/content/ListRole.jsp").forward(request, response);
+        } catch (SQLException e) {
+            request.setAttribute("message", "Lỗi cơ sở dữ liệu");
+            request.setAttribute("name", name);
+            request.getRequestDispatcher("view/admin/content/CreateRole.jsp").forward(request, response);
+        }
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

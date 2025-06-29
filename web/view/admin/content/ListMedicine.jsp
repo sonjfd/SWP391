@@ -137,7 +137,7 @@
             
             <div class="form-container">
                 <div class="toolbar">
-                    <a href="${pageContext.request.contextPath}/createmedicine">Tạo mới</a>
+                    <a href="${pageContext.request.contextPath}/admin-create-medicine">Tạo mới</a>
                     <div class="form-group">
                         <label for="filterStatus">Trạng thái:</label>
                         <select id="filterStatus">
@@ -146,14 +146,7 @@
                             <option value="0">Không hoạt động</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="sortPrice">Sắp xếp giá:</label>
-                        <select id="sortPrice">
-                            <option value="">Mặc định</option>
-                            <option value="asc">Tăng dần</option>
-                            <option value="desc">Giảm dần</option>
-                        </select>
-                    </div>
+
                     
                 </div>
                 
@@ -166,22 +159,21 @@
                         <tr>
                             <th>STT</th>
                             <th>Tên thuốc</th>
-                            <th>Mô tả</th>
-                            <th>Giá</th>
+                            <th>Mô tả</th>                            
                             <th>Trạng thái</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody id="medicineTbody">
                         <c:forEach var="medicine" items="${medicineList}" varStatus="counter">
-                            <tr data-status="${medicine.status}" data-price="${medicine.price}">
+                            <tr data-status="${medicine.status}" >
                                 <td>${counter.count}</td>
                                 <td>${medicine.name}</td>
                                 <td>${medicine.getDescripton()}</td>
-                                <td>${medicine.price}</td>
+                                
                                 <td>${medicine.status == 1 ? 'Hoạt động' : 'Không hoạt động'}</td>
                                 <td>
-                                    <a href="${pageContext.request.contextPath}/updatemedicine?id=${medicine.id}" class="action-btn edit-btn">Sửa</a>
+                                    <a href="${pageContext.request.contextPath}/admin-update-medicine?id=${medicine.id}" class="action-btn edit-btn">Sửa</a>
                                     <a href="javascript:confirmDelete('${medicine.id}')" class="action-btn delete-btn">Xóa</a>
                                 </td>
                             </tr>
@@ -210,11 +202,10 @@
 
         function filterMedicines() {
             const statusFilter = document.getElementById('filterStatus').value;
-            const sortPrice = document.getElementById('sortPrice').value;
+            
             const tbody = document.getElementById('medicineTbody');
 
-            console.log('Status filter: ' + statusFilter + ', Sort price: ' + sortPrice); // Debug
-            console.log('Original rows: ' + originalRows.length); // Debug
+            
 
             // Lọc trạng thái từ danh sách gốc
             let filteredRows = originalRows.filter(row => {
@@ -222,19 +213,7 @@
                 return statusFilter === '' || status === statusFilter;
             });
 
-            console.log('Rows after status filter: ' + filteredRows.length); // Debug
-            console.log('Prices before sort: ' + filteredRows.map(row => row.getAttribute('data-price'))); // Debug
-
-            // Sắp xếp giá
-            if (sortPrice !== '') {
-                filteredRows = filteredRows.sort((a, b) => {
-                    const priceA = parseFloat(a.getAttribute('data-price'));
-                    const priceB = parseFloat(b.getAttribute('data-price'));
-                    return sortPrice === 'asc' ? priceA - priceB : priceB - priceA;
-                });
-            }
-
-            console.log('Prices after sort: ' + filteredRows.map(row => row.getAttribute('data-price'))); // Debug
+            
 
             // Cập nhật tbody
             tbody.innerHTML = '';
@@ -244,7 +223,7 @@
                 filteredRows.forEach(row => tbody.appendChild(row.cloneNode(true)));
             }
 
-            console.log('Tbody children after update: ' + tbody.children.length); // Debug
+            
         }
 
         function resetFilters() {
@@ -255,13 +234,13 @@
 
         function confirmDelete(id) {
             if (confirm("Bạn chắc chắn muốn xóa thuốc này?")) {
-                window.location.href = "${pageContext.request.contextPath}/deletemedicine?id=" + id;
+                window.location.href = "${pageContext.request.contextPath}/admin-delete-medicine?id=" + id;
             }
         }
 
         // Gắn sự kiện
         document.getElementById('filterStatus').addEventListener('change', filterMedicines);
-        document.getElementById('sortPrice').addEventListener('change', filterMedicines);
+        
 
         // Chạy lần đầu
         filterMedicines();

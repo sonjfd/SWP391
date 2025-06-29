@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name = "DeleteSlider", urlPatterns = {"/deleteslider"})
+@WebServlet(name = "DeleteSlider", urlPatterns = {"/admin-delete-slider"})
 public class DeleteSlider extends HttpServlet {
 
     /**
@@ -71,7 +71,7 @@ public class DeleteSlider extends HttpServlet {
                 request.setAttribute("slides", slides);
 
                 // Thông báo mặc định (vì không kiểm tra thành công hay thất bại)
-                request.setAttribute("message", "Slide deleted.");
+                request.setAttribute("message", "Xóa thành công");
             } else {
                 List<Slider> slides = sliderDAO.getAllSlider();
                 request.setAttribute("slides", slides);

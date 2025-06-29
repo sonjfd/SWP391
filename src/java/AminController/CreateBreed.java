@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="CreateBreed", urlPatterns={"/createbreed"})
+@WebServlet(name="CreateBreed", urlPatterns={"/admin-create-breed"})
 public class CreateBreed extends HttpServlet {
     
     /** 
@@ -93,7 +93,7 @@ public class CreateBreed extends HttpServlet {
 
             List<Breed> breedList = breedDAO.getAllBreeds();
             request.setAttribute("breedList", breedList);
-            request.setAttribute("message", success ? "Breed created successfully!" : "Failed to create breed.");
+            request.setAttribute("message", success ? "Tạo giống mới thành công" : "Tạo giống thất bại");
             request.getRequestDispatcher("view/admin/content/ListBreed.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();

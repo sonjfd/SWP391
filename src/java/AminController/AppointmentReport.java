@@ -16,12 +16,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.Arrays;
 
 /**
  *
  * @author FPT
  */
-@WebServlet(name="AppointmentReport", urlPatterns={"/appointmentreport"})
+@WebServlet(name="AppointmentReport", urlPatterns={"/admin-appointment-report"})
 public class AppointmentReport extends HttpServlet {
     private DashboardDAO dashboardDAO;
 
@@ -68,16 +71,24 @@ public class AppointmentReport extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         try {
             String period = request.getParameter("period");
-            int days = "30days".equals(period) ? 30 : 7; // Mặc định 7 ngày
+            int days = "30days".equals(period) ? 30 : 7;
+            System.out.println("Fetching report for period: " + period + " (" + days + " days)");
+            
             AppointmentReportData data = dashboardDAO.getAppointmentReportData(days);
+
             Gson gson = new Gson();
             String json = gson.toJson(data);
+            System.out.println("Sending JSON: " + json);
             response.getWriter().write(json);
         } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi truy cập cơ sở dữ liệu");
-        }
-    } 
+            System.out.println("SQL error: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Lỗi cơ sở dữ liệu: " + e.getMessage() + "\"}");
+        } 
+    }
+        
+        
+    
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -89,7 +100,7 @@ public class AppointmentReport extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response);
     }
 
     /** 

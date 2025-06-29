@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author FPT
  */
-@WebServlet(name="UpdateService", urlPatterns={"/updateservice"})
+@WebServlet(name="UpdateService", urlPatterns={"/admin-update-service"})
 public class UpdateService extends HttpServlet {
    
     /** 
@@ -67,11 +67,11 @@ public class UpdateService extends HttpServlet {
                 request.getRequestDispatcher("view/admin/content/UpdateService.jsp").forward(request, response);
             } else {
                 request.getSession().setAttribute("message", "Không tìm thấy dịch vụ!");
-                response.sendRedirect(request.getContextPath() + "/listservice");
+                response.sendRedirect(request.getContextPath() + "/admin-list-service");
             }
         } catch (Exception e) {
             request.getSession().setAttribute("message", "ID dịch vụ không hợp lệ!");
-            response.sendRedirect(request.getContextPath() + "/listservice");
+            response.sendRedirect(request.getContextPath() + "/admin-list-service");
         }
     } 
 
@@ -105,7 +105,7 @@ public class UpdateService extends HttpServlet {
             ServiceDAO serviceDAO = new ServiceDAO();
             if (serviceDAO.updateService(service)) {
                 request.getSession().setAttribute("message", "Cập nhật dịch vụ thành công!");
-                response.sendRedirect(request.getContextPath() + "/listservice");
+                response.sendRedirect(request.getContextPath() + "/admin-list-service");
             } else {
                 request.setAttribute("error", "Lỗi khi cập nhật dịch vụ!");
                 request.setAttribute("departments", serviceDAO.getAllDepartments());

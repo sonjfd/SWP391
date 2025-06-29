@@ -96,7 +96,7 @@
                     <div class="message ${messageType}">${message}</div>
                 </c:if>
 
-                <form method="POST" action="updateclinicinfo" enctype="multipart/form-data" id="clinicForm" novalidate>
+                <form method="POST" action="admin-update-clinic-info" enctype="multipart/form-data" id="clinicForm" novalidate>
                     <input type="hidden" name="id" value="${clinic.id}">
                     
                     <div class="form-group">
@@ -139,7 +139,7 @@
                         <input type="file" id="logo" name="logo" accept=".png,.jpg,.jpeg" onchange="validateField('logo')">
                         <div class="error-text" id="logoError"></div>
                         <c:if test="${not empty clinic.logo}">
-                            <img src="${pageContext.request.contextPath}/${clinic.logo}" alt="Logo phòng khám" class="logo-img">
+                            <img src="${clinic.logo}" alt="Logo phòng khám" class="logo-img">
                         </c:if>
                     </div>
                     <div class="form-group">
@@ -149,7 +149,7 @@
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn-custom submit-btn">Lưu</button>
-                        <a href="listclinicinfo" class="btn-custom close-btn">Quay lại</a>
+                        <a href="admin-list-clinic-info" class="btn-custom close-btn">Quay lại</a>
                     </div>
                 </form>
             </div>

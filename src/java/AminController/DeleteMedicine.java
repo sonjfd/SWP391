@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="DeleteMedicine", urlPatterns={"/deletemedicine"})
+@WebServlet(name="DeleteMedicine", urlPatterns={"/admin-delete-medicine"})
 public class DeleteMedicine extends HttpServlet {
    
     /** 
@@ -65,7 +65,7 @@ public class DeleteMedicine extends HttpServlet {
 
             List<Medicine> medicineList = medicineDAO.getAllMedicines();
             request.setAttribute("medicineList", medicineList);
-            request.setAttribute("message", success ? "Medicine deleted successfully!" : "Failed to delete medicine.");
+            request.setAttribute("message", success ? "Xóa thuốc thành công!" : "Xóa thuốc không thành công.");
             request.getRequestDispatcher("view/admin/content/ListMedicine.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();

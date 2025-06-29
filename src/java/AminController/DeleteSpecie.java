@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="DeleteSpecie", urlPatterns={"/deletespecie"})
+@WebServlet(name="DeleteSpecie", urlPatterns={"/admin-delete-specie"})
 public class DeleteSpecie extends HttpServlet {
    
     /** 
@@ -59,31 +59,36 @@ public class DeleteSpecie extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         SpecieDAO specieDAO = new SpecieDAO();
-        
-        try {
+         try {
+            // Lấy ID từ request
             int id = Integer.parseInt(request.getParameter("id"));
 
+            // Thực hiện xóa
             boolean success = specieDAO.deleteSpecie(id);
 
+            // Lấy danh sách loài sau khi xóa
             List<Specie> specieList = specieDAO.getAllSpecies();
             request.setAttribute("specieList", specieList);
 
             if (success) {
-                request.setAttribute("message", "Specie deleted successfully!");
+                request.setAttribute("message", "Xóa loài thành công!");
             } else {
-                request.setAttribute("message", "Cannot delete specie. It may have related breeds.");
+                request.setAttribute("message", "Không thể xóa loài vì có liên kết dữ liệu.");
             }
 
-            request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
-
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            request.setAttribute("message", "ID không hợp lệ.");
             e.printStackTrace();
-            List<Specie> specieList = specieDAO.getAllSpecies();
-            request.setAttribute("specieList", specieList);
-            request.setAttribute("message", "Delete failed due to an error.");
-            request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("message", "Xóa thất bại do lỗi hệ thống.");
+            e.printStackTrace();
         }
-    } 
+
+        // Luôn chuyển đến danh sách loài
+        request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
+    }
+        
+    
 
     /** 
      * Handles the HTTP <code>POST</code> method.

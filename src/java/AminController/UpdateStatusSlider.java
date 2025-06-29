@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="UpdateStatusSlider", urlPatterns={"/updatestatusslider"})
+@WebServlet(name="UpdateStatusSlider", urlPatterns={"/admin-update-status-slider"})
 public class UpdateStatusSlider extends HttpServlet {
    
     /** 
@@ -85,7 +85,7 @@ public class UpdateStatusSlider extends HttpServlet {
             request.setAttribute("slides", slides);
 
             // Đặt thông báo
-            request.setAttribute("message", success ? "Status updated successfully!" : "Failed to update status.");
+            request.setAttribute("message", success ? "Cập nhật trạng thái thành công" : "Cập nhật trạng thái thất bại");
 
             // Forward
             request.getRequestDispatcher("view/admin/content/ListSlider.jsp").forward(request, response);

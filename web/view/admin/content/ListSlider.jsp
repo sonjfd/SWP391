@@ -224,7 +224,7 @@
             
             
             <div class="toolbar">
-                <a href="createslider">Tạo mới</a>
+                <a href="admin-create-slider">Tạo mới</a>
                 <div class="toolbar-right">
                     
                     <div class="filter-container">
@@ -258,10 +258,10 @@
                         <tr data-status="${slide.isActive}">
                             <td>${counter.count}</td>
                             <td>${slide.title}</td>
-                            <td><img src="${pageContext.request.contextPath}${slide.imageUrl}" alt="${slide.title}" class="slide-image"></td>
+                            <td><img src="${slide.imageUrl}" alt="${slide.title}" class="slide-image"></td>
                             <td><a href="${slide.link}" target="_blank">${slide.link}</a></td>
                             <td>
-                                <form method="post" action="updatestatusslider">
+                                <form method="post" action="admin-update-status-slider">
                                     <input type="hidden" name="id" value="${slide.id}">
                                     <input type="hidden" name="isActive" value="${slide.isActive == 1 ? 0 : 1}">
                                     
@@ -275,7 +275,7 @@
                                 </form>
                             </td>
                             <td>
-                                <a href="updateslider?id=${slide.id}" class="action-btn edit-btn">Sửa</a>
+                                <a href="admin-update-slider?id=${slide.id}" class="action-btn edit-btn">Sửa</a>
                                 <button class="action-btn delete-btn" onclick="confirmDelete('${slide.id}')">Xóa</button>
                             </td>
                         </tr>
@@ -294,7 +294,7 @@
     <script>
         function confirmDelete(id) {
             if (confirm("Bạn chắc chắn muốn xóa slideshow này?")) {
-                window.location.href = "deleteslider?id=" + id;
+                window.location.href = "admin-delete-slider?id=" + id;
             }
         }
 

@@ -111,7 +111,7 @@
             <div class="alert-danger">${error}</div>
         </c:if>
 
-        <form id="updateServiceForm" action="${pageContext.request.contextPath}/updateservice" method="POST">
+        <form id="updateServiceForm" action="${pageContext.request.contextPath}/admin-update-service" method="POST">
             <input type="hidden" name="id" value="${service.id}">
 
             <div class="form-group">
@@ -153,7 +153,7 @@
             </div>
 
             <button type="submit">Cập nhật</button>
-            <a href="${pageContext.request.contextPath}/listservice" class="btn-back">Quay lại</a>
+            <a href="${pageContext.request.contextPath}/admin-list-service" class="btn-back">Quay lại</a>
         </form>
     </div>
 

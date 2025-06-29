@@ -23,9 +23,9 @@ import java.io.File;
  * @author FPT
  */
 @MultipartConfig
-@WebServlet(name="UpdateClinicInfo", urlPatterns={"/updateclinicinfo"})
+@WebServlet(name="UpdateClinicInfo", urlPatterns={"/admin-update-clinic-info"})
 public class UpdateClinicInfo extends HttpServlet {
-   private static final String IMAGE_DIR = "assets/images";
+   private static final String UPLOAD_DIR = "C:/MyUploads/avatars";
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -66,7 +66,7 @@ public class UpdateClinicInfo extends HttpServlet {
         if (id == null || id.isEmpty()) {
             request.setAttribute("message", "Invalid clinic ID!");
             request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("listclinicinfo").forward(request, response);
+            request.getRequestDispatcher("admin-list-clinic-info").forward(request, response);
             return;
         }
 
@@ -76,7 +76,7 @@ public class UpdateClinicInfo extends HttpServlet {
             if (clinic == null) {
                 request.setAttribute("message", "Clinic not found!");
                 request.setAttribute("messageType", "error");
-                request.getRequestDispatcher("listclinicinfo").forward(request, response);
+                request.getRequestDispatcher("admin-list-clinic-info").forward(request, response);
                 return;
             }
             request.setAttribute("clinic", clinic);
@@ -84,7 +84,7 @@ public class UpdateClinicInfo extends HttpServlet {
         } catch (Exception e) {
             request.setAttribute("message", "Error loading clinic: " + e.getMessage());
             request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("listclinicinfo").forward(request, response);
+            request.getRequestDispatcher("admin-list-clinic-info").forward(request, response);
         }
     } 
 
@@ -99,44 +99,52 @@ public class UpdateClinicInfo extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         String id = request.getParameter("id");
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String phone = request.getParameter("phone");
-        String email = request.getParameter("email");
-        String website = request.getParameter("website");
-        String workingHours = request.getParameter("workingHours");
-        String description = request.getParameter("description");
-        String googleMap = request.getParameter("googleMap");
-        Part filePart = request.getPart("logo");
+    String name = request.getParameter("name");
+    String address = request.getParameter("address");
+    String phone = request.getParameter("phone");
+    String email = request.getParameter("email");
+    String website = request.getParameter("website");
+    String workingHours = request.getParameter("workingHours");
+    String description = request.getParameter("description");
+    String googleMap = request.getParameter("googleMap");
+    Part filePart = request.getPart("logo");
 
-        if (name == null || name.trim().isEmpty()) {
-            request.setAttribute("message", "Name is required!");
-            request.setAttribute("messageType", "error");
-            reloadClinic(request, response, id);
-            return;
-        }
+    if (name == null || name.trim().isEmpty()) {
+        request.setAttribute("message", "Name is required!");
+        request.setAttribute("messageType", "error");
+        reloadClinic(request, response, id);
+        return;
+    }
 
-        ClinicInfo clinic = new ClinicInfo();
-        clinic.setId(id);
-        clinic.setName(name);
-        clinic.setAddress(address);
-        clinic.setPhone(phone);
-        clinic.setEmail(email);
-        clinic.setWebsite(website);
-        clinic.setWorkingHours(workingHours);
-        clinic.setDescription(description);
-        clinic.setGoogleMap(googleMap);
+    ClinicInfo clinic = new ClinicInfo();
+    clinic.setId(id);
+    clinic.setName(name);
+    clinic.setAddress(address);
+    clinic.setPhone(phone);
+    clinic.setEmail(email);
+    clinic.setWebsite(website);
+    clinic.setWorkingHours(workingHours);
+    clinic.setDescription(description);
+    clinic.setGoogleMap(googleMap);
 
-        // Handle file upload
-        String logoPath = null;
+    String logoPath = null;
+    AdminDao adminDAO = new AdminDao();
+
+    try {
+        ClinicInfo existingClinic = adminDAO.getClinicInfoById(id);
+
         if (filePart != null && filePart.getSize() > 0) {
-            String fileName = filePart.getSubmittedFileName();
+            String fileName = filePart.getSubmittedFileName().toLowerCase();
+
+            // Validate file extension
             if (!fileName.endsWith(".png") && !fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg")) {
                 request.setAttribute("message", "Only PNG, JPG, JPEG files are allowed!");
                 request.setAttribute("messageType", "error");
                 reloadClinic(request, response, id);
                 return;
             }
+
+            // Validate file size
             if (filePart.getSize() > MAX_FILE_SIZE) {
                 request.setAttribute("message", "File size must be less than 5MB!");
                 request.setAttribute("messageType", "error");
@@ -144,46 +152,57 @@ public class UpdateClinicInfo extends HttpServlet {
                 return;
             }
 
-            String uploadPath = getServletContext().getRealPath("") + File.separator + IMAGE_DIR;
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-            String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-            logoPath = IMAGE_DIR + File.separator + uniqueFileName;
-            filePart.write(uploadPath + File.separator + uniqueFileName);
-            clinic.setLogo(logoPath.replace("\\", "/")); // Normalize path
-        }
-
-        try {
-            AdminDao adminDAO = new AdminDao();
-            ClinicInfo existingClinic = adminDAO.getClinicInfoById(id);
-            if (existingClinic == null) {
-                request.setAttribute("message", "Clinic not found!");
-                request.setAttribute("messageType", "error");
-                request.getRequestDispatcher("listclinicinfo").forward(request, response);
-                return;
+            // Ensure upload directory exists
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
             }
 
-            // Keep old logo if no new file uploaded
-            if (logoPath == null) {
+            // Delete old file if exists
+            if (existingClinic != null && existingClinic.getLogo() != null && existingClinic.getLogo().contains("/image-loader/")) {
+                String oldFileName = existingClinic.getLogo().substring(existingClinic.getLogo().lastIndexOf("/") + 1);
+                File oldFile = new File(uploadDir, oldFileName);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+
+            // Save new file
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+            String uniqueFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+            File savedFile = new File(uploadDir, uniqueFileName);
+            filePart.write(savedFile.getAbsolutePath());
+
+            // Set logo path for DB
+            logoPath = request.getContextPath() + "/image-loader/" + uniqueFileName;
+            clinic.setLogo(logoPath);
+        } else {
+            // No file uploaded → keep existing logo
+            if (existingClinic != null) {
                 clinic.setLogo(existingClinic.getLogo());
             }
+        }
 
-            boolean success = adminDAO.updateClinicInfo(clinic);
-            if (success) {
-                request.setAttribute("message", "Clinic updated successfully!");
-                request.setAttribute("messageType", "success");
-                response.sendRedirect("listclinicinfo");
-            } else {
-                request.setAttribute("message", "Failed to update clinic!");
-                request.setAttribute("messageType", "error");
-                reloadClinic(request, response, id);
-            }
-        } catch (Exception e) {
-            request.setAttribute("message", "Error updating clinic: " + e.getMessage());
+        // Update clinic info in DB
+        boolean success = adminDAO.updateClinicInfo(clinic);
+
+        if (success) {
+            request.setAttribute("message", "Clinic updated successfully!");
+            request.setAttribute("messageType", "success");
+            response.sendRedirect("admin-list-clinic-info");
+        } else {
+            request.setAttribute("message", "Failed to update clinic!");
             request.setAttribute("messageType", "error");
             reloadClinic(request, response, id);
         }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("message", "Error updating clinic: " + e.getMessage());
+        request.setAttribute("messageType", "error");
+        reloadClinic(request, response, id);
     }
+}
         
         private void reloadClinic(HttpServletRequest request, HttpServletResponse response, String id) throws ServletException, IOException {
         try {
@@ -194,7 +213,7 @@ public class UpdateClinicInfo extends HttpServlet {
         } catch (Exception e) {
             request.setAttribute("message", "Error loading clinic: " + e.getMessage());
             request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("listclinicinfo").forward(request, response);
+            request.getRequestDispatcher("admin-list-clinic-info").forward(request, response);
         }
     }
     

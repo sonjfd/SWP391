@@ -85,7 +85,7 @@
             <h5 class="mb-0">Cập Nhật Slide</h5>
             <div class="row">
                 <div class="col-lg-6">
-                    <form id="updateSlideForm" method="post" action="updateslider" enctype="multipart/form-data">
+                    <form id="updateSlideForm" method="post" action="admin-update-slider" enctype="multipart/form-data">
                         <input type="hidden" name="id" value="${slide.id}">
                         <div class="form-group">
                             <label>Tiêu đề <span style="color: red;">*</span></label>

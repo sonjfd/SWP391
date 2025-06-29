@@ -92,7 +92,7 @@
                     <div class="error">${error}</div>
                 </c:if>
                 
-                <form id="updateShiftForm" action="${pageContext.request.contextPath}/updateshift" method="POST">
+                <form id="updateShiftForm" action="${pageContext.request.contextPath}/admin-update-shift" method="POST">
                     <input type="hidden" name="id" value="${shift.id}">
                     <div class="form-group">
                         <label for="name">Tên ca:</label>

@@ -5,8 +5,8 @@
 
 package AminController;
 
-import DAO.ShiftDAO;
-import Model.Shift;
+import DAO.RoleDAO;
+import Model.Role;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,14 +14,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.LocalTime;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author FPT
  */
-@WebServlet(name="UpdateShift", urlPatterns={"/admin-update-shift"})
-public class UpdateShift extends HttpServlet {
+@WebServlet(name="UpdateRole", urlPatterns={"/admin-update-role"})
+public class UpdateRole extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,10 +40,10 @@ public class UpdateShift extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UpdateShift</title>");  
+            out.println("<title>Servlet UpdateRole</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UpdateShift at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet UpdateRole at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,21 +60,23 @@ public class UpdateShift extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        RoleDAO roleDAO = new RoleDAO();
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            ShiftDAO shiftDAO = new ShiftDAO();
-            Shift shift = shiftDAO.getShiftById(id);
-            if (shift != null) {
-                request.setAttribute("shift", shift);
-                request.getRequestDispatcher("view/admin/content/UpdateShift.jsp").forward(request, response);
-            } else {
-                request.getSession().setAttribute("message", "Không tìm thấy ca làm việc!");
-                response.sendRedirect("admin-list-shift");
+            Role role = roleDAO.getRoleByIdAll(id);
+            if (role == null) {
+                request.setAttribute("message", "Vai trò không tồn tại");
+                request.getRequestDispatcher("view/admin/content/ListRole.jsp").forward(request, response);
+                return;
             }
-        } catch (Exception e) {
-            request.getSession().setAttribute("message", "ID ca không hợp lệ!");
-            response.sendRedirect("admin-list-shift");
-        }
+            request.setAttribute("role", role);
+            request.getRequestDispatcher("view/admin/content/UpdateRole.jsp").forward(request, response);
+        } catch (NumberFormatException e) {
+            request.setAttribute("message", "ID vai trò không hợp lệ");
+            request.getRequestDispatcher("view/admin/content/ListRole.jsp").forward(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(UpdateRole.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     } 
 
     /** 
@@ -85,38 +89,35 @@ public class UpdateShift extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        RoleDAO roleDAO = new RoleDAO();
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            String name = request.getParameter("name").trim();
-            LocalTime startTime = LocalTime.parse(request.getParameter("start_time"));
-            LocalTime endTime = LocalTime.parse(request.getParameter("end_time"));
+            String name = request.getParameter("name");
 
-            Shift shift = new Shift();
-            shift.setId(id);
-            shift.setName(name);
-            shift.setStart_time(startTime);
-            shift.setEnd_time(endTime);
-
-            ShiftDAO shiftDAO = new ShiftDAO();
-            if (shiftDAO.updateShift(shift)) {
-                request.getSession().setAttribute("message", "Cập nhật ca thành công!");
-                response.sendRedirect("admin-list-shift");
-            } else {
-                request.setAttribute("error", "Lỗi khi cập nhật ca làm việc!");
-                request.setAttribute("shift", shift);
-                request.getRequestDispatcher("view/admin/content/UpdateShift.jsp").forward(request, response);
+            if (name == null || name.trim().isEmpty() || name.length() > 50 || roleDAO.isNameExists(name, id)) {
+                request.setAttribute("message", "Tên vai trò không hợp lệ hoặc đã tồn tại");
+                request.setAttribute("role", new Role(id, name));
+                request.getRequestDispatcher("view/admin/content/UpdateRole.jsp").forward(request, response);
+                return;
             }
-        } catch (Exception e) {
-            Shift shift = new Shift();
-            try {
-                shift.setId(Integer.parseInt(request.getParameter("id")));
-            } catch (Exception ex) {}
-            shift.setName(request.getParameter("name"));
-            request.setAttribute("error", "Dữ liệu không hợp lệ!");
-            request.setAttribute("shift", shift);
-            request.getRequestDispatcher("view/admin/content/UpdateShift.jsp").forward(request, response);
+
+            roleDAO.updateRole(id, name);
+            request.setAttribute("roles", roleDAO.getAllRoles());
+            request.setAttribute("message", "Cập nhật vai trò thành công");
+            request.getRequestDispatcher("view/admin/content/ListRole.jsp").forward(request, response);
+        } catch (SQLException e) {
+            request.setAttribute("message", "Lỗi cơ sở dữ liệu");
+            request.setAttribute("role", new Role(
+                Integer.parseInt(request.getParameter("id")),
+                request.getParameter("name")
+            ));
+            request.getRequestDispatcher("view/admin/content/UpdateRole.jsp").forward(request, response);
+        } catch (NumberFormatException e) {
+            request.setAttribute("message", "ID vai trò không hợp lệ");
+            response.sendRedirect(request.getContextPath() + "/admin-list-role");
         }
     }
+    
 
     /** 
      * Returns a short description of the servlet.

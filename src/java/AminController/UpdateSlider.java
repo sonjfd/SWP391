@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package AminController;
 
 import DAO.SliderDAO;
@@ -25,37 +24,42 @@ import java.util.List;
  */
 @MultipartConfig
 
-@WebServlet(name="UpdateSlider", urlPatterns={"/updateslider"})
+@WebServlet(name = "UpdateSlider", urlPatterns = {"/admin-update-slider"})
 public class UpdateSlider extends HttpServlet {
-   private static final String UPLOAD_DIR = "assets/images/slider";
+
+    private static final String UPLOAD_DIR = "C:/MyUploads/avatars";
     private SliderDAO sliderDAO = new SliderDAO();
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet UpdateSlider</title>");  
+            out.println("<title>Servlet UpdateSlider</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UpdateSlider at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet UpdateSlider at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -63,7 +67,7 @@ public class UpdateSlider extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         String id = request.getParameter("id");
         String submit = request.getParameter("submit");
 
@@ -99,18 +103,20 @@ public class UpdateSlider extends HttpServlet {
                 // Xử lý ảnh
                 Part filePart = request.getPart("image");
                 if (filePart != null && filePart.getSize() > 0) {
-                    String fileName = filePart.getSubmittedFileName();
-                    String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-                    File uploadDir = new File(uploadPath);
+                    File uploadDir = new File(UPLOAD_DIR);
                     if (!uploadDir.exists()) {
                         uploadDir.mkdirs();
                     }
-                    String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-                    File file = new File(uploadPath, uniqueFileName);
+
+                    String fileExtension = filePart.getSubmittedFileName().substring(filePart.getSubmittedFileName().lastIndexOf("."));
+                    String uniqueFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+
+                    File file = new File(uploadDir, uniqueFileName);
                     filePart.write(file.getAbsolutePath());
-                    slide.setImageUrl("/" + UPLOAD_DIR + "/" + uniqueFileName);
+
+                    // Sử dụng đường dẫn dùng chung image-loader
+                    slide.setImageUrl(request.getContextPath() + "/image-loader/" + uniqueFileName);
                 } else {
-                    // Giữ ảnh cũ
                     Slider existing = sliderDAO.getSlideById(id);
                     slide.setImageUrl(existing.getImageUrl());
                 }
@@ -123,7 +129,7 @@ public class UpdateSlider extends HttpServlet {
                 request.setAttribute("slides", slides);
 
                 // Đặt thông báo
-                request.setAttribute("message", success ? "Slide updated successfully!" : "Failed to update slide.");
+                request.setAttribute("message", success ? "Cập nhật trình chiếu thành công" : "Cập nhật thất bại");
 
                 // Forward về ListSlider.jsp
                 request.getRequestDispatcher("view/admin/content/ListSlider.jsp").forward(request, response);
@@ -135,10 +141,11 @@ public class UpdateSlider extends HttpServlet {
             request.setAttribute("message", "Update failed due to an error.");
             request.getRequestDispatcher("view/admin/content/ListSlider.jsp").forward(request, response);
         }
-    } 
+    }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -146,7 +153,7 @@ public class UpdateSlider extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         String id = request.getParameter("id");
 
         try {
@@ -161,18 +168,20 @@ public class UpdateSlider extends HttpServlet {
             // Xử lý ảnh
             Part filePart = request.getPart("image");
             if (filePart != null && filePart.getSize() > 0) {
-                String fileName = filePart.getSubmittedFileName();
-                String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-                File uploadDir = new File(uploadPath);
+                File uploadDir = new File(UPLOAD_DIR);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
                 }
-                String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-                File file = new File(uploadPath, uniqueFileName);
+
+                String fileExtension = filePart.getSubmittedFileName().substring(filePart.getSubmittedFileName().lastIndexOf("."));
+                String uniqueFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+
+                File file = new File(uploadDir, uniqueFileName);
                 filePart.write(file.getAbsolutePath());
-                slide.setImageUrl("/" + UPLOAD_DIR + "/" + uniqueFileName);
+
+                // Sử dụng đường dẫn dùng chung image-loader
+                slide.setImageUrl(request.getContextPath() + "/image-loader/" + uniqueFileName);
             } else {
-                // Giữ ảnh cũ
                 Slider existing = sliderDAO.getSlideById(id);
                 slide.setImageUrl(existing.getImageUrl());
             }
@@ -198,8 +207,9 @@ public class UpdateSlider extends HttpServlet {
         }
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

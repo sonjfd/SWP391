@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="CreateMedicine", urlPatterns={"/createmedicine"})
+@WebServlet(name="CreateMedicine", urlPatterns={"/admin-create-medicine"})
 public class CreateMedicine extends HttpServlet {
    
     /** 
@@ -77,14 +77,13 @@ public class CreateMedicine extends HttpServlet {
             Medicine medicine = new Medicine();
             medicine.setName(request.getParameter("name"));
             medicine.setDescripton(request.getParameter("description"));
-            medicine.setPrice(Double.parseDouble(request.getParameter("price")));
             medicine.setStatus(request.getParameter("status") != null && request.getParameter("status").equals("1") ? 1 : 0);
 
             boolean success = medicineDAO.addMedicine(medicine);
 
             List<Medicine> medicineList = medicineDAO.getAllMedicines();
             request.setAttribute("medicineList", medicineList);
-            request.setAttribute("message", success ? "Medicine created successfully!" : "Failed to create medicine.");
+            request.setAttribute("message", success ? "Thuốc được thêm thành công!" : "Lỗi bị trùng tên hoặc nhập sai");
             request.getRequestDispatcher("view/admin/content/ListMedicine.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();

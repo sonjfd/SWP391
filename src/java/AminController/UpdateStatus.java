@@ -10,6 +10,7 @@ import Model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
+@WebServlet("/admin-update-status")
 public class UpdateStatus extends HttpServlet {
    
     /** 
@@ -77,7 +79,7 @@ public class UpdateStatus extends HttpServlet {
         
         try {
             status = Integer.parseInt(statusStr);
-            if (status != 0 && status != 1) throw new Exception();
+            
         } catch (Exception e) {
             // Đặt thông báo lỗi
             request.setAttribute("message", "Invalid status!");

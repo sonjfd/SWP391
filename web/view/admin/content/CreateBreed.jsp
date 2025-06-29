@@ -49,7 +49,7 @@
             <h5 class="mb-3">Tạo giống mới</h5>
             <div class="row">
                 <div class="col-lg-6">
-                    <form id="createBreedForm" method="post" action="${pageContext.request.contextPath}/createbreed">
+                    <form id="createBreedForm" method="post" action="${pageContext.request.contextPath}/admin-create-breed">
                         <div class="form-group">
                             <label>Loài <span style="color: red;">*</span></label>
                             <select id="speciesId" name="speciesId">
@@ -66,7 +66,7 @@
                             <div id="nameError" class="error-text"></div>
                         </div>
                         <button type="submit">Tạo giống</button>
-                        <a href="${pageContext.request.contextPath}/listbreed" class="btn-back">Quay lại</a>
+                        <a href="${pageContext.request.contextPath}/admin-list-breed" class="btn-back">Quay lại</a>
                     </form>
                 </div>
             </div>

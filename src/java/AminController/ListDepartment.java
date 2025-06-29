@@ -5,8 +5,8 @@
 
 package AminController;
 
-import DAO.AdminDao;
-import Model.ClinicInfo;
+import DAO.DepartmentDAO;
+import Model.Department;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -20,8 +20,8 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="ListClinicInfo", urlPatterns={"/admin-list-clinic-info"})
-public class ListClinicInfo extends HttpServlet {
+@WebServlet(name="ListDepartment", urlPatterns={"/admin-list-department"})
+public class ListDepartment extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,10 +38,10 @@ public class ListClinicInfo extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ListClinicInfo</title>");  
+            out.println("<title>Servlet ListDepartment</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ListClinicInfo at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ListDepartment at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,16 +58,11 @@ public class ListClinicInfo extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try {
-            AdminDao adminDAO = new AdminDao();
-            List<ClinicInfo> clinics = adminDAO.getAllClinicInfo();
-            request.setAttribute("clinics", clinics);
-            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
-        } catch (Exception e) {
-            request.setAttribute("message", "Error loading clinics: " + e.getMessage());
-            request.setAttribute("messageType", "error");
-            request.getRequestDispatcher("view/admin/content/ListClinicInfo.jsp").forward(request, response);
-        }
+        DepartmentDAO departmentDAO = new DepartmentDAO();
+        List<Department> departments = departmentDAO.getAllDepartments();
+        request.setAttribute("departments", departments);
+        request.getRequestDispatcher("view/admin/content/ListDepartment.jsp").forward(request, response);
+        
     } 
 
     /** 

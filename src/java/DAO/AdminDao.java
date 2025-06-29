@@ -8,7 +8,10 @@ import Model.Doctor;
 import Model.User;
 import DAO.DBContext;
 import Model.ClinicInfo;
+import Model.Department;
+import Model.Nurse;
 import Model.Role;
+import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +19,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 import java.util.UUID;
 
 /**
@@ -24,12 +26,11 @@ import java.util.UUID;
  * @author FPT
  */
 public class AdminDao {
-    
-    public boolean createAccount(User user, Doctor doctor) {
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "INSERT INTO users (id, username, email, password, full_name, phone, address, avatar, status, role_id, created_at, updated_at) " +
-                     "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+
+    public boolean createAccount(User user, Doctor doctor, Nurse nurse, Integer departmentId) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO users (id, username, email, password, full_name, phone, address, avatar, status, role_id, created_at, updated_at) "
+                + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             stmt.setString(1, user.getUserName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword()); // Nên mã hóa password
@@ -45,8 +46,8 @@ public class AdminDao {
 
             if (user.getRole().getId() == 3 && doctor != null) {
                 try (PreparedStatement doctorStmt = conn.prepareStatement(
-                        "INSERT INTO doctors (user_id, specialty, certificates, qualifications, years_of_experience, biography) " +
-                        "VALUES ((SELECT id FROM users WHERE username = ?), ?, ?, ?, ?, ?)")) {
+                        "INSERT INTO doctors (user_id, specialty, certificates, qualifications, years_of_experience, biography) "
+                        + "VALUES ((SELECT id FROM users WHERE username = ?), ?, ?, ?, ?, ?)")) {
                     doctorStmt.setString(1, user.getUserName());
                     doctorStmt.setString(2, doctor.getSpecialty());
                     doctorStmt.setString(3, doctor.getCertificates());
@@ -56,22 +57,29 @@ public class AdminDao {
                     doctorStmt.executeUpdate();
                 }
             }
+            if (user.getRole().getId() == 5 && nurse != null && departmentId != null) {
+                try (PreparedStatement nurseStmt = conn.prepareStatement(
+                        "INSERT INTO nurses (user_id, department_id) "
+                        + "VALUES ((SELECT id FROM users WHERE username = ?), ?)")) {
+                    nurseStmt.setString(1, user.getUserName());
+                    nurseStmt.setInt(2, departmentId);
+                    nurseStmt.executeUpdate();
+                }
+            }
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-    
 
     
-    
+
     public List<User> getAllAccounts() {
         List<User> users = new ArrayList<>();
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.status, u.role_id, u.created_at, u.updated_at, r.name " +
-                     "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,3,4,5)")) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(
+                "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.status, u.role_id, u.created_at, u.updated_at, r.name "
+                + "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,3,4,5)")) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -96,12 +104,11 @@ public class AdminDao {
         }
         return users;
     }
-    
+
     public User getUserById(String id) {
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.role_id, u.created_at, u.updated_at, r.name " +
-                     "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = ?")) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(
+                "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.role_id, u.created_at, u.updated_at, r.name "
+                + "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = ?")) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -128,10 +135,9 @@ public class AdminDao {
     }
 
     public Doctor getDoctorByUserId(String userId) {
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography " +
-                     "FROM doctors WHERE user_id = ?")) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(
+                "SELECT user_id, specialty, certificates, qualifications, years_of_experience, biography "
+                + "FROM doctors WHERE user_id = ?")) {
             stmt.setString(1, userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -144,7 +150,7 @@ public class AdminDao {
                 doctor.setQualifications(rs.getString("qualifications"));
                 doctor.setYearsOfExperience(rs.getInt("years_of_experience"));
                 doctor.setBiography(rs.getString("biography"));
-                
+
                 return doctor;
             }
         } catch (SQLException e) {
@@ -152,64 +158,84 @@ public class AdminDao {
         }
         return null;
     }
+public List<Department> getAllDepartments() {
+        List<Department> departments = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            String sql = "SELECT id, name FROM departments";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Department dept = new Department();
+                dept.setId(rs.getInt("id"));
+                dept.setName(rs.getString("name"));
+                departments.add(dept);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException e) {}
+            try { if (stmt != null) stmt.close(); } catch (SQLException e) {}
+            try { if (conn != null) conn.close(); } catch (SQLException e) {}
+        }
+        return departments;
+    }
 
-    public boolean updateAccount(User user, Doctor doctor) {
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "UPDATE users SET username = ?, email = ?, full_name = ?, phone = ?, address = ?, avatar = ?, updated_at = ? " +
-                     "WHERE id = ?")) {
+    public boolean updateAccount(User user, Integer departmentId) {
+        Connection conn = null;
+        try {
+            conn = DBContext.getConnection();
+            conn.setAutoCommit(false);
+
+            // Cập nhật bảng users
+            String userSql = "UPDATE users SET username = ?, email = ?, full_name = ?, phone = ?, role_id = ?, updated_at = ? WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(userSql);
             stmt.setString(1, user.getUserName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getFullName());
             stmt.setString(4, user.getPhoneNumber());
-            stmt.setString(5, user.getAddress());
-            stmt.setString(6, user.getAvatar());
-            stmt.setTimestamp(7, new java.sql.Timestamp(new Date().getTime()));
-            stmt.setString(8, user.getId());
+            stmt.setInt(5, user.getRole().getId());
+            stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+            stmt.setString(7, user.getId());
             stmt.executeUpdate();
+            stmt.close();
 
-            if (doctor != null) {
-                try (PreparedStatement doctorStmt = conn.prepareStatement(
-                        "UPDATE doctors SET specialty = ?, certificates = ?, qualifications = ?, years_of_experience = ?, biography = ? " +
-                        "WHERE user_id = ?")) {
-                    doctorStmt.setString(1, doctor.getSpecialty());
-                    doctorStmt.setString(2, doctor.getCertificates());
-                    doctorStmt.setString(3, doctor.getQualifications());
-                    doctorStmt.setInt(4, doctor.getYearsOfExperience());
-                    doctorStmt.setString(5, doctor.getBiography());
-                    
-                    doctorStmt.setString(7, doctor.getUser().getId());
-                    doctorStmt.executeUpdate();
-                }
-            } else {
-                try (PreparedStatement deleteStmt = conn.prepareStatement(
-                        "DELETE FROM doctors WHERE user_id = ?")) {
-                    deleteStmt.setString(1, user.getId());
-                    deleteStmt.executeUpdate();
+            // Xóa dữ liệu y tá cũ nếu có
+            String deleteNurseSql = "DELETE FROM nurses WHERE user_id = ?";
+            PreparedStatement deleteNurseStmt = conn.prepareStatement(deleteNurseSql);
+            deleteNurseStmt.setString(1, user.getId());
+            deleteNurseStmt.executeUpdate();
+            deleteNurseStmt.close();
+
+            // Nếu là y tá và có departmentId -> thêm vào bảng nurses
+            if (user.getRole().getId() == 5) {
+                if (departmentId != null) {
+                    String insertNurseSql = "INSERT INTO nurses (user_id, department_id) VALUES (?, ?)";
+                    PreparedStatement nurseStmt = conn.prepareStatement(insertNurseSql);
+                    nurseStmt.setString(1, user.getId());
+                    nurseStmt.setInt(2, departmentId);
+                    nurseStmt.executeUpdate();
+                    nurseStmt.close();
+                } else {
+                    // Nếu là y tá mà thiếu departmentId thì coi là lỗi
+                    throw new SQLException("Y tá phải có departmentId");
                 }
             }
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
-    public boolean deleteAccount(String id) {
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE id = ?")) {
-            stmt.setString(1, id);
-            stmt.executeUpdate();
+            conn.commit();
             return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+           return false; 
         }
     }
 
     public boolean isUsernameTaken(String username) {
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM users WHERE username = ?")) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM users WHERE username = ?")) {
             stmt.setString(1, username);
             return stmt.executeQuery().next();
         } catch (SQLException e) {
@@ -219,8 +245,7 @@ public class AdminDao {
     }
 
     public boolean isEmailTaken(String email) {
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM users WHERE email = ?")) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM users WHERE email = ?")) {
             stmt.setString(1, email);
             return stmt.executeQuery().next();
         } catch (SQLException e) {
@@ -228,27 +253,26 @@ public class AdminDao {
             return false;
         }
     }
-    
-    public boolean updateStatus(String id, int status) {    
-    try {
-        Connection conn = DBContext.getConnection(); // Kết nối database
-        PreparedStatement stmt = conn.prepareStatement("UPDATE users SET status = ? WHERE id = ?");
-        stmt.setInt(1, status); // Gán status (0 hoặc 1)
-        stmt.setString(2, id);  // Gán id
-        int rows = stmt.executeUpdate(); // Thực thi
-        return rows > 0; // Thành công nếu cập nhật được
-    } catch (SQLException e ) {
-        return false; // Lỗi thì trả false
+
+    public boolean updateStatus(String id, int status) {
+        try {
+            Connection conn = DBContext.getConnection(); // Kết nối database
+            PreparedStatement stmt = conn.prepareStatement("UPDATE users SET status = ? WHERE id = ?");
+            stmt.setInt(1, status); // Gán status (0 hoặc 1)
+            stmt.setString(2, id);  // Gán id
+            int rows = stmt.executeUpdate(); // Thực thi
+            return rows > 0; // Thành công nếu cập nhật được
+        } catch (SQLException e) {
+            return false; // Lỗi thì trả false
+        }
     }
-}
-    
+
     public List<User> searchAccountsByFullName(String search) throws SQLException, ClassNotFoundException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT u.id, u.username, u.full_name, u.status, r.name " +
-                     "FROM users u JOIN roles r ON u.role_id = r.id " +
-                     "WHERE u.full_name LIKE ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "SELECT u.id, u.username, u.full_name, u.status, r.name "
+                + "FROM users u JOIN roles r ON u.role_id = r.id "
+                + "WHERE u.full_name LIKE ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + search + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -265,12 +289,12 @@ public class AdminDao {
         }
         return users;
     }
+
     public List<ClinicInfo> getAllClinicInfo() throws SQLException, ClassNotFoundException {
         List<ClinicInfo> clinics = new ArrayList<>();
-        String sql = "SELECT id, name, address, phone, email, website, working_hours, description, logo, googlemap, created_at, updated_at " +
-                     "FROM clinic_info";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "SELECT id, name, address, phone, email, website, working_hours, description, logo, googlemap, created_at, updated_at "
+                + "FROM clinic_info";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 ClinicInfo clinic = new ClinicInfo();
@@ -291,12 +315,12 @@ public class AdminDao {
         }
         return clinics;
     }
+
     //Lấy id của thông tin phòng khám 
     public ClinicInfo getClinicInfoById(String id) throws SQLException, ClassNotFoundException {
-        String sql = "SELECT id, name, address, phone, email, website, working_hours, description, logo, googlemap, created_at, updated_at " +
-                     "FROM clinic_info WHERE id = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "SELECT id, name, address, phone, email, website, working_hours, description, logo, googlemap, created_at, updated_at "
+                + "FROM clinic_info WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -318,12 +342,11 @@ public class AdminDao {
         }
         return null;
     }
-    
+
     public boolean updateClinicInfo(ClinicInfo clinic) throws SQLException, ClassNotFoundException {
-        String sql = "UPDATE clinic_info SET name = ?, address = ?, phone = ?, email = ?, website = ?, working_hours = ?, " +
-                     "description = ?, logo = ?, googlemap = ?, updated_at = GETDATE() WHERE id = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "UPDATE clinic_info SET name = ?, address = ?, phone = ?, email = ?, website = ?, working_hours = ?, "
+                + "description = ?, logo = ?, googlemap = ?, updated_at = GETDATE() WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, clinic.getName());
             stmt.setString(2, clinic.getAddress());
             stmt.setString(3, clinic.getPhone());
@@ -338,47 +361,25 @@ public class AdminDao {
             return rows > 0;
         }
     }
-    
-    
 
-    
-   
-    
-    
-    
-       public static void main(String[] args) {
-        AdminDao adminDao = new AdminDao(); // Đảm bảo class chứa hàm getAllAccounts()
-        List<User> users = adminDao.getAllAccounts();
+    public static void main(String[] args) {
+        AdminDao dao = new AdminDao();
 
-        if (users.isEmpty()) {
-            System.out.println("Không có tài khoản nào được tìm thấy.");
-        } else {
-            for (User u : users) {
-                System.out.println("ID: " + u.getId());
-                System.out.println("Username: " + u.getUserName());
-                System.out.println("Email: " + u.getEmail());
-                System.out.println("Full Name: " + u.getFullName());
-                System.out.println("Phone: " + u.getPhoneNumber());
-                System.out.println("Address: " + u.getAddress());
-                System.out.println("Avatar: " + u.getAvatar());
-                System.out.println("Status: " + u.getStatus());
-                System.out.println("Role ID: " + (u.getRole() != null ? u.getRole().getId() : "null"));
-                System.out.println("Role Name: " + (u.getRole() != null ? u.getRole().getName() : "null"));
-                System.out.println("Created At: " + u.getCreateDate());
-                System.out.println("Updated At: " + u.getUpdateDate());
-                System.out.println("----------------------------------------");
-            }
-        }
+        // Tạo role nhân viên (id = 4)
+        Role employeeRole = new Role();
+        employeeRole.setId(3);
+
+        // Tạo user nhân viên
+        User employee = new User();
+        employee.setId("D63A7CF3-26E7-4786-883F-F29F02437566"); // ID này phải tồn tại trong DB
+        employee.setUserName("doctor");
+        employee.setEmail("doctor@clinic.com");
+        employee.setFullName("Nguyễn Văn Nhân");
+        employee.setPhoneNumber("0906222333");
+        employee.setRole(employeeRole);
+
+        boolean result = dao.updateAccount(employee, null); // Không cần department
+        System.out.println(result ? "✅ Cập nhật NHÂN VIÊN thành công" : "❌ Cập nhật NHÂN VIÊN thất bại");
     }
-    
-        
-    
 
-        
-        
-      
-       
-    
-    
-}
-
+    }

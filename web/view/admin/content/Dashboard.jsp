@@ -1,433 +1,250 @@
 <%-- 
     Document   : Dashboard
-    Created on : Jun 17, 2025
+    Created on : Jun 18, 2025
     Author     : Grok
+    Description: Admin dashboard for SWP391 with bar charts, clears old charts on period change
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="utf-8" />
-    <title>Dashboard - Phòng Khám Thú Y</title>
+    <meta charset="UTF-8">
+    <title>Dashboard - PetCareSystem</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hệ thống đặt lịch thú cưng" />
-    <meta name="keywords" content="Pet, Appointment, Dashboard, Veterinary" />
-    <meta name="author" content="FPT" />
-    <!-- favicon -->
-    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
-    <!-- Bootstrap -->
-    <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <!-- simplebar -->
-    <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
-    <!-- Icons -->
-    <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">
-    <!-- CSS nội tuyến -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.53.0/dist/apexcharts.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        body { font-family: Arial, sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
+        .container-fluid { padding: 20px; }
+        .dashboard-title { color: #2c3e50; font-size: 24px; margin-bottom: 20px; font-weight: bold; }
+        .metric-card {
+            background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 15px; text-align: center; height: 100px; display: flex; align-items: center; justify-content: center;
         }
-        .layout-specing {
-            padding: 15px;
+        .metric-card .icon {
+            background: #007bff; color: #fff; border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 10px;
         }
-        h5.mb-0 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 20px;
+        .metric-card .icon.green { background: #28a745; }
+        .metric-card h5 { font-size: 20px; color: #007bff; margin: 0; font-weight: bold; }
+        .metric-card p { color: #6c757d; font-size: 12px; margin: 5px 0 0; }
+        .chart-card {
+            background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 15px; margin-bottom: 20px;
         }
-        .features.feature-primary {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.3s ease-in-out;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .features.feature-primary:hover {
-            transform: translateY(-3px);
-        }
-        .features .icon {
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 5px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            line-height: 30px;
-        }
-        .features .flex-1 h5 {
-            font-size: 20px;
-            color: #007bff;
-            margin: 8px 0 3px;
-            line-height: 1.2;
-        }
-        .features .flex-1 p {
-            color: #555;
-            margin: 0;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 15px;
-            background-color: #fff;
-            margin-bottom: 15px;
-        }
-        .card h6 {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        .form-select {
-            width: 120px;
-            padding: 4px;
-            font-size: 12px;
-            height: 30px;
-        }
-        .apex-chart {
-            min-height: 250px;
-        }
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #preloader #status {
-            text-align: center;
-        }
-        #preloader .spinner {
-            width: 30px;
-            height: 30px;
-            position: relative;
-        }
-        #preloader .double-bounce1, #preloader .double-bounce2 {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-color: #007bff;
-            opacity: 0.6;
-            position: absolute;
-            top: 0;
-            left: 0;
-            animation: bounce 2.0s infinite ease-in-out;
-        }
-        #preloader .double-bounce2 {
-            animation-delay: -1.0s;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: scale(0.0); }
-            50% { transform: scale(1.0); }
-        }
-        /* Đảm bảo căn đều các cột */
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: -7.5px;
-        }
-        .row > [class*="col-"] {
-            padding: 7.5px;
+        .chart-card h6 { font-size: 16px; color: #333; margin-bottom: 10px; font-weight: bold; }
+        .chart-card .form-select { width: 150px; padding: 8px; font-size: 12px; border-radius: 4px; }
+        .apex-chart { min-height: 250px; }
+        .no-data { text-align: center; color: #6c757d; font-size: 14px; padding: 20px; }
+        .row { margin: -10px; }
+        .row > [class*="col-"] { padding: 10px; }
+        .navbar { background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        @media (max-width: 768px) {
+            .metric-card { height: 80px; }
+            .metric-card h5 { font-size: 16px; }
+            .metric-card p { font-size: 10px; }
+            .chart-card .form-select { width: 120px; }
+            .dashboard-title { font-size: 20px; }
+            .apex-chart { min-height: 200px; }
         }
     </style>
 </head>
 <body>
-    <!-- Loader -->
-    <div id="preloader">
-        <div id="status">
-            <div class="spinner">
-                <div class="double-bounce1"></div>
-                <div class="double-bounce2"></div>
+    <%@include file="../layout/Header.jsp" %>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">PetCareSystem</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="${pageContext.request.contextPath}/admin-dashboard">Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <h5 class="dashboard-title">Tổng Quan</h5>
+        <div class="row">
+            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="metric-card">
+                    <div class="icon"><i class="fas fa-paw"></i></div>
+                    <div>
+                        <h5>${dashboardData.totalPets}</h5>
+                        <p>Thú cưng</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="metric-card">
+                    <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div>
+                        <h5>${dashboardData.totalRevenue}</h5>
+                        <p>Doanh thu (VND)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="metric-card">
+                    <div class="icon"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                        <h5>${dashboardData.totalAppointments}</h5>
+                        <p>Cuộc hẹn</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="metric-card">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <div>
+                        <h5>${dashboardData.totalUsers}</h5>
+                        <p>Người dùng</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="metric-card">
+                    <div class="icon green"><i class="fas fa-user-md"></i></div>
+                    <div>
+                        <h5>${dashboardData.totalDoctors}</h5>
+                        <p>Bác sĩ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="metric-card">
+                    <div class="icon green"><i class="fas fa-medkit"></i></div>
+                    <div>
+                        <h5>${dashboardData.totalNurses}</h5>
+                        <p>Y tá</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6 col-lg-12">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6>Doanh Thu Theo Ngày</h6>
+                        <select class="form-select" id="period-revenue">
+                            <option value="7days" selected>7 ngày qua</option>
+                            <option value="30days">30 ngày qua</option>
+                        </select>
+                    </div>
+                    <div id="revenueChart" class="apex-chart"></div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-12">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6>Số Lượng Cuộc Hẹn</h6>
+                        <select class="form-select" id="period-appointment">
+                            <option value="7days" selected>7 ngày qua</option>
+                            <option value="30days">30 ngày qua</option>
+                        </select>
+                    </div>
+                    <div id="appointmentChart" class="apex-chart"></div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- Loader -->
-    <%@include file="../layout/Header.jsp" %>
-    <div class="container-fluid">
-        <div class="layout-specing">
-            <h5 class="mb-0">Dashboard</h5>
-
-            <div class="row">
-                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6 mt-3">
-                    <div class="card features feature-primary rounded border-0 shadow">
-                        <div class="d-flex align-items-center">
-                            <div class="icon text-center rounded-md">
-                                <i class="uil uil-paw"></i>
-                            </div>
-                            <div class="flex-1 ms-2">
-                                <h5 class="mb-0">${dashboardData.totalPets}</h5>
-                                <p class="text-muted mb-0">Thú cưng</p>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end col-->
-
-                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6 mt-3">
-                    <div class="card features feature-primary rounded border-0 shadow">
-                        <div class="d-flex align-items-center">
-                            <div class="icon text-center rounded-md">
-                                <i class="uil uil-usd-circle"></i>
-                            </div>
-                            <div class="flex-1 ms-2">
-                                <h5 class="mb-0">${dashboardData.totalRevenue}</h5>
-                                <p class="text-muted mb-0">Doanh thu (VND)</p>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end col-->
-
-                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6 mt-3">
-                    <div class="card features feature-primary rounded border-0 shadow">
-                        <div class="d-flex align-items-center">
-                            <div class="icon text-center rounded-md">
-                                <i class="uil uil-calendar-alt"></i>
-                            </div>
-                            <div class="flex-1 ms-2">
-                                <h5 class="mb-0">${dashboardData.totalAppointments}</h5>
-                                <p class="text-muted mb-0">Cuộc hẹn</p>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end col-->
-
-                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6 mt-3">
-                    <div class="card features feature-primary rounded border-0 shadow">
-                        <div class="d-flex align-items-center">
-                            <div class="icon text-center rounded-md">
-                                <i class="uil uil-users-alt"></i>
-                            </div>
-                            <div class="flex-1 ms-2">
-                                <h5 class="mb-0">${dashboardData.totalUsers}</h5>
-                                <p class="text-muted mb-0">Người dùng</p>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end col-->
-
-                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6 mt-3">
-                    <div class="card features feature-primary rounded border-0 shadow">
-                        <div class="d-flex align-items-center">
-                            <div class="icon text-center rounded-md">
-                                <i class="uil uil-stethoscope"></i>
-                            </div>
-                            <div class="flex-1 ms-2">
-                                <h5 class="mb-0">${dashboardData.totalDoctors}</h5>
-                                <p class="text-muted mb-0">Bác sĩ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end col-->
-
-                <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6 mt-3">
-                    <div class="card features feature-primary rounded border-0 shadow">
-                        <div class="d-flex align-items-center">
-                            <div class="icon text-center rounded-md">
-                                <i class="uil uil-medkit"></i>
-                            </div>
-                            <div class="flex-1 ms-2">
-                                <h5 class="mb-0">${dashboardData.totalNurses}</h5>
-                                <p class="text-muted mb-0">Y tá</p>
-                            </div>
-                        </div>
-                    </div>
-                </div><!--end col-->
-            </div><!--end row-->
-
-            <div class="row">
-                <div class="col-xl-8 col-lg-7 mt-3">
-                    <div class="card shadow border-0">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="align-items-center mb-0">Cuộc hẹn theo ngày</h6>
-                            <div class="mb-0 position-relative">
-                                <select class="form-select form-control" id="yearchart">
-                                    <option value="7days" selected>7 ngày qua</option>
-                                    <option value="30days">30 ngày qua</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="appointmentChart" class="apex-chart"></div>
-                    </div>
-                </div><!--end col-->
-
-                <div class="col-xl-4 col-lg-5 mt-3">
-                    <div class="card shadow border-0">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="align-items-center mb-0">Thú cưng theo loài</h6>
-                            <div class="mb-0 position-relative">
-                                <select class="form-select form-control" id="specieschart">
-                                    <option value="7days" selected>7 ngày qua</option>
-                                    <option value="30days">30 ngày qua</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="speciesChart" class="apex-chart"></div>
-                    </div>
-                </div><!--end col-->
-            </div><!--end row-->
-        </div>
-    </div><!--end container-->
-
-    <!-- JavaScript -->
-    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Ẩn preloader
-        function hidePreloader() {
-            const preloader = document.getElementById('preloader');
-            if (preloader) {
-                preloader.style.display = 'none';
+        console.log('Dashboard script started');
+
+        // Lưu instance của biểu đồ
+        let revenueChartInstance = null;
+        let appointmentChartInstance = null;
+
+        function showNoData(chartId, chartType) {
+            const chartElement = document.getElementById(chartId);
+            if (chartElement) {
+                const message = chartType === 'revenue' ? 'Không có dữ liệu doanh thu' : 'Không có dữ liệu cuộc hẹn';
+                console.log(`No data for ${chartId}: ${message}`);
+                chartElement.innerHTML = `<div class="no-data">${message}</div>`;
             }
         }
 
-        // Khai báo biến toàn cục cho biểu đồ
-        let appointmentChart = null;
-        let speciesChart = null;
-
-        // Hàm fetch với timeout
-        async function fetchWithTimeout(url, options = {}, timeout = 5000) {
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), timeout);
-            try {
-                const response = await fetch(url, { ...options, signal: controller.signal });
-                clearTimeout(id);
-                return response;
-            } catch (error) {
-                clearTimeout(id);
-                throw error;
+        function renderChart(chartId, chartType, categories, data) {
+            console.log(`Rendering ${chartType} chart for ${chartId}`);
+            // Xóa biểu đồ cũ nếu tồn tại
+            if (chartType === 'revenue' && revenueChartInstance) {
+                console.log('Destroying old revenue chart');
+                revenueChartInstance.destroy();
+                revenueChartInstance = null;
+            } else if (chartType === 'appointment' && appointmentChartInstance) {
+                console.log('Destroying old appointment chart');
+                appointmentChartInstance.destroy();
+                appointmentChartInstance = null;
             }
+            // Xóa nội dung cũ trong div
+            const chartElement = document.getElementById(chartId);
+            if (chartElement) chartElement.innerHTML = '';
+
+            const options = {
+                chart: { type: 'bar', height: 250, toolbar: { show: false } },
+                series: [{ name: chartType === 'revenue' ? 'Doanh thu' : 'Cuộc hẹn', data }],
+                xaxis: { categories, title: { text: 'Ngày' } },
+                yaxis: {
+                    title: { text: chartType === 'revenue' ? 'VND' : 'Số lượng' },
+                    labels: { formatter: val => chartType === 'revenue' ? val.toLocaleString('vi-VN') : Math.floor(val) }
+                },
+                colors: [chartType === 'revenue' ? '#007bff' : '#28a745'],
+                plotOptions: { bar: { columnWidth: '50%' } }
+            };
+            const chart = new ApexCharts(document.getElementById(chartId), options);
+            chart.render();
+            console.log(`${chartType} chart rendered`);
+            // Lưu instance
+            if (chartType === 'revenue') revenueChartInstance = chart;
+            else appointmentChartInstance = chart;
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Hàm lấy dữ liệu biểu đồ
-            function loadChartData(period) {
-                // Kiểm tra period, mặc định là '7days' nếu không hợp lệ
-                if (!period) {
-                    console.warn('Period không được định nghĩa, sử dụng mặc định: 7days');
-                    period = '7days';
-                }
-                console.log('Period:', period);
-
-                // Tạo URL
-                const contextPath = '${pageContext.request.contextPath}';
-                const url = contextPath + '/appointmentreport?period=' + encodeURIComponent(period);
-                console.log('Fetching URL:', url);
-
-                fetchWithTimeout(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Received data:', data);
-                        hidePreloader();
-
-                        // Kiểm tra dữ liệu
-                        if (!data.dates || !data.counts || !data.species || !data.speciesCounts) {
-                            console.error('Dữ liệu không hợp lệ:', data);
-                            return;
-                        }
-
-                        // Hủy biểu đồ cũ
-                        if (appointmentChart) {
-                            appointmentChart.destroy();
-                        }
-                        // Vẽ biểu đồ cuộc hẹn theo ngày
-                        const appointmentOptions = {
-                            chart: {
-                                type: 'bar',
-                                height: 250
-                            },
-                            series: [{
-                                name: 'Số cuộc hẹn',
-                                data: data.counts
-                            }],
-                            xaxis: {
-                                categories: data.dates,
-                                title: { text: 'Ngày' }
-                            },
-                            yaxis: {
-                                title: { text: 'Số lượng' }
-                            },
-                            colors: ['#007bff']
-                        };
-                        appointmentChart = new ApexCharts(document.querySelector("#appointmentChart"), appointmentOptions);
-                        appointmentChart.render();
-
-                        // Hủy biểu đồ loài cũ
-                        if (speciesChart) {
-                            speciesChart.destroy();
-                        }
-                        // Vẽ biểu đồ thú cưng theo loài
-                        const speciesOptions = {
-                            chart: {
-                                type: 'bar',
-                                height: 250
-                            },
-                            series: [{
-                                name: 'Số lượng thú cưng',
-                                data: data.speciesCounts
-                            }],
-                            xaxis: {
-                                categories: data.species,
-                                title: { text: 'Loài' }
-                            },
-                            yaxis: {
-                                title: { text: 'Số lượng' }
-                            },
-                            colors: ['#28a745']
-                        };
-                        speciesChart = new ApexCharts(document.querySelector("#speciesChart"), speciesOptions);
-                        speciesChart.render();
-                    })
-                    .catch(error => {
-                        console.error('Lỗi khi tải dữ liệu biểu đồ:', error);
-                        hidePreloader();
-                    });
-            }
-
-            // Load dữ liệu mặc định (7 ngày)
-            loadChartData('7days');
-
-            // Xử lý thay đổi khoảng thời gian
-            const yearChartSelect = document.getElementById('yearchart');
-            if (yearChartSelect) {
-                yearChartSelect.addEventListener('change', function() {
-                    loadChartData(this.value);
+        function loadChartData(period, chartType) {
+            const url = `${window.location.origin}/SWP391/admin-appointment-report?period=${period}`;
+            console.log(`Fetching ${chartType} data: ${url}`);
+            fetch(url)
+                .then(response => {
+                    console.log(`Status for ${chartType}: ${response.status}`);
+                    if (!response.ok) throw new Error('Fetch failed');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`Data for ${chartType}:`, data);
+                    if (chartType === 'revenue' && data.revenueDates?.length > 0 && data.revenues?.length > 0) {
+                        renderChart('revenueChart', 'revenue', data.revenueDates, data.revenues);
+                    } else if (chartType === 'revenue') {
+                        showNoData('revenueChart', 'revenue');
+                    }
+                    if (chartType === 'appointment' && data.appointmentDates?.length > 0 && data.appointmentCounts?.length > 0) {
+                        renderChart('appointmentChart', 'appointment', data.appointmentDates, data.appointmentCounts);
+                    } else if (chartType === 'appointment') {
+                        showNoData('appointmentChart', 'appointment');
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error fetching ${chartType}:`, error);
+                    showNoData(chartType === 'revenue' ? 'revenueChart' : 'appointmentChart', chartType);
                 });
-            } else {
-                console.error('Không tìm thấy element #yearchart');
-            }
+        }
 
-            const speciesChartSelect = document.getElementById('specieschart');
-            if (speciesChartSelect) {
-                speciesChartSelect.addEventListener('change', function() {
-                    loadChartData(this.value);
-                });
-            } else {
-                console.error('Không tìm thấy element #specieschart');
-            }
-
-            // Ẩn preloader sau 5 giây nếu fetch bị treo
-            setTimeout(hidePreloader, 5000);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded');
+            loadChartData('7days', 'revenue');
+            loadChartData('7days', 'appointment');
+            document.getElementById('period-revenue').addEventListener('change', e => {
+                console.log('Revenue period:', e.target.value);
+                loadChartData(e.target.value, 'revenue');
+            });
+            document.getElementById('period-appointment').addEventListener('change', e => {
+                console.log('Appointment period:', e.target.value);
+                loadChartData(e.target.value, 'appointment');
+            });
         });
     </script>
 </body>

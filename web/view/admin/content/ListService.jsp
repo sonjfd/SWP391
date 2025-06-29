@@ -136,7 +136,7 @@
             
             <div class="form-container">
                 <div class="toolbar">
-                    <a href="${pageContext.request.contextPath}/createservice">Tạo mới</a>
+                    <a href="${pageContext.request.contextPath}/admin-create-service">Tạo mới</a>
                     <div class="filter-group">
                         <select id="statusFilter">
                             <option value="">Tất cả trạng thái</option>
@@ -183,8 +183,8 @@
                                 <td>${service.price}</td>
                                 <td>${service.status == 1 ? 'Hoạt động' : 'Không hoạt động'}</td>
                                 <td>
-                                    <a href="${pageContext.request.contextPath}/updateservice?id=${service.id}" class="action-btn edit-btn">Sửa</a>
-                                    <a href="${pageContext.request.contextPath}/deleteservice?id=${service.id}" class="action-btn delete-btn" >Xóa</a>
+                                    <a href="${pageContext.request.contextPath}/admin-update-service?id=${service.id}" class="action-btn edit-btn">Sửa</a>
+                                    <a href="${pageContext.request.contextPath}/admin-delete-service?id=${service.id}" class="action-btn delete-btn" >Xóa</a>
                                 </td>
                             </tr>
                         </c:forEach>

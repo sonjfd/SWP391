@@ -129,7 +129,7 @@
             
             <div class="form-container">
                 <div class="toolbar">
-                    <a href="${pageContext.request.contextPath}/createshift">Tạo mới</a>
+                    <a href="${pageContext.request.contextPath}/admin-create-shift">Tạo mới</a>
                     <div class="form-group">
                         <label for="filterPeriod">Khoảng thời gian:</label>
                         <select id="filterPeriod">
@@ -174,8 +174,8 @@
                                 <td>${shift.start_time != null ? shift.start_time : 'N/A'}</td>
                                 <td>${shift.end_time != null ? shift.end_time : 'N/A'}</td>
                                 <td>
-                                    <a href="updateshift?id=${shift.id}" class="action-btn edit-btn">Sửa</a>
-                                    <a href="${pageContext.request.contextPath}/deleteshift?id=${shift.id}" class="action-btn delete-btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa ca này?')">Xóa</a>
+                                    <a href="admin-update-shift?id=${shift.id}" class="action-btn edit-btn">Sửa</a>
+                                    <a href="${pageContext.request.contextPath}/admin-delete-shift?id=${shift.id}" class="action-btn delete-btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa ca này?')">Xóa</a>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -262,7 +262,7 @@
 
             function confirmDelete(id) {
                 if (confirm("Bạn chắc chắn muốn xóa ca làm việc này?")) {
-                    window.location.href = "${pageContext.request.contextPath}/deleteshift?id=" + id;
+                    window.location.href = "${pageContext.request.contextPath}/admin-delete-shift?id=" + id;
                 }
             }
 

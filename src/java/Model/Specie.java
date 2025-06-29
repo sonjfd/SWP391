@@ -15,6 +15,7 @@ public class Specie {
     private int id;
     private String name;
     private List<Breed> breeds;
+    private String imageUrl;
 
     public Specie() {
     }
@@ -24,6 +25,21 @@ public class Specie {
         this.name = name;
     }
 
+    public Specie(int id, String name, String imageUrl) {
+        this.id = id;
+        this.name = name;
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    
     public int getId() {
         return id;
     }
@@ -42,8 +58,10 @@ public class Specie {
 
     @Override
     public String toString() {
-        return "Specie{" + "id=" + id + ", name=" + name + '}';
+        return "Specie{" + "id=" + id + ", name=" + name + ", breeds=" + breeds + ", imageUrl=" + imageUrl + '}';
     }
+
+    
 
     public List<Breed> getBreeds() {
         return breeds;

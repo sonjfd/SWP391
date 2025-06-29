@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author FPT
  */
-@WebServlet(name="DeleteBreed", urlPatterns={"/deletebreed"})
+@WebServlet(name="DeleteBreed", urlPatterns={"/admin-delete-breed"})
 public class DeleteBreed extends HttpServlet {
    
     /** 
@@ -65,7 +65,7 @@ public class DeleteBreed extends HttpServlet {
 
             List<Breed> breedList = breedDAO.getAllBreeds();
             request.setAttribute("breedList", breedList);
-            request.setAttribute("message", success ? "Breed deleted successfully!" : "Failed to delete breed.");
+            request.setAttribute("message", success ? "Xóa thành công" : "Xóa thất bại.");
 
             request.getRequestDispatcher("view/admin/content/ListBreed.jsp").forward(request, response);
         } catch (Exception e) {
