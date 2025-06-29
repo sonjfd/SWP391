@@ -148,15 +148,6 @@
             <c:remove var="FailMessage" scope="session"/>
         </c:if>
 
-
-
-        <c:if test="${not empty sessionScope.FailMessage}">
-            <script>
-                alert('${sessionScope.FailMessage}');
-            </script>
-            <c:remove var="FailMessage" scope="session"/>
-        </c:if>
-
         <!-- Navbar STart -->
         <%@include file="../home/layout/Header.jsp" %>
         <!-- Navbar End -->
@@ -168,20 +159,21 @@
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
+                                <img src="${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
+                                <img src="${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
 
                             </div>
-                            <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i>Danh sách cuộc hẹn</a></li>
-                                <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
-                                <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
-                            </ul>
+                              <ul class="list-unstyled sidebar-nav mb-0">
+                                    <li class="navbar-item"><a href="customer-viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                    <li class="navbar-item"><a href="customer-viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                    <li class="navbar-item"><a href="customer-viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                    <li class="navbar-item"><a href="customer-updateuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                    <li class="navbar-item"><a href="customer-chat" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat với nhân viên hỗ trợ</a></li>
+                                </ul>
+
                         </div>
                     </div><!--end col-->
 
@@ -190,7 +182,7 @@
                         <h3 class="mb-4">Cập nhật thông tin thú cưng:</h3>
                         <c:set var="pet" value="${requestScope.pet}"/>
 
-                        <form id="updateForm" action="updatepet" method="post" enctype="multipart/form-data">
+                        <form id="updateForm" action="customer-updatepet" method="post" enctype="multipart/form-data">
 
                             <input type="hidden" name="petId" value="${pet.id}"/>
                             <div class="form-top-grid">
@@ -258,7 +250,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Ảnh hiện tại:</label><br>
-                                <img src="${pageContext.request.contextPath}/${pet.avatar}" alt="Pet Avatar" width="150" height="150" class="rounded mb-2" >
+                                <img src="${pet.avatar}" alt="Pet Avatar" width="150" height="150" class="rounded mb-2" >
                             </div>
 
                             <div class="mb-3">
@@ -269,7 +261,7 @@
                             </div>
 
                             <div class="d-flex justify-content-between">
-                                <a href="viewlistpet" class="btn btn-secondary" style="margin-bottom: 5px">Hủy</a>
+                                <a href="customer-viewlistpet" class="btn btn-secondary" style="margin-bottom: 5px">Hủy</a>
                                 <button type="submit" class="btn btn-primary" style="margin-bottom: 5px">Cập nhật</button>
                             </div>
                         </form>
@@ -334,7 +326,7 @@
                         birthDateError.style.display = "none";
                     }
                 });
-               
+
                 document.getElementById("updateForm").addEventListener("submit", function (event) {
                     const birthDateInput = document.getElementById("birthDate");
                     const birthDateError = document.getElementById("birthDateError");

@@ -75,6 +75,8 @@
                         <li><a href="listservice"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lý dịch vụ</a></li>
                         <li><a href="admin-listcategories"><i class="uil uil-clinic-medical me-2 d-inline-block"></i>Quản lí danh mục</a></li>
                         <li><a href="admin-listratings"><i class="uil uil-feedback me-2 d-inline-block"></i>Quản lí đánh giá</a></li>
+                        <li><a href="admin-assignconsultingstaff"><i class="uil uil-user-check me-2 d-inline-block"></i> Chỉ định nhân viên tư vấn</a></li>
+
 
                     </ul>
                     <!-- sidebar-menu  -->
@@ -82,7 +84,7 @@
                 <!-- sidebar-content  -->
                 <ul class="sidebar-footer list-unstyled mb-0">
                     <li class="list-inline-item mb-0 ms-1">
-                        <a href="#" class="btn btn-icon btn-pills btn-soft-primary">
+                        <a href="chatlist" class="btn btn-icon btn-pills btn-soft-primary">
                             <i class="uil uil-comment icons"></i>
                         </a>
                     </li>

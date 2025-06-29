@@ -107,33 +107,26 @@
             <div class="layout-specing">
                 <h5 class="mb-0">Quản lý đánh giá</h5>
 
-                <div class="canle">
-                    <form method="get" action="admin-searchrating" class="search-form">
-                        <input type="text" name="search" value="${param.search}" placeholder="Tìm theo tên khách hàng">
-                        <button type="submit" >Tìm kiếm</button>
-                    </form>
-                    <form method="get" action="admin-filterrating" class="filter-form">
-                        <div class="filter-inline">
-                            <label for="status" class="form-label">Lọc theo trạng thái:</label>
-                            <select id="status" name="statusrating" class="form-select" onchange="this.form.submit()">
-                                <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
-                                <option value="pending" ${status == 'pending' ? 'selected' : ''}>Chờ</option>
-                                <option value="posted" ${status == 'posted' ? 'selected' : ''}>Đã đăng</option>
-                                <option value="hide" ${status == 'hide' ? 'selected' : ''}>Đã ẩn</option>
-                            </select>
-
-                        </div>
+                <div class="search-filter-container">
+                    <form method="get" action="admin-listratings" class="d-flex gap-2 mb-3">
+                        <input type="text" class="form-control" placeholder="Tìm theo tên khách hàng" name="search" value="${search}">
+                        <select name="status" class="form-select w-auto">
+                            <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
+                            <option value="posted" ${status == 'posted' ? 'selected' : ''}>Đã đăng</option>
+                            <option value="hide" ${status == 'hide' ? 'selected' : ''}>Đã ẩn</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Lọc</button>
                     </form>
                 </div>
                 <c:if test="${not empty message}">
                     <div class="${message.contains('successfully') ? 'message' : 'error'}">${message}</div>
                 </c:if>
 
-                <table class="table table-hover table-striped align-middle text-center">
+                <table class="table table-bordered text-center align-middle">
                     <thead class="table-primary">
-                        <tr class="headtable">
+                        <tr>
                             <th>STT</th>
-                            <th>Chủ sở hữu</th>
+                            <th>Khách hàng</th>
                             <th>Nội dung</th>
                             <th>Độ hài lòng</th>
                             <th>Trạng thái</th>
@@ -142,29 +135,48 @@
                     <tbody>
                         <c:forEach var="rate" items="${RateList}" varStatus="counter">
                             <tr>
-                                <td>${counter.count}</td>
+                                <td>${counter.index + 1 + (currentPage - 1) * 5}</td>
                                 <td>${rate.user.fullName}</td>
                                 <td>${rate.comment}</td>
-                                <td>${rate.satisfaction_level}&#11088;</td>
+                                <td style="color: gold; font-size: 18px;">
+                                    <c:forEach begin="1" end="${rate.satisfaction_level}" var="i">
+                                        ★
+                                    </c:forEach>
+                                </td>
+
+
                                 <td>
-                                    <form action="admin-listratings" method="post" class="d-flex justify-content-center">
+                                    <form method="post" action="admin-listratings" class="d-flex justify-content-center">
                                         <input type="hidden" name="ratingId" value="${rate.id}">
-                                        <select name="status" class="form-select form-select-sm w-auto me-2">
-                                            <option value="pending" ${rate.status == 'pending' ? 'selected' : ''}>Chờ xác nhận</option>
+                                        <select name="status" class="form-select w-auto me-2">
                                             <option value="posted" ${rate.status == 'posted' ? 'selected' : ''}>Đã đăng</option>
-                                            <option value="hide" ${rate.status == 'hide' ? 'selected' : ''}>Ẩn</option>
+                                            <option value="hide" ${rate.status == 'hide' ? 'selected' : ''}>Đã ẩn</option>
                                         </select>
-                                        <button type="submit" class="btn btn-primary btn-sm">Lưu</button>
+                                        <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
                                     </form>
                                 </td>
                             </tr>
                         </c:forEach>
+                        <c:if test="${empty RateList}">
+                            <tr><td colspan="5">Không có dữ liệu đánh giá.</td></tr>
+                        </c:if>
                     </tbody>
                 </table>
 
-                <c:if test="${empty RateList}">
-                    <p>Chưa có đánh giá.</p>
+                <c:if test="${totalPages > 1}">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <c:forEach begin="1" end="${totalPages}" var="p">
+                                <li class="page-item ${p == currentPage ? 'active' : ''}">
+                                    <a class="page-link"
+                                       href="admin-listratings?page=${p}&search=${search}&status=${status}">${p}</a>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </nav>
                 </c:if>
+
+
             </div>
         </div>
 

@@ -150,7 +150,7 @@
                                         </div>
                                     </ul>
                                 </li>
-                                
+
                                 <li><a href="home-list-product" class="sub-menu-item">Sản Phẩm</a></li>
                                 <li><a href="home-contact" class="sub-menu-item">Liên hệ</a></li>
                             </ul>
@@ -182,38 +182,38 @@
                                     <li class="list-inline-item mb-0 ms-1">
                                         <div class="dropdown dropdown-primary">
                                             <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown">
-                                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar">
+                                                <img src="${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar">
                                             </button>
                                             <div class="dropdown-menu dd-menu dropdown-menu-end bg-white shadow border-0 mt-3 py-3" style="min-width: 200px;">
                                                 <a class="dropdown-item d-flex align-items-center text-dark" href="#">
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar">
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar">
                                                     <div class="flex-1 ms-2">
                                                         <span class="d-block mb-1">${sessionScope.user.fullName}</span>
-                                                       
+
 
                                                         <c:choose>
                                                             <c:when test="${sessionScope.user.role.id==1}">
                                                                 <span class="badge bg-warning text-dark">Khách Hàng</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==2}">
+                                                            <c:when test="${sessionScope.user.role.id==2}">
                                                                 <span class="badge bg-warning text-dark">Admin</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==3}">
+                                                            <c:when test="${sessionScope.user.role.id==3}">
                                                                 <span class="badge bg-warning text-dark">Bác sĩ</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==4}">
+                                                            <c:when test="${sessionScope.user.role.id==4}">
                                                                 <span class="badge bg-warning text-dark">Nhân Viên</span>
                                                             </c:when>
-                                                                <c:when test="${sessionScope.user.role.id==5}">
+                                                            <c:when test="${sessionScope.user.role.id==5}">
                                                                 <span class="badge bg-warning text-dark">Y tá</span>
                                                             </c:when>
-                                                            
+
 
                                                         </c:choose>
                                                     </div>
                                                 </a>
                                                 <c:if test="${sessionScope.user.role.name == 'customer'}">
-                                                    <a class="dropdown-item text-dark" href="viewuserinformation"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
+                                                    <a class="dropdown-item text-dark" href="customer-updateuserinformation"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <c:if test="${sessionScope.user.role.name == 'doctor'}">
                                                     <a class="dropdown-item text-dark" href="doctor-schedule"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
@@ -226,6 +226,10 @@
                                                 <c:if test="${sessionScope.user.role.name == 'admin'}">
                                                     <a class="dropdown-item text-dark" href="admin-dashboard"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
                                                     <a class="dropdown-item text-dark" href="admin-profile-setting"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
+                                                </c:if>
+                                                <c:if test="${sessionScope.user.role.name == 'nurse'}">
+                                                    <a class="dropdown-item text-dark" href="nurse-list-appointment-service"><i class="uil uil-dashboard align-middle h6 me-1"></i> Bảng điều khiển</a>
+                                                    <a class="dropdown-item text-dark" href="nurse-viewprofile"><i class="uil uil-setting align-middle h6 me-1"></i> Hồ sơ</a>
                                                 </c:if>
                                                 <div class="dropdown-divider border-top"></div>
                                                 <a class="dropdown-item text-dark" href="logout"><i class="uil uil-sign-out-alt align-middle h6 me-1"></i> Đăng xuất</a>

@@ -237,47 +237,7 @@
 
     <%@include file="../layout/Header.jsp" %>
 
-    <div class="container">
-        <c:if test="${not empty message}">
-            <div class="message ${messageType}">${message}</div>
-        </c:if>
-        <div class="header">
-            <h2>Danh sách tài khoản nhân viên/bác sĩ</h2>
-        </div>
-        <div class="toolbar">
-            <div class="toolbar-left">
-                <a href="createaccount" class="create-btn">Tạo tài khoản mới</a>
-            </div>
-            <div class="toolbar-right">
-                <form method="post" action="searchaccount" class="search-form">
-                    <input type="text" name="search" value="${search}" placeholder="Tìm kiếm theo tên">
-                    <button type="submit">Tìm kiếm</button>
-                </form>
-                <div class="filter-container">
-                    <div>
-                        <label for="filterRole">Vai trò:</label>
-                        <select id="filterRole" onchange="filterAccounts()">
-                            <option value="">Tất cả</option>
-                            <option value="3">Bác sĩ</option>
-                            <option value="4">Nhân viên</option>
-                            <option value="5">Y tá</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="filterStatus">Trạng thái:</label>
-                        <select id="filterStatus" onchange="filterAccounts()">
-                            <option value="">Tất cả</option>
-                            <option value="1">Hoạt động</option>
-                            <option value="0">Không hoạt động</option>
-                        </select>
-                    </div>
-                    <a href="listaccount" class="reset-btn" >Tất cả tài khoản</a>
-                </div>
-            </div>
-        </div>
-        <!-- Loader -->
-
-        <%@include file="../layout/Header.jsp" %>
+    
 
         <div class="container">
             <c:if test="${not empty message}">

@@ -103,6 +103,13 @@
                             <c:remove var="alertType" scope="session"/><!-- Xóa alertType khỏi session -->
                         </script>
                     </c:if>
+                        <c:if test="${not empty sessionScope.SuccessMessage}">
+                        <script>
+                            alert("${sessionScope.SuccessMessage}"); // Hiển thị thông báo
+                            // Xóa thông báo khỏi session sau khi hiển thị
+                            <c:remove var="SuccessMessage" scope="session"/>
+                        </script>
+                    </c:if>
                     <c:set value="${sessionScope.doctor}" var="doctor"></c:set>
             
                         
@@ -118,14 +125,17 @@
                                     <div class="p-4 border-bottom">
                                         <div class="row align-items-center">
                                             <div class="col-lg-2 col-md-4">
-                                                <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
+                                                <img src="${doctor.user.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
                                         </div>
                                         <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
                                             <h5>Ảnh đại diện</h5>
                                             <p class="text-muted mb-0">Chọn ảnh vuông tối thiểu 256x256 (.jpg, .png)</p>
                                         </div>
                                         <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
+                                            
                                             <input type="file" class="form-control d-inline-block w-100" name="avatar" id="avatarInput" accept=".jpg,.jpeg,.png" onchange="previewAvatar(event)">
+                                        <div id="fileName" class="mt-1 text-success"></div>
+                                            <div id="fileError" class="mt-1 text-danger"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -163,7 +173,7 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Chứng chỉ</label>
-                                            <input name="certificates" type="text" class="form-control" value="${doctor.certificates}" placeholder="Chứng chỉ" maxlength="200">
+                                            <input name="certificates" type="text" class="form-control" value="${doctor.certificates}" placeholder="Chứng chỉ" maxlength="50">
                                             <div class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
@@ -187,13 +197,13 @@
 
                     </div>
 
-                    <div class="rounded shadow mt-4">
+                                            <div id="password" class="rounded shadow mt-4">
                             <div class="p-4 border-bottom">
                                 <h5 class="mb-0">Đổi mật khẩu:</h5>
                             </div>
 
                             <div class="p-4">
-                                <form action="change-pass" method="post" onsubmit="return validateChangePass()">
+                                <form action="change-password" method="post" onsubmit="return validateChangePass()">
                                     <!-- Old Password -->
                                     <div class="mb-3 position-relative">
                                         <label class="form-label">Mật khẩu cũ</label>
@@ -275,11 +285,7 @@ function previewAvatar(event) {
     }
 }
 
-// --------- Remove avatar -----------
-function removeAvatar() {
-    document.getElementById('avatarInput').value = '';
-    document.getElementById('avatarPreview').src = '${doctor.user.avatar}'; // Reset về ảnh cũ
-}
+
 
 // --------- Escape HTML (anti-XSS) ----------
 function escapeHtml(e, input) {
@@ -488,6 +494,37 @@ form.addEventListener('submit', function (e) {
         e.preventDefault(); // Dừng submit nếu có lỗi
     }
 });
+
+document.getElementById("avatarInput").addEventListener("change", function () {
+                var fileInput = this;
+                var fileNameDisplay = document.getElementById("fileName");
+                var fileErrorDisplay = document.getElementById("fileError");
+
+                // Clear old messages
+                fileNameDisplay.textContent = "";
+                fileErrorDisplay.textContent = "";
+
+                if (fileInput.files.length > 0) {
+                    var file = fileInput.files[0];
+                    fileNameDisplay.textContent = "Đã chọn: " + file.name;
+
+                    if (file.size > 1048576) {
+                        fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
+                    }
+                }
+            });
+
+            form.addEventListener("submit", function (e) {
+                var fileInput = document.getElementById("avatarInput");
+                var fileErrorDisplay = document.getElementById("fileError");
+
+                // Nếu có file và bị lỗi kích thước thì chặn submit
+                if (fileInput.files.length > 0 && fileInput.files[0].size > 1048576) {
+                    e.preventDefault();
+                    fileErrorDisplay.textContent = "Ảnh phải nhỏ hơn 1MB!";
+                }
+            });
+
 </script>
 
     <a href="#" onclick="topFunction()" id="back-to-top" class="btn btn-icon btn-pills btn-primary back-to-top"><i data-feather="arrow-up" class="icons"></i></a>

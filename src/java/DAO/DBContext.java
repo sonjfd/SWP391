@@ -28,8 +28,8 @@ public class DBContext {
     public static Connection getConnection() {
         Connection conn = null;
         String url = "jdbc:sqlserver://localhost:1433;databaseName=SWP;encrypt=true;trustServerCertificate=true";
-        String user = "sa";
-        String password = "condoc123";
+        String user = "admin";
+        String password = "hai";
 
         try {
             // Load driver lên

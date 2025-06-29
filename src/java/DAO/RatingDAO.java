@@ -70,14 +70,15 @@ public class RatingDAO {
 
     // Thêm mới rating
     public boolean addRating(Rating rating) {
-        String sql = "INSERT INTO ratings (id, appointment_id, customer_id, doctor_id, satisfaction_level, comment) "
-                + "VALUES (NEWID(), ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO ratings (id, appointment_id, customer_id, doctor_id, satisfaction_level, comment,status) "
+                + "VALUES (NEWID(), ?, ?, ?, ?, ?,?)";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, rating.getAppointment().getId());
             ps.setString(2, rating.getUser().getId());
             ps.setString(3, rating.getDoctor().getUser().getId());
             ps.setInt(4, rating.getSatisfaction_level());
             ps.setString(5, rating.getComment());
+            ps.setString(6, "posted");
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error in addRating: " + e.getMessage());
@@ -178,12 +179,44 @@ public class RatingDAO {
         }
     }
 
-    public List<Rating> getAllRatings() {
+    public List<Rating> getRatings(String customerName, String status, int page, int pageSize) {
         List<Rating> ratings = new ArrayList<>();
-        String sql = "SELECT * FROM ratings";
+        String sql = """
+        SELECT r.*
+        FROM ratings r
+        JOIN users u ON r.customer_id = u.id
+        WHERE (? IS NULL OR u.full_name LIKE ?)
+          AND (? IS NULL OR r.status = ?)
+        ORDER BY r.created_at DESC
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
+
         UserDAO udao = new UserDAO();
 
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Tìm theo tên khách hàng
+            if (customerName != null && !customerName.trim().isEmpty()) {
+                ps.setString(1, customerName);
+                ps.setString(2, "%" + customerName + "%");
+            } else {
+                ps.setNull(1, java.sql.Types.VARCHAR);
+                ps.setNull(2, java.sql.Types.VARCHAR);
+            }
+
+            // Lọc theo trạng thái
+            if (status != null && !status.trim().isEmpty()) {
+                ps.setString(3, status);
+                ps.setString(4, status);
+            } else {
+                ps.setNull(3, java.sql.Types.VARCHAR);
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            }
+
+            ps.setInt(5, (page - 1) * pageSize);
+            ps.setInt(6, pageSize);
+
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Rating rating = new Rating();
                 rating.setId(rs.getString("id"));
@@ -195,12 +228,51 @@ public class RatingDAO {
                 ratings.add(rating);
             }
         } catch (SQLException e) {
-            System.err.println("Error in getAllRatings: " + e.getMessage());
+            System.err.println("Error in getRatings: " + e.getMessage());
             e.printStackTrace();
         }
         return ratings;
     }
-public List<Rating> getAllRatingsPosted() {
+
+    public int countRatings(String customerName, String status) {
+        String sql = """
+        SELECT COUNT(*)
+        FROM ratings r
+        JOIN users u ON r.customer_id = u.id
+        WHERE (? IS NULL OR u.full_name LIKE ?)
+          AND (? IS NULL OR r.status = ?)
+    """;
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (customerName != null && !customerName.trim().isEmpty()) {
+                ps.setString(1, customerName);
+                ps.setString(2, "%" + customerName + "%");
+            } else {
+                ps.setNull(1, java.sql.Types.VARCHAR);
+                ps.setNull(2, java.sql.Types.VARCHAR);
+            }
+
+            if (status != null && !status.trim().isEmpty()) {
+                ps.setString(3, status);
+                ps.setString(4, status);
+            } else {
+                ps.setNull(3, java.sql.Types.VARCHAR);
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error in countRatings: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Rating> getAllRatingsPosted() {
         List<Rating> ratings = new ArrayList<>();
         String sql = "SELECT * FROM ratings where status = 'posted'";
         UserDAO udao = new UserDAO();
@@ -222,6 +294,7 @@ public List<Rating> getAllRatingsPosted() {
         }
         return ratings;
     }
+
     public List<Rating> getRatingsByStatus(String status) {
         List<Rating> ratings = new ArrayList<>();
         String sql = "SELECT * FROM ratings WHERE status = ?";

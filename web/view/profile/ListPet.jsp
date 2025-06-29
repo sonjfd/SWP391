@@ -281,6 +281,50 @@
             .create-btn:hover {
                 background-color: #218838;
             }
+            .filter-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 15px;
+                background: #fff;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            }
+
+            .filter-container input[type="text"],
+            .filter-container select,
+            .filter-container button {
+                height: 38px;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .filter-container input[type="text"],
+            .filter-container select {
+                min-width: 200px;
+            }
+
+            .filter-container button {
+                background-color: #28a745;
+                color: #fff;
+                border: none;
+            }
+
+            .filter-container button:hover {
+                background-color: #218838;
+            }
+
+            .filter-container .btn-search {
+                background-color: #007bff;
+            }
+
+            .filter-container .btn-search:hover {
+                background-color: #0056b3;
+            }
+
 
         </style>
 
@@ -314,50 +358,47 @@
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
+                                <img src="${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
+                                <img src="${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
-
 
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i>Danh sách cuộc hẹn</a></li>
-                                <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
-                                <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
+                                <li class="navbar-item"><a href="customer-viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                <li class="navbar-item"><a href="customer-viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                <li class="navbar-item"><a href="customer-viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="customer-updateuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="customer-chat" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat với nhân viên hỗ trợ</a></li>
                             </ul>
+
                         </div>
                     </div><!--end col-->
 
                     <div class=" col-9">
 
                         <!-- Start -->
-                        <div class="canle">
-                            <form method="post" action="searchpet" class="search-form">
-                                <input type ="text" name ="id" value ="${user.id}" hidden>
-                                <input type="text" name="search" value="${text}" placeholder="Tìm theo tên">
-                                <button type="submit" >Tìm kiếm</button>
-                            </form>
-                            <form method="post" action="filterpet" class="filter-form">
-                                <input type="hidden" name="id" value="${user.id}">
-                                <div class="filter-inline">
-                                    <label for="status" class="form-label">Lọc theo trạng thái:</label>
-                                    <select id="status" name="status" class="form-select" onchange="this.form.submit()">
-                                        <option value="" ${status == null || status == '' ? 'selected' : ''}>-- Tất cả --</option>
-                                        <option value="active" ${status == 'active' ? 'selected' : ''}>Hoạt động</option>
-                                        <option value="inactive" ${status == 'inactive' ? 'selected' : ''}>Không hoạt động</option>
-                                        <option value="lost" ${status == 'lost' ? 'selected' : ''}>Đã chết</option>
-                                        <option value="deceased" ${status == 'deceased' ? 'selected' : ''}>Đã thất lạc</option>
-                                    </select>
+                        <form method="get" action="customer-viewlistpet" class="search-filter-form">
+                            <div class="filter-container">
+                                <input type="text" name="search" placeholder="Tìm theo tên thú cưng" value="${param.search}">
 
-                                </div>
-                            </form>
+                                <label for="status">Lọc theo trạng thái:</label>
+                                <select name="status" id="status">
+                                    <option value="">-- Tất cả --</option>
+                                    <option value="active" ${param.status == 'active' ? 'selected' : ''}>Hoạt động</option>
+                                    <option value="inactive" ${param.status == 'inactive' ? 'selected' : ''}>Không hoạt động</option>
+                                    <option value="lost" ${param.status == 'lost' ? 'selected' : ''}>Đã mất</option>
+                                    <option value="deceased" ${param.status == 'deceased' ? 'selected' : ''}>Đã thất lạc</option>
+                                </select>
 
-                            <a href="addpet" class="create-btn"> + Thêm mới</a>
-                        </div>
+                                <button type="submit" class="btn-search">Tìm kiếm</button>
+
+                                <a href="customer-addpet" class="btn btn-success">+ Thêm mới</a>
+                            </div>
+                        </form>
+
+
                         <table class="table table-striped ">
                             <thead>
                                 <tr>
@@ -384,7 +425,7 @@
                                             </c:choose>
                                         </td>
                                         <td>
-                                            <img src="${pageContext.request.contextPath}${pet.avatar}" alt="pet" width="100px" height="80px" />
+                                            <img src="${pet.avatar}" alt="pet" width="100px" height="80px" />
                                         </td>
                                         <td>${pet.breed.specie.name}</td>
                                         <td>
@@ -405,12 +446,12 @@
                                             </button>
 
 
-                                            <a href="updatepet?petID=${pet.id}" class="btn btn-warning">
+                                            <a href="customer-updatepet?petID=${pet.id}" class="btn btn-warning">
                                                 <i class="fa-solid fa-pen-to-square"></i>
                                             </a>
 
 
-                                            <form action="deletepet" method="post" style="display:inline;" 
+                                            <form action="customer-deletepet" method="post" style="display:inline;" 
                                                   onsubmit="return confirm('Bạn có chắc muốn xóa pet này không?');">
                                                 <input type="hidden" name="id" value="${pet.id}" />
                                                 <button type="submit" class="btn btn-danger ">
@@ -433,7 +474,7 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-md-4 text-center">
-                                                        <img src="${pageContext.request.contextPath}${pet.avatar}" alt="Pet" 
+                                                        <img src="${pet.avatar}" alt="Pet" 
                                                              class="img-fluid rounded mb-3" 
                                                              style="max-width: 100%;
                                                              height: auto;" />
@@ -476,6 +517,32 @@
                             </c:forEach>
                             </tbody>
                         </table>
+                        <c:if test="${totalPages > 1}">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination justify-content-center">
+
+                                    <c:if test="${currentPage > 1}">
+                                        <li class="page-item">
+                                            <a class="page-link" href="customer-viewlistpet?page=${currentPage - 1}&search=${petName}&status=${status}">Trước</a>
+                                        </li>
+                                    </c:if>
+
+                                    <c:forEach begin="1" end="${totalPages}" var="i">
+                                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                            <a class="page-link" href="customer-viewlistpet?page=${i}&search=${petName}&status=${status}">${i}</a>
+                                        </li>
+                                    </c:forEach>
+
+                                    <c:if test="${currentPage < totalPages}">
+                                        <li class="page-item">
+                                            <a class="page-link" href="customer-viewlistpet?page=${currentPage + 1}&search=${petName}&status=${status}">Sau</a>
+                                        </li>
+                                    </c:if>
+
+                                </ul>
+                            </nav>
+                        </c:if>
+
                         <p type="text" name="id" style="color: red"  >${requestScope.Message}</p>
 
 
@@ -489,74 +556,6 @@
 
         </div>
 
-        <!-- Offcanvas Start -->
-        <div class="offcanvas bg-white offcanvas-top" tabindex="-1" id="offcanvasTop">
-            <div class="offcanvas-body d-flex align-items-center align-items-center">
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-center">
-                                <h4>Search now.....</h4>
-                                <div class="subcribe-form mt-4">
-                                    <form>
-                                        <div class="mb-0">
-                                            <input type="text" id="help" name="name" class="border bg-white rounded-pill" required="" placeholder="Search">
-                                            <button type="submit" class="btn btn-pills btn-primary">Search</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end container-->
-            </div>
-        </div>
-        <!-- Offcanvas End -->
-
-        <!-- Offcanvas Start -->
-        <div class="offcanvas offcanvas-end bg-white shadow" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-            <div class="offcanvas-header p-4 border-bottom">
-                <h5 id="offcanvasRightLabel" class="mb-0">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="light-version" alt="">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="dark-version" alt="">
-                </h5>
-                <button type="button" class="btn-close d-flex align-items-center text-dark" data-bs-dismiss="offcanvas" aria-label="Close"><i class="uil uil-times fs-4"></i></button>
-            </div>
-            <div class="offcanvas-body p-4 px-md-5">
-                <div class="row">
-                    <div class="col-12">
-                        <!-- Style switcher -->
-                        <div id="style-switcher">
-                            <div>
-                                <ul class="text-center list-unstyled mb-0">
-                                    <li class="d-grid"><a href="javascript:void(0)" class="rtl-version t-rtl-light" onclick="setTheme('style-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="ltr-version t-ltr-light" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-rtl-version t-rtl-dark" onclick="setTheme('style-dark-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-ltr-version t-ltr-dark" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-version t-dark mt-4" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Dark Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="light-version t-light mt-4" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Light Version</span></a></li>
-                                    <li class="d-grid"><a href="../admin/#" target="_blank" class="mt-4"><img src="${pageContext.request.contextPath}/assets/images/layouts/light-dash.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Admin Dashboard</span></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- end Style switcher -->
-                    </div><!--end col-->
-                </div><!--end row-->
-            </div>
-
-            <div class="offcanvas-footer p-4 border-top text-center">
-                <ul class="list-unstyled social-icon mb-0">
-                    <li class="list-inline-item mb-0"><a href="https://1.envato.market/doctris-template" target="_blank" class="rounded"><i class="uil uil-shopping-cart align-middle" title="Buy Now"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://dribbble.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-dribbble align-middle" title="dribbble"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://www.facebook.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-facebook-f align-middle" title="facebook"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://www.instagram.com/shreethemes/" target="_blank" class="rounded"><i class="uil uil-instagram align-middle" title="instagram"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://twitter.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-twitter align-middle" title="twitter"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="mailto:support@shreethemes.in" class="rounded"><i class="uil uil-envelope align-middle" title="email"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="../#" target="_blank" class="rounded"><i class="uil uil-globe align-middle" title="website"></i></a></li>
-                </ul><!--end icon-->
-            </div>
-        </div>
-        <!-- Offcanvas End -->
 
         <!-- javascript -->
         <script>
@@ -572,8 +571,8 @@
                 }
             }, 8000);
         </script>
-        
-        
+
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- Icons -->

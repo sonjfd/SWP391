@@ -319,39 +319,43 @@
                     <div class=" col-3">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
+                                <img src="${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
+                                <img src="${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
-
 
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i>Danh sách cuộc hẹn</a></li>
-                                <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
-                                <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
+                                <li class="navbar-item"><a href="customer-viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                <li class="navbar-item"><a href="customer-viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                <li class="navbar-item"><a href="customer-viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                <li class="navbar-item"><a href="customer-updateuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                <li class="navbar-item"><a href="customer-chat" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat với nhân viên hỗ trợ</a></li>
                             </ul>
+
                         </div>
                     </div><!--end col-->
 
                     <div class=" col-9">
 
                         <!-- Start -->
-                        <div class="canle">
-                            <form method="post" action="searchrecordbypet" class="search-form">
-                                <input type ="text" name ="id" value ="${user.id}" hidden>
-                                <input type="text" name="search" value="${text}" placeholder="Tìm theo tên pet">
-                                <button type="submit" >Tìm kiếm</button>
+                        <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+                            <form method="get" action="customer-viewmedicalhistory" class="d-flex align-items-center flex-wrap gap-2">
+                                <input type="text" name="search" value="${petName}" class="form-control" placeholder="Tìm theo tên pet" style="width: 200px;">
+
+                                <label class="form-label mb-0">Tái khám từ:</label>
+                                <input type="date" name="datefrom" value="${fromDate}" class="form-control" style="width: 160px;">
+
+                                <label class="form-label mb-0">Đến:</label>
+                                <input type="date" name="dateto" value="${toDate}" class="form-control" style="width: 160px;">
+
+                                <button type="submit" class="btn btn-primary">Lọc</button>
                             </form>
-
-
-
                         </div>
-                        <table class="table table-striped ">
-                            <thead>
+
+                        <table class="table table-striped text-center">
+                            <thead class="table-primary">
                                 <tr>
                                     <th>STT</th>
                                     <th>Mã</th>
@@ -367,57 +371,68 @@
                             <tbody>
                                 <c:forEach items="${ListPetsMedical}" var="medical" varStatus="status">
                                     <tr>
-                                        <td>${status.index+1}</td>
+                                        <td>${(currentPage - 1) * 5 + status.index + 1}</td>
                                         <td>${medical.pet.pet_code}</td>
                                         <td>${medical.pet.name}</td>
                                         <td>${medical.diagnosis}</td>
-                                        <td>
-                                            ${medical.treatment}
-                                        </td>
-                                        <td> ${medical.reExamDate}</td>
+                                        <td>${medical.treatment}</td>
+                                        <td>${medical.reExamDate}</td>
                                         <td>${medical.doctor.user.fullName}</td>
-                                        <td> <fmt:formatDate value="${medical.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                        <td><fmt:formatDate value="${medical.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>
-                                            <button type="button" class="btn btn-info" 
-                                                    data-bs-toggle="modal" data-bs-target="#detailMedicalRecord${medical.id}">
+                                            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailMedicalRecord${medical.id}">
                                                 <i class="fa-solid fa-circle-info"></i>
                                             </button>
                                         </td>
-
                                     </tr>
 
-
                                     <!-- Modal Chi tiết -->
-                                <div class="modal fade" id="detailMedicalRecord${medical.id}" tabindex="-1" aria-labelledby="detailMedicalRecordModalLabel${medical.id}" aria-hidden="true">
+                                <div class="modal fade" id="detailMedicalRecord${medical.id}" tabindex="-1" aria-labelledby="detailMedicalRecordLabel${medical.id}" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="detailMedicalRecordModalLabel${medical.id}">Thông tin chi tiết lịch sử khám bệnh</h5>
+                                                <h5 class="modal-title" id="detailMedicalRecordLabel${medical.id}">Chi tiết lịch sử khám</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-md-4 text-center">
-                                                        <img src="${pageContext.request.contextPath}${medical.pet.avatar}" alt="Pet" 
-                                                             class="img-fluid rounded mb-3" 
-                                                             style="max-width: 100%;
-                                                             height: auto;" />
+                                                        <img src="${medical.pet.avatar}" alt="Pet" class="img-fluid rounded mb-3" style="max-width: 100%; height: auto;">
                                                     </div>
-
                                                     <div class="col-md-8">
-
                                                         <p><strong>Mã:</strong> ${medical.pet.pet_code}</p>
                                                         <p><strong>Tên:</strong> ${medical.pet.name}</p>
                                                         <p><strong>Chuẩn đoán:</strong> ${medical.diagnosis}</p>
-                                                        <p><strong>Điều trị:</strong>${medical.treatment}</p>
+                                                        <p><strong>Điều trị:</strong> ${medical.treatment}</p>
                                                         <p><strong>Ngày tái khám:</strong> ${medical.reExamDate}</p>
                                                         <p><strong>Bác sĩ:</strong> ${medical.doctor.user.fullName}</p>
-                                                        <p><strong>Giờ khám:</strong>${medical.appointment.startTime}-${medical.appointment.endTime}
                                                         <p><strong>Ngày tạo:</strong> <fmt:formatDate value="${medical.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
-
                                                         <p><strong>Ngày cập nhật:</strong> <fmt:formatDate value="${medical.updatedAt}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
                                                     </div>
                                                 </div>
+
+                                                <hr>
+                                                <h6 class="mt-3">Tệp đính kèm:</h6>
+                                                <c:if test="${empty medical.files}">
+                                                    <p>Không có tệp đính kèm.</p>
+                                                </c:if>
+                                                <c:forEach var="file" items="${medical.files}">
+                                                    <div class="mb-2">
+                                                        <c:choose>
+                                                            <c:when test="${file.fileUrl.endsWith('.jpg') || file.fileUrl.endsWith('.png') || file.fileUrl.endsWith('.jpeg') || file.fileUrl.endsWith('.gif')}">
+                                                                <a href="${file.fileUrl}" download target="_blank">
+                                                                    <img src="${file.fileUrl}" alt="${file.fileName}" style="max-width: 100px; max-height: 100px; border-radius: 5px; margin-right: 10px;">
+                                                                    <span>${file.fileName}</span>
+                                                                </a>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <a href="${file.fileUrl}" download target="_blank">
+                                                                    <i class="fas fa-file-alt"></i> ${file.fileName}
+                                                                </a>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </div>
+                                                </c:forEach>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -428,12 +443,22 @@
                             </c:forEach>
                             </tbody>
                         </table>
+
+                        <!-- Phân trang -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <c:forEach var="i" begin="1" end="${totalPages}">
+                                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                        <a class="page-link"
+                                           href="customer-viewmedicalhistory?page=${i}&search=${petName}&datefrom=${fromDate}&dateto=${toDate}">
+                                            ${i}
+                                        </a>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </nav>
+
                         <p type="text" name="id" style="color: red"  >${requestScope.Message}</p>
-
-
-
-
-
 
                     </div><!--end row-->
                 </div><!-- End -->
@@ -441,89 +466,8 @@
 
         </div>
 
-        <!-- Offcanvas Start -->
-        <div class="offcanvas bg-white offcanvas-top" tabindex="-1" id="offcanvasTop">
-            <div class="offcanvas-body d-flex align-items-center align-items-center">
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-center">
-                                <h4>Search now.....</h4>
-                                <div class="subcribe-form mt-4">
-                                    <form>
-                                        <div class="mb-0">
-                                            <input type="text" id="help" name="name" class="border bg-white rounded-pill" required="" placeholder="Search">
-                                            <button type="submit" class="btn btn-pills btn-primary">Search</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end container-->
-            </div>
-        </div>
-        <!-- Offcanvas End -->
 
-        <!-- Offcanvas Start -->
-        <div class="offcanvas offcanvas-end bg-white shadow" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-            <div class="offcanvas-header p-4 border-bottom">
-                <h5 id="offcanvasRightLabel" class="mb-0">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo-dark.png" height="24" class="light-version" alt="">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo-light.png" height="24" class="dark-version" alt="">
-                </h5>
-                <button type="button" class="btn-close d-flex align-items-center text-dark" data-bs-dismiss="offcanvas" aria-label="Close"><i class="uil uil-times fs-4"></i></button>
-            </div>
-            <div class="offcanvas-body p-4 px-md-5">
-                <div class="row">
-                    <div class="col-12">
-                        <!-- Style switcher -->
-                        <div id="style-switcher">
-                            <div>
-                                <ul class="text-center list-unstyled mb-0">
-                                    <li class="d-grid"><a href="javascript:void(0)" class="rtl-version t-rtl-light" onclick="setTheme('style-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="ltr-version t-ltr-light" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-rtl-version t-rtl-dark" onclick="setTheme('style-dark-rtl')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark-rtl.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">RTL Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-ltr-version t-ltr-dark" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">LTR Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="dark-version t-dark mt-4" onclick="setTheme('style-dark')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-dark.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Dark Version</span></a></li>
-                                    <li class="d-grid"><a href="javascript:void(0)" class="light-version t-light mt-4" onclick="setTheme('style')"><img src="${pageContext.request.contextPath}/assets/images/layouts/landing-light.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Light Version</span></a></li>
-                                    <li class="d-grid"><a href="../admin/#" target="_blank" class="mt-4"><img src="${pageContext.request.contextPath}/assets/images/layouts/light-dash.png" class="img-fluid rounded-md shadow-md d-block" alt=""><span class="text-muted mt-2 d-block">Admin Dashboard</span></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- end Style switcher -->
-                    </div><!--end col-->
-                </div><!--end row-->
-            </div>
 
-            <div class="offcanvas-footer p-4 border-top text-center">
-                <ul class="list-unstyled social-icon mb-0">
-                    <li class="list-inline-item mb-0"><a href="https://1.envato.market/doctris-template" target="_blank" class="rounded"><i class="uil uil-shopping-cart align-middle" title="Buy Now"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://dribbble.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-dribbble align-middle" title="dribbble"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://www.facebook.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-facebook-f align-middle" title="facebook"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://www.instagram.com/shreethemes/" target="_blank" class="rounded"><i class="uil uil-instagram align-middle" title="instagram"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="https://twitter.com/shreethemes" target="_blank" class="rounded"><i class="uil uil-twitter align-middle" title="twitter"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="mailto:support@shreethemes.in" class="rounded"><i class="uil uil-envelope align-middle" title="email"></i></a></li>
-                    <li class="list-inline-item mb-0"><a href="../#" target="_blank" class="rounded"><i class="uil uil-globe align-middle" title="website"></i></a></li>
-                </ul><!--end icon-->
-            </div>
-        </div>
-        <!-- Offcanvas End -->
-
-        <!-- javascript -->
-        <script>
-            // Tự động ẩn thông báo sau 5 giây
-            setTimeout(function () {
-                const successAlert = document.getElementById('successAlert');
-                const failAlert = document.getElementById('failAlert');
-                if (successAlert) {
-                    successAlert.style.display = 'none';
-                }
-                if (failAlert) {
-                    failAlert.style.display = 'none';
-                }
-            }, 8000);
-        </script>
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

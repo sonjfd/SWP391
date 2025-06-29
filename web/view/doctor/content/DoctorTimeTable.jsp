@@ -176,7 +176,17 @@
         .action-icons .icon-record i { color: #0dcaf0; }
         .action-icons .icon-service i:hover { color: #198754; }
         .action-icons .icon-record i:hover { color: #0b5ed7; }
+        
     </style>
+    <style>
+    .status-booked { background-color: #0dcaf0; }             /* Xanh dương nhạt */
+    .status-completed { background-color: #28a745; }          /* Xanh lá */
+    .status-canceled { background-color: #dc3545; }           /* Đỏ */
+    .status-cancel_requested { background-color: #ffc107; }   /* Vàng */
+    .status-checkin { background-color: #20c997; }            /* Xanh ngọc */
+    .status-noshow { background-color: #6c757d; }             /* Xám */
+</style>
+
 <!-- Font Awesome for icons -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">    
     
@@ -371,32 +381,60 @@
 
                             // Nếu có cuộc hẹn, hiển thị thông tin
                             if (foundAppointment) {
-    // Chọn màu theo trạng thái
-    let dotClass = 'status-pending';
-    let statusText = 'Đang chờ'; // default
+    let dotClass = '';
+let statusText = '';
 
-    if (foundAppointment.appointmentStatus === 'completed') {
+switch (foundAppointment.appointmentStatus) {
+    case 'booked':
+        dotClass = 'status-booked';
+        statusText = 'Đang đặt';
+        break;
+    case 'completed':
         dotClass = 'status-completed';
         statusText = 'Hoàn thành';
-    };
+        break;
+    case 'canceled':
+        dotClass = 'status-canceled';
+        statusText = 'Đã hủy';
+        break;
+    case 'cancel_requested':
+        dotClass = 'status-cancel_requested';
+        statusText = 'Yêu cầu hủy';
+        break;
+    default:
+        dotClass = 'status-booked';
+        statusText = 'Không xác định';
+}
+
+if (foundAppointment.appointmentCheckinStatus === 'checkin') {
+    dotClass += ' status-checkin';
+    statusText += ' - Đã checkin';
+} else {
+    dotClass += ' status-noshow';
+    statusText += ' - Chưa checkin';
+}
+
+    
 
     cell.classList.add('appointment-cell');
     cell.innerHTML =
-        '<span class="cell-status-dot ' + dotClass + '" title="' + statusText + '"></span>' +
-        '<a href="#" class="appointment-link fw-bold" data-id="' + foundAppointment.id + '" data-pet_id="' + foundAppointment.petId + '">' +
+    '<span class="cell-status-dot ' + dotClass + '" title="' + statusText + '"></span>' +
+    '<a href="#" class="appointment-link fw-bold" data-id="' + foundAppointment.id + '" data-pet_id="' + foundAppointment.petId + '">' +
     foundAppointment.petCode + ' - ' + foundAppointment.petName + '<br/>' +
     '<small>' + foundAppointment.ownerName + '</small>' +
-'</a>'+
+    '</a>';
 
+if (foundAppointment.appointmentStatus === 'completed' || foundAppointment.appointmentCheckin === 'checkin') {
+    cell.innerHTML +=
         '<div class="action-icons">' +
-            '<button type="button" class="icon-service add-service-btn" title="Thêm dịch vụ" data-id="' + foundAppointment.id + '">' +
-                '<i class="fa-solid fa-plus"></i>' +
-            '</button>' +
+            
             '<button type="button" class="icon-record add-record-btn" title="Thêm hồ sơ" data-id="' + foundAppointment.id + '">' +
                 '<i class="fa-solid fa-file-medical"></i>' +
             '</button>' +
         '</div>';
-console.log(foundAppointment.id);
+}
+
+
 } else {
     cell.innerHTML = '-';
 }
@@ -411,25 +449,20 @@ console.log(foundAppointment.id);
                 document.querySelectorAll('.appointment-link').forEach(function(link) {
                     link.addEventListener('click', function(event) {
                         event.preventDefault();
-                        const appointmentId = event.target.getAttribute('data-id');
-                        const petId = event.target.getAttribute('data-pet_id');
+                        const appointmentId = event.currentTarget.getAttribute('data-id');
+const petId = event.currentTarget.getAttribute('data-pet_id');
+
                         openAppointmentModal(appointmentId,petId); // Mở modal và load dữ liệu
                     });
                 });
-                // Nút Thêm dịch vụ
-document.querySelectorAll('.icon-service').forEach(function(button) {
-    button.addEventListener('click', function(event) {
-        const appointmentId = button.getAttribute('data-id');
-        window.location.href = './add-appointment-service?appointmentId=' + appointmentId;
-    });
-});
+                
 
 // Nút Thêm hồ sơ
 document.querySelectorAll('.add-record-btn').forEach(function(button) {
     button.addEventListener('click', function(event) {
         const appointmentId = button.getAttribute('data-id');
         // Gọi trang thêm hồ sơ bệnh án, truyền id
-        window.location.href = './add-medical-record?appointmentId=' + appointmentId;
+        window.location.href = './doctor-clinical-diagnosis?appointmentId=' + appointmentId;
     });
 });
                 })

@@ -60,6 +60,8 @@
                         <li><a href="staff-list-invoice-service"><i class="uil uil-receipt d-inline-block"></i>Hoá Đơn</a></li>
                         <li><a href="staff-contact"><i class="uil uil-envelope me-2 d-inline-block"></i>Liên Hệ</a></li>
                         <li><a href="staff-list-blog"><i class="uil uil-file-alt me-2 d-inline-block"></i>Quản Lý Blog</a></li>
+                        <li><a href="staff-conversations"><i class="uil uil-file-alt me-2 d-inline-block"></i>Chat</a></li>
+
                     </ul>
 
                     <!-- sidebar-menu  -->

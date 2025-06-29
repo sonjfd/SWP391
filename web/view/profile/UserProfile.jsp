@@ -1,4 +1,4 @@
-z<%-- 
+<%-- 
     Document   : UserProfile
     Created on : May 21, 2025, 9:18:11 PM
     Author     : Admin
@@ -121,20 +121,20 @@ z<%--
                         <div class="col-xl-4 col-lg-4 col-md-5 col-12">
                             <div class="rounded shadow overflow-hidden sticky-bar">
                                 <div class="card border-0">
-                                    <img src="${pageContext.request.contextPath}/${user.avatar}" class="img-fluid" alt="">
+                                    <img src="${user.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                <img src="${pageContext.request.contextPath}/${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
+                                <img src="${user.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${user.fullName}</h5>
 
                             </div>
-                            <ul class="list-unstyled sidebar-nav mb-0">
-                                <li class="navbar-item"><a href="viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
-                                <li class="navbar-item"><a href="viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
-                                <li class="navbar-item"><a href="viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
-                                <li class="navbar-item"><a href="viewuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
-                                <li class="navbar-item"><a href="doctor-chat.html" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Trò chuyện</a></li>
-                            </ul>
+                              <ul class="list-unstyled sidebar-nav mb-0">
+                                    <li class="navbar-item"><a href="customer-viewappointment" class="navbar-link"><i class="ri-calendar-check-line align-middle navbar-icon"></i> Danh sách cuộc hẹn</a></li>
+                                    <li class="navbar-item"><a href="customer-viewmedicalhistory" class="navbar-link"><i class="ri-timer-line align-middle navbar-icon"></i>Lịch sử khám bệnh</a></li>
+                                    <li class="navbar-item"><a href="customer-viewlistpet" class="navbar-link"><i class="ri-bear-smile-line align-middle navbar-icon"></i> Danh sách thú cưng</a></li>
+                                    <li class="navbar-item"><a href="customer-updateuserinformation" class="navbar-link"><i class="ri-user-settings-line align-middle navbar-icon"></i> Cài đặt thông tin cá nhân</a></li>
+                                    <li class="navbar-item"><a href="customer-chat" class="navbar-link"><i class="ri-chat-voice-line align-middle navbar-icon"></i> Chat với nhân viên hỗ trợ</a></li>
+                                </ul>
 
                         </div>
                     </div><!--end col-->
@@ -145,11 +145,11 @@ z<%--
                             <div class="p-4 border-bottom">
                                 <h5 class="mb-0">Thông tin của bạn</h5>
                             </div>
-                            <form id="updateUserForm" action="updateuserinformation" method="post" enctype="multipart/form-data">
+                            <form id="updateUserForm" action="customer-updateuserinformation" method="post" enctype="multipart/form-data">
                                 <div class="p-4 border-bottom">
                                     <div class="row align-items-center">
                                         <div class="col-lg-2 col-md-4">
-                                            <img src="${pageContext.request.contextPath}/${user.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
+                                            <img src="${user.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="">
                                         </div>
                                         <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
                                             <h5>Ảnh đại diện</h5>
@@ -208,7 +208,7 @@ z<%--
                             </div>
 
                             <div class="p-4">
-                                <form action="changepass" method="post" onsubmit="return validateChangePass()">
+                                <form action="customer-changepass" method="post" onsubmit="return validateChangePass()">
                                     <!-- Old Password -->
                                     <div class="mb-3 position-relative">
                                         <label class="form-label">Mật khẩu cũ</label>
@@ -525,9 +525,9 @@ z<%--
 
         </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-         
-       
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
         <!-- Icons -->
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <!-- Main Js -->

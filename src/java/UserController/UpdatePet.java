@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  *
  * @author Admin
  */
-@WebServlet(name = "UpdatePet", urlPatterns = {"/updatepet"})
+@WebServlet(name = "UpdatePet", urlPatterns = {"/customer-updatepet"})
 @MultipartConfig
 public class UpdatePet extends HttpServlet {
 
@@ -115,45 +115,65 @@ public class UpdatePet extends HttpServlet {
         int breedId = Integer.parseInt(request.getParameter("breed_id"));
         String status = request.getParameter("status");
         String description = request.getParameter("description");
-        Part part = request.getPart("avatar");
+         Part part = request.getPart("avatar");
 
-        String realPath = request.getServletContext().getRealPath("/assets/images");
-        File uploads = new File(realPath);
-        if (!uploads.exists()) {
-            uploads.mkdirs();
+        // Thư mục lưu ảnh ngoài project
+        String uploadDirPath = "C:/MyUploads/avatars";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
         }
 
-        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-        String filePath = "/assets/images/" + filename;
+        String avatarPath = null;
+        String randomFileName = null;
+        UserDAO userDAO = new UserDAO();
 
-        // Nếu không có ảnh mới, giữ ảnh cũ
-        if (filename.isEmpty()) {
-
+        if (part != null && part.getSize() > 0) {
+            // Xóa ảnh cũ nếu có
+            String oldAvatarPath = null;
             try {
-                UserDAO userDao = new UserDAO();
-                Pet pet = userDao.getPetsById(petId);
-                filePath = pet.getAvatar(); // Giữ lại ảnh cũ
-            } catch (Exception e) {
-                e.printStackTrace();
+                oldAvatarPath = userDAO.getPetsById(petId).getAvatar(); // eg: /swp391/image-loader/abc.jpg
+            } catch (SQLException ex) {
+                Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (oldAvatarPath != null && oldAvatarPath.contains("/image-loader/")) {
+                String oldFileName = oldAvatarPath.substring((request.getContextPath() + "/image-loader/").length());
+                File oldFile = new File(uploadDir, oldFileName);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
             }
 
-        } else {
-            String originalFilename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String randomFilename = System.currentTimeMillis() + "_" + (int) (Math.random() * 10000) + fileExtension;
+            // Tạo tên ngẫu nhiên cho file
+            String fileExtension = part.getSubmittedFileName().substring(part.getSubmittedFileName().lastIndexOf("."));
+            randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
 
-            filePath = "/assets/images/" + randomFilename;
-            File file = new File(uploads, randomFilename);
-            part.write(file.getAbsolutePath());
+            // Ghi file
+            File newFile = new File(uploadDir, randomFileName);
+            part.write(newFile.getAbsolutePath());
+
+            // Gán đường dẫn lưu DB
+            avatarPath = request.getContextPath() + "/image-loader/" + randomFileName;
+        } else {
+            try {
+                // Không upload ảnh mới → giữ nguyên ảnh cũ
+                avatarPath = userDAO.getPetsById(petId).getAvatar();
+            } catch (SQLException ex) {
+                Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(UpdatePet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         UserDAO ud = new UserDAO();
-        if (ud.updatePet(petId, name, gender, birthDate, breedId, status, description, filePath)) {
+        if (ud.updatePet(petId, name, gender, birthDate, breedId, status, description, avatarPath)) {
             request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thú cưng thành công!");
         } else {
             request.getSession().setAttribute("FailMessage", "Cập nhật thông tin thú cưng không thành công!");
         }
 
-        response.sendRedirect("viewlistpet");
+        response.sendRedirect("customer-viewlistpet");
     }
 
     /**

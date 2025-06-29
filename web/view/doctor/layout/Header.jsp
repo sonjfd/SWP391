@@ -11,7 +11,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Pet24h-Trang làm việc của bác sĩ</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
@@ -86,10 +86,10 @@
                                     <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <c:choose>
                                             <c:when test="${not empty sessionScope.user.avatar}">
-                                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
+                                                <img src="${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
                                             </c:when>
                                             <c:otherwise>
-                                                <img src="../assets/images/default-avatar.png" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
+                                                <img src="../../../assets/images/default_user.png" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
                                             </c:otherwise>
                                         </c:choose>
                                     </button>
@@ -97,10 +97,10 @@
                                         <a class="dropdown-item d-flex align-items-center text-dark" href="profile">
                                             <c:choose>
                                                 <c:when test="${not empty sessionScope.user.avatar}">
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
                                                 </c:otherwise>
                                             </c:choose>
                                             <div class="flex-1 ms-2">
