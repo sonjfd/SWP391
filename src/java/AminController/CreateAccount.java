@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package AminController;
 
 import DAO.AdminDao;
 import DAO.DepartmentDAO;
+import static GoogleLogin.PasswordUtils.hashPassword;
 import Model.Department;
 import Model.Doctor;
 import Model.Nurse;
@@ -28,34 +28,37 @@ import java.util.List;
  */
 @WebServlet("/admin-create-account")
 public class CreateAccount extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CreateAccount</title>");  
+            out.println("<title>Servlet CreateAccount</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet CreateAccount at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet CreateAccount at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -63,15 +66,16 @@ public class CreateAccount extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         DepartmentDAO departmentDAO = new DepartmentDAO();
         List<Department> departments = departmentDAO.getAllDepartments();
         request.setAttribute("departments", departments);
         request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
-    } 
+    }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -79,7 +83,7 @@ public class CreateAccount extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
 
         int roleId;
         try {
@@ -102,10 +106,11 @@ public class CreateAccount extends HttpServlet {
         String password = request.getParameter("password");
         String fullName = request.getParameter("fullName");
         String phoneNumber = request.getParameter("phoneNumber");
+        String hashedPass = hashPassword(password);
 
         // Kiểm tra các trường bắt buộc
-        if (userName == null || userName.trim().isEmpty() || email == null || email.trim().isEmpty() ||
-                password == null || password.trim().isEmpty() || fullName == null || fullName.trim().isEmpty()) {
+        if (userName == null || userName.trim().isEmpty() || email == null || email.trim().isEmpty()
+                || password == null || password.trim().isEmpty() || fullName == null || fullName.trim().isEmpty()) {
             request.setAttribute("message", "Vui lòng điền đầy đủ các trường bắt buộc.");
             request.setAttribute("messageType", "error");
             request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
@@ -116,18 +121,18 @@ public class CreateAccount extends HttpServlet {
 
         // Kiểm tra trùng username và email
         if (accountDAO.isUsernameTaken(userName)) {
-             DepartmentDAO departmentDAO = new DepartmentDAO();
-        List<Department> departments = departmentDAO.getAllDepartments();
-        request.setAttribute("departments", departments);
+            DepartmentDAO departmentDAO = new DepartmentDAO();
+            List<Department> departments = departmentDAO.getAllDepartments();
+            request.setAttribute("departments", departments);
             request.setAttribute("usernameError", "Tên đăng nhập đã tồn tại.");
             request.setAttribute("messageType", "error");
             request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
             return;
         }
         if (accountDAO.isEmailTaken(email)) {
-             DepartmentDAO departmentDAO = new DepartmentDAO();
-        List<Department> departments = departmentDAO.getAllDepartments();
-        request.setAttribute("departments", departments);
+            DepartmentDAO departmentDAO = new DepartmentDAO();
+            List<Department> departments = departmentDAO.getAllDepartments();
+            request.setAttribute("departments", departments);
             request.setAttribute("emailError", "Email đã tồn tại.");
             request.setAttribute("messageType", "error");
             request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
@@ -154,7 +159,7 @@ public class CreateAccount extends HttpServlet {
         User user = new User();
         user.setUserName(userName);
         user.setEmail(email);
-        user.setPassword(password); // TODO: Mã hóa password
+        user.setPassword(hashedPass); // TODO: Mã hóa password
         user.setFullName(fullName);
         user.setPhoneNumber(phoneNumber);
         user.setStatus(1); // Mặc định active
@@ -167,22 +172,22 @@ public class CreateAccount extends HttpServlet {
         boolean success = accountDAO.createAccount(user, null, nurse, departmentId);
         if (success) {
             request.setAttribute("message", "Tạo tài khoản thành công!");
-            
+
             response.sendRedirect("admin-list-account");
         } else {
-             DepartmentDAO departmentDAO = new DepartmentDAO();
-        List<Department> departments = departmentDAO.getAllDepartments();
-        request.setAttribute("departments", departments);
+            DepartmentDAO departmentDAO = new DepartmentDAO();
+            List<Department> departments = departmentDAO.getAllDepartments();
+            request.setAttribute("departments", departments);
             request.setAttribute("message", "Tạo tài khoản thất bại. Vui lòng thử lại.");
-            
+
             request.getRequestDispatcher("view/admin/content/CreateAccount.jsp").forward(request, response);
         }
-        
-    }
-    
 
-    /** 
+    }
+
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

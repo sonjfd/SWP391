@@ -237,7 +237,7 @@ Author     : Dell
                 <div class="container text-center py-4">
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
-                            <img src="${pageContext.request.contextPath}/${cl.logo}" height="100" class="mb-3 shadow-sm bg-white rounded-circle p-2 border" alt="Logo Phòng Khám">
+                            <img src="${cl.logo}" height="100" class="mb-3 shadow-sm bg-white rounded-circle p-2 border" alt="Logo Phòng Khám">
                         <h1 class="fw-bold text-dark mb-3 fs-3" style="color: #fff">
                             Gặp Gỡ Bác Sĩ Thú Y Tốt Nhất
                         </h1>
@@ -265,7 +265,7 @@ Author     : Dell
                             <c:forEach var="slider" items="${sliders}" varStatus="status">
                                 <div class="carousel-item ${status.first ? 'active' : ''}">
                                     <a href="${slider.link}" <c:if test="${empty slider.link}">onclick="return false;"</c:if>>
-                                        <img src="${pageContext.request.contextPath}/${slider.imageUrl}" class="d-block w-100" style="max-height:450px; object-fit:cover;">
+                                        <img src="${slider.imageUrl}" class="d-block w-100" style="max-height:450px; object-fit:cover;">
                                     </a>
                                 </div>
                             </c:forEach>
@@ -295,7 +295,7 @@ Author     : Dell
                     <c:forEach var="species" items="${speciesList}">
                         <div class="swiper-slide" style="max-width:280px;">
                             <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden">
-                                <img src="${pageContext.request.contextPath}/assets/images/species/${species.name}.png" class="card-img-top" style="height:220px; object-fit:cover;" alt="${species.name}">
+                                <img src="${species.imageUrl}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${species.name}">
                                 <div class="card-body">
                                     <h6 class="card-title fw-bold text-dark text-uppercase">${species.name}</h6>
                                     <p class="card-text text-muted small">
@@ -324,7 +324,7 @@ Author     : Dell
                             
                                 <div style="min-width: 280px;">
                                     <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
-                                        <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${doctor.user.fullName}">
+                                        <img src="${doctor.user.avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${doctor.user.fullName}">
                                         <div class="card-body d-flex flex-column">
                                             <h6 class="card-title fw-bold text-dark">${doctor.user.fullName}</h6>
                                             <p class="text-muted small">${doctor.specialty}</p>
@@ -356,7 +356,7 @@ Author     : Dell
                                         <i class="fa-solid fa-quote-left quote-icon mb-2"></i>
                                         <p>${rate.comment}</p>
                                         <div class="customer-info mt-3">
-                                            <img src="${pageContext.request.contextPath}/${rate.user.avatar}" class="rounded-circle mb-2" width="60" height="60">
+                                            <img src="${rate.user.avatar}" class="rounded-circle mb-2" width="60" height="60">
                                             <h5 class="customer-name">${rate.user.fullName}</h5>
                                             <span class="customer-role">Chủ nuôi</span>
                                             <div class="rating-stars mt-2">
@@ -386,7 +386,7 @@ Author     : Dell
                     <c:forEach var="blog" items="${blogs}" begin="0" end="7">
                         <div class="swiper-slide" style="max-width: 280px;">
                             <div class="card border-0 shadow-sm rounded-4 h-100 blog-card position-relative">
-                                <img src="${pageContext.request.contextPath}/${blog.image}" class="card-img-top" style="height:170px; object-fit:cover;" alt="${blog.title}">
+                                <img src="${blog.image}" class="card-img-top" style="height:170px; object-fit:cover;" alt="${blog.title}">
                                 <div class="card-body d-flex flex-column">
                                     <h6 class="card-title fw-semibold text-dark">${blog.title}</h6>
                                     <p class="text-muted small mb-2">

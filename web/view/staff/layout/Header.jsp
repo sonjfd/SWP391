@@ -107,7 +107,7 @@
                                     <button type="button" class="btn btn-pills btn-soft-primary dropdown-toggle p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <c:choose>
                                             <c:when test="${not empty sessionScope.user.avatar}">
-                                                <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
+                                                <img src="${sessionScope.user.avatar}" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
                                             </c:when>
                                             <c:otherwise>
                                                 <img src="../assets/images/default-avatar.png" class="avatar avatar-ex-small rounded-circle" alt="User Avatar" />
@@ -118,15 +118,16 @@
                                         <a class="dropdown-item d-flex align-items-center text-dark" href="profile">
                                             <c:choose>
                                                 <c:when test="${not empty sessionScope.user.avatar}">
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
+                                                    <img src="${sessionScope.user.avatar}" class="avatar avatar-md-sm rounded-circle border shadow" alt="User Avatar" />
                                                 </c:otherwise>
                                             </c:choose>
                                             <div class="flex-1 ms-2">
                                                 <span class="d-block mb-1">${sessionScope.user.fullName}</span>
-                                                <small class="text-muted">${sessionScope.user.role.name}</small>
+                                                <small class="text-muted">Nhân viên</small>
+
                                             </div>
                                         </a>
                                         <a class="dropdown-item text-dark" href="staff-list-pet-and-owner">

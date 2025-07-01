@@ -114,10 +114,10 @@ z<%--
                     <div class="col-xl-4 col-lg-4 col-md-5 col-12">
                         <div class="rounded shadow overflow-hidden sticky-bar">
                             <div class="card border-0">
-                                <img src="${pageContext.request.contextPath}/${staff.avatar}" class="img-fluid" alt="">
+                                <img src="${staff.avatar}" class="img-fluid" alt="">
                             </div>
                             <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-4 border-bottom">
-                                <img src="${pageContext.request.contextPath}/${staff.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
+                                <img src="${staff.avatar}" class="rounded-circle shadow-md avatar avatar-md-md" alt="">
                                 <h5 class="mt-3 mb-1">${staff.fullName}</h5>
                             </div>
                             <ul class="list-unstyled sidebar-nav mb-0">
@@ -136,7 +136,7 @@ z<%--
                                 <div class="p-4 border-bottom">
                                     <div class="row align-items-center">
                                         <div class="col-lg-2 col-md-4">
-                                            <img src="${pageContext.request.contextPath}/${staff.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="Ảnh đại diện">
+                                            <img src="${staff.avatar}" id="avatarPreview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" alt="Ảnh đại diện">
                                         </div>
                                         <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
                                             <h5>Ảnh đại diện</h5>

@@ -37,7 +37,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                     <div class="row">
                         <div class="col-xl-5 col-lg-4 mb-0 mb-md-4 pb-0 pb-md-2">
                             <a href="homepage" class="logo-footer">
-                                <img src="${pageContext.request.contextPath}/${cl.logo}" height="50" width="50" class="">
+                                <img src="${cl.logo}" height="50" width="50" class="">
                             <span class="logo-text">Pet24h</span>
                         </a>
                         <p class="mt-4 me-xl-5">${cl.description}</p>

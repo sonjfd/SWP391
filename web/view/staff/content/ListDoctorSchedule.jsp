@@ -205,7 +205,7 @@
                             <c:forEach items="${listshedules}" var="s" varStatus="loop">
                                 <tr>
                                     <td>${offset + loop.index + 1}</td>
-                                    <td><img src="${pageContext.request.contextPath}/${s.doctor.user.avatar}" alt="Avatar" style="width:40px; height:40px; border-radius:50%;">
+                                    <td><img src="${s.doctor.user.avatar}" alt="Avatar" style="width:40px; height:40px; border-radius:50%;">
                                     </td>
                                     <td>${s.doctor.user.fullName}</td>
                                     <td>${s.doctor.user.email}</td>

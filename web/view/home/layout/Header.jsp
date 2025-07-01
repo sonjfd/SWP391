@@ -115,7 +115,7 @@
 
                     <div class="d-flex align-items-center">
                         <a class="logo d-flex align-items-center" href="homepage">
-                            <img src="${pageContext.request.contextPath}/${cl.logo}" height="30" width="30" alt="Logo">
+                            <img src="${cl.logo}" height="30" width="30" alt="Logo">
                             <span class="logo-text">Pet24h</span>
                         </a>
                         <div id="navigation" class="d-flex justify-content-between align-items-center">

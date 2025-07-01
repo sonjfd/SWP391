@@ -22,7 +22,7 @@ CREATE TABLE users (
   full_name NVARCHAR(255),
   phone NVARCHAR(20),
   address NVARCHAR(255),
-  avatar NVARCHAR(255) DEFAULT '/assets/images/default_user.png',
+  avatar NVARCHAR(255) DEFAULT '/SWP391/image-loader/default_user.png',
   status BIT DEFAULT 1,
   role_id INT NOT NULL DEFAULT 1,
   created_at DATETIME DEFAULT GETDATE(),
@@ -63,8 +63,11 @@ CREATE TABLE nurses (
 -- 7. Species (Loài)
 CREATE TABLE species (
   id INT PRIMARY KEY IDENTITY(1,1),
-  name NVARCHAR(100) UNIQUE NOT NULL
+  name NVARCHAR(100) UNIQUE NOT NULL,
+  image_url NVARCHAR(255)
 );
+
+
 
 
 -- 11. Breeds (Giống loài)
@@ -84,7 +87,7 @@ CREATE TABLE pets (
   birth_date DATE,
   breeds_id INT NOT NULL,
   gender NVARCHAR(20),
-  avatar NVARCHAR(255) DEFAULT '/assets/images/default_pet.png',
+  avatar NVARCHAR(255) DEFAULT '/SWP391/image-loader/default_pet.png' ,
   description NVARCHAR(MAX) NULL,
   status NVARCHAR(50) DEFAULT 'active',
   created_at DATETIME DEFAULT GETDATE(),

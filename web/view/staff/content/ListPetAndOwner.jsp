@@ -314,7 +314,7 @@
                                 <div class="col-md-6">
                                     <h6 class="fw-bold text-center">Thú cưng</h6>
                                     <div class="text-center mb-3">
-                                        <img src="${pageContext.request.contextPath}${p.avatar}" 
+                                        <img src="${p.avatar}" 
                                              alt="Ảnh thú cưng" class="img-fluid rounded-circle shadow" style="max-height: 180px;">
                                     </div>
                                     <table class="table table-sm table-borderless">
@@ -341,7 +341,7 @@
                                 <div class="col-md-6">
                                     <h6 class="fw-bold text-center"> Chủ sở hữu</h6>
                                     <div class="text-center mb-3">
-                                        <img src="${pageContext.request.contextPath}${p.user.avatar}" 
+                                        <img src="${p.user.avatar}" 
                                              alt="Ảnh chủ" class="img-fluid rounded-circle shadow" style="max-height: 160px;">
                                     </div>
                                     <table class="table table-sm table-borderless">

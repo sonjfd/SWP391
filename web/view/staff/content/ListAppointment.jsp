@@ -298,7 +298,7 @@
                                         <!-- Header Section -->
                                         <div class="header text-center mb-4">
                                             <c:if test="${not empty ClinicInfo.logo}">
-                                                <img src="${pageContext.request.contextPath}${ClinicInfo.logo}" alt="Logo Phòng khám" class="mb-3" style="max-width: 150px;">
+                                                <img src="${ClinicInfo.logo}" alt="Logo Phòng khám" class="mb-3" style="max-width: 150px;">
                                             </c:if>
                                             <div><strong>${ClinicInfo.name}</strong></div>
                                             <div>Địa chỉ: ${ClinicInfo.address}</div>

@@ -95,53 +95,58 @@ public class StaffProfile extends HttpServlet {
         String number = request.getParameter("phone");
 
         Part part = request.getPart("avatar");
-        String realPath = request.getServletContext().getRealPath("/assets/images");
-        File uploads = new File(realPath);
-        if (!uploads.exists()) {
-            uploads.mkdirs();
+
+        String uploadDirPath = "C:/MyUploads/avatars";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
         }
 
-        String filename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-        String filePath = "/assets/images/" + filename;
+        String avatarPath = null;
+        String randomFileName = null;
 
-        if (filename.isEmpty()) {
+        UserDAO userDAO = new UserDAO();
+        User currentUser = userDAO.getUserById(id);
 
-            try {
-                UserDAO userDao = new UserDAO();
-                User user = userDao.getUserById(id);
-                filePath = user.getAvatar();
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (part != null && part.getSize() > 0) {
+            String oldAvatarPath = currentUser.getAvatar();
+            if (oldAvatarPath != null && oldAvatarPath.contains("/image-loader/")) {
+                String oldFileName = oldAvatarPath.substring((request.getContextPath() + "/image-loader/").length());
+                File oldFile = new File(uploadDir, oldFileName);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
             }
 
-        } else {
-            String originalFilename = Path.of(part.getSubmittedFileName()).getFileName().toString();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String randomFilename = System.currentTimeMillis() + "_" + (int) (Math.random() * 10000) + fileExtension;
+            String submittedFileName = part.getSubmittedFileName();
+            String fileExtension = submittedFileName.substring(submittedFileName.lastIndexOf("."));
+            randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
 
-            filePath = "/assets/images/" + randomFilename;
-            File file = new File(uploads, randomFilename);
-            part.write(file.getAbsolutePath());
+            File newFile = new File(uploadDir, randomFileName);
+            part.write(newFile.getAbsolutePath());
+
+            avatarPath = request.getContextPath() + "/image-loader/" + randomFileName;
+        } else {
+            avatarPath = currentUser.getAvatar();
         }
 
-        UserDAO ud = new UserDAO();
-        User u = ud.getUserByEmail(email);
+        User u = userDAO.getUserByEmail(email);
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("staff");
-        if (u != null && !u.getId().equals(user.getId())) {
+        User loggedInStaff = (User) session.getAttribute("staff");
+
+        if (u != null && !u.getId().equals(loggedInStaff.getId())) {
             request.setAttribute("wrongemail", "Cập nhật thông tin không thành công do email đã được sử dụng");
-            User currentUser = ud.getUserById(id);
             request.setAttribute("staff", currentUser);
             request.getRequestDispatcher("view/staff/content/StaffProfile.jsp").forward(request, response);
             return;
         }
-        if (ud.updateUser(id, name, address, email, number, filePath)) {
-            User updatedUser = ud.getUserById(id);
-            request.getSession().setAttribute("user", updatedUser);
 
-            request.getSession().setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
+        if (userDAO.updateUser(id, name, address, email, number, avatarPath)) {
+            User updatedUser = userDAO.getUserById(id);
+            session.setAttribute("user", updatedUser);
+            session.setAttribute("SuccessMessage", "Cập nhật thông tin thành công!");
         } else {
-            request.getSession().setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
+            session.setAttribute("FailMessage", "Cập nhật thông tin không thành công!");
         }
 
         response.sendRedirect("staff-profile-setting");

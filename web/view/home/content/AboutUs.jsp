@@ -267,7 +267,7 @@
                     <!-- Phần logo và ảnh phòng khám -->
                     <div class="col-lg-5 col-md-6">
                         <div class="clinic-logo">
-                            <img src="${pageContext.request.contextPath}/${clinicInfo.logo}" class="img-fluid" alt="Logo phòng khám">
+                            <img src="${clinicInfo.logo}" class="img-fluid" alt="Logo phòng khám">
                         </div>
                     </div><!--end col-->
 

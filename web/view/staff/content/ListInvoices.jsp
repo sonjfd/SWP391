@@ -156,7 +156,7 @@
                                     <!-- Clinic Info Section -->
                                     <div class="text-center mb-4">
                                         <c:if test="${not empty ClinicInfo.logo}">
-                                            <img src="${pageContext.request.contextPath}${ClinicInfo.logo}" alt="Logo" height="80">
+                                            <img src="${ClinicInfo.logo}" alt="Logo" height="80">
                                         </c:if>
                                         <h4 class="fw-bold">${ClinicInfo.name}</h4>
                                         <div>Địa chỉ: ${ClinicInfo.address}</div>
