@@ -76,7 +76,7 @@ public class ListAppointment extends HttpServlet {
         String dateStr = request.getParameter("date");
         String doctorId = request.getParameter("doctor");
         AppointmentDAO appointmentDAO = new AppointmentDAO();
-        
+        appointmentDAO.autoCancelAppointments();
 
         StaffDAO staffDAO = new StaffDAO();
         ExaminationPrice price = appointmentDAO.getExaminationPrice();

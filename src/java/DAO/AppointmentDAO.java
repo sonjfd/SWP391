@@ -1140,7 +1140,7 @@ public void autoCancelAppointments() {
     String sql = """
         UPDATE appointments
         SET status = 'canceled'
-        WHERE appointment_time < GETDATE()
+        WHERE DATEADD(SECOND, DATEDIFF(SECOND, 0, end_time), CAST(appointment_time AS DATETIME)) < GETDATE()
           AND status = 'booked'
           AND checkin_status = 'noshow'
     """;

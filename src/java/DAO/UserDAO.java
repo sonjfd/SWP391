@@ -552,37 +552,47 @@ public class UserDAO {
         return null;
     }
 
-    public User loginCheck(String idenfier, String password) {
-        String sql = "select *from users where (username = ? or email = ?) and password = ?";
-        try {
-            Connection conn = DBContext.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, idenfier);
-            stmt.setString(2, idenfier);
+private String getSafeString(String value) {
+        return value != null ? value : "";
+    }
+
+    public User loginCheck(String identifier, String password) {
+        String sql = "SELECT * FROM users WHERE (username = ? OR email = ?) AND password = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, identifier);
+            stmt.setString(2, identifier);
             stmt.setString(3, password);
+
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 Role role = getRoleById(rs.getInt("role_id"));
 
-                return new User(rs.getString("id"),
-                        rs.getString("username"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("full_Name"),
-                        rs.getString("phone"),
-                        rs.getString("address"),
-                        rs.getString("avatar"),
+                return new User(
+                        getSafeString(rs.getString("id")),
+                        getSafeString(rs.getString("username")),
+                        getSafeString(rs.getString("email")),
+                        getSafeString(rs.getString("password")),
+                        getSafeString(rs.getString("full_name")),
+                        getSafeString(rs.getString("phone")),
+                        getSafeString(rs.getString("address")),
+                        getSafeString(rs.getString("avatar")),
                         rs.getInt("status"),
                         role,
                         rs.getDate("created_at"),
-                        rs.getDate("updated_at"));
+                        rs.getDate("updated_at")
+                );
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+    
+    
+      
+
 
     public List<Breed> getBreeds() {
         List<Breed> breedList = new ArrayList<Breed>();

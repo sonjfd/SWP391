@@ -112,7 +112,7 @@ public class AddMedicalRecordAJAX extends HttpServlet {
 
                     MedicalRecordFile uf = new MedicalRecordFile();
                     uf.setFileName(originalFileName);
-                    uf.setFileUrl(request.getContextPath()+"/image-loader/" + randomFileName); 
+                    uf.setFileUrl(request.getContextPath()+"/file-loader/" + randomFileName); 
                     uf.setUploadedAt(new java.util.Date());
                     files.add(uf);
                 }

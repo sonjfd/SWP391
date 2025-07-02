@@ -1,6 +1,5 @@
 package DoctorController;
 
-
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,20 +11,39 @@ import java.io.OutputStream;
 
 @WebServlet("/file-loader/*")
 public class MedicalRecordFileLoaderServlet extends HttpServlet {
+
     private final String imageBasePath = "C:/MyUploads/medical";
 
     @Override
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-         String filename = request.getPathInfo(); // /abc.jpg
+        String filename = request.getPathInfo(); // /abc.docx
+        if (filename == null || filename.equals("/")) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Thiếu tên file.");
+            return;
+        }
+
         File file = new File(imageBasePath, filename);
         if (!file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        response.setContentType(getServletContext().getMimeType(file.getName()));
+
+        // Xác định MIME
+        String mimeType = getServletContext().getMimeType(file.getName());
+        if (mimeType == null) {
+            mimeType = "application/octet-stream"; // fallback
+        }
+        response.setContentType(mimeType);
+
+        // Set để trình duyệt cố gắng mở trong tab (không tải ngay)
+        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
+
+        // Gửi nội dung file
         try (FileInputStream in = new FileInputStream(file); OutputStream out = response.getOutputStream()) {
             in.transferTo(out);
         }
     }
+
 }

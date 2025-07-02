@@ -57,7 +57,8 @@
                         <li><a href="staff-list-pet-and-owner"><i class="uil uil-user me-2 d-inline-block"></i>Khách Hàng Và Thú Cưng</a></li>                       
                         <li><a href="staff-list-work-schedule"><i class="uil uil-calendar-alt d-inline-block"></i>Lịch Làm Việc Bác Sĩ</a></li>
                         <li><a href="staff-list-appointment"><i class="uil uil-notes d-inline-block"></i>Cuộc Hẹn</a></li>
-                        <li><a href="staff-list-invoice-service"><i class="uil uil-receipt d-inline-block"></i>Hoá Đơn</a></li>
+                        <li><a href="staff-list-invoice-service"><i class="uil uil-receipt d-inline-block"></i>Hoá Đơn Dịch Vụ</a></li>
+                          <li><a href="staff-list-invoices"><i class="uil uil-receipt d-inline-block"></i>Hoá Đơn Bán Hàng</a></li>
                         <li><a href="staff-contact"><i class="uil uil-envelope me-2 d-inline-block"></i>Liên Hệ</a></li>
                         <li><a href="staff-list-blog"><i class="uil uil-file-alt me-2 d-inline-block"></i>Quản Lý Blog</a></li>
                         <li><a href="staff-conversations"><i class="uil uil-file-alt me-2 d-inline-block"></i>Chat</a></li>

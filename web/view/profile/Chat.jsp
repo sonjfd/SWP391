@@ -183,12 +183,16 @@ User currentUser = (User) request.getAttribute("currentUser");
                 </c:forEach>
             </div>
             <!-- Ô nhập và nút gửi -->
-            <div class="input-group">
-                <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
-                <input type="file" id="imageInput" accept="image/*" hidden>
-                <button id="uploadImageBtn" class="btn btn-outline-secondary"><i class="fas fa-image"></i></button>
-                <button id="sendBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+            <div class="input-group d-flex flex-column">
+                <div id="imagePreview" class="mb-2 d-flex flex-wrap"></div>
+                <div class="d-flex w-100">
+                    <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
+                    <input type="file" id="imageInput" accept="image/*" hidden>
+                    <button id="uploadImageBtn" class="btn btn-outline-secondary"><i class="fas fa-image"></i></button>
+                    <button id="sendBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                </div>
             </div>
+
 
 
         </div>
@@ -197,33 +201,22 @@ User currentUser = (User) request.getAttribute("currentUser");
             const userId = "<%= currentUser.getId() %>";
             const fullName = "<%= currentUser.getFullName() %>";
             const messagesDiv = document.getElementById("messages");
+            const imagePreview = document.getElementById("imagePreview");
+            let pendingImageLink = ""; // Đường dẫn ảnh đã upload nhưng chưa gửi
 
             let ws;
 
             function connectWebSocket() {
-                ws = new WebSocket(
-                        "ws://localhost:8080/SWP391/chat/" +
-                        encodeURIComponent(conversationId) + "/" +
-                        encodeURIComponent(userId) + "/" +
-                        encodeURIComponent(fullName)
-                        );
+                ws = new WebSocket("ws://localhost:8080/SWP391/chat/" + encodeURIComponent(conversationId) + "/" + encodeURIComponent(userId) + "/" + encodeURIComponent(fullName));
 
                 ws.onopen = function () {
-                    console.log("✅ WebSocket kết nối thành công.");
-
                     fetch("staff-get-messages?conversationId=" + encodeURIComponent(conversationId))
-                            .then(function (res) {
-                                return res.json();
-                            })
-                            .then(function (data) {
+                            .then(res => res.json())
+                            .then(data => {
                                 messagesDiv.innerHTML = "";
-                                data.forEach(function (msg) {
-                                    renderMessage(msg.senderName, msg.content, msg.senderId === userId);
-                                });
+                                data.forEach(msg => renderMessage(msg.senderName, msg.content, msg.senderId === userId));
                             })
-                            .catch(function (err) {
-                                console.error("❌ Lỗi tải tin nhắn cũ:", err);
-                            });
+                            .catch(err => console.error("❌ Lỗi tải tin nhắn cũ:", err));
                 };
 
                 ws.onmessage = function (event) {
@@ -233,13 +226,8 @@ User currentUser = (User) request.getAttribute("currentUser");
                     renderMessage(sender, messageContent, sender === fullName);
                 };
 
-                ws.onerror = function (err) {
-                    console.error("❌ WebSocket lỗi:", err);
-                };
-
-                ws.onclose = function () {
-                    console.warn("⚠️ WebSocket đã đóng kết nối.");
-                };
+                ws.onerror = err => console.error("❌ WebSocket lỗi:", err);
+                ws.onclose = () => console.warn("⚠️ WebSocket đã đóng kết nối.");
             }
 
             function renderMessage(sender, content, isMine) {
@@ -251,8 +239,7 @@ User currentUser = (User) request.getAttribute("currentUser");
                 if (content.startsWith("IMAGE:")) {
                     const img = document.createElement("img");
                     const relativePath = content.replace("IMAGE:", "");
-                    const fullLink = window.location.origin + relativePath;
-                    img.src = fullLink;
+                    img.src = window.location.origin + relativePath;
                     img.style.maxWidth = "200px";
                     img.style.borderRadius = "10px";
                     inner.innerHTML = "<strong>" + sender + "</strong><br>";
@@ -266,16 +253,35 @@ User currentUser = (User) request.getAttribute("currentUser");
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
 
-            document.getElementById("sendBtn").addEventListener("click", function () {
-                const input = document.getElementById("messageInput");
-                const msg = input.value.trim();
-                if (msg && ws.readyState === WebSocket.OPEN) {
-                    ws.send(msg);
-                    input.value = "";
+            document.getElementById("sendBtn").addEventListener("click", sendMessage);
+
+            document.getElementById("messageInput").addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendMessage();
                 }
             });
 
-            document.getElementById("uploadImageBtn").addEventListener("click", function () {
+            function sendMessage() {
+                const input = document.getElementById("messageInput");
+                const msg = input.value.trim();
+
+                if (ws.readyState !== WebSocket.OPEN)
+                    return;
+
+                if (pendingImageLink) {
+                    ws.send("IMAGE:" + pendingImageLink);
+                    pendingImageLink = "";
+                    imagePreview.innerHTML = "";
+                }
+
+                if (msg) {
+                    ws.send(msg);
+                    input.value = "";
+                }
+            }
+
+            document.getElementById("uploadImageBtn").addEventListener("click", () => {
                 document.getElementById("imageInput").click();
             });
 
@@ -306,21 +312,27 @@ User currentUser = (User) request.getAttribute("currentUser");
                     method: "POST",
                     body: formData
                 })
-                        .then(function (res) {
-                            return res.text();
+                        .then(res => res.text())
+                        .then(link => {
+                            pendingImageLink = link;
+                            showImagePreview(link);
                         })
-                        .then(function (link) {
-                            if (ws.readyState === WebSocket.OPEN) {
-                                ws.send("IMAGE:" + link);
-                            }
-                        })
-                        .catch(function (err) {
-                            console.error("❌ Upload ảnh lỗi:", err);
-                        });
+                        .catch(err => console.error("❌ Upload ảnh lỗi:", err));
+            }
+
+            function showImagePreview(link) {
+                imagePreview.innerHTML = "";
+                const img = document.createElement("img");
+                img.src = window.location.origin + link;
+                img.style.maxHeight = "80px";
+                img.style.marginRight = "10px";
+                img.style.borderRadius = "6px";
+                imagePreview.appendChild(img);
             }
 
             connectWebSocket();
         </script>
+
 
     </body>
 </html>

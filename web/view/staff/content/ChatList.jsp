@@ -6,7 +6,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="Model.User" %>
 <%@ page import="Model.Conversation" %>
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -46,7 +45,7 @@
         <style>
             #chatBox {
                 overflow-y: auto;
-                height: 75vh;
+                height: 67vh;
                 background: white;
             }
 
@@ -241,6 +240,26 @@
                 padding:10px 0 10px;
 
             }
+            #imagePreview button {
+                height: 30px;
+                width: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+            }
+            #imagePreview img {
+                box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            }
+
+            #imagePreview button i {
+                font-size: 12px;
+            }
+            #imagePreview img {
+                box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            }
+
+
 
         </style>
 
@@ -290,14 +309,19 @@
 
                     <div id="chatBox" class="d-flex flex-column mb-2"></div>
 
-                    <div class="input-group">
-                        <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
-                        <input type="file" id="imageInput" accept="image/*" hidden>
-                        <button id="uploadImageBtn" class="btn btn-outline-secondary"><i class="fas fa-image"></i></button>
-                        <button id="sendBtn" class="btn btn-success">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
+                    <div class="input-group d-flex flex-column">
+                        <div id="imagePreview" class="position-relative d-inline-block mb-2"></div>
+
+                        <div class="d-flex w-100">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
+                            <input type="file" id="imageInput" accept="image/*" hidden>
+                            <button id="uploadImageBtn" class="btn btn-outline-secondary"><i class="fas fa-image"></i></button>
+                            <button id="sendBtn" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </div>
+
                 </div>
 
             </div>
@@ -314,6 +338,8 @@
             const chatSection = document.getElementById("chatSection");
             const conversationSection = document.getElementById("conversationSection");
             const chatBox = document.getElementById("chatBox");
+
+            let pendingImageLink = ""; // Link ảnh chờ gửi
 
             conversationItems.forEach(function (item) {
                 item.addEventListener("click", function () {
@@ -336,56 +362,130 @@
                 conversationSection.style.display = "block";
             });
 
-            document.getElementById("sendBtn").onclick = function () {
-                const msg = document.getElementById("messageInput").value;
-                if (msg.trim() !== "") {
-                    socket.send(msg);
-                    document.getElementById("messageInput").value = "";
-                }
-            };
+// Gửi tin nhắn hoặc ảnh khi bấm nút gửi
+            document.getElementById("sendBtn").onclick = sendMessage;
 
+// Gửi tin nhắn hoặc ảnh khi nhấn Enter
+            document.getElementById("messageInput").addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+// Chọn ảnh từ máy
             document.getElementById("uploadImageBtn").onclick = function () {
                 document.getElementById("imageInput").click();
             };
 
+// Xử lý chọn ảnh và upload
             document.getElementById("imageInput").onchange = function (e) {
                 const file = e.target.files[0];
                 if (file && file.type.startsWith("image/")) {
-                    const formData = new FormData();
-                    formData.append("image", file);
-                    fetch("upload-image", {
-                        method: "POST",
-                        body: formData
-                    })
-                            .then(function (res) {
-                                return res.text();
-                            })
-                            .then(function (link) {
-                                if (socket.readyState === WebSocket.OPEN) {
-                                    socket.send("IMAGE:" + link);
-                                }
-                            })
-                            .catch(function (err) {
-                                console.error("Upload lỗi", err);
-                            });
+                    uploadImage(file);
                 }
             };
 
+// Dán ảnh từ clipboard
+            document.getElementById("messageInput").addEventListener("paste", function (e) {
+                const items = (e.clipboardData || window.clipboardData).items;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.startsWith("image/")) {
+                        const file = items[i].getAsFile();
+                        if (file) {
+                            uploadImage(file);
+                        }
+                    }
+                }
+            });
+
+// Hàm gửi tin nhắn hoặc ảnh nếu có
+            function sendMessage() {
+                const msg = document.getElementById("messageInput").value.trim();
+                if (!socket || socket.readyState !== WebSocket.OPEN)
+                    return;
+
+                if (pendingImageLink) {
+                    socket.send("IMAGE:" + pendingImageLink);
+                    pendingImageLink = "";
+                    document.getElementById("imagePreview").innerHTML = "";
+                }
+
+                if (msg) {
+                    socket.send(msg);
+                    document.getElementById("messageInput").value = "";
+                }
+            }
+
+// Hàm upload ảnh
+            function uploadImage(file) {
+                const formData = new FormData();
+                formData.append("image", file);
+
+                fetch("upload-image", {
+                    method: "POST",
+                    body: formData
+                })
+                        .then(res => res.text())
+                        .then(link => {
+                            pendingImageLink = link;
+                            showImagePreview(link);
+                        })
+                        .catch(err => console.error("Upload lỗi", err));
+            }
+
+// Hiển thị ảnh xem trước
+            function showImagePreview(link) {
+                const preview = document.getElementById("imagePreview");
+                preview.innerHTML = "";
+
+                const wrapper = document.createElement("div");
+                wrapper.style.position = "relative";
+                wrapper.style.display = "inline-block";
+
+                const img = document.createElement("img");
+                img.src = link;
+                img.style.maxHeight = "80px";
+                img.style.borderRadius = "8px";
+                img.style.display = "block";
+
+                const removeBtn = document.createElement("button");
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.className = "btn btn-sm btn-danger position-absolute";
+                removeBtn.style.top = "5px";
+                removeBtn.style.right = "5px";
+                removeBtn.style.padding = "2px 6px";
+                removeBtn.style.borderRadius = "50%";
+                removeBtn.style.lineHeight = "1";
+                removeBtn.onclick = function () {
+                    pendingImageLink = "";
+                    preview.innerHTML = "";
+                };
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                preview.appendChild(wrapper);
+            }
+
+
+
+
+// Hàm mở cuộc trò chuyện
             function openChat(conversationId, customerName) {
                 chatBox.innerHTML = "";
                 currentConversationId = conversationId;
+
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     socket.close();
                 }
+
                 socket = new WebSocket("ws://localhost:8080/SWP391/chat/" + conversationId + "/" + staffId + "/" + encodeURIComponent(fullName));
 
                 socket.onopen = function () {
                     fetch("staff-get-messages?conversationId=" + conversationId)
-                            .then(function (res) {
-                                return res.json();
-                            })
-                            .then(function (data) {
-                                data.forEach(function (msg) {
+                            .then(res => res.json())
+                            .then(data => {
+                                data.forEach(msg => {
                                     appendMessage(msg.senderName, msg.content, msg.senderId === staffId ? 'staff' : 'customer');
                                 });
                             });
@@ -407,9 +507,11 @@
                 };
             }
 
+// Hàm hiển thị tin nhắn
             function appendMessage(sender, message, cssClass) {
                 const div = document.createElement("div");
                 div.className = "chat-message " + cssClass;
+
                 if (message.startsWith("IMAGE:")) {
                     const img = document.createElement("img");
                     img.src = message.replace("IMAGE:", "");
@@ -420,12 +522,13 @@
                 } else {
                     div.innerHTML = "<strong>" + sender + "</strong>: " + message;
                 }
+
                 chatBox.appendChild(div);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
+
         </script>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 

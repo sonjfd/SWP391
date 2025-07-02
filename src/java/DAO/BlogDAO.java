@@ -81,6 +81,7 @@ public class BlogDAO {
                 b.setPublishedAt(rs.getTimestamp("published_at"));
                 b.setCreatedAt(rs.getTimestamp("created_at"));
                 b.setUpdatedAt(rs.getTimestamp("updated_at"));
+               
 
                 User author = new User();
                 author.setId(rs.getString("user_id"));
@@ -124,6 +125,7 @@ public class BlogDAO {
                     b.setPublishedAt(rs.getTimestamp("published_at"));
                     b.setCreatedAt(rs.getTimestamp("created_at"));
                     b.setUpdatedAt(rs.getTimestamp("updated_at"));
+                   
 
                     b.setTags(getTagsByBlogId(rs.getString("id")));
                     blogs.add(b);
@@ -171,6 +173,7 @@ public class BlogDAO {
                     b.setPublishedAt(rs.getTimestamp("published_at"));
                     b.setCreatedAt(rs.getTimestamp("created_at"));
                     b.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    
 
                     b.setTags(getTagsByBlogId(rs.getString("id")));
                     blogs.add(b);
@@ -183,7 +186,10 @@ public class BlogDAO {
     }
 // Lấy blog theo tagId với phân trang
 
+    
 // Đếm blog theo tag
+    
+
     public Blog getBlogById(String id) {
         Blog blog = null;
         String sql = "SELECT "
@@ -208,6 +214,7 @@ public class BlogDAO {
                     blog.setPublishedAt(rs.getTimestamp("published_at"));
                     blog.setCreatedAt(rs.getTimestamp("created_at"));
                     blog.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    
 
                     User author = new User();
                     author.setId(rs.getString("user_id"));
@@ -225,6 +232,8 @@ public class BlogDAO {
 
         return blog;
     }
+
+   
 
     // END BLOG COMMENT
     // ==================== TẠO BLOG ===============================
@@ -275,31 +284,38 @@ public class BlogDAO {
 
     //===============================================================
     //===================== XÓA BLOG ===============================
-    public void deleteBlog(String blogId) {
-        String deleteBlogTag = "DELETE FROM blog_tags WHERE blog_id = ?";
-        String deleteBlog = "DELETE FROM blogs WHERE id = ?";
+    public boolean deleteBlog(String blogId) {
+    String deleteBlogTag = "DELETE FROM blog_tags WHERE blog_id = ?";
+    String deleteBlog = "DELETE FROM blogs WHERE id = ?";
 
-        try (Connection conn = DBContext.getConnection()) {
-            conn.setAutoCommit(false);
+    try (Connection conn = DBContext.getConnection()) {
+        conn.setAutoCommit(false);
 
-            try (
-                    PreparedStatement psTag = conn.prepareStatement(deleteBlogTag); PreparedStatement psBlog = conn.prepareStatement(deleteBlog)) {
-                psTag.setString(1, blogId);
-                psTag.executeUpdate();
+        try (
+            PreparedStatement psTag = conn.prepareStatement(deleteBlogTag);
+            PreparedStatement psBlog = conn.prepareStatement(deleteBlog)
+        ) {
+            psTag.setString(1, blogId);
+            psTag.executeUpdate();
 
-                psBlog.setString(1, blogId);
-                psBlog.executeUpdate();
+            psBlog.setString(1, blogId);
+            int rowsAffected = psBlog.executeUpdate();
 
-                conn.commit();
-            } catch (SQLException e) {
-                conn.rollback();
-                throw new RuntimeException("Lỗi khi xóa blog", e);
-            }
+            conn.commit();
 
-        } catch (Exception e) {
+            // Nếu rowsAffected > 0 thì có blog bị xóa -> thành công
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            conn.rollback();
             e.printStackTrace();
+            return false;
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
     }
+}
+
     //==============================================================
     //======================UPDATE BLOG ================================
 
@@ -365,6 +381,10 @@ public class BlogDAO {
         return tagIds;
     }
 
+    
+
+    
+
     // ======================================================================================
     public List<Blog> getBlogsByTagId(String tagId) {
         List<Blog> blogs = new ArrayList<>();
@@ -390,6 +410,7 @@ public class BlogDAO {
                     b.setPublishedAt(rs.getTimestamp("published_at"));
                     b.setCreatedAt(rs.getTimestamp("created_at"));
                     b.setUpdatedAt(rs.getTimestamp("updated_at"));
+                   
 
                     User author = new User();
                     author.setId(rs.getString("user_id"));
@@ -408,15 +429,15 @@ public class BlogDAO {
 
         return blogs;
     }
-
-    // Phương thức lấy danh sách Blog với lọc và phân trang
+    
+     // Phương thức lấy danh sách Blog với lọc và phân trang
     public List<Blog> getBlogsWithFilterAndPagination(String dateFrom, String dateTo, String status, String tag, int page, int pageSize) {
         List<Blog> listBlogs = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT b.* FROM blogs b "
-                + "JOIN blog_tags bt ON b.id = bt.blog_id "
-                + "JOIN tags t ON bt.tag_id = t.id "
-                + "WHERE 1=1");
+            "SELECT distinct b.* FROM blogs b " +
+            "JOIN blog_tags bt ON b.id = bt.blog_id " +
+            "JOIN tags t ON bt.tag_id = t.id " +
+            "WHERE 1=1");
 
         // Thêm các điều kiện lọc vào câu SQL
         if (dateFrom != null && !dateFrom.isEmpty()) {
@@ -474,10 +495,10 @@ public class BlogDAO {
     public int getTotalBlogsCount(String dateFrom, String dateTo, String status, String tag) {
         int count = 0;
         StringBuilder sql = new StringBuilder(
-                "SELECT COUNT(*) FROM blogs b "
-                + "JOIN blog_tags bt ON b.id = bt.blog_id "
-                + "JOIN tags t ON bt.tag_id = t.id "
-                + "WHERE 1=1");
+            " SELECT   COUNT(*) distinct FROM blogs b " +
+            "JOIN blog_tags bt ON b.id = bt.blog_id " +
+            "JOIN tags t ON bt.tag_id = t.id " +
+            "WHERE 1=1");
 
         // Thêm các điều kiện lọc vào câu SQL
         if (dateFrom != null && !dateFrom.isEmpty()) {
@@ -517,6 +538,7 @@ public class BlogDAO {
         }
         return count;
     }
+
 
     public int countAllBlogs() {
         String sql = "SELECT COUNT(*) FROM blogs";

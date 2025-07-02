@@ -257,13 +257,13 @@ if (rec.appointmentStatus.toLowerCase() !== 'completed') {
     '<button class="btn btn-sm btn-outline-success mark-done-btn" data-id="' + rec.appointmentId + '" title="Hoàn thành cuộc hẹn">' +
       '<i class="bi bi-check-circle"></i>' +
     '</button>';
-}
+}else{
 
 actionButtons +=
   '<a href="doctor-print-medical-record?id=' + rec.id + '" target="_blank" class="me-2 text-secondary" title="In hồ sơ">' +
     '<i class="bi bi-printer"></i>' +
   '</a>';
-
+}
 tr.innerHTML =
   '<td>' + (i + 1) + '</td>' +
   '<td>' + (rec.createdAt ? new Date(rec.createdAt).toLocaleDateString('vi-VN') : '-') + '</td>' +

@@ -64,137 +64,137 @@
     <body>
         <%@include file="../layout/Header.jsp" %>
 
-         <div class="container-fluid bg-light">
+        <div class="container-fluid bg-light">
             <div class="layout-specing">
 
 
 
-                
 
-            <!-- FILTER FORM -->
-            <form class="row g-2 mb-4 align-items-center" method="get" action="">
-                <div class="col-md-2">
-                    <input type="text" name="petName" class="form-control form-control-sm" placeholder="Tên thú cưng" value="${fn:escapeXml(param.petName)}">
-                </div>
-                <div class="col-md-2">
-                    <input type="text" name="ownerName" class="form-control form-control-sm" placeholder="Tên chủ nuôi" value="${fn:escapeXml(param.ownerName)}">
-                </div>
-                <div class="col-md-3">
-                    <select name="serviceId" class="form-select form-select-sm">
-                        <option value="">-- Tất cả dịch vụ --</option>
-                        <c:forEach var="sv" items="${serviceList}">
-                            <option value="${sv.id}" ${param.serviceId==sv.id ? 'selected' : ''}><c:out value="${sv.name}" /></option>
-                        </c:forEach>
-                    </select>
-                </div>
-                <div class="col-md-3 d-flex">
-                    <input type="date" name="fromDate" class="form-control form-control-sm me-2" value="${param.fromDate}">
-                    <input type="date" name="toDate" class="form-control form-control-sm me-2" value="${param.toDate}">
-                    <button class="btn btn-primary btn-sm px-3" type="submit"><i class="bi bi-funnel"></i></button>
-                </div>
-            </form>
 
-            <!-- BẢNG DANH SÁCH -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Danh sách phiếu xét nghiệm chờ nhập kết quả</h5>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>Mã thú cưng</th>
-                                <th>Thú cưng</th>
-                                <th>Chủ nuôi</th>
-                                <th>Dịch vụ</th>
-                                <th>Ngày chỉ định</th>
-                                <th class="text-center">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach var="aps" items="${list}">
-                            <tr>
-                                <td>
-                            <c:out value="${aps.appointment.pet.pet_code}" />
-                            </td>
-                            <td>
-                                <img src="${aps.appointment.pet.avatar != null ? aps.appointment.pet.avatar : '/assets/images/default_pet.png'}" class="avatar me-2" />
-                            <c:out value="${aps.appointment.pet.name}" />
-                            </td>
-                            <td>
-                            <c:out value="${aps.appointment.pet.user.fullName}" />
-                            </td>
-                            <td>
-                            <c:out value="${aps.service.name}" />
-                            </td>
-                            <td>
-                            <fmt:formatDate value="${aps.createdAt}" pattern="dd/MM/yyyy" />
-                            </td>
-                            <td class="text-center">
-                                <!-- Icon Nhập kết quả -->
-                                <button type="button" class="icon-btn open-upload-modal-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#uploadResultModal"
-                                        data-id="${aps.appointment.id}"
-                                        data-serid="${aps.service.id}"
-                                        data-petname="${aps.appointment.pet.name}"
-                                        data-petavatar="${aps.appointment.pet.avatar != null ? aps.appointment.pet.avatar : '/assets/images/default_pet.png'}"
-                                        data-ownername="${aps.appointment.pet.user.fullName}"
-                                        data-servicename="${aps.service.name}"
-                                        title="Upload file kết quả">
-                                    <i class="bi bi-upload"></i>
-                                </button>
-                                <!-- Icon Xem file kết quả (giả sử link JSP là NurseViewResultServlet?id=...) -->
-                                <a href="#" class="icon-btn ms-2 open-view-result-modal-btn"
-                                   data-id="${aps.appointment.id}"
-                                   data-serid="${aps.service.id}"
-                                   title="Xem kết quả đã upload">
-                                    <i class="bi bi-file-earmark-text"></i>
-                                </a>
-                                <!-- Thêm icon "Đánh dấu hoàn thành" -->
-                                <button type="button"
-                                        class="icon-btn mark-completed-btn"
-                                        data-id="${aps.id}"
-                                        title="Đánh dấu đã hoàn thành">
-                                    <i class="bi bi-check-circle"></i>
-                                </button>
+                <!-- FILTER FORM -->
+                <form class="row g-2 mb-4 align-items-center" method="get" action="">
+                    <div class="col-md-2">
+                        <input type="text" name="petName" class="form-control form-control-sm" placeholder="Tên thú cưng" value="${fn:escapeXml(param.petName)}">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="ownerName" class="form-control form-control-sm" placeholder="Tên chủ nuôi" value="${fn:escapeXml(param.ownerName)}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="serviceId" class="form-select form-select-sm">
+                            <option value="">-- Tất cả dịch vụ --</option>
+                            <c:forEach var="sv" items="${serviceList}">
+                                <option value="${sv.id}" ${param.serviceId==sv.id ? 'selected' : ''}><c:out value="${sv.name}" /></option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex">
+                        <input type="date" name="fromDate" class="form-control form-control-sm me-2" value="${param.fromDate}">
+                        <input type="date" name="toDate" class="form-control form-control-sm me-2" value="${param.toDate}">
+                        <button class="btn btn-primary btn-sm px-3" type="submit"><i class="bi bi-funnel"></i></button>
+                    </div>
+                </form>
 
-                            </td>
-                            </tr>
-                        </c:forEach>
-                        <c:if test="${empty list}">
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-4">Không có phiếu nào phù hợp!</td>
-                            </tr>
-                        </c:if>
-                        </tbody>
-                    </table>
+                <!-- BẢNG DANH SÁCH -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Danh sách phiếu xét nghiệm chờ nhập kết quả</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Mã thú cưng</th>
+                                    <th>Thú cưng</th>
+                                    <th>Chủ nuôi</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Ngày chỉ định</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="aps" items="${list}">
+                                    <tr>
+                                        <td>
+                                            <c:out value="${aps.appointment.pet.pet_code}" />
+                                        </td>
+                                        <td>
+                                            <img src="${aps.appointment.pet.avatar != null ? aps.appointment.pet.avatar : '/assets/images/default_pet.png'}" class="avatar me-2" />
+                                            <c:out value="${aps.appointment.pet.name}" />
+                                        </td>
+                                        <td>
+                                            <c:out value="${aps.appointment.pet.user.fullName}" />
+                                        </td>
+                                        <td>
+                                            <c:out value="${aps.service.name}" />
+                                        </td>
+                                        <td>
+                                            <fmt:formatDate value="${aps.createdAt}" pattern="dd/MM/yyyy" />
+                                        </td>
+                                        <td class="text-center">
+                                            <!-- Icon Nhập kết quả -->
+                                            <button type="button" class="icon-btn open-upload-modal-btn"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#uploadResultModal"
+                                                    data-id="${aps.appointment.id}"
+                                                    data-serid="${aps.service.id}"
+                                                    data-petname="${aps.appointment.pet.name}"
+                                                    data-petavatar="${aps.appointment.pet.avatar != null ? aps.appointment.pet.avatar : '/assets/images/default_pet.png'}"
+                                                    data-ownername="${aps.appointment.pet.user.fullName}"
+                                                    data-servicename="${aps.service.name}"
+                                                    title="Upload file kết quả">
+                                                <i class="bi bi-upload"></i>
+                                            </button>
+                                            <!-- Icon Xem file kết quả (giả sử link JSP là NurseViewResultServlet?id=...) -->
+                                            <a href="#" class="icon-btn ms-2 open-view-result-modal-btn"
+                                               data-id="${aps.appointment.id}"
+                                               data-serid="${aps.service.id}"
+                                               title="Xem kết quả đã upload">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </a>
+                                            <!-- Thêm icon "Đánh dấu hoàn thành" -->
+                                            <button type="button"
+                                                    class="icon-btn mark-completed-btn"
+                                                    data-id="${aps.id}"
+                                                    title="Đánh dấu đã hoàn thành">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${empty list}">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">Không có phiếu nào phù hợp!</td>
+                                    </tr>
+                                </c:if>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+                <!-- PHÂN TRANG -->
+                <c:if test="${totalPages > 1}">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <c:forEach begin="1" end="${totalPages}" var="p">
+                                <li class="page-item ${p == page ? 'active' : ''}">
+                                    <a class="page-link"
+                                       href="?page=${p}&pageSize=10
+                                       &petName=${fn:escapeXml(param.petName)}
+                                       &ownerName=${fn:escapeXml(param.ownerName)}
+                                       &serviceId=${fn:escapeXml(param.serviceId)}
+                                       &fromDate=${fn:escapeXml(param.fromDate)}
+                                       &toDate=${fn:escapeXml(param.toDate)}">
+                                        ${p}
+                                    </a>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </nav>
+                </c:if>
+
             </div>
-
-            <!-- PHÂN TRANG -->
-            <c:if test="${totalPages > 1}">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <c:forEach begin="1" end="${totalPages}" var="p">
-                            <li class="page-item ${p == page ? 'active' : ''}">
-                                <a class="page-link"
-                                   href="?page=${p}&pageSize=10
-                                   &petName=${fn:escapeXml(param.petName)}
-                                   &ownerName=${fn:escapeXml(param.ownerName)}
-                                   &serviceId=${fn:escapeXml(param.serviceId)}
-                                   &fromDate=${fn:escapeXml(param.fromDate)}
-                                   &toDate=${fn:escapeXml(param.toDate)}">
-                                    ${p}
-                                </a>
-                            </li>
-                        </c:forEach>
-                    </ul>
-                </nav>
-            </c:if>
-
         </div>
-         </div>
         <!-- Modal upload file -->
         <div class="modal fade" id="uploadResultModal" tabindex="-1" aria-labelledby="uploadResultLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -231,23 +231,23 @@
                 </div>
             </div>
         </div>
-        
+
         <!--modal danh sách file-->
         <div class="modal fade" id="viewResultModal" tabindex="-1" aria-labelledby="viewResultLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-info text-white">
-        <h5 class="modal-title" id="viewResultLabel">Kết quả đã upload</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-      </div>
-      <div class="modal-body">
-        <div id="view-result-list">
-          <!-- Bảng sẽ render bằng JS -->
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title" id="viewResultLabel">Kết quả đã upload</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="view-result-list">
+                            <!-- Bảng sẽ render bằng JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 
@@ -304,125 +304,157 @@
                 });
             });
 
-            // Submit form bằng fetch (AJAX)
             form.onsubmit = function (e) {
                 e.preventDefault();
+                let filesInput = document.getElementById('modal-upload-files');
+                let files = filesInput.files;
+
+                if (files.length === 0) {
+                    alert("Vui lòng chọn ít nhất 1 file.");
+                    return;
+                }
+
+                if (files.length > 5) {
+                    alert("Chỉ được phép chọn tối đa 5 file.");
+                    return;
+                }
+
+                let totalSize = 0;
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].size > 10 * 1024 * 1024) {
+                        alert("File \"" + files[i].name + "\" vượt quá 10MB. Vui lòng chọn lại.");
+                        return;
+                    }
+                    totalSize += files[i].size;
+                }
+
+                if (totalSize > 50 * 1024 * 1024) {
+                    alert("Tổng dung lượng file vượt quá 50MB. Vui lòng chọn lại.");
+                    return;
+                }
+
                 let formData = new FormData(form);
+
                 fetch('./nurse-uploadtestresultservice', {
                     method: 'POST',
                     body: formData
                 })
                         .then(res => res.json())
                         .then(data => {
-                            var modalInstance = bootstrap.Modal.getInstance(modal);
+                            const modalInstance = bootstrap.Modal.getInstance(modal);
                             if (data.success) {
                                 modalInstance.hide();
-                                alert("Upload file thành công!");
-                                // Có thể reload bảng, hoặc ẩn nút upload đã hoàn thành...
-                                // location.reload();
+                                alert(data.message);  // Hiển thị thông báo cụ thể từ backend
+                                location.reload();    // Reload để cập nhật trạng thái (tuỳ chọn)
                             } else {
-                                alert("Có lỗi khi upload file!");
+                                alert("Lỗi: " + data.message); // Hiển thị rõ lý do lỗi
                             }
                         })
                         .catch(() => {
-                            alert("Không gửi được file lên server!", "danger");
+                            alert("Có lỗi kết nối tới server!");
                         });
             };
 
 
+
 // của xem file 
-document.querySelectorAll('.open-view-result-modal-btn').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        let appointmentServiceId = btn.getAttribute('data-id');
-        let serviceId = btn.getAttribute('data-serid');
+            document.querySelectorAll('.open-view-result-modal-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    let appointmentServiceId = btn.getAttribute('data-id');
+                    let serviceId = btn.getAttribute('data-serid');
 
-        fetch('./nurse-viewuploadedresultapi?appointmentId=' + encodeURIComponent(appointmentServiceId) + '&serviceId=' + encodeURIComponent(serviceId))
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                let html = '';
-                if (data.files && data.files.length > 0) {
-                    html += '<table class="table table-bordered align-middle">' +
-                            '<thead class="table-light">' +
-                              '<tr>' +
-                                '<th>Tên file</th>' +
-                                '<th>Xem</th>' +
-                                '<th>Người upload</th>' +
-                                '<th>Ngày upload</th>' +
-                                '<th class="text-center">Xóa</th>' +
-                              '</tr>' +
-                            '</thead>' +
-                            '<tbody>';
-                    data.files.forEach(function(file) {
-                        let ext = file.file_url.split('.').pop().toLowerCase();
-                        let isImage = ['jpg','jpeg','png','gif','bmp','webp'].includes(ext);
-                        html += '<tr data-fileid="' + file.id + '">' +
-                            '<td>' + file.file_name + '</td>' +
-                            '<td>' +
-                                '<a href="' + file.file_url + '" target="_blank" class="btn btn-outline-info btn-sm">' +
-                                    (isImage ?
-                                        '<i class="bi bi-image"></i>' :
-                                        '<i class="bi bi-file-earmark-pdf"></i>'
-                                    ) +
-                                '</a>' +
-                            '</td>' +
-                            '<td>' + (file.uploader_name || '<span class="text-muted">?</span>') + '</td>' +
-                            '<td>' + (file.uploaded_at_fmt || '') + '</td>' +
-                            '<td class="text-center">' +
-                                '<button class="btn btn-outline-danger btn-sm delete-uploaded-file-btn" ' +
-                                        'data-fileid="' + file.id + '" title="Xóa file">' +
-                                    '<i class="bi bi-trash"></i>' +
-                                '</button>' +
-                            '</td>' +
-                        '</tr>';
-                    });
-                    html += '</tbody></table>';
-                } else {
-                    html = '<div class="text-center text-muted py-3">Chưa có file nào được upload!</div>';
-                }
-                document.getElementById('view-result-list').innerHTML = html;
-
-                let modal = new bootstrap.Modal(document.getElementById('viewResultModal'));
-                modal.show();
-
-                document.querySelectorAll('.delete-uploaded-file-btn').forEach(function(delBtn) {
-                    delBtn.addEventListener('click', function() {
-                        if (!confirm('Xóa file này?')) return;
-                        let fileId = delBtn.getAttribute('data-fileid');
-                        fetch('./nurse-deleteuploadedfileajax', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: 'id=' + encodeURIComponent(fileId)
-                        })
-                        .then(function(res) { return res.json(); })
-                        .then(function(data) {
-                            if (data.success) {
-                                delBtn.closest('tr').remove();
-                                if (document.querySelectorAll('#view-result-list tbody tr').length === 0) {
-                                    document.getElementById('view-result-list').innerHTML = '<div class="text-center text-muted py-3">Chưa có file nào được upload!</div>';
+                    fetch('./nurse-viewuploadedresultapi?appointmentId=' + encodeURIComponent(appointmentServiceId) + '&serviceId=' + encodeURIComponent(serviceId))
+                            .then(function (res) {
+                                return res.json();
+                            })
+                            .then(function (data) {
+                                let html = '';
+                                if (data.files && data.files.length > 0) {
+                                    html += '<table class="table table-bordered align-middle">' +
+                                            '<thead class="table-light">' +
+                                            '<tr>' +
+                                            '<th>Tên file</th>' +
+                                            '<th>Xem</th>' +
+                                            '<th>Người upload</th>' +
+                                            '<th>Ngày upload</th>' +
+                                            '<th class="text-center">Xóa</th>' +
+                                            '</tr>' +
+                                            '</thead>' +
+                                            '<tbody>';
+                                    data.files.forEach(function (file) {
+                                        let ext = file.file_url.split('.').pop().toLowerCase();
+                                        let isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext);
+                                        html += '<tr data-fileid="' + file.id + '">' +
+                                                '<td>' + file.file_name + '</td>' +
+                                                '<td>' +
+                                                '<a href="' + file.file_url + '" target="_blank" class="btn btn-outline-info btn-sm">' +
+                                                (isImage ?
+                                                        '<i class="bi bi-image"></i>' :
+                                                        '<i class="bi bi-file-earmark-pdf"></i>'
+                                                        ) +
+                                                '</a>' +
+                                                '</td>' +
+                                                '<td>' + (file.uploader_name || '<span class="text-muted">?</span>') + '</td>' +
+                                                '<td>' + (file.uploaded_at_fmt || '') + '</td>' +
+                                                '<td class="text-center">' +
+                                                '<button class="btn btn-outline-danger btn-sm delete-uploaded-file-btn" ' +
+                                                'data-fileid="' + file.id + '" title="Xóa file">' +
+                                                '<i class="bi bi-trash"></i>' +
+                                                '</button>' +
+                                                '</td>' +
+                                                '</tr>';
+                                    });
+                                    html += '</tbody></table>';
+                                } else {
+                                    html = '<div class="text-center text-muted py-3">Chưa có file nào được upload!</div>';
                                 }
-                            } else {
-                                alert('Xóa thất bại!');
-                            }
-                        })
-                        .catch(function() {
-                            alert('Lỗi kết nối server!');
-                        });
-                    });
+                                document.getElementById('view-result-list').innerHTML = html;
+
+                                let modal = new bootstrap.Modal(document.getElementById('viewResultModal'));
+                                modal.show();
+
+                                document.querySelectorAll('.delete-uploaded-file-btn').forEach(function (delBtn) {
+                                    delBtn.addEventListener('click', function () {
+                                        if (!confirm('Xóa file này?'))
+                                            return;
+                                        let fileId = delBtn.getAttribute('data-fileid');
+                                        fetch('./nurse-deleteuploadedfileajax', {
+                                            method: 'POST',
+                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                            body: 'id=' + encodeURIComponent(fileId)
+                                        })
+                                                .then(function (res) {
+                                                    return res.json();
+                                                })
+                                                .then(function (data) {
+                                                    if (data.success) {
+                                                        delBtn.closest('tr').remove();
+                                                        if (document.querySelectorAll('#view-result-list tbody tr').length === 0) {
+                                                            document.getElementById('view-result-list').innerHTML = '<div class="text-center text-muted py-3">Chưa có file nào được upload!</div>';
+                                                        }
+                                                    } else {
+                                                        alert('Xóa thất bại!');
+                                                    }
+                                                })
+                                                .catch(function () {
+                                                    alert('Lỗi kết nối server!');
+                                                });
+                                    });
+                                });
+                            });
                 });
             });
-    });
-});
 
 
 
         </script>
-        
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
- <!-- simplebar -->
+        <!-- simplebar -->
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
-       
+
         <!-- Icons -->
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <!-- Main Js -->

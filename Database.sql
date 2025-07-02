@@ -23,13 +23,16 @@ CREATE TABLE users (
   phone NVARCHAR(20),
   address NVARCHAR(255),
   avatar NVARCHAR(255) DEFAULT '/SWP391/image-loader/default_user.png',
-  status BIT DEFAULT 1,
+  status   TINYINT NOT NULL DEFAULT 1,
   role_id INT NOT NULL DEFAULT 1,
   created_at DATETIME DEFAULT GETDATE(),
   updated_at DATETIME DEFAULT GETDATE(),
 
   CONSTRAINT FK_users_roles FOREIGN KEY (role_id) REFERENCES roles(id)
 );
+
+
+
 
 -- 4. Doctors
 CREATE TABLE doctors (

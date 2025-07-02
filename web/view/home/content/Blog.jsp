@@ -119,7 +119,7 @@
                 <section class="featured-news container py-5">
                     <div class="row align-items-center gx-5">
                         <div class="col-md-6">
-                            <img src="${pageContext.request.contextPath}/${blogs[0].image}" class="featured-img img-fluid rounded-4 shadow-sm" alt="Main blog image">
+                            <img src="${blogs[0].image}" class="featured-img img-fluid rounded-4 shadow-sm" alt="Main blog image">
                         </div>
                         <div class="col-md-6">
                             <p class="text-orange small mb-1">
@@ -142,7 +142,7 @@
                 <c:forEach var="blog" items="${blogs}" varStatus="loop" begin="1">
                     <div class="col">
                         <div class="news-card p-3 h-100">
-                            <img src="${pageContext.request.contextPath}/${blog.image}" class="news-img mb-2" alt="Blog Image">
+                            <img src="${blog.image}" class="news-img mb-2" alt="Blog Image">
                             <p class="text-muted small mb-1">BẢN TIN BỆNH VIỆN</p>
                             <p class="text-orange small mb-1">
                                 <fmt:formatDate value="${blog.publishedAt}" pattern="dd/MM/yyyy" />

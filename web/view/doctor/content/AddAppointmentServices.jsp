@@ -397,7 +397,7 @@
                     let formData = new FormData(form);
                     formData.append("appointmentId", appointmentId);
 
-                    fetch('add-appointment-service', {
+                    fetch('doctor-add-appointment-service', {
                         method: 'POST',
                         body: formData
                     })

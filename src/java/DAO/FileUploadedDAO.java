@@ -94,6 +94,25 @@ public class FileUploadedDAO {
         return list;
     }
 
+    public UploadedFile getById(String id) {
+        String sql = "SELECT * FROM uploaded_files WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                UploadedFile f = new UploadedFile();
+                f.setId(rs.getString("id"));
+                f.setFile_url(rs.getString("file_url"));
+                f.setFile_name(rs.getString("file_name"));
+                f.setUploaded_at(rs.getTimestamp("uploaded_at"));
+                return f;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean deleteById(String id) {
         String sql = "DELETE FROM uploaded_files WHERE id = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
