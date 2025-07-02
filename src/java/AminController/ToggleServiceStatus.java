@@ -18,8 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author FPT
  */
-@WebServlet(name="DeleteService", urlPatterns={"/admin-delete-service"})
-public class DeleteService extends HttpServlet {
+@WebServlet(name="ToggleServiceStatus", urlPatterns={"/admin-toggle-service-status"})
+public class ToggleServiceStatus extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -36,10 +36,10 @@ public class DeleteService extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteService</title>");  
+            out.println("<title>Servlet ToggleServiceStatus</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteService at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ToggleServiceStatus at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -56,20 +56,8 @@ public class DeleteService extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try {
-            String id = request.getParameter("id");
-            ServiceDAO serviceDAO = new ServiceDAO();
-            if (serviceDAO.deleteService(id)) {
-                request.getSession().setAttribute("message", "Xóa dịch vụ thành công!");
-            } else {
-                request.getSession().setAttribute("message", "Lỗi khi xóa dịch vụ!");
-            }
-        } catch (Exception e) {
-            request.getSession().setAttribute("message", "Lỗi khi xóa dịch vụ!");
-        }
-        response.sendRedirect(request.getContextPath() + "/admin-list-service");
-    }
-     
+        processRequest(request, response);
+    } 
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -81,8 +69,21 @@ public class DeleteService extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String id = request.getParameter("id");
+        int newStatus = Integer.parseInt(request.getParameter("status")); // 0 hoặc 1
+
+        ServiceDAO serviceDAO = new ServiceDAO();
+        boolean updated = serviceDAO.updateServiceStatus(id, newStatus);
+
+        if (updated) {
+            request.getSession().setAttribute("message", "Cập nhật trạng thái dịch vụ thành công!");
+        } else {
+            request.getSession().setAttribute("error", "Không thể cập nhật trạng thái dịch vụ.");
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin-list-service");
     }
+    
 
     /** 
      * Returns a short description of the servlet.

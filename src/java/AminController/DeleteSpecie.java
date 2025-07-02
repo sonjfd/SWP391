@@ -73,7 +73,7 @@ public class DeleteSpecie extends HttpServlet {
             if (success) {
                 request.setAttribute("message", "Xóa loài thành công!");
             } else {
-                request.setAttribute("message", "Không thể xóa loài vì có liên kết dữ liệu.");
+                request.setAttribute("message", "Không thể xóa loài vì liên quan đến bảng khác.");
             }
 
         } catch (NumberFormatException e) {
@@ -83,8 +83,8 @@ public class DeleteSpecie extends HttpServlet {
             request.setAttribute("message", "Xóa thất bại do lỗi hệ thống.");
             e.printStackTrace();
         }
-
-        // Luôn chuyển đến danh sách loài
+        List<Specie> specieList = specieDAO.getAllSpecies();
+        request.setAttribute("specieList", specieList);
         request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
     }
         

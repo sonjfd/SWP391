@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class ServiceDAO {
+
     private Connection getConnection() throws SQLException {
         return DBContext.getConnection();
     }
@@ -99,8 +100,7 @@ public class ServiceDAO {
         return services;
     }
 
-    
-     public List<Service> getAllActiveServices() {
+    public List<Service> getAllActiveServices() {
         return getAllServices()
                 .stream()
                 .filter(s -> s.getStatus() == 1)
@@ -124,7 +124,41 @@ public class ServiceDAO {
         }
         return departments;
     }
-    
+
+    public boolean isServiceNameExists(String name, String excludeId) {
+        String sql = "SELECT COUNT(*) FROM services WHERE LOWER(name) = ?";
+        if (excludeId != null && !excludeId.isEmpty()) {
+            sql += " AND id <> ?";
+        }
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name.trim().toLowerCase());
+            if (excludeId != null && !excludeId.isEmpty()) {
+                ps.setString(2, excludeId);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateServiceStatus(String serviceId, int newStatus) {
+        String sql = "UPDATE services SET status = ? WHERE id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newStatus);
+            ps.setString(2, serviceId);
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         // Tạo đối tượng Service cần thêm
         Service newService = new Service();
@@ -147,6 +181,5 @@ public class ServiceDAO {
             System.out.println("Thêm dịch vụ thất bại.");
         }
     }
-    
-   
+
 }
