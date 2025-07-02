@@ -20,12 +20,12 @@ import java.util.UUID;
 @WebServlet("/staff-edit-blog")
 @MultipartConfig
 public class EditBlog extends HttpServlet {
-
+    
     private final String UPLOAD_DIR = "assets/images/blogs";
-
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         String id = request.getParameter("id");
         Blog blog = new BlogDAO().getBlogById(id);
         List<Tag> tagList = new BlogDAO().getAllTags();
@@ -35,22 +35,22 @@ public class EditBlog extends HttpServlet {
         request.setAttribute("tagList", tagList);
         request.getRequestDispatcher("/view/staff/content/EditBlog.jsp").forward(request, response);
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-
+        
         String id = request.getParameter("id");
         String title = request.getParameter("title");
         String content = request.getParameter("content");
         String status = request.getParameter("status");
         String[] tagIds = request.getParameterValues("tags");
         Part filePart = request.getPart("image");
-
+        
         BlogDAO dao = new BlogDAO();
         Blog blog = dao.getBlogById(id);
-
+        
         blog.setTitle(title);
         blog.setContent(content);
         blog.setStatus(status);
@@ -59,17 +59,44 @@ public class EditBlog extends HttpServlet {
             blog.setPublishedAt(new Date());
         }
 
-        if (filePart != null && filePart.getSize() > 0) {
-            String uploadPath = request.getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
-            filePart.write(uploadPath + File.separator + uniqueFileName);
-            blog.setImage(UPLOAD_DIR + "/" + uniqueFileName);
+        // Thư mục lưu ảnh ngoài project
+        String uploadDirPath = "C:/MyUploads/avatars";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
         }
+        
+        String avatarPath = null;
+        String randomFileName = null;
+        
+        if (filePart != null && filePart.getSize() > 0) {
+            // Xóa ảnh cũ nếu có
+            String oldAvatarPath = blog.getImage(); // eg: /image-loader/abc.jpg
+            if (oldAvatarPath != null && oldAvatarPath.contains("/image-loader/")) {
+                String oldFileName = oldAvatarPath.substring((request.getContextPath() + "/image-loader/").length());
+                File oldFile = new File(uploadDir, oldFileName);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
 
+            // Tạo tên ngẫu nhiên cho file
+            String fileExtension = filePart.getSubmittedFileName().substring(filePart.getSubmittedFileName().lastIndexOf("."));
+            randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
+
+            // Ghi file
+            File newFile = new File(uploadDir, randomFileName);
+            filePart.write(newFile.getAbsolutePath());
+
+            // Gán đường dẫn lưu DB
+            avatarPath = request.getContextPath() + "/image-loader/" + randomFileName;
+            
+        } else {
+            // Không upload ảnh mới → giữ nguyên ảnh cũ
+            avatarPath = blog.getImage();
+        }
+        blog.setImage(avatarPath);
+        
         dao.updateBlog(blog, tagIds);
         response.sendRedirect("staff-list-blog");
     }

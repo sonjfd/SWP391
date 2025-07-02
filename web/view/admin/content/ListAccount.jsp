@@ -41,6 +41,7 @@
             }
             .container {
                 max-width: 1200px;
+                height: 100vh;
                 margin: auto;
                 background: white;
                 padding: 20px;
@@ -215,6 +216,20 @@
                 background-color: #f2dede;
                 color: #a94442;
             }
+
+            .ban-btn {
+                background-color: #e74c3c;
+            }
+            .ban-btn:hover {
+                background-color: #c0392b;
+            }
+            .unban-btn {
+                background-color: #2ecc71;
+            }
+            .unban-btn:hover {
+                background-color: #27ae60;
+            }
+
         </style>
     </head>
     <body>
@@ -232,7 +247,7 @@
         <%@include file="../layout/Header.jsp" %>
 
         <div class="container">
-            
+
             <div class="header">
                 <h2>Danh sách tài khoản nhân viên/bác sĩ</h2>
             </div>
@@ -241,8 +256,8 @@
                     <a href="admin-create-account" class="create-btn">Tạo tài khoản mới</a>
                 </div>
                 <c:if test="${not empty message}">
-                ${message}
-            </c:if>
+                    ${message}
+                </c:if>
                 <div class="toolbar-right">
                     <form method="post" action="admin-search-account" class="search-form">
                         <input type="text" name="search" value="${search}" placeholder="Tìm kiếm theo tên">
@@ -265,8 +280,8 @@
                                 <option value="">Tất cả</option>
                                 <option value="1">Hoạt động</option>
                                 <option value="2">Ban</option>
-                                
-                                
+
+
                             </select>
                         </div>
                         <a href="admin-list-account" class="reset-btn" >Tất cả tài khoản</a>
@@ -281,7 +296,6 @@
                     <th>Email</th>
                     <th>Họ và tên</th>
                     <th>Vai trò</th>
-                    <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
                 <c:forEach var="user" items="${users}" varStatus="counter">
@@ -300,19 +314,19 @@
                             </c:choose>
                         </td>
                         <td>
-                            <form method="post" action="admin-update-status">
+                            <form method="post" action="admin-update-status" style="display:inline;">
                                 <input type="hidden" name="id" value="${user.id}">
                                 <input type="hidden" name="status" value="${user.status == 1 ? 2 : 1}">
-                                <input type="hidden" name="search" value="${search}">
-                                <label class="switch">
-                                    <input type="checkbox" ${user.status == 1 ? 'checked' : ''} onchange="this.form.submit()">
-                                    <span class="slider"></span>
-                                </label>
+                                <button type="submit" class="action-btn ${user.status == 1 ? 'ban-btn' : 'unban-btn'}">
+                                    ${user.status == 1 ? 'Ban' : 'Mở khóa'}
+                                </button>
                             </form>
-                        </td>
-                        <td>
-                            <a href="admin-update-account?id=${user.id}" class="action-btn edit-btn">Sửa</a>
 
+
+
+                            <c:if test="${user.role.id!=1}">
+                                <a href="admin-update-account?id=${user.id}" class="action-btn edit-btn">Sửa</a>
+                            </c:if>
                         </td>
                     </tr>
                 </c:forEach>
@@ -324,8 +338,7 @@
         </div>
 
         <script>
-            
-
+            // Lọc bảng theo role và status
             function filterAccounts() {
                 const roleFilter = document.getElementById('filterRole').value;
                 const statusFilter = document.getElementById('filterStatus').value;
@@ -339,34 +352,28 @@
                     if (roleFilter && role !== roleFilter) {
                         showRow = false;
                     }
+
                     if (statusFilter && status !== statusFilter) {
                         showRow = false;
                     }
 
                     row.style.display = showRow ? '' : 'none';
-                    console.log(`Filter applied: Role=${roleFilter}, Status=${statusFilter}, Row visible=${showRow}`);
                 });
             }
 
+            // Reset cả 2 bộ lọc về mặc định (Tất cả)
             function resetFilters() {
-                const filterRole = document.getElementById('filterRole');
-                const filterStatus = document.getElementById('filterStatus');
-                filterRole.value = '';
-                filterStatus.value = '';
+                document.getElementById('filterRole').value = '';
+                document.getElementById('filterStatus').value = '';
                 filterAccounts();
-                console.log('Filters reset: Showing all accounts');
             }
 
+            // Gọi filter ngay khi trang load để áp dụng bộ lọc mặc định (nếu có)
             document.addEventListener('DOMContentLoaded', function () {
-                const filterRole = document.getElementById('filterRole');
-                const filterStatus = document.getElementById('filterStatus');
-                if (filterRole && filterStatus) {
-                    filterAccounts();
-                } else {
-                    console.error('Filter elements not found');
-                }
+                filterAccounts();
             });
         </script>
+
 
         <!-- javascript -->
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

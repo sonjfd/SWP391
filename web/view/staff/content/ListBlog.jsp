@@ -1,7 +1,3 @@
-
-
-
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -149,7 +145,7 @@
                 }
             }
 
- 
+
 
 
 
@@ -168,7 +164,7 @@
             }
 
             .btn-add {
-                
+
                 align-items: center;
                 font-size: 12px;
 
@@ -181,7 +177,7 @@
                 gap: 6px;
             }
 
-            
+
             /* --- ẢNH BLOG --- */
             .image-thumb {
                 width: 50px;
@@ -213,6 +209,9 @@
             td:last-child {
                 text-align: center;
                 white-space: nowrap;
+            }
+            td:nth-child(4){
+                text-align: center;
             }
 
             /* Nút Sửa */
@@ -249,15 +248,15 @@
                     display: none;
                 }
             }
-.blog-image {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;       /* Đảm bảo ảnh không méo */
-    border-radius: 6px;
-    display: block;
-    margin: 0 auto;          /* Căn giữa ảnh trong ô */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
+            .blog-image {
+                width: 50px;
+                height: 50px;
+                object-fit: cover;       /* Đảm bảo ảnh không méo */
+                border-radius: 6px;
+                display: block;
+                margin: 0 auto;          /* Căn giữa ảnh trong ô */
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            }
 
 
 
@@ -276,39 +275,39 @@
 
                 <h4 class="mb-3">Danh sách Blogs</h4>
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <!-- Form lọc bên trái -->
-    <form method="get" action="staff-list-blog" class="row gx-2 align-items-center flex-nowrap">
-        <div class="col-auto">
-            <input type="date" name="dateFrom" value="${param.dateFrom}" class="form-control form-control-sm" />
-        </div>
-        <div class="col-auto">
-            <input type="date" name="dateTo" value="${param.dateTo}" class="form-control form-control-sm" />
-        </div>
-        <div class="col-auto">
-            <select name="status" class="form-select form-select-sm">
-                <option value="">Tất cả</option>
-                <option value="published" ${param.status == 'published' ? 'selected' : ''}>Đã đăng</option>
-                <option value="draft" ${param.status == 'draft' ? 'selected' : ''}>Nháp</option>
-            </select>
-        </div>
-        <div class="col-auto">
-            <select name="tag" class="form-select form-select-sm">
-                <option value="">Chọn tag</option>
-                <c:forEach var="tag" items="${tagsList}">
-                    <option value="${tag.id}" ${param.tag == tag.id ? 'selected' : ''}>${tag.name}</option>
-                </c:forEach>
-            </select>
-        </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-sm btn-primary">Lọc</button>
-        </div>
-    </form>
+                    <!-- Form lọc bên trái -->
+                    <form method="get" action="staff-list-blog" class="row gx-2 align-items-center flex-nowrap">
+                        <div class="col-auto">
+                            <input type="date" name="dateFrom" value="${param.dateFrom}" class="form-control form-control-sm" />
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" name="dateTo" value="${param.dateTo}" class="form-control form-control-sm" />
+                        </div>
+                        <div class="col-auto">
+                            <select name="status" class="form-select form-select-sm">
+                                <option value="">Tất cả</option>
+                                <option value="published" ${param.status == 'published' ? 'selected' : ''}>Đã đăng</option>
+                                <option value="draft" ${param.status == 'draft' ? 'selected' : ''}>Nháp</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <select name="tag" class="form-select form-select-sm">
+                                <option value="">Chọn tag</option>
+                                <c:forEach var="tag" items="${tagsList}">
+                                    <option value="${tag.id}" ${param.tag == tag.id ? 'selected' : ''}>${tag.name}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-sm btn-primary">Lọc</button>
+                        </div>
+                    </form>
 
-    <!-- Nút thêm mới bên phải -->
-    <a href="staff-add-blog" class="btn btn-sm btn-success d-flex align-items-center gap-1">
-        <i class="fas fa-plus-circle"></i> Thêm mới
-    </a>
-</div>
+                    <!-- Nút thêm mới bên phải -->
+                    <a href="staff-add-blog" class="btn btn-sm btn-success d-flex align-items-center gap-1">
+                        <i class="fas fa-plus-circle"></i> Thêm mới
+                    </a>
+                </div>
 
 
 
@@ -327,14 +326,14 @@
                     </thead>
                     <tbody>
                         <c:forEach var="blog" items="${listBlogs}" varStatus="loop">
-                            <tr>
+                            <tr data-id="${blog.id}">
                                 <td>${loop.index + 1}</td>
                                 <td class="blog-title">${blog.title}</td>
                                 <td>
-                                    <img src="${pageContext.request.contextPath}/${blog.image}" class="img-thumbnail image-thumb blog-image" style="width: 30px;height: 30px" alt="blog-img"/>
+                                    <img src="${blog.image}" class="img-thumbnail image-thumb blog-image" style="width: 30px;height: 30px" alt="blog-img"/>
                                 </td>
                                 <td>
-                                    <span class="badge ${blog.status == 'published' ? 'bg-success' : 'bg-secondary'}">
+                                    <span class=" text-center badge ${blog.status == 'published' ? 'bg-success' : 'bg-secondary'}">
                                         ${blog.status == 'published' ? 'Đã đăng' : 'Nháp'}
                                     </span>
                                 </td>
@@ -343,12 +342,12 @@
                                         <a href="staff-edit-blog?id=${blog.id}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit icon-btn"></i> <span>Sửa</span>
                                     </a>
-                                    <a href="staff-delete-blog?id=${blog.id}" 
-                                       class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?')">
+
+                                    <a href="javascript:void(0);" 
+                                       class="btn btn-sm btn-danger" 
+                                       onclick="deleteBlog('${blog.id}')" >
                                         <i class="fas fa-trash-alt icon-btn"></i> <span>Xóa</span>
                                     </a>
-
                                 </td>
                             </tr>
                         </c:forEach>
@@ -359,50 +358,79 @@
                         </c:if>
                     </tbody>
                 </table>
-                
+
                 <!-- Phân trang -->
-<div class="pagination-container text-center mt-3">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            <!-- Nút Previous -->
-            <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                <a class="page-link" href="staff-list-blog?page=${currentPage - 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
+                <div class="pagination-container text-center mt-3">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <!-- Nút Previous -->
+                            <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link" href="staff-list-blog?page=${currentPage - 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
 
-            <!-- Các trang số -->
-            <c:forEach var="i" begin="1" end="${totalPages}" varStatus="status">
-                <li class="page-item ${currentPage == i ? 'active' : ''}">
-                    <a class="page-link" href="staff-list-blog?page=${i}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}">${i}</a>
-                </li>
-            </c:forEach>
+                            <!-- Các trang số -->
+                            <c:forEach var="i" begin="1" end="${totalPages}" varStatus="status">
+                                <li class="page-item ${currentPage == i ? 'active' : ''}">
+                                    <a class="page-link" href="staff-list-blog?page=${i}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}">${i}</a>
+                                </li>
+                            </c:forEach>
 
-            <!-- Nút Next -->
-            <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="staff-list-blog?page=${currentPage + 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
+                            <!-- Nút Next -->
+                            <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link" href="staff-list-blog?page=${currentPage + 1}&dateFrom=${param.dateFrom}&dateTo=${param.dateTo}&status=${param.status}&tag=${param.tag}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
 
 
             </div>
         </div>
+        <script>
+            function deleteBlog(blogId) {
+                if (confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
+                    fetch("./staff-delete-blog?id=" + blogId, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
 
-        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+                            .then(function (response) {
+                                console.log(response);
+                                if (response.ok) {
+                                    // Xóa phần tử <tr> tương ứng với bài viết
+                                    document.querySelector("tr[data-id='" + blogId + "']").remove();
+                                } else {
+                                    alert('Xóa bài viết không thành công!');
+                                }
+                            })
+                            .catch(function (error) {
+                                console.error('Error:', error);
+                                alert('Đã xảy ra lỗi khi xóa bài viết!');
+                            });
+                }
+            }
+        </script>
 
 
 
 
-        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
 
+
+        <!-- simplebar -->
+        <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
         <!-- Chart -->
-        
-
+        <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/columnchart.init.js"></script>
+        <!-- Icons -->
+        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <!-- Main Js -->
+        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+
     </body>
 </html>
-

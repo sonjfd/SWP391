@@ -76,10 +76,12 @@
                         <select class="form-select form-select-sm" style="width: auto;" id="doctorFilter" name="doctor">
                             <option value="">Bác sĩ</option>
                             <c:forEach items="${doctors}" var="d">
-                                <option value="${d.user.id}" 
-                                        ${d.user.id == selectedDoctor ? "selected" : ""}>
-                                    ${d.user.fullName}
-                                </option>
+                                <c:if test="${d.user.status==1}">
+                                    <option value="${d.user.id}" 
+                                            ${d.user.id == selectedDoctor ? "selected" : ""}>
+                                        ${d.user.fullName}
+                                    </option>
+                                </c:if>
                             </c:forEach>
                         </select>
 

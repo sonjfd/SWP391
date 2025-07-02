@@ -153,40 +153,57 @@
                     <button type="submit" form="serviceForm" class="btn btn-success">Thêm dịch vụ</button>
                 </div>
             </form>
-                <c:if test="${not empty errorMessage}">
-                    <div id="errorMessageBox" class="alert alert-danger mt-3">${errorMessage}</div>
-                </c:if>
-                <!-- Bảng dịch vụ -->
-                <div class="card mt-4">
-                    <div class="card-header bg-primary text-white">
-                        Danh sách dịch vụ đã thêm cho cuộc hẹn này
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table mb-0 align-middle text-center" id="serviceListTable">
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Tên dịch vụ</th>
-                                    <th>Giá (VNĐ)</th>
-                                    <th>Trạng thái</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="listServiceBody">
-                                <!-- JS sẽ đổ dữ liệu vào đây -->
-                            </tbody>
-                        </table>
-                    </div>
+            <c:if test="${not empty errorMessage}">
+                <div id="errorMessageBox" class="alert alert-danger mt-3">${errorMessage}</div>
+            </c:if>
+            <!-- Bảng dịch vụ -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    Danh sách dịch vụ đã thêm cho cuộc hẹn này
                 </div>
+                <div class="card-body p-0">
+                    <table class="table mb-0 align-middle text-center" id="serviceListTable">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên dịch vụ</th>
+                                <th>Giá (VNĐ)</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listServiceBody">
+                            <!-- JS sẽ đổ dữ liệu vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
 
 
 
 
         </div>
+        <!-- Modal Hiển thị Kết Quả -->
+        <div class="modal fade" id="resultFilesModal" tabindex="-1" aria-labelledby="resultFilesLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="resultFilesLabel">Kết quả dịch vụ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body" id="resultFilesBody">
+                        <!-- Các file sẽ được render tại đây -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
-        
+
 
 
 
@@ -252,7 +269,7 @@
                                                 '<td>' + sv.serviceName + '</td>' +
                                                 '<td>' + Number(sv.price).toLocaleString('vi-VN') + '</td>' +
                                                 '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
-                                                '<td >' +actionHtml + '</td>';
+                                                '<td >' + actionHtml + '</td>';
 
                                         tbody.appendChild(tr);
                                     });
@@ -280,31 +297,66 @@
                 document.addEventListener('click', function (e) {
                     const btn = e.target.closest('.receive-result-btn');
                     if (btn) {
-                        // Lấy đúng appointmentId hiện tại
-
                         const serviceId = btn.getAttribute('data-serid');
-                        if (!serviceId) {
-                            alert("Không tìm thấy mã dịch vụ.");
-                            return;
-                        }
+                        const appointmentId = document.getElementById('appointmentId').value;
+
+                        // Fetch API call with concatenated query string
                         fetch('./api/get-files?appointmentId=' + appointmentId + '&serviceId=' + serviceId)
-                                .then(res => res.json())
-                                .then(data => {
+                                .then(function (res) {
+                                    return res.json();
+                                })
+                                .then(function (data) {
+                                    const resultBody = document.getElementById('resultFilesBody');
+                                    resultBody.innerHTML = '';
+
                                     if (data.files && data.files.length > 0) {
-                                        data.files.forEach(file => {
-                                            const a = document.createElement('a');
-                                            a.href = file.fileUrl;
-                                            a.download = file.fileName || 'result_file';
-                                            document.body.appendChild(a);
-                                            a.click();
-                                            document.body.removeChild(a);
+                                        let tableHtml = ''
+                                                + '<table class="table table-bordered align-middle">'
+                                                + '<thead class="table-light">'
+                                                + '<tr>'
+                                                + '<th>STT</th>'
+                                                + '<th>Tên file</th>'
+                                                + '<th>Xem trước</th>'
+                                                + '<th>Tải xuống</th>'
+                                                + '</tr>'
+                                                + '</thead>'
+                                                + '<tbody>';
+
+                                        data.files.forEach(function (file, idx) {
+                                            const ext = file.fileName.split('.').pop().toLowerCase();
+                                            const previewUrl = file.fileUrl;
+                                            const viewLink = ''
+                                                    + '<a href="' + previewUrl + '" target="_blank" class="btn btn-sm btn-outline-info">'
+                                                    + '<i class="bi bi-eye"></i> Xem'
+                                                    + '</a>';
+                                            const downloadLink = ''
+                                                    + '<a href="' + file.fileUrl + '" download="' + file.fileName + '" class="btn btn-sm btn-outline-primary">'
+                                                    + '<i class="bi bi-download"></i> Tải xuống'
+                                                    + '</a>';
+
+                                            tableHtml += ''
+                                                    + '<tr>'
+                                                    + '<td>' + (idx + 1) + '</td>'
+                                                    + '<td>' + file.fileName + '</td>'
+                                                    + '<td class="text-center">' + viewLink + '</td>'
+                                                    + '<td class="text-center">' + downloadLink + '</td>'
+                                                    + '</tr>';
                                         });
+
+                                        tableHtml += '</tbody></table>';
+                                        resultBody.innerHTML = tableHtml;
+
+                                        const modal = new bootstrap.Modal(document.getElementById('resultFilesModal'));
+                                        modal.show();
                                     } else {
                                         alert('Không có file kết quả nào!');
                                     }
                                 });
                     }
                 });
+
+
+
 
 
                 // Reload lại list khi form submit thành công
@@ -345,7 +397,7 @@
                     let formData = new FormData(form);
                     formData.append("appointmentId", appointmentId);
 
-                    fetch('doctor-add-appointment-service', {
+                    fetch('add-appointment-service', {
                         method: 'POST',
                         body: formData
                     })

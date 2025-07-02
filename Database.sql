@@ -191,24 +191,22 @@ CREATE TABLE appointment_services (
   CONSTRAINT FK_appointment_services_department_service FOREIGN KEY (service_id) REFERENCES services(id)
 );
 
-
--- 15. Nurse Results (Kết quả cập nhật bởi y tá)
 CREATE TABLE nurse_specialization_results (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   appointment_id UNIQUEIDENTIFIER NOT NULL,
   service_id UNIQUEIDENTIFIER NOT NULL, -- Dịch vụ trong phòng ban
-  nurse_id UNIQUEIDENTIFIER NOT NULL, 
+  nurse_id UNIQUEIDENTIFIER NOT NULL, -- Bác sĩ thực hiện dịch vụ
   created_at DATETIME DEFAULT GETDATE(),
 
   CONSTRAINT FK_specialization_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id),
   CONSTRAINT FK_specialization_department_service FOREIGN KEY (service_id) REFERENCES services(id),
-  CONSTRAINT FK_specialization_doctor FOREIGN KEY (nurse_id) REFERENCES doctors(user_id)
+  CONSTRAINT FK_specialization_nurse FOREIGN KEY (nurse_id) REFERENCES nurses(user_id)
 );
 CREATE TABLE uploaded_files (
   id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
   result_id UNIQUEIDENTIFIER NOT NULL,  -- Liên kết với kết quả của nurse_specialization_results
   file_url NVARCHAR(500) NOT NULL,
-  file_type NVARCHAR(50),
+  file_name NVARCHAR(500) NOT NULL,
   uploaded_at DATETIME DEFAULT GETDATE(),
   
   CONSTRAINT FK_uploaded_files_result FOREIGN KEY (result_id) REFERENCES nurse_specialization_results(id) ON DELETE CASCADE

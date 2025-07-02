@@ -62,8 +62,13 @@
                                     <select id="doctor" name="doctor_id" class="form-select">
                                         <option value="">-- Chọn bác sĩ --</option>
                                         <c:forEach var="d" items="${doctors}">
-                                            <option value="${d.user.id}" ${d.user.id == doctor_id ? 'selected' : ''}>${d.user.fullName}</option>
+                                            <c:if test="${d.user.status == 1}">
+                                                <option value="${d.user.id}" ${d.user.id == doctor_id ? 'selected' : ''}>
+                                                    ${d.user.fullName}
+                                                </option>
+                                            </c:if>
                                         </c:forEach>
+
                                     </select>
                                 </div>
                                 <div class="d-flex flex-wrap gap-3">
@@ -149,7 +154,7 @@
                 const shifts = document.getElementById("shift").value;
                 const dayOfWeekCheckboxes = document.querySelectorAll('input[name="day_of_week"]:checked');
                 const monthsCheckboxes = document.querySelectorAll('input[name="months"]:checked');
-                const currentMonth = new Date().getMonth() + 1; 
+                const currentMonth = new Date().getMonth() + 1;
 
                 if (!doctor) {
                     alert("Vui lòng chọn bác sĩ.");

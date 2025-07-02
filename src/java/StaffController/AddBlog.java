@@ -21,9 +21,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024,
-    maxFileSize = 5 * 1024 * 1024,
-    maxRequestSize = 10 * 1024 * 1024
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 10 * 1024 * 1024
 )
 @WebServlet("/staff-add-blog")
 public class AddBlog extends HttpServlet {
@@ -51,28 +51,35 @@ public class AddBlog extends HttpServlet {
 
         // Giả lập User
         HttpSession ss = request.getSession();
-        User u  = (User) ss.getAttribute("user");
-       
-        if(u==null){
+        User u = (User) ss.getAttribute("user");
+        if (u == null) {
             response.sendRedirect("login");
             return;
         }
-        System.out.println("l");
-        // Xử lý file ảnh
-        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-        String uploadPath = request.getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
+        // Thư mục lưu ảnh ngoài project
+        String uploadDirPath = "C:/MyUploads/avatars";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
 
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
-        filePart.write(uploadPath + File.separator + uniqueFileName);
-        String dbImagePath = UPLOAD_DIR + "/" + uniqueFileName;
+        String avatarPath = null;
+        String randomFileName = null;
+        // Tạo tên ngẫu nhiên cho file
+        String fileExtension = filePart.getSubmittedFileName().substring(filePart.getSubmittedFileName().lastIndexOf("."));
+        randomFileName = java.util.UUID.randomUUID().toString() + fileExtension;
 
+        // Ghi file
+        File newFile = new File(uploadDir, randomFileName);
+        filePart.write(newFile.getAbsolutePath());
+
+        // Gán đường dẫn lưu DB
+        avatarPath = request.getContextPath() + "/image-loader/" + randomFileName;
         Blog blog = new Blog();
         blog.setId(UUID.randomUUID().toString());
         blog.setTitle(title);
         blog.setContent(content);
-        blog.setImage(dbImagePath);
+        blog.setImage(avatarPath);
         blog.setAuthor(u);
         blog.setStatus(status);
         blog.setCreatedAt(new Date());
@@ -85,4 +92,3 @@ public class AddBlog extends HttpServlet {
         response.sendRedirect("staff-list-blog");
     }
 }
-

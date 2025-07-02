@@ -79,9 +79,11 @@
                             <select id="doctorId" name="doctorId" class="form-select form-select-sm">
                                 <option value="">Tất cả</option>
                                 <c:forEach var="doctor" items="${doctorList}">
-                                    <option value="${doctor.user.id}" ${doctor.user.id == doctorId ? "selected" : ""}>
-                                        ${doctor.user.fullName}
-                                    </option>
+                                    <c:if test="${doctor.user.status==1}">
+                                        <option value="${doctor.user.id}" ${doctor.user.id == doctorId ? "selected" : ""}>
+                                            ${doctor.user.fullName}
+                                        </option>
+                                    </c:if>
                                 </c:forEach>
                             </select>
                         </div>
@@ -124,8 +126,13 @@
                                     <select id="deleteDoctorId" name="doctorId" class="form-select ">
                                         <option value=""> Chọn bác sĩ </option>
                                         <c:forEach var="doctor" items="${doctorList}">
-                                            <option value="${doctor.user.id}">${doctor.user.fullName}</option>
+                                            <c:if test="${doctor.user.status == 1}">
+                                                <option value="${doctor.user.id}" ${doctor.user.id == doctorId ? "selected" : ""}>
+                                                    ${doctor.user.fullName}
+                                                </option>
+                                            </c:if>
                                         </c:forEach>
+
                                     </select>
                                 </div>
 

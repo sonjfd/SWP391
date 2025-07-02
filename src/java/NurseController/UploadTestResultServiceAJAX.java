@@ -40,7 +40,7 @@ public class UploadTestResultServiceAJAX extends HttpServlet {
             String resultId = new NurseSpecializationResultDAO().insertIfNotExists(appointmentId, nurseId, serviceId);
 
             // 1. Đường dẫn lưu file ngoài project
-            String uploadDirPath = "C:/MyUploads/Images";
+            String uploadDirPath = "C:/MyUploads/avatars";
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();

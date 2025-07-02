@@ -254,18 +254,21 @@ public List<Department> getAllDepartments() {
         }
     }
 
+    
     public boolean updateStatus(String id, int status) {
-        try {
-            Connection conn = DBContext.getConnection(); // Kết nối database
-            PreparedStatement stmt = conn.prepareStatement("UPDATE users SET status = ? WHERE id = ?");
-            stmt.setInt(1, status); // Gán status (0 hoặc 1)
-            stmt.setString(2, id);  // Gán id
-            int rows = stmt.executeUpdate(); // Thực thi
-            return rows > 0; // Thành công nếu cập nhật được
-        } catch (SQLException e) {
-            return false; // Lỗi thì trả false
-        }
+    try {
+        Connection conn = DBContext.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE users SET status = ? WHERE id = ?");
+        stmt.setInt(1, status);
+        stmt.setString(2, id);
+        int rows = stmt.executeUpdate();
+        return rows > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
     }
+}
+
 
     public List<User> searchAccountsByFullName(String search) throws SQLException, ClassNotFoundException {
         List<User> users = new ArrayList<>();
@@ -363,23 +366,20 @@ public List<Department> getAllDepartments() {
     }
 
     public static void main(String[] args) {
-        AdminDao dao = new AdminDao();
+         AdminDao dao = new AdminDao();
+        String testId = "C72B501D-715B-4C3C-A770-0572AC939261";
+        int newStatus = 2; // hoặc 1 để mở khóa
 
-        // Tạo role nhân viên (id = 4)
-        Role employeeRole = new Role();
-        employeeRole.setId(3);
+        boolean result = dao.updateStatus(testId, newStatus);
 
-        // Tạo user nhân viên
-        User employee = new User();
-        employee.setId("D63A7CF3-26E7-4786-883F-F29F02437566"); // ID này phải tồn tại trong DB
-        employee.setUserName("doctor");
-        employee.setEmail("doctor@clinic.com");
-        employee.setFullName("Nguyễn Văn Nhân");
-        employee.setPhoneNumber("0906222333");
-        employee.setRole(employeeRole);
-
-        boolean result = dao.updateAccount(employee, null); // Không cần department
-        System.out.println(result ? "✅ Cập nhật NHÂN VIÊN thành công" : "❌ Cập nhật NHÂN VIÊN thất bại");
+        if (result) {
+            System.out.println("✅ Cập nhật trạng thái thành công cho ID: " + testId);
+        } else {
+            System.out.println("❌ Cập nhật thất bại cho ID: " + testId);
+        }
     }
 
+      
     }
+
+    

@@ -218,7 +218,9 @@
                             <select name="userId" id="userSelect" class="form-select" required>
                                 <option>Chọn khách hàng</option>
                                 <c:forEach items="${users}" var="u"> 
+                                    <c:if test="${u.status==1}">
                                     <option value="${u.id}">${u.fullName}</option>
+                                    </c:if>
                                 </c:forEach>
                             </select>
                         </div>
