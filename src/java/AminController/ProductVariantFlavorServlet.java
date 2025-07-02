@@ -46,7 +46,10 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                 try {
                     int flavorId = Integer.parseInt(request.getParameter("id"));
                     flavorDAO.softDelete(flavorId);
-                } catch (NumberFormatException ignored) {}
+                    request.getSession().setAttribute("message", "Đã ẩn hương vị thành công.");
+                } catch (NumberFormatException ignored) {
+                    request.getSession().setAttribute("error", "Lỗi khi ẩn hương vị.");
+                }
                 response.sendRedirect("admin-productVariantFlavor");
                 break;
 
@@ -54,7 +57,10 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                 try {
                     int flavorId = Integer.parseInt(request.getParameter("id"));
                     flavorDAO.delete(flavorId);
-                } catch (NumberFormatException ignored) {}
+                    request.getSession().setAttribute("message", "Đã xoá hương vị thành công.");
+                } catch (NumberFormatException ignored) {
+                    request.getSession().setAttribute("error", "Lỗi khi xoá hương vị.");
+                }
                 response.sendRedirect("admin-productVariantFlavor");
                 break;
 
@@ -115,10 +121,12 @@ public class ProductVariantFlavorServlet extends HttpServlet {
 
             if (action.equals("add")) {
                 flavorDAO.insert(f);
+                request.getSession().setAttribute("message", "Thêm hương vị thành công!");
             } else if (action.equals("edit")) {
                 int flavorId = Integer.parseInt(request.getParameter("flavorId"));
                 f.setFlavorId(flavorId);
                 flavorDAO.update(f);
+                request.getSession().setAttribute("message", "Cập nhật hương vị thành công!");
             }
 
             response.sendRedirect("admin-productVariantFlavor");

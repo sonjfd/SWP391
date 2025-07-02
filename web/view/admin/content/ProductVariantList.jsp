@@ -34,20 +34,28 @@
         <div class="container-fluid mt-6 pt-4" style="margin-top: 50px;">
             <h5 class="mb-4">Danh sách biến thể sản phẩm</h5>
 
+            <!-- Hiển thị thông báo thành công -->
+            <c:if test="${not empty message}">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </c:if>
+
+            <!-- Hiển thị thông báo lỗi -->
             <c:if test="${not empty error}">
-                <div class="alert alert-danger">${error}</div>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             </c:if>
 
             <!-- Form tìm kiếm và lọc -->
             <form method="get" action="admin-productVariant" class="row g-3 mb-4">
                 <input type="hidden" name="action" value="list">
-
-                <!-- Nút Thêm bên trái -->
                 <div class="col-md-3">
                     <a href="admin-productVariant?action=add" class="btn btn-primary w-100">+ Thêm biến thể</a>
                 </div>
-
-                <!-- Phần tìm kiếm bên phải -->
                 <div class="col-md-9">
                     <div class="d-flex justify-content-end gap-2">
                         <input type="text" name="keyword" class="form-control" placeholder="Tìm theo tên sản phẩm"
@@ -97,8 +105,7 @@
                                         <td>${v.flavorName}</td>
                                         <td><fmt:formatNumber value="${v.price}" type="number" pattern="#,##0.##" /> đ</td>
                                         <td>${v.stockQuantity}</td>
-                                        <td><img src="${v.image}" class="thumbnail" />
-                                        </td>
+                                        <td><img src="${v.image}" class="thumbnail" /></td>
                                         <td>
                                             <span class="badge bg-${v.status ? 'success' : 'danger'}">
                                                 ${v.status ? 'Đang bán' : 'Ngừng bán'}
@@ -124,16 +131,12 @@
             <c:if test="${totalPage > 1}">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center mt-3">
-
-                        <!-- Nút Trước (disabled nếu đang ở trang 1) -->
                         <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
                             <a class="page-link"
                                href="admin-productVariant?action=list&page=${currentPage - 1}&keyword=${param.keyword}&status=${param.status}">
                                 Trước
                             </a>
                         </li>
-
-                        <!-- Các số trang -->
                         <c:forEach begin="1" end="${totalPage}" var="i">
                             <li class="page-item ${i == currentPage ? 'active' : ''}">
                                 <a class="page-link"
@@ -142,18 +145,17 @@
                                 </a>
                             </li>
                         </c:forEach>
-
-                        <!-- Nút Sau (disabled nếu đang ở trang cuối) -->
                         <li class="page-item ${currentPage == totalPage ? 'disabled' : ''}">
                             <a class="page-link"
                                href="admin-productVariant?action=list&page=${currentPage + 1}&keyword=${param.keyword}&status=${param.status}">
                                 Sau
                             </a>
                         </li>
-
                     </ul>
                 </nav>
             </c:if>
         </div>
+
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

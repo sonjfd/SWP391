@@ -46,7 +46,10 @@ public class ProductVariantWeightServlet extends HttpServlet {
                 try {
                     int weightId = Integer.parseInt(request.getParameter("id"));
                     weightDAO.softDelete(weightId);
-                } catch (NumberFormatException ignored) {}
+                    request.getSession().setAttribute("message", "Ẩn trọng lượng thành công.");
+                } catch (NumberFormatException ignored) {
+                    request.getSession().setAttribute("error", "Ẩn thất bại! ID không hợp lệ.");
+                }
                 response.sendRedirect("admin-productVariantWeight");
                 break;
 
@@ -54,7 +57,10 @@ public class ProductVariantWeightServlet extends HttpServlet {
                 try {
                     int weightId = Integer.parseInt(request.getParameter("id"));
                     weightDAO.delete(weightId);
-                } catch (NumberFormatException ignored) {}
+                    request.getSession().setAttribute("message", "Xóa trọng lượng thành công.");
+                } catch (NumberFormatException ignored) {
+                    request.getSession().setAttribute("error", "Xóa thất bại! ID không hợp lệ.");
+                }
                 response.sendRedirect("admin-productVariantWeight");
                 break;
 
@@ -126,10 +132,12 @@ public class ProductVariantWeightServlet extends HttpServlet {
 
             if (action.equals("add")) {
                 weightDAO.insert(w);
+                request.getSession().setAttribute("message", "Thêm trọng lượng thành công.");
             } else if (action.equals("edit")) {
                 int weightId = Integer.parseInt(request.getParameter("weightId"));
                 w.setWeightId(weightId);
                 weightDAO.update(w);
+                request.getSession().setAttribute("message", "Cập nhật trọng lượng thành công.");
             }
 
             response.sendRedirect("admin-productVariantWeight");

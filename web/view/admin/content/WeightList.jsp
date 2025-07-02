@@ -10,6 +10,18 @@
         <title>Đơn vị trọng lượng biến thể</title>
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
+        <style>
+            .alert {
+                position: relative;
+                padding-right: 3rem;
+            }
+            .alert .btn-close {
+                position: absolute;
+                top: 50%;
+                right: 1rem;
+                transform: translateY(-18%);
+            }
+        </style>
     </head>
     <body>
         <%@ include file="../layout/Header.jsp" %>
@@ -18,10 +30,32 @@
             <div class="layout-specing">
                 <h5 class="mb-3">Đơn vị trọng lượng</h5>
 
+                <!-- THÔNG BÁO -->
+                <%
+                    String message = (String) session.getAttribute("message");
+                    String error = (String) session.getAttribute("error");
+                    if (message != null) {
+                %>
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    <%= message %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <%
+                        session.removeAttribute("message");
+                    }
+                    if (error != null) {
+                %>
+                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                    <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <%
+                        session.removeAttribute("error");
+                    }
+                %>
+
                 <!-- Form tìm kiếm -->
                 <form method="get" action="admin-productVariantWeight" class="mb-3 d-flex align-items-center justify-content-between w-100">
-
-
                     <input type="hidden" name="action" value="list" />
 
                     <!-- Bên trái: nút thêm -->
@@ -50,8 +84,7 @@
                     </div>
                 </form>
 
-
-
+                <!-- Danh sách bảng -->
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-primary text-center">
                         <tr>
@@ -128,7 +161,6 @@
                     </ul>
                 </nav>
                 <% } %>
-
             </div>
         </div>
 

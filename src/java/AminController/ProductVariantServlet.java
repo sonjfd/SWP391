@@ -50,8 +50,10 @@ public class ProductVariantServlet extends HttpServlet {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 variantDAO.delete(id);
+                request.getSession().setAttribute("message", "Xóa biến thể thành công.");
             } catch (Exception e) {
                 e.printStackTrace();
+                request.getSession().setAttribute("error", "Xóa thất bại: " + e.getMessage());
             }
             response.sendRedirect("admin-productVariant?action=list");
         }
@@ -79,6 +81,17 @@ public class ProductVariantServlet extends HttpServlet {
         int total = variantDAO.countSearch(keyword, status);
         int totalPage = (int) Math.ceil((double) total / PAGE_SIZE);
 
+        // Hiển thị message/error nếu có từ session
+        HttpSession session = request.getSession();
+        if (session.getAttribute("message") != null) {
+            request.setAttribute("message", session.getAttribute("message"));
+            session.removeAttribute("message");
+        }
+        if (session.getAttribute("error") != null) {
+            request.setAttribute("error", session.getAttribute("error"));
+            session.removeAttribute("error");
+        }
+
         request.setAttribute("variants", variants);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPage", totalPage);
@@ -104,23 +117,18 @@ public class ProductVariantServlet extends HttpServlet {
             int stock = Integer.parseInt(request.getParameter("stock_quantity"));
             boolean status = "1".equals(request.getParameter("status"));
 
-            // Lấy file ảnh
             Part filePart = request.getPart("image");
             String filename = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
-            // Tạo thư mục nếu chưa có
-            String uploadPath = "C:/MyUploads/avatars"; // thay đổi nếu cần
+            String uploadPath = "C:/MyUploads/avatars";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            // Lưu file ảnh
             String fullPath = uploadPath + File.separator + filename;
             filePart.write(fullPath);
 
-            // Đường dẫn ảnh để hiển thị
             String imagePath = "image-loader/" + filename;
 
-            // Tạo đối tượng biến thể
             ProductVariant variant = new ProductVariant();
             variant.setProductId(productId);
             variant.setWeightId(weightId);
@@ -130,12 +138,12 @@ public class ProductVariantServlet extends HttpServlet {
             variant.setStatus(status);
             variant.setImage(imagePath);
 
-            // Nếu là thêm mới
             if ("add".equals(action)) {
                 if (variantDAO.isDuplicateVariant(productId, weightId, flavorId)) {
                     throw new Exception("Biến thể với cùng sản phẩm, trọng lượng và hương vị đã tồn tại.");
                 }
                 variantDAO.add(variant);
+                request.getSession().setAttribute("message", "Thêm biến thể thành công.");
             }
 
             response.sendRedirect("admin-productVariant?action=list");

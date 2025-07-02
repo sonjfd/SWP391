@@ -13,7 +13,7 @@
         <meta charset="utf-8" />
 
         <title>Doctris - Doctor Appointment Booking System</title>
-=======
+
         <title>Hệ Thống Khám Thú Cưng</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
