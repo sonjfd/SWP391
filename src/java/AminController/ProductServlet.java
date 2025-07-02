@@ -4,8 +4,10 @@ import DAO.ProductDAO;
 import DAO.CategoryDAO;
 import Model.Product;
 import Model.Category;
+
 import java.io.IOException;
 import java.util.List;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -32,8 +34,10 @@ public class ProductServlet extends HttpServlet {
         int page = (pageParam == null || pageParam.isEmpty()) ? 1 : Integer.parseInt(pageParam);
         int pageSize = 5;
 
+        HttpSession session = request.getSession();
+
         try {
-            // ========================= ADD FORM =========================
+            // ========== ADD FORM ==========
             if ("addForm".equalsIgnoreCase(action)) {
                 List<Category> categories = categoryDAO.getCategoriesByStatus(true);
                 request.setAttribute("categories", categories);
@@ -41,7 +45,7 @@ public class ProductServlet extends HttpServlet {
                 return;
             }
 
-            // ========================= EDIT FORM ========================
+            // ========== EDIT FORM ==========
             if ("edit".equalsIgnoreCase(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 Product p = productDAO.getProductById(id);
@@ -51,19 +55,23 @@ public class ProductServlet extends HttpServlet {
                     request.setAttribute("editProduct", p);
                     request.getRequestDispatcher("/view/admin/content/EditProduct.jsp").forward(request, response);
                 } else {
+                    session.setAttribute("error", "Không tìm thấy sản phẩm cần chỉnh sửa.");
                     response.sendRedirect("admin-product?page=" + page);
                 }
                 return;
             }
 
-            // ========================= DELETE ============================
+            // ========== DELETE ==========
             if ("delete".equalsIgnoreCase(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
-                productDAO.softDeleteProduct(id);
-                request.getSession().setAttribute("message", " Đã xoá sản phẩm thành công!");
+                if (productDAO.softDeleteProduct(id)) {
+                    session.setAttribute("message", "Xoá sản phẩm thành công.");
+                } else {
+                    session.setAttribute("error", "Xoá sản phẩm thất bại.");
+                }
             }
 
-            // ========================= HIỂN THỊ DANH SÁCH SẢN PHẨM =========================
+            // ========== DANH SÁCH ==========
             List<Product> list;
             int total;
             if (!keyword.isEmpty()) {
@@ -85,7 +93,7 @@ public class ProductServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ServletException(" Lỗi xử lý GET trong ProductServlet", e);
+            throw new ServletException("❌ Lỗi xử lý GET trong ProductServlet", e);
         }
     }
 
@@ -99,26 +107,50 @@ public class ProductServlet extends HttpServlet {
         try {
             String action = request.getParameter("action");
             int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-            String name = request.getParameter("productName");
-            String desc = request.getParameter("description");
+            String name = request.getParameter("productName").trim();
+            String desc = request.getParameter("description").trim();
 
             Category category = new Category();
             category.setCategoryId(categoryId);
 
             if ("add".equalsIgnoreCase(action)) {
+                if (productDAO.isDuplicateProductName(name)) {
+                    request.setAttribute("error", "Tên sản phẩm đã tồn tại.");
+                    request.setAttribute("oldName", name);
+                    request.setAttribute("oldDesc", desc);
+                    request.setAttribute("categories", categoryDAO.getCategoriesByStatus(true));
+                    request.getRequestDispatcher("/view/admin/content/AddProduct.jsp").forward(request, response);
+                    return;
+                }
+
                 Product p = new Product();
                 p.setProductName(name);
                 p.setDescription(desc);
                 p.setCategory(category);
 
-                if (!productDAO.insertProduct(p)) {
-                    session.setAttribute("error", "Lỗi khi thêm sản phẩm!");
+                if (productDAO.insertProduct(p)) {
+                    session.setAttribute("message", "Thêm sản phẩm thành công.");
                 } else {
-                    session.setAttribute("message", " Thêm sản phẩm thành công!");
+                    session.setAttribute("error", "Thêm sản phẩm thất bại.");
                 }
+                response.sendRedirect("admin-product?page=1");
+                return;
+            }
 
-            } else if ("update".equalsIgnoreCase(action)) {
+            if ("update".equalsIgnoreCase(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
+
+                if (productDAO.isDuplicateProductNameExcludeId(name, id)) {
+                    request.setAttribute("error", "Tên sản phẩm đã tồn tại.");
+                    Product p = productDAO.getProductById(id);
+                    p.setProductName(name);
+                    p.setDescription(desc);
+                    p.setCategory(category);
+                    request.setAttribute("editProduct", p);
+                    request.setAttribute("categories", categoryDAO.getCategoriesByStatus(true));
+                    request.getRequestDispatcher("/view/admin/content/EditProduct.jsp").forward(request, response);
+                    return;
+                }
 
                 Product p = new Product();
                 p.setProductId(id);
@@ -126,19 +158,17 @@ public class ProductServlet extends HttpServlet {
                 p.setDescription(desc);
                 p.setCategory(category);
 
-                if (!productDAO.updateProduct(p)) {
-                    session.setAttribute("error", "Lỗi khi cập nhật sản phẩm!");
+                if (productDAO.updateProduct(p)) {
+                    session.setAttribute("message", "Cập nhật sản phẩm thành công.");
                 } else {
-                    session.setAttribute("message", "Cập nhật sản phẩm thành công!");
+                    session.setAttribute("error", "Cập nhật sản phẩm thất bại.");
                 }
+                response.sendRedirect("admin-product?page=1");
             }
-
-            response.sendRedirect("admin-product?page=1");
 
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("error", "Có lỗi xảy ra khi xử lý sản phẩm!");
-            response.sendRedirect("admin-product?page=1");
+            throw new ServletException("❌ Lỗi xử lý POST trong ProductServlet", e);
         }
     }
 }

@@ -20,6 +20,20 @@
 <div class="container mt-5">
     <h2 class="mb-4">Chỉnh sửa danh mục</h2>
 
+    <!-- Hiển thị lỗi nếu có -->
+    <%
+        String error = (String) session.getAttribute("error");
+        if (error != null) {
+    %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <%
+            session.removeAttribute("error");
+        }
+    %>
+
     <!-- Form chỉnh sửa danh mục -->
     <form method="post" action="admin-category">
         <input type="hidden" name="action" value="update">

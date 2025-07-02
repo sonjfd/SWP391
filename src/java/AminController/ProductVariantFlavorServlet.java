@@ -2,8 +2,10 @@ package AminController;
 
 import DAO.ProductVariantFlavorDAO;
 import Model.ProductVariantFlavor;
+
 import java.io.IOException;
 import java.util.List;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -46,10 +48,7 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                 try {
                     int flavorId = Integer.parseInt(request.getParameter("id"));
                     flavorDAO.softDelete(flavorId);
-                    request.getSession().setAttribute("message", "Đã ẩn hương vị thành công.");
-                } catch (NumberFormatException ignored) {
-                    request.getSession().setAttribute("error", "Lỗi khi ẩn hương vị.");
-                }
+                } catch (NumberFormatException ignored) {}
                 response.sendRedirect("admin-productVariantFlavor");
                 break;
 
@@ -57,10 +56,7 @@ public class ProductVariantFlavorServlet extends HttpServlet {
                 try {
                     int flavorId = Integer.parseInt(request.getParameter("id"));
                     flavorDAO.delete(flavorId);
-                    request.getSession().setAttribute("message", "Đã xoá hương vị thành công.");
-                } catch (NumberFormatException ignored) {
-                    request.getSession().setAttribute("error", "Lỗi khi xoá hương vị.");
-                }
+                } catch (NumberFormatException ignored) {}
                 response.sendRedirect("admin-productVariantFlavor");
                 break;
 
@@ -115,18 +111,41 @@ public class ProductVariantFlavorServlet extends HttpServlet {
         try {
             boolean status = statusStr != null && statusStr.equals("1");
 
+            if (flavorName == null || flavorName.trim().isEmpty()) {
+                throw new IllegalArgumentException("Tên mùi hương không được để trống.");
+            }
+
             ProductVariantFlavor f = new ProductVariantFlavor();
-            f.setFlavor(flavorName);
+            f.setFlavor(flavorName.trim());
             f.setStatus(status);
 
             if (action.equals("add")) {
+                if (flavorDAO.isFlavorExists(flavorName.trim())) {
+                    request.setAttribute("error", "Tên mùi hương đã tồn tại!");
+                    f.setFlavor(flavorName);
+                    f.setStatus(status);
+                    request.setAttribute("flavor", f);
+                    request.getRequestDispatcher("view/admin/content/AddFlavor.jsp").forward(request, response);
+                    return;
+                }
+
                 flavorDAO.insert(f);
-                request.getSession().setAttribute("message", "Thêm hương vị thành công!");
+                request.getSession().setAttribute("message", "Thêm mùi hương thành công!");
+
             } else if (action.equals("edit")) {
                 int flavorId = Integer.parseInt(request.getParameter("flavorId"));
                 f.setFlavorId(flavorId);
+
+                if (flavorDAO.isFlavorExistsExceptId(flavorName.trim(), flavorId)) {
+                    request.setAttribute("error", "Tên mùi hương đã tồn tại!");
+                    f.setFlavorId(flavorId);
+                    request.setAttribute("flavor", f);
+                    request.getRequestDispatcher("view/admin/content/EditFlavor.jsp").forward(request, response);
+                    return;
+                }
+
                 flavorDAO.update(f);
-                request.getSession().setAttribute("message", "Cập nhật hương vị thành công!");
+                request.getSession().setAttribute("message", "Cập nhật mùi hương thành công!");
             }
 
             response.sendRedirect("admin-productVariantFlavor");
@@ -134,13 +153,25 @@ public class ProductVariantFlavorServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi xử lý dữ liệu!");
-            request.setAttribute("flavor", flavorName);
-            request.setAttribute("status", statusStr);
 
-            if (action.equals("edit")) {
-                request.setAttribute("flavorId", request.getParameter("flavorId"));
+            try {
+                boolean status = statusStr != null && statusStr.equals("1");
+                int flavorId = Integer.parseInt(request.getParameter("flavorId"));
+
+                ProductVariantFlavor fallback = new ProductVariantFlavor();
+                fallback.setFlavorId(flavorId);
+                fallback.setFlavor(flavorName);
+                fallback.setStatus(status);
+
+                request.setAttribute("flavor", fallback);
+
                 request.getRequestDispatcher("view/admin/content/EditFlavor.jsp").forward(request, response);
-            } else {
+            } catch (Exception ex) {
+                ProductVariantFlavor fallback = new ProductVariantFlavor();
+                fallback.setFlavor(flavorName);
+                fallback.setStatus(statusStr != null && statusStr.equals("1"));
+                request.setAttribute("flavor", fallback);
+
                 request.getRequestDispatcher("view/admin/content/AddFlavor.jsp").forward(request, response);
             }
         }

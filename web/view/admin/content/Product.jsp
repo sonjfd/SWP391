@@ -10,144 +10,133 @@
 %>
 
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Quản lý Sản phẩm</title>
-    <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
-    <style>
-        .custom-input:focus {
-            box-shadow: none;
-            border-color: #ced4da;
-        }
-        .pagination .page-item.active .page-link {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-        }
-        .alert {
-            position: relative;
-            padding-right: 3rem;
-        }
-        .alert .btn-close {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-18%);
-        }
-    </style>
-</head>
-<body>
-    <%@ include file="../layout/Header.jsp" %>
-
-    <div class="container mt-5 pt-5">
-        <h5 class="mb-4">Danh sách sản phẩm</h5>
-
-        <!-- THÔNG BÁO -->
-        <%
-            String message = (String) session.getAttribute("message");
-            String error = (String) session.getAttribute("error");
-            if (message != null) {
-        %>
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-            <%= message %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <%
-                session.removeAttribute("message");
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Quản lý Sản phẩm</title>
+        <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
+        <style>
+            .custom-input:focus {
+                box-shadow: none;
+                border-color: #ced4da;
             }
-            if (error != null) {
-        %>
-        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-            <%= error %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <%
-                session.removeAttribute("error");
+            .pagination .page-item.active .page-link {
+                background-color: #0d6efd;
+                border-color: #0d6efd;
             }
-        %>
+        </style>
+    </head>
+    <body>
+        <%@ include file="../layout/Header.jsp" %>
 
-        <!-- FORM TÌM KIẾM + THÊM -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href="${pageContext.request.contextPath}/admin-product?action=addForm" class="btn btn-primary">
-                + Thêm sản phẩm
-            </a>
+        <div class="container mt-5 pt-5">
+            <h5 class="mb-4">Danh sách sản phẩm</h5>
 
-            <form action="admin-product" method="get" class="d-flex" style="width: 250px;">
-                <input type="text" name="keyword" value="<%= keyword %>" class="form-control custom-input" placeholder="Tìm theo tên" />
-                <button type="submit" class="btn btn-primary ms-2">Tìm</button>
-            </form>
-        </div>
+            <%-- THÔNG BÁO THÀNH CÔNG / LỖI --%>
+            <%
+                String message = (String) session.getAttribute("message");
+                String error = (String) session.getAttribute("error");
+                if (message != null) {
+            %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= message %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <%
+                    session.removeAttribute("message");
+                }
+                if (error != null) {
+            %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <%
+                    session.removeAttribute("error");
+                }
+            %>
 
-        <!-- BẢNG SẢN PHẨM -->
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-primary text-center">
-                <tr>
-                    <th>ID</th>
-                    <th>Danh mục</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Mô tả</th>
-                    <th>Ngày tạo</th>
-                    <th>Ngày cập nhật</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <%
-                    if (productList != null && !productList.isEmpty()) {
-                        for (Product p : productList) {
-                %>
-                <tr>
-                    <td class="text-center"><%= p.getProductId() %></td>
-                    <td><%= p.getCategory() != null ? p.getCategory().getCategoryName() : "N/A" %></td>
-                    <td><%= p.getProductName() %></td>
-                    <td><%= p.getDescription() %></td>
-                    <td class="text-center"><%= p.getCreatedAt().toLocalDateTime().toLocalDate() %></td>
-                    <td class="text-center"><%= p.getUpdatedAt().toLocalDateTime().toLocalDate() %></td>
-                    <td class="text-center">
-                        <a href="admin-product?action=edit&id=<%= p.getProductId() %>" class="btn btn-warning btn-sm">Sửa</a>
-                        <a href="admin-product?action=delete&id=<%= p.getProductId() %>" class="btn btn-danger btn-sm"
-                           onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm không?');">Xóa</a>
-                    </td>
-                </tr>
-                <%
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="${pageContext.request.contextPath}/admin-product?action=addForm" class="btn btn-primary">
+                    + Thêm sản phẩm
+                </a>
+
+                <form action="admin-product" method="get" class="d-flex" style="width: 250px;">
+                    <input type="text" name="keyword" value="<%= keyword %>" class="form-control custom-input" placeholder="Tìm theo tên" />
+                    <button type="submit" class="btn btn-primary ms-2">Tìm</button>
+                </form>
+            </div>
+
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Danh mục</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Mô tả</th>
+                        <th>Ngày tạo</th>
+                        <th>Ngày cập nhật</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                        if (productList != null && !productList.isEmpty()) {
+                            for (Product p : productList) {
+                    %>
+                    <tr>
+                        <td class="text-center"><%= p.getProductId() %></td>
+                        <td><%= p.getCategory() != null ? p.getCategory().getCategoryName() : "N/A" %></td>
+                        <td><%= p.getProductName() %></td>
+                        <td><%= p.getDescription() %></td>
+                        <td class="text-center"><%= p.getCreatedAt().toLocalDateTime().toLocalDate() %></td>
+                        <td class="text-center"><%= p.getUpdatedAt().toLocalDateTime().toLocalDate() %></td>
+                        <td class="text-center">
+                            <a href="admin-product?action=edit&id=<%= p.getProductId() %>" class="btn btn-warning btn-sm">Sửa</a>
+                            <a href="admin-product?action=delete&id=<%= p.getProductId() %>" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm không?');">Xóa</a>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        } else {
+                    %>
+                    <tr>
+                        <td colspan="7" class="text-center">Không có sản phẩm nào.</td>
+                    </tr>
+                    <%
                         }
-                    } else {
-                %>
-                <tr>
-                    <td colspan="7" class="text-center">Không có sản phẩm nào.</td>
-                </tr>
-                <%
-                    }
-                %>
-            </tbody>
-        </table>
+                    %>
+                </tbody>
+            </table>
 
-        <!-- PHÂN TRANG -->
-        <nav class="mt-3 d-flex justify-content-center">
-            <ul class="pagination">
-                <li class="page-item <%= (currentPage == 1) ? "disabled" : "" %>">
-                    <a class="page-link" href="admin-product?page=<%= currentPage - 1 %><%= !keyword.isEmpty() ? "&keyword=" + keyword : "" %>">Trước</a>
-                </li>
+            <!-- PHÂN TRANG -->
+            <nav class="mt-3 d-flex justify-content-center">
+                <ul class="pagination">
+                    <li class="page-item <%= (currentPage == 1) ? "disabled" : "" %>">
+                        <a class="page-link" href="admin-product?page=<%= currentPage - 1 %><%= !keyword.isEmpty() ? "&keyword=" + keyword : "" %>">Trước</a>
+                    </li>
 
-                <%
-                    for (int i = 1; i <= totalPages; i++) {
-                        String activeClass = (i == currentPage) ? "active" : "";
-                %>
-                <li class="page-item <%= activeClass %>">
-                    <a class="page-link" href="admin-product?page=<%= i %><%= !keyword.isEmpty() ? "&keyword=" + keyword : "" %>"><%= i %></a>
-                </li>
-                <%
-                    }
-                %>
+                    <%
+                        for (int i = 1; i <= totalPages; i++) {
+                            String activeClass = (i == currentPage) ? "active" : "";
+                    %>
+                    <li class="page-item <%= activeClass %>">
+                        <a class="page-link"
+                           href="admin-product?page=<%= i %><%= !keyword.isEmpty() ? "&keyword=" + keyword : "" %>"><%= i %></a>
+                    </li>
+                    <%
+                        }
+                    %>
 
-                <li class="page-item <%= (currentPage == totalPages) ? "disabled" : "" %>">
-                    <a class="page-link" href="admin-product?page=<%= currentPage + 1 %><%= !keyword.isEmpty() ? "&keyword=" + keyword : "" %>">Sau</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+                    <li class="page-item <%= (currentPage == totalPages) ? "disabled" : "" %>">
+                        <a class="page-link" href="admin-product?page=<%= currentPage + 1 %><%= !keyword.isEmpty() ? "&keyword=" + keyword : "" %>">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
 
-    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-</body>
+        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

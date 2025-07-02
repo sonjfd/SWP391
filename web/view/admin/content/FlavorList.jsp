@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.ProductVariantFlavor" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,18 +9,6 @@
     <title>Đơn vị hương vị</title>
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
-    <style>
-        .alert {
-            position: relative;
-            padding-right: 3rem;
-        }
-        .alert .btn-close {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-18%);
-        }
-    </style>
 </head>
 <body>
 <%@ include file="../layout/Header.jsp" %>
@@ -28,29 +17,23 @@
     <div class="layout-specing">
         <h5 class="mb-3">Đơn vị hương vị</h5>
 
-        <!-- THÔNG BÁO -->
-        <%
-            String message = (String) session.getAttribute("message");
-            String error = (String) session.getAttribute("error");
-            if (message != null) {
-        %>
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-            <%= message %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <%
-                session.removeAttribute("message");
-            }
-            if (error != null) {
-        %>
-        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-            <%= error %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <%
-                session.removeAttribute("error");
-            }
-        %>
+        <!-- THÔNG BÁO THÀNH CÔNG -->
+        <c:if test="${not empty sessionScope.message}">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ${sessionScope.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <c:remove var="message" scope="session"/>
+        </c:if>
+
+        <!-- THÔNG BÁO LỖI -->
+        <c:if test="${not empty sessionScope.error}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${sessionScope.error}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <c:remove var="error" scope="session"/>
+        </c:if>
 
         <!-- Form tìm kiếm -->
         <form method="get" action="admin-productVariantFlavor" class="mb-3 d-flex align-items-center justify-content-between w-100">

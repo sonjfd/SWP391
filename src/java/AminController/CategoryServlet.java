@@ -29,6 +29,7 @@ public class CategoryServlet extends HttpServlet {
 
         try {
             if (action == null || action.isEmpty()) {
+                // PHÂN TRANG + TÌM KIẾM + LỌC TRẠNG THÁI
                 String pageParam = request.getParameter("page");
                 String statusParam = request.getParameter("status");
                 String keyword = request.getParameter("keyword") != null ? request.getParameter("keyword").trim() : "";
@@ -98,12 +99,27 @@ public class CategoryServlet extends HttpServlet {
             boolean status = (statusInt == 1);
 
             if ("add".equals(action)) {
+                // ✅ Kiểm tra tên đã tồn tại chưa
+                if (categoryDAO.isNameExists(name)) {
+                    request.getSession().setAttribute("error", "Tên danh mục đã tồn tại!");
+                    response.sendRedirect("admin-category?action=addForm");
+                    return;
+                }
+
                 Category c = new Category(0, name, desc, status);
                 categoryDAO.addCategory(c);
                 request.getSession().setAttribute("message", "Thêm danh mục thành công!");
 
             } else if ("update".equals(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
+
+                // ✅ Kiểm tra tên đã tồn tại ở bản ghi khác chưa
+                if (categoryDAO.isNameExistsExceptId(name, id)) {
+                    request.getSession().setAttribute("error", "Tên danh mục đã tồn tại!");
+                    response.sendRedirect("admin-category?action=edit&id=" + id);
+                    return;
+                }
+
                 Category c = new Category(id, name, desc, status);
                 categoryDAO.updateCategory(c);
                 request.getSession().setAttribute("message", "Cập nhật danh mục thành công!");
