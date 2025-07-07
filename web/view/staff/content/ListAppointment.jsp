@@ -20,8 +20,7 @@
         <meta name="email" content="support@shreethemes.in" />
         <meta name="website" content="${pageContext.request.contextPath}/index.html" />
         <meta name="Version" content="v1.2.0" />
-        <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
+       
         <!-- Bootstrap -->
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <!-- simplebar -->
@@ -216,16 +215,21 @@
                                         <a href="staff-appointmentdetail?id=${app.id}" class="btn btn-info btn-sm" title="Xem chi tiết">
                                             <i class="bi bi-info-circle"></i>
                                         </a>
+                                        <c:if test="${app.status!='completed' && app.status !='canceled'}">
+                                            
                                         <a href="staff-update-appointment?id=${app.id}" class="btn btn-success btn-sm" title="Cập nhật lịch hẹn">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
+                                            </c:if>
+                                            
+                                        <c:if test="${app.status=='booked'}">
                                         <button type="button" class="btn btn-outline-dark btn-sm" title="In phiếu thú cưng"
                                                 data-bs-toggle="modal" data-bs-target="#printModal-${app.id}">
                                             <i class="bi bi-printer"></i>
                                         </button>
+                                        </c:if>
 
-
-                                        <c:if test="${ app.chekinStatus == 'noshow'}">
+                                        <c:if test="${ app.chekinStatus == 'noshow' && app.status!='canceled'}">
                                             <form action="staff-update-chekin" method="get" style="display:inline;">
                                                 <input type="hidden" name="id" value="${app.id}" />
                                                 <button type="submit" class="btn btn-outline-primary btn-sm" title="Xác nhận đã tới khám">

@@ -2,7 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="Model.ProductVariantWeight" %>
 <%@ page import="java.text.DecimalFormat" %>
-<%@ page import="jakarta.servlet.http.*" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -18,10 +18,17 @@
             <div class="layout-specing">
                 <h5 class="mb-3">Đơn vị trọng lượng</h5>
 
+                <!-- THÔNG BÁO THÀNH CÔNG -->
+                <c:if test="${not empty sessionScope.message}">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ${sessionScope.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <c:remove var="message" scope="session"/>
+                </c:if>
+
                 <!-- Form tìm kiếm -->
                 <form method="get" action="admin-productVariantWeight" class="mb-3 d-flex align-items-center justify-content-between w-100">
-
-
                     <input type="hidden" name="action" value="list" />
 
                     <!-- Bên trái: nút thêm -->
@@ -49,8 +56,6 @@
                         </div>
                     </div>
                 </form>
-
-
 
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-primary text-center">

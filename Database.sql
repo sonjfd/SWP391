@@ -470,7 +470,7 @@ CREATE TABLE product_variants (
 
 CREATE TABLE sales_invoices (
   invoice_id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-  staff_id UNIQUEIDENTIFIER NOT NULL,
+  staff_id UNIQUEIDENTIFIER  ,
   total_amount DECIMAL(10, 2) NOT NULL,
   payment_method NVARCHAR(50) CHECK (payment_method IN ('cash', 'online')) NOT NULL,
   payment_status NVARCHAR(20) DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid')),
@@ -478,6 +478,7 @@ CREATE TABLE sales_invoices (
   updated_at DATETIME DEFAULT GETDATE(),
   CONSTRAINT FK_sales_invoices_staff FOREIGN KEY (staff_id) REFERENCES users(id)
 );
+
 
 -- 7. Chi tiết hóa đơn
 CREATE TABLE sales_invoice_items (

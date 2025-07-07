@@ -12,7 +12,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Trang Nhân Viên</title>
+        <title>Hoá đơn dịch vụ</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -20,8 +20,7 @@
         <meta name="email" content="support@shreethemes.in" />
         <meta name="website" content="${pageContext.request.contextPath}/index.html" />
         <meta name="Version" content="v1.2.0" />
-        <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
+      
         <!-- Bootstrap -->
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <!-- simplebar -->

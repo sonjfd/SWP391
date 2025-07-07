@@ -46,7 +46,7 @@
 
 
                     <!-- Ảnh chính -->
-                    <img src="${pageContext.request.contextPath}/${blog.image}" class="blog-cover mb-4" alt="${blog.title}" />
+                    <img src="${blog.image}" class="blog-cover mb-4" alt="${blog.title}" />
 
                     <!-- Nội dung -->
                     <div class="fs-6 text-dark" style="line-height: 1.8;">

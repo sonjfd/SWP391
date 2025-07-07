@@ -7,6 +7,8 @@
     <head>
         <meta charset="utf-8" />
         <title>Pet24h</title>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
         <style>
             .logo-text {
                 font-family: 'Arial', sans-serif;

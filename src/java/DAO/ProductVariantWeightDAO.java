@@ -137,7 +137,7 @@ public class ProductVariantWeightDAO {
         return 0;
     }
 
-    // ✅ Thêm mới (có boolean trả về)
+    // ✅ Thêm mới
     public boolean insert(ProductVariantWeight w) {
         String sql = "INSERT INTO product_variant_weights (weight, status) VALUES (?, ?)";
         try (Connection conn = DBContext.getConnection();
@@ -252,10 +252,37 @@ public class ProductVariantWeightDAO {
         }
         return 0;
     }
-    
-  
-   
 
-  
+    // ✅ KIỂM TRA TRÙNG - Dành cho thêm mới
+    public boolean isWeightExists(double weight) {
+        String sql = "SELECT 1 FROM product_variant_weights WHERE weight = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ps.setDouble(1, weight);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // Có ít nhất 1 bản ghi => đã tồn tại
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ✅ KIỂM TRA TRÙNG - Dành cho cập nhật (ngoại trừ bản ghi hiện tại)
+    public boolean isWeightExistsExceptId(double weight, int id) {
+        String sql = "SELECT 1 FROM product_variant_weights WHERE weight = ? AND weight_id != ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDouble(1, weight);
+            ps.setInt(2, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // Có ít nhất 1 bản ghi khác => đã trùng
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -21,7 +21,7 @@
     %>
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Trò chuyện với khách hàng</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -29,7 +29,6 @@
         <meta name="email" content="support@shreethemes.in" />
         <meta name="website" content="https://shreethemes.in" />
         <meta name="Version" content="v1.2.0" />
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
         <!-- Bootstrap -->
 
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />

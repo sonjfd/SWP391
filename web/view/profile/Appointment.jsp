@@ -849,7 +849,6 @@
         </script>
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- Icons -->
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <!-- Main Js -->

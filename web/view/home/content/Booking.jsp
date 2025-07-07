@@ -219,13 +219,26 @@
                                     <!-- Pet selection -->
                                     <div class="mb-3">
                                         <label class="form-label">Chọn thú cưng:</label>
-                                        <select name="petId" id="petSelect" class="form-select" required>
+
+
+
+                                        <select name="petId" id="petSelect" class="form-select" required ${empty pets ? 'disabled' : ''}>
                                             <option value="">-- Chọn thú cưng --</option>
                                             <c:forEach var="pet" items="${pets}">
                                                 <option value="${pet.id}">${pet.name}</option>
                                             </c:forEach>
                                         </select>
+
+                                        <c:choose>
+                                            <c:when test="${empty pets}">
+                                                <div class="mb-2 text-danger">
+                                                    Bạn chưa có thú cưng nào. Vui lòng 
+                                                    <a href="customer-addpet" class="fw-bold text-primary">thêm thú cưng</a> để tiếp tục đặt lịch khám.
+                                                </div>
+                                            </c:when>
+                                        </c:choose>
                                     </div>
+
 
                                     <!-- Breed and Species -->
                                     <div id="breedInfo" style="display:none;">

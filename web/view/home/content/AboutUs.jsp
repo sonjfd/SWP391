@@ -382,7 +382,7 @@
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
                                 <!-- Ảnh top -->
-                                <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" 
+                                <img src="${doctor.user.avatar}" 
                                      alt="${doctor.user.fullName}" 
                                      class="card-img-top" 
                                      style="height:220px; object-fit:cover;">

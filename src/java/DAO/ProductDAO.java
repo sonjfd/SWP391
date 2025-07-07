@@ -1,5 +1,6 @@
 package DAO;
 
+import static DAO.DBContext.getConnection;
 import Model.Category;
 import Model.Product;
 
@@ -21,7 +22,9 @@ public class ProductDAO extends DBContext {
             WHERE p.status = 1
         """;
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Category category = new Category();
                 category.setCategoryId(rs.getInt("category_id"));
@@ -52,7 +55,8 @@ public class ProductDAO extends DBContext {
             VALUES (?, ?, ?, 1, GETDATE(), GETDATE())
         """;
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, product.getCategory().getCategoryId());
             ps.setString(2, product.getProductName());
             ps.setString(3, product.getDescription());
@@ -71,7 +75,8 @@ public class ProductDAO extends DBContext {
             WHERE product_id = ?
         """;
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, product.getCategory().getCategoryId());
             ps.setString(2, product.getProductName());
             ps.setString(3, product.getDescription());
@@ -88,7 +93,8 @@ public class ProductDAO extends DBContext {
     public boolean softDeleteProduct(int id) {
         String sql = "UPDATE products SET status = 0, updated_at = GETDATE() WHERE product_id = ?";
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
 
@@ -110,7 +116,8 @@ public class ProductDAO extends DBContext {
             WHERE p.product_id = ?
         """;
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -140,7 +147,8 @@ public class ProductDAO extends DBContext {
 
     public int countProductsByName(String keyword) {
         String sql = "SELECT COUNT(*) FROM products WHERE product_name LIKE ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -166,7 +174,8 @@ public class ProductDAO extends DBContext {
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
         """;
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             ps.setInt(2, (page - 1) * pageSize);
             ps.setInt(3, pageSize);
@@ -198,7 +207,9 @@ public class ProductDAO extends DBContext {
 
     public int countAllProducts() {
         String sql = "SELECT COUNT(*) FROM products WHERE status = 1";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -221,7 +232,8 @@ public class ProductDAO extends DBContext {
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
         """;
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, (page - 1) * pageSize);
             ps.setInt(2, pageSize);
 
@@ -248,5 +260,36 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+    }
+
+    // --- MỚI: Kiểm tra trùng tên sản phẩm khi thêm mới ---
+    public boolean isDuplicateProductName(String productName) {
+        String sql = "SELECT 1 FROM products WHERE product_name = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productName);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true nếu tồn tại
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // --- MỚI: Kiểm tra trùng tên sản phẩm khi sửa (ngoại trừ id đang sửa) ---
+    public boolean isDuplicateProductNameExcludeId(String productName, int excludeId) {
+        String sql = "SELECT 1 FROM products WHERE product_name = ? AND product_id != ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productName);
+            ps.setInt(2, excludeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true nếu tồn tại
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

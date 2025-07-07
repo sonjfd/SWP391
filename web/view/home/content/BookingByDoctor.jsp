@@ -200,7 +200,7 @@
                     <!-- Thông tin bác sĩ -->
 
                     <div class="col-md-4 doctor-card text-start">
-                        <img src="${pageContext.request.contextPath}/${doctor.user.avatar}" alt="${doctor.user.fullName}"
+                        <img src="${doctor.user.avatar}" alt="${doctor.user.fullName}"
                              class="rounded-circle mb-3" style="width:150px; height:150px; object-fit:cover;">
                         <h4 class="doctor-name"><i class="fas fa-user-md me-1"></i> ${doctor.user.fullName}</h4>
                         <div class="doctor-info">
@@ -265,6 +265,14 @@
                                         <option value="${pet.id}">${pet.name}</option>
                                     </c:forEach>
                                 </select>
+                                <c:choose>
+                                    <c:when test="${empty pets}">
+                                        <div class="mb-2 text-danger">
+                                            Bạn chưa có thú cưng nào. Vui lòng 
+                                            <a href="customer-addpet" class="fw-bold text-primary">thêm thú cưng</a> để tiếp tục đặt lịch khám.
+                                        </div>
+                                    </c:when>
+                                </c:choose>
                             </div>
 
                             <!-- Breed and Species -->

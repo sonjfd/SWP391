@@ -591,10 +591,10 @@ Author     : Dell
 
                         chatContent.innerHTML = "";
 
-                        const contextPath = window.location.pathname.split("/")[1];
-                        const baseUrl = window.location.origin + "/" + contextPath;
+                        
+                        const baseUrl = window.location.origin + "/" ;
 
-                        const userAvatar = data[0].user.avatar ? baseUrl + data[0].user.avatar : baseUrl + "/assets/images/default_user.png";
+                        const userAvatar = data[0].user.avatar ? baseUrl + data[0].user.avatar : baseUrl + "/SWP391/image-loader/default_user.png";
 
                         console.log(userAvatar);
                         data.forEach(item => {

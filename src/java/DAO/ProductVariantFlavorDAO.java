@@ -202,4 +202,35 @@ public class ProductVariantFlavorDAO {
 
         return 0;
     }
+
+    // ✅ Kiểm tra trùng tên khi thêm
+    public boolean isFlavorExists(String flavor) {
+        String sql = "SELECT 1 FROM product_variant_flavors WHERE flavor = ?";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, flavor);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // tồn tại ít nhất 1 bản ghi
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // ✅ Kiểm tra trùng tên khi cập nhật
+    public boolean isFlavorExistsExceptId(String flavor, int flavorId) {
+        String sql = "SELECT 1 FROM product_variant_flavors WHERE flavor = ? AND flavor_id != ?";
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, flavor);
+            ps.setInt(2, flavorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // tồn tại ít nhất 1 bản ghi trùng tên nhưng khác ID
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
