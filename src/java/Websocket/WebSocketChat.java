@@ -37,7 +37,11 @@ public class WebSocketChat {
         String conversationId = (String) session.getUserProperties().get("conversationId");
         String senderId = (String) session.getUserProperties().get("userId");
         String senderName = (String) session.getUserProperties().get("fullName");
-
+        if (message.startsWith("READ:")) {
+            chatDAO.markMessagesAsRead(conversationId, senderId); 
+            System.out.println("Marked messages as read for conversation " + conversationId + " by user " + senderId);
+            return;
+        }
         // Lưu vào DB
         Messages msg = new Messages();
         msg.setContent(message);
@@ -78,5 +82,3 @@ public class WebSocketChat {
         System.out.println("User disconnected: " + session.getId());
     }
 }
-
-    

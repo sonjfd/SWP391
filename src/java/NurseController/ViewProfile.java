@@ -96,7 +96,7 @@ public class ViewProfile extends HttpServlet {
         Part part = request.getPart("avatar");
 
         // Thư mục lưu ảnh ngoài project
-        String uploadDirPath = "C:/MyUploads/Images";
+        String uploadDirPath = "C:/MyUploads/avatars";
         File uploadDir = new File(uploadDirPath);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
@@ -135,6 +135,7 @@ public class ViewProfile extends HttpServlet {
         User u = ud.getUserByEmail(email);
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        
         if (user.getAddress().equalsIgnoreCase(address)
                 && user.getAvatar().equalsIgnoreCase(avatarPath)
                 && user.getFullName().equalsIgnoreCase(name)

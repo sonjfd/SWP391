@@ -8,6 +8,8 @@ import Model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ChatDAO {
 
@@ -118,6 +120,17 @@ public class ChatDAO {
         return list;
     }
 
+    public void markMessagesAsRead(String conversationId, String userId) {
+        String sql = "UPDATE messages SET is_read = 1 WHERE conversation_id = ? AND sender_id != ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, conversationId);
+            ps.setString(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Lưu tin nhắn mới
     public void saveMessage(Messages msg) {
         String sql = "INSERT INTO messages (conversation_id, sender_id, content) VALUES (?, ?, ?)";
@@ -219,7 +232,7 @@ public class ChatDAO {
         }
     }
 
-    public List<Conversation> searchConversations(String keyword) throws SQLException {
+    public List<Conversation> searchConversations(String keyword) {
         List<Conversation> list = new ArrayList<>();
         String sql = "SELECT c.conversation_id, u.full_name, u.phone "
                 + "FROM conversations c "
@@ -239,6 +252,8 @@ public class ChatDAO {
                 c.getCustomer().setPhoneNumber(rs.getString("phone"));
                 list.add(c);
             }
+        } catch (SQLException ex) {
+            Logger.getLogger(ChatDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return list;
     }
@@ -246,13 +261,16 @@ public class ChatDAO {
     public List<Conversation> getConversationsForStaff(String staffId, String keyword) {
         List<Conversation> list = new ArrayList<>();
         String sql
-                = "SELECT c.conversation_id, u.id AS customer_id, u.full_name, c.last_message_time "
+                = "SELECT c.conversation_id, u.id AS customer_id, u.full_name, c.last_message_time, "
+                + "  COUNT(CASE WHEN m.is_read = 0 AND m.sender_id = u.id THEN 1 END) AS unread_count "
                 + "FROM conversations c "
                 + "JOIN users u ON c.customer_id = u.id "
+                + "LEFT JOIN messages m ON c.conversation_id = m.conversation_id "
                 + "WHERE c.staff_id = ? "
                 + "AND c.staff_id != c.customer_id "
                 + (keyword != null && !keyword.isEmpty()
                 ? "AND (u.full_name LIKE ? OR u.phone LIKE ?) " : "")
+                + "GROUP BY c.conversation_id, u.id, u.full_name, c.last_message_time "
                 + "ORDER BY c.last_message_time DESC";
 
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -268,19 +286,21 @@ public class ChatDAO {
                 Conversation conv = new Conversation();
                 conv.setId(rs.getString("conversation_id"));
 
-                // Tạo User cho customer
+                // Customer info
                 User customer = new User();
                 customer.setId(rs.getString("customer_id"));
                 customer.setFullName(rs.getString("full_name"));
                 conv.setCustomer(customer);
 
                 conv.setLast_masage_time(rs.getTimestamp("last_message_time"));
+                conv.setUnreadCount(rs.getInt("unread_count")); // bạn cần có hàm setUnreadCount(int)
 
                 list.add(conv);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return list;
     }
 
