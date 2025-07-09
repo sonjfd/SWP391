@@ -104,7 +104,9 @@ public class CategoryDAO {
     public int getTotalCategories() {
         String sql = "SELECT COUNT(*) FROM Categories";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getInt(1);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,7 +119,9 @@ public class CategoryDAO {
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setBoolean(1, status);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,7 +234,9 @@ public class CategoryDAO {
             }
 
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,30 +246,31 @@ public class CategoryDAO {
 
     // ✅ Kiểm tra tên danh mục đã tồn tại (dùng cho thêm mới)
     public boolean isNameExists(String name) {
-        String sql = "SELECT 1 FROM Categories WHERE category_name = ?";
+        String sql = "SELECT 1 FROM Categories WHERE LOWER(category_name) = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
+            ps.setString(1, name.trim().toLowerCase());
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return true; // giả định đã tồn tại nếu lỗi
         }
-        return false;
     }
 
     // ✅ Kiểm tra tên danh mục đã tồn tại trừ chính nó (dùng cho cập nhật)
     public boolean isNameExistsExceptId(String name, int id) {
-        String sql = "SELECT 1 FROM Categories WHERE category_name = ? AND category_id <> ?";
+        String sql = "SELECT 1 FROM Categories WHERE LOWER(category_name) = ? AND category_id <> ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
+            ps.setString(1, name.trim().toLowerCase());
             ps.setInt(2, id);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return true; // giả định đã tồn tại nếu lỗi
         }
-        return false;
     }
+
 }

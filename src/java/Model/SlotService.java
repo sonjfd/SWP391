@@ -33,11 +33,13 @@ public class SlotService {
                     apptEnd = apptEnd.plusDays(1);
                 }
 
-                if ("booked".equalsIgnoreCase(appt.getStatus()) || "completed".equalsIgnoreCase(appt.getStatus())
+                if (("booked".equalsIgnoreCase(appt.getStatus()) 
+                        || "completed".equalsIgnoreCase(appt.getStatus()))
                         && slotStart.isBefore(apptEnd) && slotEnd.isAfter(apptStart)) {
                     isBooked = true;
                     break;
                 }
+
             }
 
             result.add(new Slot(slotStart.toLocalTime(), slotEnd.toLocalTime(), !isBooked));

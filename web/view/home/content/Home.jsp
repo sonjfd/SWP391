@@ -169,12 +169,20 @@ Author     : Dell
             font-size: 20px;
             cursor: pointer;
         }
-        .chat-content {
-            font-size: 14px;
-            padding: 10px;
-            overflow-y: auto;
-            height: 75%;
+
+        #chatWindow {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            width: 300px;
         }
+
+        #chatContent {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
 
         .message {
             margin-bottom: 10px;
@@ -321,19 +329,19 @@ Author     : Dell
                     </div>
                     <div class="d-flex gap-4 overflow-auto flex-nowrap">
                         <c:forEach var="doctor" items="${doctors}">
-                            
-                                <div style="min-width: 280px;">
-                                    <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
-                                        <img src="${doctor.user.avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${doctor.user.fullName}">
-                                        <div class="card-body d-flex flex-column">
-                                            <h6 class="card-title fw-bold text-dark">${doctor.user.fullName}</h6>
-                                            <p class="text-muted small">${doctor.specialty}</p>
-                                            <p class="text-muted small mb-3">${doctor.yearsOfExperience} năm kinh nghiệm</p>
-                                            <a href="booking-by-doctor?doctorId=${doctor.user.id}" class="btn btn-green mt-auto w-100">Xem lịch & Đặt lịch</a>
-                                        </div>
+
+                            <div style="min-width: 280px;">
+                                <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden d-flex flex-column">
+                                    <img src="${doctor.user.avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${doctor.user.fullName}">
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="card-title fw-bold text-dark">${doctor.user.fullName}</h6>
+                                        <p class="text-muted small">${doctor.specialty}</p>
+                                        <p class="text-muted small mb-3">${doctor.yearsOfExperience} năm kinh nghiệm</p>
+                                        <a href="booking-by-doctor?doctorId=${doctor.user.id}" class="btn btn-green mt-auto w-100">Xem lịch & Đặt lịch</a>
                                     </div>
                                 </div>
-                           
+                            </div>
+
                         </c:forEach>
                     </div>
                 </div>
@@ -342,7 +350,7 @@ Author     : Dell
 
 
             <!-- Testimonials -->
-               <section class="section py-5">
+            <section class="section py-5">
                 <div class="container">
                     <div class="section-title text-center mb-4">
                         <h4 class="title">Khách hàng nói gì?</h4>
@@ -420,7 +428,8 @@ Author     : Dell
             Trò chuyện với AI
             <button id="closeChatBtn" style="float: right; background: none; border: none; color: white;">&times;</button>
         </div>
-        <div id="chatContent" class="chat-content">
+        <div id="chatContent" class="chat-content" style="flex: 1; overflow-y: auto; padding: 10px;">
+
             <!-- Tin nhắn sẽ hiển thị ở đây -->
         </div>
         <div style="display: flex; padding: 10px; border-top: 1px solid #ddd;">
@@ -488,7 +497,7 @@ Author     : Dell
             if (message === "")
                 return;
 
-            console.log("Sending message:", message);
+
             const userMsg = document.createElement("div");
             userMsg.style.textAlign = "right";
             const userBubble = document.createElement("span");
@@ -526,18 +535,16 @@ Author     : Dell
             })
                     .then(response => response.text())
                     .then(data => {
-                        console.log("AI replied:", data);
-
                         const aiBubble = document.createElement("span");
                         aiBubble.innerHTML = formatAiResponse(data);
-                        aiBubble.style.cssText = `  background: #f1f1f1; 
-                                                    padding: 8px 12px; 
-                                                    border-radius: 12px; 
-                                                     display: inline-block; 
-                                                    max-width: 80%; 
-                                                    word-wrap: break-word;
-                                                    margin-left: 6px;
-          
+                        aiBubble.style.cssText = `
+            background: #f1f1f1; 
+            padding: 8px 12px; 
+            border-radius: 12px; 
+            display: inline-block; 
+            max-width: 80%; 
+            word-wrap: break-word;
+            margin-left: 6px;
         `;
 
                         const aiWrapper = document.createElement("div");
@@ -556,10 +563,178 @@ Author     : Dell
                         aiMsg.innerHTML = "";
                         aiMsg.appendChild(aiWrapper);
                         chatContent.scrollTop = chatContent.scrollHeight;
+
+
+                        if (data.includes("Bạn có muốn đặt lịch khám tại phòng khám Pet24h không")) {
+                            const btnGroup = document.createElement("div");
+                            btnGroup.style.marginTop = "8px";
+                            btnGroup.style.display = "flex";
+                            btnGroup.style.gap = "8px";
+
+                            const yesBtn = document.createElement("button");
+                            yesBtn.textContent = "Có";
+                            yesBtn.style.cssText = `
+                padding: 6px 12px;
+                border: none;
+                border-radius: 6px;
+                background-color: #28a745;
+                color: white;
+                cursor: pointer;
+            `;
+
+                            const noBtn = document.createElement("button");
+                            noBtn.textContent = "Không";
+                            noBtn.style.cssText = `
+                padding: 6px 12px;
+                border: none;
+                border-radius: 6px;
+                background-color: #dc3545;
+                color: white;
+                cursor: pointer;
+            `;
+
+                            yesBtn.addEventListener("click", () => {
+                                showBookingPrompt();
+                                btnGroup.remove();
+                            });
+
+                            noBtn.addEventListener("click", () => {
+                                const noMsg = document.createElement("div");
+                                noMsg.innerHTML = `<div style="text-align:right;"><span style="background:#007bff;color:white;padding:8px 12px;border-radius:12px;display:inline-block;">Không</span></div>`;
+                                chatContent.appendChild(noMsg);
+                                chatContent.scrollTop = chatContent.scrollHeight;
+                                btnGroup.remove();
+                            });
+
+                            btnGroup.appendChild(yesBtn);
+                            btnGroup.appendChild(noBtn);
+                            chatContent.appendChild(btnGroup);
+                            chatContent.scrollTop = chatContent.scrollHeight;
+                        }
                     })
                     .catch(err => {
                         console.error("Lỗi khi gửi hoặc nhận tin nhắn:", err);
                         aiMsg.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
+                    });
+        }
+
+
+        function showBookingPrompt() {
+            fetch("chat-ai-select-pet")
+                    .then(res => {
+                        if (res.status === 500) {
+                            const loginMsg = document.createElement("div");
+                            loginMsg.innerHTML = `
+                    <div style="margin-top:8px;">
+                        Bạn cần <a href="login" style="color: #007bff;">đăng nhập</a> để đặt lịch khám.
+                    </div>`;
+                            chatContent.appendChild(loginMsg);
+                            chatContent.scrollTop = chatContent.scrollHeight;
+                            throw new Error("Chưa đăng nhập");
+                        }
+                        return res.json();
+                    })
+                    .then(pets => {
+                        const formDiv = document.createElement("div");
+                        formDiv.style.marginTop = "8px";
+                        formDiv.innerHTML = `
+                <div id="bookingFormContent">
+                    <label>Chọn thú cưng:</label><br>
+                    <select id="petSelect" style="width: 100%; padding: 6px; margin-bottom: 6px; border-radius: 6px; border: 1px solid #ccc;">
+                        <option value="">-- Chọn thú cưng --</option>
+                    </select>
+                    <div id="noPetMessage" style="display:none; margin-top:5px;">
+                        Bạn chưa có thú cưng nào. <a href="them-thu-cung" style="color:#007bff;">Thêm thú cưng</a>
+                    </div>
+                    <label>Ngày khám mong muốn:</label><br>
+                    <input type="date" id="appointmentDateInput" style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ccc;" />
+                    <button type="button" id="confirmBookingBtn" style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 6px;">Đặt lịch</button>
+                </div>`;
+                        chatContent.appendChild(formDiv);
+                        chatContent.scrollTop = chatContent.scrollHeight;
+
+                        const petSelect = formDiv.querySelector("#petSelect");
+                        const noPetMessage = formDiv.querySelector("#noPetMessage");
+
+                        if (pets.length === 0) {
+                            noPetMessage.style.display = "block";
+                        } else {
+                            pets.forEach(pet => {
+                                const option = document.createElement("option");
+                                option.value = pet.id;
+                                option.textContent = pet.name;
+                                petSelect.appendChild(option);
+                            });
+                        }
+
+                        formDiv.querySelector("#confirmBookingBtn").addEventListener("click", () => {
+                            const petId = petSelect.value;
+                            const date = formDiv.querySelector("#appointmentDateInput").value;
+
+
+                            if (!petId || !date) {
+                                alert("Vui lòng chọn thú cưng và ngày khám.");
+                                return;
+                            }
+
+                            const today = new Date();
+                            const selectedDate = new Date(date);
+                            today.setHours(0, 0, 0, 0);
+                            selectedDate.setHours(0, 0, 0, 0);
+
+                            if (selectedDate < today) {
+                                alert("Không thể chọn ngày trong quá khứ. Vui lòng chọn lại.");
+                                return;
+                            }
+
+                            fetch("ai-booking", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded"
+                                },
+                                body: "petId=" + encodeURIComponent(petId) + "&date=" + encodeURIComponent(date)
+                            })
+                                    .then(res => res.text())
+                                    .then(msg => {
+                                        const msgEl = document.createElement("div");
+                                        msgEl.style.marginTop = "8px";
+
+                                        const span = document.createElement("span");
+                                        span.style.color = msg.includes("thành công") ? "black" : "red";
+
+                                        if (msg.includes("thành công")) {
+                                           
+                                            const textNode = document.createTextNode(msg + " Hoặc xem chi tiết tại ");
+                                            span.appendChild(textNode);
+
+                                           
+                                            const link = document.createElement("a");
+                                            link.href = "customer-viewappointment";
+                                            link.textContent = "đây";
+                                            link.style.color = "#007bff";
+
+                                            span.appendChild(link);
+                                            span.appendChild(document.createTextNode(".")); 
+                                        } else {
+                                            span.textContent = msg;
+                                        }
+
+                                        msgEl.appendChild(span);
+
+                                        const form = document.querySelector("#bookingFormContent");
+                                        form?.appendChild(msgEl);
+
+                                        chatContent.scrollTop = chatContent.scrollHeight;
+                                    })
+
+                                    .catch(err => {
+                                        console.error("Lỗi đặt lịch:", err);
+                                        alert("Có lỗi xảy ra khi đặt lịch.");
+                                    });
+                        });
+                    })
+                    .catch(err => {
+                        console.log(err);
                     });
         }
 
@@ -591,8 +766,8 @@ Author     : Dell
 
                         chatContent.innerHTML = "";
 
-                        
-                        const baseUrl = window.location.origin + "/" ;
+
+                        const baseUrl = window.location.origin + "/";
 
                         const userAvatar = data[0].user.avatar ? baseUrl + data[0].user.avatar : baseUrl + "/SWP391/image-loader/default_user.png";
 
@@ -634,7 +809,7 @@ Author     : Dell
 
 
 
-const swiperRate = new Swiper(".mySwiper-rating", {
+        const swiperRate = new Swiper(".mySwiper-rating", {
             slidesPerView: 3,
             spaceBetween: 30,
             loop: true,

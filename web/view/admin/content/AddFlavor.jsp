@@ -29,9 +29,20 @@
 
     <h2 class="mb-4">Thêm hương vị sản phẩm</h2>
 
-    <!-- Hiển thị lỗi nếu có -->
+    <!-- ✅ Thông báo lỗi -->
     <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
+    <!-- ✅ Thông báo thành công -->
+    <c:if test="${not empty message}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </c:if>
 
     <form action="admin-productVariantFlavor" method="post" onsubmit="return validateForm();">
@@ -62,5 +73,7 @@
         <a href="admin-productVariantFlavor" class="btn btn-secondary">Quay lại</a>
     </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

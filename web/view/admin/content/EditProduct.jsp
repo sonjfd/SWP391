@@ -11,11 +11,18 @@
 %>
     <div class="container mt-5">
         <h3 class="text-danger">Không tìm thấy sản phẩm!</h3>
-        <a href="${pageContext.request.contextPath}/product" class="btn btn-secondary">Quay lại danh sách</a>
+        <a href="${pageContext.request.contextPath}/admin-product" class="btn btn-secondary">Quay lại danh sách</a>
     </div>
 <%
         return;
     }
+
+    String error = (String) request.getAttribute("error");
+    String oldName = request.getAttribute("productName") != null ? (String) request.getAttribute("productName") : p.getProductName();
+    String oldDesc = request.getAttribute("description") != null ? (String) request.getAttribute("description") : p.getDescription();
+    int oldCategoryId = request.getAttribute("categoryId") != null
+                        ? Integer.parseInt((String) request.getAttribute("categoryId"))
+                        : p.getCategory().getCategoryId();
 %>
 
 <!DOCTYPE html>
@@ -23,23 +30,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Chỉnh sửa sản phẩm</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-5">
     <h2 class="mb-4">Chỉnh sửa sản phẩm</h2>
 
-    <!-- Hiển thị lỗi nếu có -->
-    <%
-        String error = (String) request.getAttribute("error");
-        if (error != null && !error.isEmpty()) {
-    %>
-        <div class="alert alert-danger"><%= error %></div>
-    <%
-        }
-    %>
+    <% if (error != null) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
 
-    <form action="${pageContext.request.contextPath}/admin-product" method="post">
+    <form action="${pageContext.request.contextPath}/admin-product" method="post" id="productForm">
         <input type="hidden" name="action" value="update">
         <input type="hidden" name="id" value="<%= p.getProductId() %>">
 
@@ -49,15 +53,13 @@
             <select class="form-select" id="categoryId" name="categoryId" required>
                 <option value="">-- Chọn danh mục --</option>
                 <%
-                    if (categories != null) {
-                        for (Category c : categories) {
-                            boolean selected = (c.getCategoryId() == p.getCategory().getCategoryId());
+                    for (Category c : categories) {
+                        boolean selected = (c.getCategoryId() == oldCategoryId);
                 %>
                     <option value="<%= c.getCategoryId() %>" <%= selected ? "selected" : "" %>>
                         <%= c.getCategoryName() %>
                     </option>
                 <%
-                        }
                     }
                 %>
             </select>
@@ -66,20 +68,15 @@
         <!-- Tên sản phẩm -->
         <div class="mb-3">
             <label for="productName" class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="productName" name="productName"
-                   value="<%= request.getAttribute("productName") != null 
-                            ? request.getAttribute("productName") 
-                            : p.getProductName() %>" required>
+            <input type="text" class="form-control" id="productName" name="productName" maxlength="50" required value="<%= oldName %>">
+            <small id="productNameError" class="text-danger" style="display:none;"></small>
         </div>
 
         <!-- Mô tả -->
         <div class="mb-3">
             <label for="description" class="form-label">Mô tả <span class="text-danger">*</span></label>
-            <textarea class="form-control" id="description" name="description" rows="3" required><%= 
-                request.getAttribute("description") != null 
-                    ? request.getAttribute("description") 
-                    : p.getDescription() 
-            %></textarea>
+            <textarea class="form-control" id="description" name="description" rows="3" maxlength="200" required><%= oldDesc %></textarea>
+            <small id="descriptionError" class="text-danger" style="display:none;"></small>
         </div>
 
         <!-- Nút -->
@@ -87,5 +84,52 @@
         <a href="${pageContext.request.contextPath}/admin-product" class="btn btn-secondary">Huỷ</a>
     </form>
 </div>
+
+<script>
+    function showError(id, message) {
+        const el = document.getElementById(id + "Error");
+        el.textContent = message;
+        el.style.display = message ? "block" : "none";
+    }
+
+    function validateProductName() {
+        const value = document.getElementById("productName").value.trim();
+        if (!value) {
+            showError("productName", "Tên sản phẩm không được để trống.");
+            return false;
+        }
+        if (value.length > 50) {
+            showError("productName", "Tên sản phẩm không được vượt quá 50 ký tự.");
+            return false;
+        }
+        showError("productName", "");
+        return true;
+    }
+
+    function validateDescription() {
+        const value = document.getElementById("description").value.trim();
+        if (!value) {
+            showError("description", "Mô tả không được để trống.");
+            return false;
+        }
+        if (value.length > 200) {
+            showError("description", "Mô tả không được vượt quá 200 ký tự.");
+            return false;
+        }
+        showError("description", "");
+        return true;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("productName").addEventListener("blur", validateProductName);
+        document.getElementById("description").addEventListener("blur", validateDescription);
+
+        document.getElementById("productForm").addEventListener("submit", function (e) {
+            if (!validateProductName() || !validateDescription()) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
 </body>
 </html>

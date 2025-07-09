@@ -39,29 +39,33 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Kê đơn thuốc</label>
-      <div class="table-responsive">
-        <table class="table table-bordered align-middle text-center">
-          <thead class="table-light">
-            <tr>
-              <th>Tên thuốc</th>
-              <th>Số lượng</th>
-              <th>Liều dùng</th>
-              <th>Thời gian</th>
-              <th>Hướng dẫn</th>
-              <th>
-                <button type="button" id="addMedicineBtn" class="btn btn-sm btn-success">
-                  <i class="bi bi-plus"></i>
-                </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody id="prescribedMedicinesBody">
-            <!-- JS thêm dòng thuốc -->
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <label class="form-label">Kê đơn thuốc</label>
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Tên thuốc</th>
+          <th>Số lượng</th>
+          <th>Liều dùng</th>
+          <th>Thời gian</th>
+          <th>Hướng dẫn</th>
+          <th></th> <!-- Cột rỗng để giữ cấu trúc hàng -->
+        </tr>
+      </thead>
+      <tbody id="prescribedMedicinesBody">
+        <!-- JS thêm dòng thuốc -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Đặt nút thêm thuốc bên dưới bảng -->
+  <div class="mt-2">
+    <button type="button" id="addMedicineBtn" class="btn btn-success btn-sm">
+      <i class="bi bi-plus-lg"></i> Thêm thuốc
+    </button>
+  </div>
+</div>
+
 
     <div class="text-end">
       <button type="submit" class="btn btn-primary">Lưu hồ sơ</button>
@@ -250,9 +254,10 @@ var tr = document.createElement('tr');
 let actionButtons = '';
 
 if (rec.appointmentStatus.toLowerCase() !== 'completed') {
+ 
   actionButtons +=
-    '<a href="doctor-edit-medical-record?id=' + rec.id + '" class="me-2 text-primary" title="Sửa">' +
-      '<i class="bi bi-pencil-square"></i>' +
+    '<a href="doctor-edit-medical-record?id=' + rec.id + '&appointmentId=' + appointmentId + '" class="me-2 text-primary" title="Sửa">' +
+    '<i class="bi bi-pencil-square"></i>' +
     '</a>' +
     '<button class="btn btn-sm btn-outline-success mark-done-btn" data-id="' + rec.appointmentId + '" title="Hoàn thành cuộc hẹn">' +
       '<i class="bi bi-check-circle"></i>' +

@@ -11,9 +11,15 @@
 <div class="container-fluid py-4">
     <!-- Nút quay lại -->
     <div class="mb-3">
-        <a href="doctor-time-table" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left"></i> Quay lại
-        </a>
+        
+     <c:if test="${not empty sessionScope.backUrl}">
+    <button type="button" class="btn btn-secondary" onclick="window.location.href='${sessionScope.backUrl}'">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </button>
+</c:if>
+
+
+
     </div>
 
     <!-- Tiêu đề -->
@@ -51,7 +57,7 @@
         <div class="col-lg-4 col-md-5 mb-4">
             <div class="card shadow-sm">
                 <div class="text-center p-3">
-                    <img id="petAvatar" src="${pageContext.request.contextPath}/assets/images/default_pet.png" alt="Pet Avatar"
+                    <img id="petAvatar" src="" alt="Pet Avatar"
                          class="img-fluid rounded-circle border border-primary" style="max-width: 100px;">
                 </div>
                 <div class="card-body pt-0">
@@ -85,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(res => res.json())
         .then(data => {
             const appt = data.appointments[0];
-            document.getElementById('petAvatar').src = './' + (appt.petAvatar || 'assets/images/default_pet.png');
+            document.getElementById('petAvatar').src = (appt.petAvatar);
             document.getElementById('petCode').innerText = appt.petCode || '-';
             document.getElementById('petName').innerText = appt.petName || '-';
             document.getElementById('petBreed').innerText = appt.petBreed || '-';
@@ -131,6 +137,25 @@ function applyStatusUI(status) {
     }
 }
 
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const tab = "${activeTab}";
+    if (tab) {
+        const tabMap = {
+            "diagnosis": "#tab-diagnosis",
+            "services": "#tab-services",
+            "conclude": "#tab-conclude"
+        };
+        const selector = tabMap[tab];
+        if (selector) {
+            const tabTrigger = document.querySelector(selector);
+            if (tabTrigger) {
+                new bootstrap.Tab(tabTrigger).show();
+            }
+        }
+    }
+});
 </script>
 
 </body>

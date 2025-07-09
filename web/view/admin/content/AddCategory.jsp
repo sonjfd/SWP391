@@ -10,7 +10,21 @@
     <div class="container mt-5">
         <h2 class="mb-4">Thêm danh mục mới</h2>
 
-        <!-- Form thêm danh mục -->
+        <%-- ✅ Thông báo lỗi nếu tên danh mục đã tồn tại --%>
+        <%
+            String error = (String) session.getAttribute("error");
+            if (error != null) {
+        %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <%
+                session.removeAttribute("error");
+            }
+        %>
+
+        <!-- ✅ Form thêm danh mục -->
         <form method="post" action="admin-category">
             <input type="hidden" name="action" value="add">
 
@@ -52,7 +66,7 @@
             const nameError = document.getElementById("nameError");
             const descError = document.getElementById("descError");
 
-            const nameRegex = /^[^<>"]{1,50}$/u; // Cho phép chữ cái Unicode, số, khoảng trắng, dấu gạch
+            const nameRegex = /^[^<>"]{1,50}$/u;
 
             nameInput.addEventListener("blur", function () {
                 const nameValue = nameInput.value.trim();

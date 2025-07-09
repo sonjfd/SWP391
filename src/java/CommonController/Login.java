@@ -145,7 +145,7 @@ public class Login extends HttpServlet {
                 response.sendRedirect("admin");
                 break;
             case 3: // doctor
-                response.sendRedirect("homepage");
+                response.sendRedirect("doctor-schedule");
                 break;
             case 4: // staff
                 response.sendRedirect("staff-list-pet-and-owner");

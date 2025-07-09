@@ -36,9 +36,20 @@
 
     <h2 class="mb-4">Chỉnh sửa hương vị sản phẩm</h2>
 
-    <!-- Hiển thị lỗi nếu có -->
+    <!-- ✅ Hiển thị lỗi nếu có -->
     <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
+    <!-- ✅ Hiển thị thông báo thành công -->
+    <c:if test="${not empty message}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </c:if>
 
     <form action="admin-productVariantFlavor" method="post" onsubmit="return validateForm();">
@@ -52,22 +63,25 @@
                 class="form-control"
                 id="flavor"
                 name="flavor"
-                value="<%= flavor.getFlavor() %>"
                 maxlength="50"
                 required
+                value="${param.flavor != null ? param.flavor : flavor.flavor}"
             />
         </div>
 
         <div class="mb-3">
             <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
             <select class="form-select" id="status" name="status">
-                <option value="1" <%= flavor.isStatus() ? "selected" : "" %>>Đang bán</option>
-                <option value="0" <%= !flavor.isStatus() ? "selected" : "" %>>Ngừng bán</option>
+                <option value="1" ${param.status == '1' || (param.status == null && flavor.status) ? 'selected' : ''}>Đang bán</option>
+                <option value="0" ${param.status == '0' || (param.status == null && !flavor.status) ? 'selected' : ''}>Ngừng bán</option>
             </select>
         </div>
 
         <button type="submit" class="btn btn-success">Cập nhật</button>
         <a href="admin-productVariantFlavor" class="btn btn-secondary">Quay lại</a>
     </form>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

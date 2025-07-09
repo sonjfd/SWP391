@@ -87,41 +87,47 @@
         </div>
 
         <!-- Bảng thuốc -->
-        <div class="mb-3">
-            <label class="form-label">Kê đơn thuốc</label>
-            <table class="table table-bordered align-middle table-striped" id="prescribedMedicinesTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>Tên thuốc</th>
-                        <th>Số lượng</th>
-                        <th>Liều dùng</th>
-                        <th>Thời gian</th>
-                        <th>Hướng dẫn</th>
-                        <th>
-                            <button type="button" id="addMedicineBtn" class="btn btn-sm btn-success"><i class="bi bi-plus"></i></button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="prescribedMedicinesBody">
-                    <c:forEach var="medicine" items="${medicalRecord.prescribedMedicines}">
-                        <tr>
-                            <td>
-                                <select name="medicineId" class="form-select" required>
-                                    <c:forEach var="med" items="${medicines}">
-                                        <option value="${med.id}" ${med.id == medicine.medicineId ? 'selected' : ''}>${med.name}</option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                            <td><input type="number" name="medicineQuantity" class="form-control" value="${medicine.quantity}" min="1" required></td>
-                            <td><textarea name="medicineDosage" class="form-control" rows="2">${medicine.dosage}</textarea></td>
-                            <td><textarea name="medicineDuration" class="form-control" rows="2">${medicine.duration}</textarea></td>
-                            <td><textarea name="medicineInstructions" class="form-control" rows="2">${medicine.usageInstructions}</textarea></td>
-                            <td><button type="button" class="btn btn-danger btn-sm remove-medicine-btn"><i class="bi bi-x"></i></button></td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
+        <!-- Bảng thuốc -->
+<div class="mb-3">
+    <label class="form-label">Kê đơn thuốc</label>
+    <table class="table table-bordered align-middle table-striped" id="prescribedMedicinesTable">
+        <thead class="table-light">
+            <tr>
+                <th>Tên thuốc</th>
+                <th>Số lượng</th>
+                <th>Liều dùng</th>
+                <th>Thời gian</th>
+                <th>Hướng dẫn</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="prescribedMedicinesBody">
+            <c:forEach var="medicine" items="${medicalRecord.prescribedMedicines}">
+                <tr>
+                    <td>
+                        <select name="medicineId" class="form-select" required>
+                            <c:forEach var="med" items="${medicines}">
+                                <option value="${med.id}" ${med.id == medicine.medicineId ? 'selected' : ''}>${med.name}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                    <td><input type="number" name="medicineQuantity" class="form-control" value="${medicine.quantity}" min="1" required></td>
+                    <td><textarea name="medicineDosage" class="form-control" rows="2">${medicine.dosage}</textarea></td>
+                    <td><textarea name="medicineDuration" class="form-control" rows="2">${medicine.duration}</textarea></td>
+                    <td><textarea name="medicineInstructions" class="form-control" rows="2">${medicine.usageInstructions}</textarea></td>
+                    <td><button type="button" class="btn btn-danger btn-sm remove-medicine-btn"><i class="bi bi-x"></i></button></td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+    <!-- Nút thêm thuốc đặt bên dưới bảng -->
+    <div class="mt-2">
+        <button type="button" id="addMedicineBtn" class="btn btn-success btn-sm">
+            <i class="bi bi-plus-lg"></i> Thêm thuốc
+        </button>
+    </div>
+</div>
+
 
         <div class="mb-4 d-flex justify-content-between">
             <button id="backButton" type="button" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Quay lại</button>
@@ -266,7 +272,10 @@ document.getElementById("editMedicalRecordForm").addEventListener("submit", asyn
         if (response.ok) {
             alert("Cập nhật hồ sơ thành công!");
             // Có thể redirect hoặc reload tùy bạn:
-            window.location.href = document.referrer + (document.referrer.includes('?') ? '&' : '?') + 'reload=1';
+            const appointmentId = new URLSearchParams(window.location.search).get('appointmentId');
+window.location.href = 'doctor-clinical-diagnosis?appointmentId=' + appointmentId + '&tab=conclude';
+
+//            window.location.href = document.referrer + (document.referrer.includes('?') ? '&' : '?') + 'reload=1';
         } else {
             alert("Cập nhật thất bại! " + resultText);
         }

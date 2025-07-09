@@ -264,32 +264,34 @@ public class ProductDAO extends DBContext {
 
     // --- MỚI: Kiểm tra trùng tên sản phẩm khi thêm mới ---
     public boolean isDuplicateProductName(String productName) {
-        String sql = "SELECT 1 FROM products WHERE product_name = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, productName);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // true nếu tồn tại
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    String sql = "SELECT 1 FROM products WHERE LOWER(product_name) = ?";
+    try (Connection conn = getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, productName.trim().toLowerCase());
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next(); // true nếu tồn tại
         }
-        return false;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return true; // giả định có trùng nếu lỗi DB
     }
+}
+
 
     // --- MỚI: Kiểm tra trùng tên sản phẩm khi sửa (ngoại trừ id đang sửa) ---
-    public boolean isDuplicateProductNameExcludeId(String productName, int excludeId) {
-        String sql = "SELECT 1 FROM products WHERE product_name = ? AND product_id != ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, productName);
-            ps.setInt(2, excludeId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // true nếu tồn tại
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+   public boolean isDuplicateProductNameExcludeId(String productName, int excludeId) {
+    String sql = "SELECT 1 FROM products WHERE LOWER(product_name) = LOWER(?) AND product_id != ?";
+    try (Connection conn = getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, productName.trim().toLowerCase());
+        ps.setInt(2, excludeId);
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next(); // true nếu tồn tại
         }
-        return false;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return true; // giả sử trùng nếu có lỗi
     }
+}
+
 }

@@ -55,7 +55,7 @@ public class AIChatboxDAO {
                 chat.setCreated_at(rs.getTimestamp("created_at").toLocalDateTime());
 
                 User u = new User();
-                u.setId(String.valueOf(userId));
+                u.setId(userId);
                 u.setAvatar(rs.getString("avatar"));
                 chat.setUser(u);
 

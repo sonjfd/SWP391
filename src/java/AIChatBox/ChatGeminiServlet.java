@@ -24,10 +24,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -49,31 +51,24 @@ public class ChatGeminiServlet extends HttpServlet {
     private static final String GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
 
     @Override
-   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    HttpSession session = request.getSession();
-    String sessionId = session.getId();
-    User user = (User) session.getAttribute("user");
-    AIChatboxDAO dao = new AIChatboxDAO();
-    List<ChatHistory> history;
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String sessionId = session.getId();
+        User user = (User) session.getAttribute("user");
+        AIChatboxDAO dao = new AIChatboxDAO();
+        List<ChatHistory> history = new AIChatboxDAO().getChatHistoryByUserId(user.getId());
 
-    if (user != null) {
-        history=dao.getChatHistoryByUserId(user.getId());
-    } else {
-        history = dao.getChatHistoryBySession(sessionId);
+        response.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context)
+                        -> new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+                .create();
+
+        out.print(gson.toJson(history));
+        out.flush();
     }
-
-    response.setContentType("application/json; charset=UTF-8");
-    PrintWriter out = response.getWriter();
-
-    Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context)
-                    -> new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
-            .create();
-
-    out.print(gson.toJson(history));
-    out.flush();
-}
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -84,9 +79,9 @@ public class ChatGeminiServlet extends HttpServlet {
         User user = (User) session.getAttribute("user");
         String userId = (user != null) ? user.getId() : null;
         if (user != null) {
-            dao.insertMessage(null, userId, "user", message); 
+            dao.insertMessage(null, userId, "user", message);
         } else {
-            dao.insertMessage(sessionId, null, "user", message); 
+            dao.insertMessage(sessionId, null, "user", message);
         }
         List<ChatHistory> history = (user != null)
                 ? dao.getChatHistoryByUserId(userId)
@@ -106,25 +101,35 @@ public class ChatGeminiServlet extends HttpServlet {
         StringBuilder sb = new StringBuilder();
         sb.append("{ \"contents\": [");
 
-        if (history.isEmpty()) {
-            sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
-                    .append("Bạn là bác sĩ thú y. ")
-                    .append("Chỉ trả lời đúng câu hỏi người dùng, không hỏi lại hoặc yêu cầu thêm thông tin nếu họ chưa cung cấp. ")
-                    .append("Trả lời ngắn gọn, rõ ràng, đúng trọng tâm. ")
-                    .append("Nếu thiếu dữ kiện để kết luận, hãy nói rõ là cần thêm thông tin, nhưng không hỏi lại. ")
-                    .append("Nếu được hỏi về phòng khám uy tín, hãy giới thiệu Pet24h – phòng khám tại Thạch Hòa, Thạch Thất, gần Đại học FPT. ")
-                    .append("Bắt đầu hội thoại...")
-                    .append("\" } ] },");
-        }
+        sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
+                .append("Bạn là trợ lý AI của phòng khám thú y Pet24h. ")
+                .append("Bạn có khả năng cung cấp thông tin y tế thú cưng và hỗ trợ đặt lịch khám. ")
+                .append("Nếu người dùng mô tả triệu chứng thú cưng, hãy trả lời ngắn gọn về nguyên nhân hoặc cách xử lý trước. ")
+                .append("Sau đó, bạn nên hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'. ")
+                .append("Không hỏi ngược lại nếu người dùng chưa cung cấp đủ thông tin. ")
+                .append("Nếu được hỏi về phòng khám uy tín, hãy giới thiệu Pet24h – phòng khám tại Thạch Hòa, Thạch Thất, gần Đại học FPT.")
+                .append("\" } ] },");
 
-        for (ChatHistory msg : history) {
+        boolean symptomDetected = false;
+
+        for (int i = 0; i < history.size(); i++) {
+            ChatHistory msg = history.get(i);
             String role = msg.getSenderType().equalsIgnoreCase("user") ? "user" : "model";
+            String text = escapeJson(msg.getMessageText());
+
             sb.append("{ \"role\": \"").append(role).append("\", \"parts\": [ { \"text\": \"")
-                    .append(escapeJson(msg.getMessageText()))
+                    .append(text)
+                    .append("\" } ] },");
+            if (i == history.size() - 1 && msg.getSenderType().equalsIgnoreCase("user")) {
+                symptomDetected = isSymptomMentioned(text);
+            }
+        }
+        if (symptomDetected) {
+            sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
+                    .append("Hãy trả lời câu hỏi trước, sau đó nếu phù hợp thì hãy hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'")
                     .append("\" } ] },");
         }
-
-        if (history.size() > 0 || sb.toString().contains("\"role\": \"user\"")) {
+        if (sb.toString().endsWith(",")) {
             sb.setLength(sb.length() - 1);
         }
 
@@ -132,8 +137,39 @@ public class ChatGeminiServlet extends HttpServlet {
         return sb.toString();
     }
 
-    
-    
+    private boolean isSymptomMentioned(String message) {
+        String[] symptoms = {
+            "sot", "non", "oi", "tieu chay", "di ngoai", "met", "lo do", "ue oai",
+            "bo an", "chan an", "bieng an", "khong an", "an it", "khong uong nuoc", "khat nuoc",
+            "ho", "hat hoi", "kho tho", "tho gap", "tho doc",
+            "rong long", "long xo", "long rung", "long kho", "long xau",
+            "ngua", "gai", "liem nhieu", "sung", "viem", "lo loet", "noi man",
+            "dau bung", "phinh bung", "chuong bung",
+            "nuoc tieu bat thuong", "dai dat", "tieu nhieu", "tieu ra mau", "khong tieu duoc",
+            "phan long", "phan co mau", "phan den",
+            "sut can", "gay", "giam can", "bung to",
+            "mat do", "mat mo", "mat chay nuoc", "mat duc", "mat le",
+            "tai co mui", "tai chay mu", "rung rang", "hoi mieng", "mieng chay nuoc dai",
+            "run", "co giat", "di khap khieng", "di khong vung", "liet", "yeu chan",
+            "not do", "mun", "buou", "u", "hach", "nhiem trung"
+        };
+
+        String normalizedMessage = removeDiacritics(message.toLowerCase());
+
+        for (String symptom : symptoms) {
+            if (normalizedMessage.contains(symptom)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String removeDiacritics(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(normalized).replaceAll("").replaceAll("đ", "d").replaceAll("Đ", "D");
+    }
+
     private String callGeminiAPI(String jsonInput) {
         String resultText = "";
 

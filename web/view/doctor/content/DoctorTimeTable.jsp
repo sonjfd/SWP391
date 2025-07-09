@@ -264,12 +264,18 @@
   </div>
 </div>
 
+<%-- Xóa backUrl khỏi session nếu có --%>
+<c:if test="${not empty sessionScope.backUrl}">
+    <c:remove var="backUrl" scope="session"/>
+</c:if>
 
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Lấy currentYear và currentWeek từ JavaScript
-        const currentYear = new Date().getFullYear();
+         // Lấy currentYear và currentWeek từ URL nếu có
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentYear = parseInt(urlParams.get('year')) || new Date().getFullYear();
+    const currentWeek = parseInt(urlParams.get('week')) || getCurrentWeek(new Date());
 
         // Hàm tính tuần hiện tại
         function getCurrentWeek(date) {
@@ -278,8 +284,7 @@
             return Math.ceil((days + 1) / 7);
         }
 
-        const currentWeek = getCurrentWeek(new Date());
-
+        
         // Điền vào dropdown năm
         const yearSelect = document.getElementById('year');
         for (let i = currentYear - 5; i <= currentYear + 5; i++) {
@@ -311,8 +316,23 @@
         setTimeout(fetchAppointments, 1000); // Đặt thời gian trì hoãn 1 giây (1000ms)
 
         // Khi người dùng thay đổi năm hoặc tuần, gọi lại API để lấy dữ liệu mới
-        document.getElementById('year').addEventListener('change', fetchAppointments);
-        document.getElementById('week').addEventListener('change', fetchAppointments);
+        function updateUrlParams() {
+    const year = document.getElementById('year').value;
+    const week = document.getElementById('week').value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('year', year);
+    url.searchParams.set('week', week);
+    window.history.replaceState({}, '', url);
+}
+document.getElementById('year').addEventListener('change', () => {
+    updateUrlParams();
+    fetchAppointments();
+});
+document.getElementById('week').addEventListener('change', () => {
+    updateUrlParams();
+    fetchAppointments();
+});
+
 
         // Hàm tính ngày bắt đầu và kết thúc của tuần
     function getStartAndEndOfWeek(year, week) {
@@ -475,8 +495,20 @@ const petId = event.currentTarget.getAttribute('data-pet_id');
 document.querySelectorAll('.add-record-btn').forEach(function(button) {
     button.addEventListener('click', function(event) {
         const appointmentId = button.getAttribute('data-id');
-        // Gọi trang thêm hồ sơ bệnh án, truyền id
-        window.location.href = './doctor-clinical-diagnosis?appointmentId=' + appointmentId;
+         // Lấy năm và tuần đang chọn
+        const selectedYear = document.getElementById('year').value;
+        const selectedWeek = document.getElementById('week').value;
+
+        // Tạo backUrl với tham số đầy đủ
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('year', selectedYear);
+        currentUrl.searchParams.set('week', selectedWeek);
+
+        const backUrl = encodeURIComponent(currentUrl.toString());
+
+        // Điều hướng đến servlet thêm hồ sơ
+window.location.href = './doctor-clinical-diagnosis?appointmentId=' + appointmentId + '&back=' + backUrl;
+
     });
 });
                 })
