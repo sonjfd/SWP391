@@ -295,6 +295,9 @@
                                         </div>
 
                                         <input type="hidden" name="totalBill" id="totalBill" value="${defaultPrice}" />
+                                        <div class="text-danger small mt-1">
+                                            * Lưu ý: Phí đặt lịch sẽ không được hoàn lại nếu bạn huỷ lịch khám.
+                                        </div>
                                     </div>
 
 

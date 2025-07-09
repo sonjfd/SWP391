@@ -28,7 +28,9 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.config.RequestConfig;
@@ -100,44 +102,54 @@ public class ChatGeminiServlet extends HttpServlet {
     private String buildMessagesJson(List<ChatHistory> history) {
         StringBuilder sb = new StringBuilder();
         sb.append("{ \"contents\": [");
-
         sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
                 .append("Bạn là trợ lý AI của phòng khám thú y Pet24h. ")
                 .append("Bạn có khả năng cung cấp thông tin y tế thú cưng và hỗ trợ đặt lịch khám. ")
-                .append("Nếu người dùng mô tả triệu chứng thú cưng, hãy trả lời ngắn gọn về nguyên nhân hoặc cách xử lý trước. ")
-                .append("Sau đó, bạn nên hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'. ")
+                .append("Nếu người dùng mô tả triệu chứng thú cưng hoặc yêu cầu đặt lịch, hãy hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'. ")
+                .append("Nếu người dùng muốn xem danh sách bác sĩ, hãy hiển thị danh sách tất cả bác sĩ hiện có. ")
+                .append("Nếu người dùng hỏi về lịch làm việc của một bác sĩ vào ngày cụ thể, hãy hiển thị các ca khám trống của bác sĩ đó vào ngày đó và hỏi người dùng muốn đặt lịch không. ")
                 .append("Không hỏi ngược lại nếu người dùng chưa cung cấp đủ thông tin. ")
                 .append("Nếu được hỏi về phòng khám uy tín, hãy giới thiệu Pet24h – phòng khám tại Thạch Hòa, Thạch Thất, gần Đại học FPT.")
                 .append("\" } ] },");
-
-        boolean symptomDetected = false;
-
+        String lastUserMessage = "";
         for (int i = 0; i < history.size(); i++) {
             ChatHistory msg = history.get(i);
             String role = msg.getSenderType().equalsIgnoreCase("user") ? "user" : "model";
             String text = escapeJson(msg.getMessageText());
-
             sb.append("{ \"role\": \"").append(role).append("\", \"parts\": [ { \"text\": \"")
-                    .append(text)
-                    .append("\" } ] },");
-            if (i == history.size() - 1 && msg.getSenderType().equalsIgnoreCase("user")) {
-                symptomDetected = isSymptomMentioned(text);
+                    .append(text).append("\" } ] },");
+            if (i == history.size() - 1 && role.equals("user")) {
+                lastUserMessage = text;
             }
         }
-        if (symptomDetected) {
+        Set<String> flags = regax(lastUserMessage);
+        if (flags.contains("symptom")) {
             sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
-                    .append("Hãy trả lời câu hỏi trước, sau đó nếu phù hợp thì hãy hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'")
+                    .append("Hãy trả lời câu hỏi về triệu chứng trước, sau đó hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'")
                     .append("\" } ] },");
         }
+        if (flags.contains("book_request") && !flags.contains("symptom")) {
+            sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
+                    .append("Người dùng đang yêu cầu đặt lịch, hãy hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'")
+                    .append("\" } ] },");
+        }
+        if (flags.contains("doctor_list")) {
+            sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
+                    .append("Hãy trả lời với danh sách tất cả bác sĩ hiện có tại phòng khám. Không hỏi người dùng có muốn đặt lịch không.")
+                    .append("\" } ] },");
+        }
+
+        
         if (sb.toString().endsWith(",")) {
             sb.setLength(sb.length() - 1);
         }
-
         sb.append(" ] }");
         return sb.toString();
     }
 
-    private boolean isSymptomMentioned(String message) {
+    private Set<String> regax(String message) {
+        Set<String> result = new HashSet<>();
+        String text = removeDiacritics(message.toLowerCase());
         String[] symptoms = {
             "sot", "non", "oi", "tieu chay", "di ngoai", "met", "lo do", "ue oai",
             "bo an", "chan an", "bieng an", "khong an", "an it", "khong uong nuoc", "khat nuoc",
@@ -153,21 +165,26 @@ public class ChatGeminiServlet extends HttpServlet {
             "run", "co giat", "di khap khieng", "di khong vung", "liet", "yeu chan",
             "not do", "mun", "buou", "u", "hach", "nhiem trung"
         };
-
-        String normalizedMessage = removeDiacritics(message.toLowerCase());
-
         for (String symptom : symptoms) {
-            if (normalizedMessage.contains(symptom)) {
-                return true;
+            if (text.contains(symptom)) {
+                result.add("symptom");
+                break;
             }
         }
-        return false;
+        if (text.matches(".*\\b(dat lich|muon dat lich|toi muon dat lich|dat kham|muon kham)\\b.*")) {
+            result.add("book_request");
+        }
+        if (text.matches(".*\\b(danh sach bac si|xem bac si|bac si nao|co bac si nao)\\b.*")) {
+            result.add("doctor_list");
+        }
+        
+        return result;
     }
 
     private String removeDiacritics(String input) {
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        return pattern.matcher(normalized).replaceAll("").replaceAll("đ", "d").replaceAll("Đ", "D");
+        return normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .replaceAll("đ", "d").replaceAll("Đ", "D");
     }
 
     private String callGeminiAPI(String jsonInput) {

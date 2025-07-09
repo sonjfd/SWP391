@@ -432,6 +432,11 @@ Author     : Dell
 
             <!-- Tin nhắn sẽ hiển thị ở đây -->
         </div>
+        <!-- Nút hướng dẫn sử dụng -->
+        <div style="text-align: center; padding: 4px;">
+            <button id="guideBtn" style="background: transparent; border: none; color: #007bff; cursor: pointer; text-decoration: underline;">Xem hướng dẫn sử dụng</button>
+        </div>
+
         <div style="display: flex; padding: 10px; border-top: 1px solid #ddd;">
             <input id="userInput" type="text" placeholder="Nhập tin nhắn..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 20px 0 0 20px;">
             <button id="sendMessageBtn" style="background: #007bff; color: white; border: none; padding: 0 16px; border-radius: 0 20px 20px 0;">
@@ -444,370 +449,69 @@ Author     : Dell
 
 
 
+    <!-- Modal hướng dẫn sử dụng -->
+    <div class="modal fade" id="aiGuideModal" tabindex="-1" aria-labelledby="aiGuideLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aiGuideLabel">Hướng dẫn sử dụng Trợ lý AI - Pet24h</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body" style="line-height: 1.7;">
+
+                    <h6>1. Tra cứu thông tin thú cưng</h6>
+                    <ol>
+                        <li>Nhập các câu hỏi liên quan đến chăm sóc thú cưng như: <em>“Thức ăn tốt cho mèo con”, “Cách xử lý khi chó bị tiêu chảy”, “Tiêm phòng định kỳ cho thú cưng”</em>.</li>
+                        <li>Trợ lý AI sẽ phân tích và cung cấp thông tin tham khảo từ kiến thức thú y tổng hợp.</li>
+                    </ol>
+
+                    <h6>2. Đặt lịch khám theo triệu chứng</h6>
+                    <ol>
+                        <li>Gõ tin nhắn như: <em>“Tôi muốn đặt lịch khám”</em> hoặc mô tả triệu chứng như: <em>“Chó bị nôn và bỏ ăn”</em>.</li>
+                        <li>AI sẽ hỏi bạn chọn thú cưng và ngày khám mong muốn.</li>
+                        <li>Hệ thống sẽ tìm bác sĩ phù hợp có ca làm việc và slot trống để tự động đặt lịch.</li>
+                        <li>Nếu không còn slot trống hoặc bác sĩ không làm việc trong ngày đó, hệ thống sẽ thông báo để bạn chọn ngày khác.</li>
+                    </ol>
+
+                    <h6>3. Đặt lịch khám với bác sĩ cụ thể</h6>
+                    <ol>
+                        <li>Gõ: <em>“Danh sách bác sĩ”</em>.</li>
+                        <li>Trợ lý AI sẽ hiển thị danh sách bác sĩ hiện đang làm việc tại Pet24h.</li>
+                        <li>Bạn chọn thú cưng, bác sĩ và ngày khám.</li>
+                        <li>Hệ thống sẽ kiểm tra ca làm việc và slot của bác sĩ trong ngày đã chọn:</li>
+                        <ul>
+                            <li>Nếu có ca và còn slot trống: hệ thống sẽ đặt lịch thành công.</li>
+                            <li>Nếu bác sĩ không làm việc hoặc đã full slot: hệ thống sẽ báo và yêu cầu chọn ngày khác.</li>
+                        </ul>
+                    </ol>
+
+                    <h6>Lưu ý:</h6>
+                    <ul>
+                        <li>Bạn cần đăng nhập để sử dụng chức năng đặt lịch.</li>
+                        <li>Không thể chọn ngày khám trong quá khứ.</li>
+                        <li>Nếu bạn chưa có thú cưng, vui lòng thêm thú cưng trước khi đặt lịch.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
     <%@include file="../layout/Footer.jsp" %>
     <script>
-        const isLoggedIn = ${not empty sessionScope.user};
-
-        const chatBtn = document.getElementById("chatAiBtn");
-        const chatWindow = document.getElementById("chatWindow");
-        const closeChatBtn = document.getElementById("closeChatBtn");
-        const sendMessageBtn = document.getElementById("sendMessageBtn");
-        const userInput = document.getElementById("userInput");
-        const chatContent = document.getElementById("chatContent");
 
 
-        chatBtn.addEventListener("click", () => {
-            chatWindow.style.display = "flex";
-            chatBtn.style.display = "none";
-
-
-            if (isLoggedIn) {
-                loadChatHistory();
+        document.addEventListener("DOMContentLoaded", function () {
+            const guideBtn = document.getElementById("guideBtn");
+            if (guideBtn) {
+                guideBtn.addEventListener("click", function () {
+                    const modal = new bootstrap.Modal(document.getElementById("aiGuideModal"));
+                    modal.show();
+                });
             }
         });
-        closeChatBtn.addEventListener("click", () => {
-            chatWindow.style.display = "none";
-            chatBtn.style.display = "block";
-        });
-
-        userInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                sendMessage();
-            }
-        });
-
-        sendMessageBtn.addEventListener("click", sendMessage);
-
-
-        function formatAiResponse(text) {
-            text = text.replace(/^Tuyệt vời!.*?\?/, "").trim();
-            text = text
-                    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-                    .replace(/\*(.*?)\*/g, "<i>$1</i>")
-                    .replace(/\n{2,}/g, "<br><br>")
-                    .replace(/\n/g, "<br>");
-            return text;
-        }
-
-        function sendMessage() {
-            const message = userInput.value.trim();
-            if (message === "")
-                return;
-
-
-            const userMsg = document.createElement("div");
-            userMsg.style.textAlign = "right";
-            const userBubble = document.createElement("span");
-            userBubble.textContent = message;
-            userBubble.style.cssText = `
-        background: #007bff; 
-        color: white; 
-        padding: 8px 12px; 
-        border-radius: 12px; 
-        display: inline-block; 
-        max-width: 80%; 
-        word-wrap: break-word;
-        margin-bottom: 4px;
-    `;
-            userMsg.appendChild(userBubble);
-            chatContent.appendChild(userMsg);
-
-            userInput.value = "";
-            chatContent.scrollTop = chatContent.scrollHeight;
-
-
-            const aiMsg = document.createElement("div");
-            aiMsg.className = "ai-message";
-            aiMsg.innerHTML = `<div style="margin-top:5px; font-style: italic;">Đang trả lời...</div>`;
-            chatContent.appendChild(aiMsg);
-            chatContent.scrollTop = chatContent.scrollHeight;
-
-
-            fetch("chat-ai", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: "message=" + encodeURIComponent(message)
-            })
-                    .then(response => response.text())
-                    .then(data => {
-                        const aiBubble = document.createElement("span");
-                        aiBubble.innerHTML = formatAiResponse(data);
-                        aiBubble.style.cssText = `
-            background: #f1f1f1; 
-            padding: 8px 12px; 
-            border-radius: 12px; 
-            display: inline-block; 
-            max-width: 80%; 
-            word-wrap: break-word;
-            margin-left: 6px;
-        `;
-
-                        const aiWrapper = document.createElement("div");
-                        aiWrapper.style.display = "flex";
-                        aiWrapper.style.alignItems = "flex-start";
-                        aiWrapper.style.marginTop = "8px";
-
-                        const aiImg = document.createElement("img");
-                        aiImg.src = "${pageContext.request.contextPath}/assets/images/ai.png";
-                        aiImg.alt = "AI";
-                        aiImg.style.cssText = "width: 28px; height: 28px; border-radius: 50%; margin-top: 2px;";
-
-                        aiWrapper.appendChild(aiImg);
-                        aiWrapper.appendChild(aiBubble);
-
-                        aiMsg.innerHTML = "";
-                        aiMsg.appendChild(aiWrapper);
-                        chatContent.scrollTop = chatContent.scrollHeight;
-
-
-                        if (data.includes("Bạn có muốn đặt lịch khám tại phòng khám Pet24h không")) {
-                            const btnGroup = document.createElement("div");
-                            btnGroup.style.marginTop = "8px";
-                            btnGroup.style.display = "flex";
-                            btnGroup.style.gap = "8px";
-
-                            const yesBtn = document.createElement("button");
-                            yesBtn.textContent = "Có";
-                            yesBtn.style.cssText = `
-                padding: 6px 12px;
-                border: none;
-                border-radius: 6px;
-                background-color: #28a745;
-                color: white;
-                cursor: pointer;
-            `;
-
-                            const noBtn = document.createElement("button");
-                            noBtn.textContent = "Không";
-                            noBtn.style.cssText = `
-                padding: 6px 12px;
-                border: none;
-                border-radius: 6px;
-                background-color: #dc3545;
-                color: white;
-                cursor: pointer;
-            `;
-
-                            yesBtn.addEventListener("click", () => {
-                                showBookingPrompt();
-                                btnGroup.remove();
-                            });
-
-                            noBtn.addEventListener("click", () => {
-                                const noMsg = document.createElement("div");
-                                noMsg.innerHTML = `<div style="text-align:right;"><span style="background:#007bff;color:white;padding:8px 12px;border-radius:12px;display:inline-block;">Không</span></div>`;
-                                chatContent.appendChild(noMsg);
-                                chatContent.scrollTop = chatContent.scrollHeight;
-                                btnGroup.remove();
-                            });
-
-                            btnGroup.appendChild(yesBtn);
-                            btnGroup.appendChild(noBtn);
-                            chatContent.appendChild(btnGroup);
-                            chatContent.scrollTop = chatContent.scrollHeight;
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Lỗi khi gửi hoặc nhận tin nhắn:", err);
-                        aiMsg.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
-                    });
-        }
-
-
-        function showBookingPrompt() {
-            fetch("chat-ai-select-pet")
-                    .then(res => {
-                        if (res.status === 500) {
-                            const loginMsg = document.createElement("div");
-                            loginMsg.innerHTML = `
-                    <div style="margin-top:8px;">
-                        Bạn cần <a href="login" style="color: #007bff;">đăng nhập</a> để đặt lịch khám.
-                    </div>`;
-                            chatContent.appendChild(loginMsg);
-                            chatContent.scrollTop = chatContent.scrollHeight;
-                            throw new Error("Chưa đăng nhập");
-                        }
-                        return res.json();
-                    })
-                    .then(pets => {
-                        const formDiv = document.createElement("div");
-                        formDiv.style.marginTop = "8px";
-                        formDiv.innerHTML = `
-                <div id="bookingFormContent">
-                    <label>Chọn thú cưng:</label><br>
-                    <select id="petSelect" style="width: 100%; padding: 6px; margin-bottom: 6px; border-radius: 6px; border: 1px solid #ccc;">
-                        <option value="">-- Chọn thú cưng --</option>
-                    </select>
-                    <div id="noPetMessage" style="display:none; margin-top:5px;">
-                        Bạn chưa có thú cưng nào. <a href="them-thu-cung" style="color:#007bff;">Thêm thú cưng</a>
-                    </div>
-                    <label>Ngày khám mong muốn:</label><br>
-                    <input type="date" id="appointmentDateInput" style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #ccc;" />
-                    <button type="button" id="confirmBookingBtn" style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 6px;">Đặt lịch</button>
-                </div>`;
-                        chatContent.appendChild(formDiv);
-                        chatContent.scrollTop = chatContent.scrollHeight;
-
-                        const petSelect = formDiv.querySelector("#petSelect");
-                        const noPetMessage = formDiv.querySelector("#noPetMessage");
-
-                        if (pets.length === 0) {
-                            noPetMessage.style.display = "block";
-                        } else {
-                            pets.forEach(pet => {
-                                const option = document.createElement("option");
-                                option.value = pet.id;
-                                option.textContent = pet.name;
-                                petSelect.appendChild(option);
-                            });
-                        }
-
-                        formDiv.querySelector("#confirmBookingBtn").addEventListener("click", () => {
-                            const petId = petSelect.value;
-                            const date = formDiv.querySelector("#appointmentDateInput").value;
-
-
-                            if (!petId || !date) {
-                                alert("Vui lòng chọn thú cưng và ngày khám.");
-                                return;
-                            }
-
-                            const today = new Date();
-                            const selectedDate = new Date(date);
-                            today.setHours(0, 0, 0, 0);
-                            selectedDate.setHours(0, 0, 0, 0);
-
-                            if (selectedDate < today) {
-                                alert("Không thể chọn ngày trong quá khứ. Vui lòng chọn lại.");
-                                return;
-                            }
-
-                            fetch("ai-booking", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/x-www-form-urlencoded"
-                                },
-                                body: "petId=" + encodeURIComponent(petId) + "&date=" + encodeURIComponent(date)
-                            })
-                                    .then(res => res.text())
-                                    .then(msg => {
-                                        const msgEl = document.createElement("div");
-                                        msgEl.style.marginTop = "8px";
-
-                                        const span = document.createElement("span");
-                                        span.style.color = msg.includes("thành công") ? "black" : "red";
-
-                                        if (msg.includes("thành công")) {
-                                           
-                                            const textNode = document.createTextNode(msg + " Hoặc xem chi tiết tại ");
-                                            span.appendChild(textNode);
-
-                                           
-                                            const link = document.createElement("a");
-                                            link.href = "customer-viewappointment";
-                                            link.textContent = "đây";
-                                            link.style.color = "#007bff";
-
-                                            span.appendChild(link);
-                                            span.appendChild(document.createTextNode(".")); 
-                                        } else {
-                                            span.textContent = msg;
-                                        }
-
-                                        msgEl.appendChild(span);
-
-                                        const form = document.querySelector("#bookingFormContent");
-                                        form?.appendChild(msgEl);
-
-                                        chatContent.scrollTop = chatContent.scrollHeight;
-                                    })
-
-                                    .catch(err => {
-                                        console.error("Lỗi đặt lịch:", err);
-                                        alert("Có lỗi xảy ra khi đặt lịch.");
-                                    });
-                        });
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-        }
-
-
-
-
-        function loadChatHistory() {
-            fetch("chat-ai")
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Lỗi HTTP: " + response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log("Data received:", data);
-
-
-                        if (!Array.isArray(data)) {
-                            console.error("Dữ liệu trả về không phải là mảng:", data);
-                            return;
-                        }
-
-                        const chatContent = document.getElementById("chatContent");
-                        if (!chatContent) {
-                            console.error("Không tìm thấy phần tử chat-content");
-                            return;
-                        }
-
-                        chatContent.innerHTML = "";
-
-
-                        const baseUrl = window.location.origin + "/";
-
-                        const userAvatar = data[0].user.avatar ? baseUrl + data[0].user.avatar : baseUrl + "/SWP391/image-loader/default_user.png";
-
-                        console.log(userAvatar);
-                        data.forEach(item => {
-
-
-                            const msgDiv = document.createElement("div");
-                            msgDiv.className = item.senderType === "user" ? "message user" : "message ai";
-
-                            const avatarSrc = item.senderType === "user" ? userAvatar : "assets/images/ai.png";
-                            const messageText = item.senderType === "ai" ? formatAiResponse(item.messageText) : item.messageText;
-
-                            const messageBubbleDiv = document.createElement("div");
-                            messageBubbleDiv.className = "message-bubble";
-                            const avatarImg = document.createElement("img");
-                            avatarImg.src = avatarSrc;
-                            avatarImg.className = "avatar";
-                            const messageSpan = document.createElement("span");
-                            messageSpan.className = "text";
-                            messageSpan.innerHTML = messageText;
-
-                            messageBubbleDiv.appendChild(avatarImg);
-                            messageBubbleDiv.appendChild(messageSpan);
-
-                            msgDiv.appendChild(messageBubbleDiv);
-
-                            chatContent.appendChild(msgDiv);
-                        });
-                        chatContent.scrollTop = chatContent.scrollHeight;
-                    })
-                    .catch(err => {
-                        console.error("Lỗi khi load lịch sử:", err);
-
-                    });
-        }
-
-
-
-
 
         const swiperRate = new Swiper(".mySwiper-rating", {
             slidesPerView: 3,
@@ -858,6 +562,11 @@ Author     : Dell
 
 
 
+    <script>
+        const pageContextPath = "${pageContext.request.contextPath}";
+        const isLoggedIn = ${not empty sessionScope.user};
+    </script>
+    <script src="${pageContext.request.contextPath}/assets/js/chatbot.js"></script>
 
 
     <!-- javascript -->
