@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import static org.eclipse.jdt.internal.compiler.parser.Parser.name;
 
 /**
  *
@@ -74,24 +75,40 @@ public class CreateMedicine extends HttpServlet {
     throws ServletException, IOException {
         MedicineDAO medicineDAO = new MedicineDAO();
         try {
+            request.setCharacterEncoding("UTF-8");
+
+            String name = request.getParameter("name").trim();
+            String description = request.getParameter("description");
+            int status = (request.getParameter("status") != null && request.getParameter("status").equals("1")) ? 1 : 0;
+
             Medicine medicine = new Medicine();
-            medicine.setName(request.getParameter("name"));
-            medicine.setDescripton(request.getParameter("description"));
-            medicine.setStatus(request.getParameter("status") != null && request.getParameter("status").equals("1") ? 1 : 0);
+            medicine.setName(name);
+            medicine.setDescripton(description);
+            medicine.setStatus(status);
 
+            
+            if (medicineDAO.isMedicineNameExists(name, null)) {
+                request.setAttribute("error", "Tên thuốc đã tồn tại!");
+                request.setAttribute("medicine", medicine);
+                request.getRequestDispatcher("view/admin/content/CreateMedicine.jsp").forward(request, response);
+                return;
+            }
+
+            
             boolean success = medicineDAO.addMedicine(medicine);
-
             List<Medicine> medicineList = medicineDAO.getAllMedicines();
             request.setAttribute("medicineList", medicineList);
-            request.setAttribute("message", success ? "Thuốc được thêm thành công!" : "Lỗi bị trùng tên hoặc nhập sai");
+            request.setAttribute("message", success ? "Thuốc được thêm thành công!" : "Không thể thêm thuốc!");
             request.getRequestDispatcher("view/admin/content/ListMedicine.jsp").forward(request, response);
+
         } catch (Exception e) {
             e.printStackTrace();
+            request.setAttribute("message", "Tạo thuốc thất bại do lỗi hệ thống!");
             List<Medicine> medicineList = medicineDAO.getAllMedicines();
             request.setAttribute("medicineList", medicineList);
-            request.setAttribute("message", "Create failed due to an error.");
             request.getRequestDispatcher("view/admin/content/ListMedicine.jsp").forward(request, response);
         }
+            
     }
 
     /** 

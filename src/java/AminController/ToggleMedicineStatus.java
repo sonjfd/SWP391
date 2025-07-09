@@ -6,7 +6,6 @@
 package AminController;
 
 import DAO.MedicineDAO;
-import Model.Medicine;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,14 +13,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  *
  * @author FPT
  */
-@WebServlet(name="DeleteMedicine", urlPatterns={"/admin-delete-medicine"})
-public class DeleteMedicine extends HttpServlet {
+@WebServlet(name="ToggleMedicineStatus", urlPatterns={"/admin-toggle-medicine-status"})
+public class ToggleMedicineStatus extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,10 +36,10 @@ public class DeleteMedicine extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteMedicine</title>");  
+            out.println("<title>Servlet ToggleMedicineStatus</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteMedicine at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ToggleMedicineStatus at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,22 +56,7 @@ public class DeleteMedicine extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        MedicineDAO medicineDAO = new MedicineDAO();
-        try {
-            String id = request.getParameter("id");
-            boolean success = medicineDAO.deleteMedicine(id);
-
-            List<Medicine> medicineList = medicineDAO.getAllMedicines();
-            request.setAttribute("medicineList", medicineList);
-            request.setAttribute("message", success ? "Xóa thuốc thành công!" : "Xóa thuốc không thành công.");
-            request.getRequestDispatcher("view/admin/content/ListMedicine.jsp").forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            List<Medicine> medicineList = medicineDAO.getAllMedicines();
-            request.setAttribute("medicineList", medicineList);
-            request.setAttribute("message", "Delete failed due to an error.");
-            request.getRequestDispatcher("view/admin/content/ListMsedicine.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     } 
 
     /** 
@@ -86,8 +69,21 @@ public class DeleteMedicine extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        String id = request.getParameter("id");
+        int newStatus = Integer.parseInt(request.getParameter("status"));
+
+        MedicineDAO dao = new MedicineDAO();
+        boolean updated = dao.updateMedicineStatus(id, newStatus);
+
+        if (updated) {
+            request.getSession().setAttribute("message", "Cập nhật trạng thái thuốc thành công!");
+        } else {
+            request.getSession().setAttribute("error", "Không thể cập nhật trạng thái thuốc.");
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin-list-medicine");
     }
+    
 
     /** 
      * Returns a short description of the servlet.

@@ -59,7 +59,9 @@ public class DeleteShift extends HttpServlet {
        try {
             int id = Integer.parseInt(request.getParameter("id"));
             ShiftDAO shiftDAO = new ShiftDAO();
-            if (shiftDAO.deleteShift(id)) {
+            if (shiftDAO.isShiftInUse(id)) {
+            request.getSession().setAttribute("message", "Không thể xóa vì ca đang được sử dụng!");
+            } else if (shiftDAO.deleteShift(id)) {
                 request.getSession().setAttribute("message", "Xóa ca thành công!");
             } else {
                 request.getSession().setAttribute("message", "Lỗi khi xóa ca!");

@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.sql.SQLIntegrityConstraintViolationException;
 /**
  *
  * @author ASUS
@@ -117,49 +117,20 @@ public class SpecieDAO {
     }
 
     public boolean deleteSpecie(int id) {
-    String[] queries = {
-        // 1. Xóa hồ sơ y tế trước
-        "DELETE FROM medical_records WHERE pet_id IN (SELECT id FROM pets WHERE breeds_id IN (SELECT id FROM breeds WHERE species_id = ?)) " +
-        "OR appointment_id IN (SELECT id FROM appointments WHERE pet_id IN (SELECT id FROM pets WHERE breeds_id IN (SELECT id FROM breeds WHERE species_id = ?)))",
+    String sql = "DELETE FROM species WHERE id = ?";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        // 2. Xóa symptoms trước khi xóa appointments
-        "DELETE FROM appointment_symptoms WHERE appointment_id IN (SELECT id FROM appointments WHERE pet_id IN (SELECT id FROM pets WHERE breeds_id IN (SELECT id FROM breeds WHERE species_id = ?)))",
+        ps.setInt(1, id);
+        int affectedRows = ps.executeUpdate();
+        return affectedRows > 0;
 
-        // 3. Xóa hóa đơn
-        "DELETE FROM invoices WHERE appointment_id IN (SELECT id FROM appointments WHERE pet_id IN (SELECT id FROM pets WHERE breeds_id IN (SELECT id FROM breeds WHERE species_id = ?)))",
-
-        // 4. Xóa lịch hẹn
-        "DELETE FROM appointments WHERE pet_id IN (SELECT id FROM pets WHERE breeds_id IN (SELECT id FROM breeds WHERE species_id = ?))",
-
-        // 5. Xóa thú cưng
-        "DELETE FROM pets WHERE breeds_id IN (SELECT id FROM breeds WHERE species_id = ?)",
-
-        // 6. Xóa giống loài
-        "DELETE FROM breeds WHERE species_id = ?",
-
-        // 7. Xóa loài
-        "DELETE FROM species WHERE id = ?"
-    };
-
-    try (Connection conn = DBContext.getConnection()) {
-        conn.setAutoCommit(false);
-
-        for (String sql : queries) {
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, id);
-                if (sql.chars().filter(ch -> ch == '?').count() > 1) {
-                    ps.setInt(2, id); // nếu có 2 dấu ?
-                }
-                ps.executeUpdate();
-            }
-        }
-
-        conn.commit();
-        return true;
-    } catch (SQLException e) {
+    } catch (SQLIntegrityConstraintViolationException fkEx) {
+        System.out.println("Không thể xóa loài do ràng buộc khóa ngoại.");
+    } catch (Exception e) {
         e.printStackTrace();
-        return false;
     }
+    return false;
 }
     
      

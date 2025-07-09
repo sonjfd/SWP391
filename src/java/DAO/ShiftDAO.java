@@ -137,6 +137,33 @@ public class ShiftDAO {
         }
     }
     
+    public boolean isShiftInUse(int shiftId) {
+    String sql1 = "SELECT COUNT(*) FROM weekly_schedule_template WHERE shift_id = ?";
+    String sql2 = "SELECT COUNT(*) FROM doctor_schedule WHERE shift_id = ?";
+
+    try (Connection conn = DBContext.getConnection()) {
+        try (
+            PreparedStatement ps1 = conn.prepareStatement(sql1);
+            PreparedStatement ps2 = conn.prepareStatement(sql2)
+        ) {
+            ps1.setInt(1, shiftId);
+            ps2.setInt(1, shiftId);
+
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+
+            rs1.next(); rs2.next();
+            int count1 = rs1.getInt(1);
+            int count2 = rs2.getInt(1);
+
+            return (count1 + count2) > 0; // Nếu có ít nhất 1 bản ghi thì đang được dùng
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return true; // Nếu lỗi, coi như đang dùng để tránh xóa
+    }
+}
+    
    public static void main(String[] args) {
         int idToDelete = 6; // Thay bằng ID thực tế trong DB của bạn
 

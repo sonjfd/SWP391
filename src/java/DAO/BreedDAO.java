@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.sql.SQLIntegrityConstraintViolationException;
 /**
  *
  * @author ASUS
@@ -152,17 +152,22 @@ public class BreedDAO {
     }
 
     public boolean deleteBreed(int id) {
-        String sql = "DELETE FROM breeds WHERE id = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Error in deleteBreed: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+    String sql = "DELETE FROM breed WHERE id = ?";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, id);
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+
+    } catch (SQLIntegrityConstraintViolationException fkEx) {
+        // Lỗi do đang có bảng khác tham chiếu tới giống này (ví dụ: pet)
+        System.err.println("Không thể xóa giống do bị ràng buộc khóa ngoại.");
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return false;
+}
 
     // Lấy danh sách species để hiển thị trong dropdown
     public List<Specie> getAllSpecies() {
@@ -184,4 +189,6 @@ public class BreedDAO {
         return specieList;
     }
 
+    
+    
 }

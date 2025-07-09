@@ -58,23 +58,35 @@ public class DeleteBreed extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        String message;
         BreedDAO breedDAO = new BreedDAO();
         try {
             int id = Integer.parseInt(request.getParameter("id"));
+
+            // Gọi DAO để xóa
             boolean success = breedDAO.deleteBreed(id);
 
-            List<Breed> breedList = breedDAO.getAllBreeds();
-            request.setAttribute("breedList", breedList);
-            request.setAttribute("message", success ? "Xóa thành công" : "Xóa thất bại.");
+            if (success) {
+                message = "Xóa giống thành công.";
+            } else {
+                message = "Không thể xóa giống vì đang được sử dụng ở bảng khác.";
+            }
 
-            request.getRequestDispatcher("view/admin/content/ListBreed.jsp").forward(request, response);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            message = "ID không hợp lệ.";
             e.printStackTrace();
-            List<Breed> breedList = breedDAO.getAllBreeds();
-            request.setAttribute("breedList", breedList);
-            request.setAttribute("message", "Delete failed due to an error.");
-            request.getRequestDispatcher("view/admin/content/ListBreed.jsp").forward(request, response);
+        } catch (Exception e) {
+            message = "Xóa thất bại do lỗi hệ thống.";
+            e.printStackTrace();
         }
+
+        // Luôn load lại danh sách giống
+        List<Breed> breedList = breedDAO.getAllBreeds();
+        request.setAttribute("breedList", breedList);
+        request.setAttribute("message", message);
+
+        // Chuyển tiếp đến JSP
+        request.getRequestDispatcher("view/admin/content/ListBreed.jsp").forward(request, response);
     } 
 
     /** 
