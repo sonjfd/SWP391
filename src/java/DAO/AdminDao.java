@@ -7,6 +7,7 @@ package DAO;
 import Model.Doctor;
 import Model.User;
 import DAO.DBContext;
+import static GoogleLogin.PasswordUtils.hashPassword;
 import Model.ClinicInfo;
 import Model.Department;
 import Model.Nurse;
@@ -365,17 +366,36 @@ public List<Department> getAllDepartments() {
         }
     }
 
+
     public static void main(String[] args) {
-         AdminDao dao = new AdminDao();
-        String testId = "C72B501D-715B-4C3C-A770-0572AC939261";
-        int newStatus = 2; // hoặc 1 để mở khóa
+        // Tạo đối tượng User đại diện cho admin
+        User admin = new User();
+        admin.setUserName("admin123");
+        admin.setEmail("admin01@gmail.com");
+        admin.setPassword(hashPassword("admin123")); // Nên mã hóa trong thực tế
+        admin.setFullName("Quản trị viên");
+        admin.setPhoneNumber("0123456789");
+        admin.setAddress("Hà Nội");
+        admin.setAvatar("/image-loader/default_user.png");
+        admin.setStatus(1);
 
-        boolean result = dao.updateStatus(testId, newStatus);
+        // Gán role admin
+        Role role = new Role();
+        role.setId(2); // 2 = Admin
+        admin.setRole(role);
 
-        if (result) {
-            System.out.println("✅ Cập nhật trạng thái thành công cho ID: " + testId);
+        // Ngày tạo + cập nhật
+        Date now = new Date();
+        admin.setCreateDate(now);
+        admin.setUpdateDate(now);
+
+        AdminDao dao=new AdminDao();
+        boolean success = dao.createAccount(admin, null, null, null);
+
+        if (success) {
+            System.out.println("✅ Tạo tài khoản admin thành công.");
         } else {
-            System.out.println("❌ Cập nhật thất bại cho ID: " + testId);
+            System.out.println("❌ Tạo tài khoản admin thất bại.");
         }
     }
 

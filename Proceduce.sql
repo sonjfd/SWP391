@@ -66,61 +66,7 @@ END;
 
 
 
--- Khi người dùng thả tim
-CREATE TRIGGER trg_increase_reaction
-ON blog_reactions
-AFTER INSERT, UPDATE
-AS
-BEGIN
-    UPDATE blogs
-    SET reactions_count = reactions_count + 1
-    FROM blogs b
-    JOIN inserted i ON b.id = i.blog_id
-    WHERE i.is_active = 1
-      AND (SELECT is_active FROM blog_reactions 
-           WHERE blog_id = i.blog_id AND user_id = i.user_id) = 1
-END
-GO
 
--- Khi người dùng bỏ tim
-CREATE TRIGGER trg_decrease_reaction
-ON blog_reactions
-AFTER UPDATE
-AS
-BEGIN
-    UPDATE blogs
-    SET reactions_count = reactions_count - 1
-    FROM blogs b
-    JOIN inserted i ON b.id = i.blog_id
-    JOIN deleted d ON d.blog_id = i.blog_id AND d.user_id = i.user_id
-    WHERE i.is_active = 0 AND d.is_active = 1
-END
-GO
-
--- comment
-CREATE TRIGGER trg_increase_comment
-ON blog_comments
-AFTER INSERT
-AS
-BEGIN
-    UPDATE blogs
-    SET comments_count = comments_count + 1
-    FROM blogs b
-    JOIN inserted i ON b.id = i.blog_id
-END
-GO
--- xóa comment
-CREATE TRIGGER trg_decrease_comment
-ON blog_comments
-AFTER DELETE
-AS
-BEGIN
-    UPDATE blogs
-    SET comments_count = comments_count - 1
-    FROM blogs b
-    JOIN deleted d ON b.id = d.blog_id
-END
-GO
 
 
 
@@ -178,3 +124,70 @@ END;
 
 
 
+CREATE TRIGGER trg_CheckoutCart
+ON cart_items
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @cart_id INT;
+    DECLARE @user_id UNIQUEIDENTIFIER;
+    DECLARE @invoice_id UNIQUEIDENTIFIER;
+    DECLARE @total_amount DECIMAL(18,2);
+
+    -- Lấy cart_id từ bản ghi vừa xóa
+    SELECT TOP 1 @cart_id = d.cart_id FROM DELETED d;
+
+    -- Kiểm tra nếu cart không còn item nào thì tiến hành tạo hóa đơn
+    IF NOT EXISTS (SELECT 1 FROM cart_items WHERE cart_id = @cart_id)
+    BEGIN
+        -- Lấy user_id từ cart
+        SELECT @user_id = user_id FROM cart WHERE cart_id = @cart_id;
+
+        -- Tính tổng tiền từ các item vừa xóa
+        SELECT @total_amount = SUM(d.quantity * pv.price)
+        FROM DELETED d
+        JOIN product_variants pv ON d.product_variant_id = pv.product_variant_id;
+
+        -- Tạo invoice mới
+        SET @invoice_id = NEWID();
+        INSERT INTO sales_invoices (invoice_id, staff_id, total_amount, payment_method, payment_status, created_at, updated_at)
+        VALUES (@invoice_id, NULL, @total_amount, 'cash', 'unpaid', GETDATE(), GETDATE());
+
+        -- Thêm các chi tiết hóa đơn từ item vừa xóa
+        INSERT INTO sales_invoice_items (invoice_id, product_variant_id, quantity, price)
+        SELECT
+            @invoice_id,
+            d.product_variant_id,
+            d.quantity,
+            pv.price
+        FROM DELETED d
+        JOIN product_variants pv ON d.product_variant_id = pv.product_variant_id;
+
+        -- Xóa giỏ hàng nếu không muốn giữ cart rỗng
+        DELETE FROM cart WHERE cart_id = @cart_id;
+    END
+END;
+GO
+
+
+CREATE TRIGGER trg_UpdateLastMessageTime
+ON messages
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.last_message_time = (
+        SELECT MAX(m.sent_at)
+        FROM messages m
+        WHERE m.conversation_id = c.conversation_id
+    )
+    FROM conversations c
+    INNER JOIN (
+        SELECT DISTINCT conversation_id
+        FROM inserted
+    ) i ON c.conversation_id = i.conversation_id;
+END;

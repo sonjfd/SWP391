@@ -140,11 +140,11 @@
 //        return;
 //    }
 //
-//    // Lấy role ID
-//    int roleId = user.getRole().getId(); // Đảm bảo đúng getter theo class của bạn
+//    // Lấy tên vai trò
+//    String roleName = user.getRole().getName();
 //
 //    // Chặn các role không được phép truy cập các URI chứa từ "home"
-//    if ((roleId == 2 || roleId == 3 || roleId == 4 || roleId == 5) && uri.contains("/home")) {
+//    if (!roleName.equals("customer") && uri.contains("/home")) {
 //        req.setAttribute("errorMessage", "Truy cập bị từ chối: Không có quyền truy cập vào trang này.");
 //        req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
 //        return;
@@ -157,30 +157,30 @@
 //    }
 //
 //    // Kiểm tra quyền truy cập theo vai trò
-//    if (uri.contains("/admin") && roleId != 2) {
+//    if (uri.contains("/admin") && !roleName.equals("admin")) {
 //        req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho quản trị viên.");
 //        req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
 //        return;
 //    }
 //
-//    if (uri.contains("/customer") && roleId != 1) {
+//    if (uri.contains("/customer") && !roleName.equals("customer")) {
 //        req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho khách hàng.");
 //        req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
 //        return;
 //    }
 //
-//    if (uri.contains("/doctor") && roleId != 3) {
+//    if (uri.contains("/doctor") && !roleName.equals("doctor")) {
 //        req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho bác sĩ.");
 //        req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
 //        return;
 //    }
 //
-//    if (uri.contains("/staff") && roleId != 4) {
+//    if (uri.contains("/staff") && !roleName.equals("staff")) {
 //        req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho nhân viên.");
 //        req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
 //        return;
 //    }
-//    if (uri.contains("/nurse") && roleId != 5) {
+//    if (uri.contains("/nurse") && !roleName.equals("nurse")) {
 //        req.setAttribute("errorMessage", "Truy cập bị từ chối: chỉ dành cho y tá.");
 //        req.getRequestDispatcher("/view/home/content/access-denied.jsp").forward(req, res);
 //        return;

@@ -11,13 +11,32 @@ import java.util.Date;
  * @author Admin
  */
 public class Conversation {
+
     private String id;
     private User customer;
     private User staff;
     private Date created_at;
-    private Date last_masage_time ;
+    private Date last_masage_time;
+    private int unreadCount;
 
     public Conversation() {
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
+
+    public Conversation(String id, User customer, User staff, Date created_at, Date last_masage_time, int unreadCount) {
+        this.id = id;
+        this.customer = customer;
+        this.staff = staff;
+        this.created_at = created_at;
+        this.last_masage_time = last_masage_time;
+        this.unreadCount = unreadCount;
     }
 
     public Conversation(String id, User customer, User staff, Date created_at, Date last_masage_time) {
@@ -72,5 +91,5 @@ public class Conversation {
     public String toString() {
         return "Conversation{" + "id=" + id + ", customer=" + customer + ", staff=" + staff + ", created_at=" + created_at + ", last_masage_time=" + last_masage_time + '}';
     }
-    
+
 }

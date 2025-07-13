@@ -11,17 +11,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en">
-    <%
-    User staff = (User) session.getAttribute("user");
-    if (staff == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-    List<Conversation> conversations = (List<Conversation>) request.getAttribute("conversations");
-    %>
+
     <head>
         <meta charset="utf-8" />
-        <title>Trò chuyện với khách hàng</title>
+        <title>Doctris - Doctor Appointment Booking System</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -29,6 +22,7 @@
         <meta name="email" content="support@shreethemes.in" />
         <meta name="website" content="https://shreethemes.in" />
         <meta name="Version" content="v1.2.0" />
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
         <!-- Bootstrap -->
 
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -265,7 +259,14 @@
     </head>
 
     <body>
-
+        <%
+           User staff = (User) session.getAttribute("user");
+           if (staff == null) {
+               response.sendRedirect("login.jsp");
+               return;
+           }
+           List<Conversation> conversations = (List<Conversation>) request.getAttribute("conversations");
+        %>
 
         <c:if test="${not empty sessionScope.SuccessMessage}">
             <script>alert('${sessionScope.SuccessMessage}');</script>
@@ -280,37 +281,52 @@
         <%@ include file="../layout/Header.jsp" %>
 
         <section class="bg-dashboard">
-
             <div class="container-fluid chat-wrapper">
                 <div class="chat-list-section" id="conversationSection">
                     <h4 class="mb-3">Danh sách cuộc trò chuyện</h4>
                     <form method="get" action="staff-conversations">
-                        <input type="text" name="keyword" class="form-control mb-3" placeholder="Tìm khách hàng...">
+                        <input type="text" name="keyword" class="form-control mb-3" placeholder="Tìm khách hàng..." 
+                               value="${param.keyword != null ? fn:escapeXml(param.keyword) : ''}">
+
                     </form>
                     <ul class="list-group">
                         <c:forEach var="c" items="${conversations}">
-                            <li class="list-group-item conversation-item"
-                                data-id="${c.id}" 
-                                data-name="${fn:escapeXml(c.customer.fullName)}">
-                                <strong>${c.customer.fullName}</strong><br>
-                                <small>${c.last_masage_time}</small>
+                            <li class="list-group-item conversation-item d-flex justify-content-between align-items-center"
+                                data-id="${c.id}"
+                                data-name="${fn:escapeXml(c.customer.fullName)}"
+                                <c:if test="${not empty c.last_masage_time}">
+                                    data-time="${c.last_masage_time.time}"
+                                </c:if>>
+                                <div>
+                                    <strong>${c.customer.fullName}</strong><br>
+                                    <c:choose>
+                                        <c:when test="${not empty c.last_masage_time}">
+                                            <small class="message-time" data-time="${c.last_masage_time.time}"></small>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <small class="text-muted fst-italic">Chưa có tin nhắn</small>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                <c:if test="${c.unreadCount > 0}">
+                                    <span class="badge bg-danger rounded-pill">${c.unreadCount}</span>
+                                </c:if>
                             </li>
                         </c:forEach>
                     </ul>
+
                 </div>
 
                 <div id="chatSection" style="display:none;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <button class="btn btn-outline-secondary" id="backBtn"><i class="fas fa-arrow-left"></i> Quay lại</button>
                         <h5 id="chatWith" style="margin-right: 40%"> Khách hàng ...</h5>
-
                     </div>
 
                     <div id="chatBox" class="d-flex flex-column mb-2"></div>
 
                     <div class="input-group d-flex flex-column">
                         <div id="imagePreview" class="position-relative d-inline-block mb-2"></div>
-
                         <div class="d-flex w-100">
                             <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
                             <input type="file" id="imageInput" accept="image/*" hidden>
@@ -320,12 +336,8 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
-
             </div>
-
-
         </section>
         <script>
             let socket;
@@ -338,7 +350,28 @@
             const conversationSection = document.getElementById("conversationSection");
             const chatBox = document.getElementById("chatBox");
 
-            let pendingImageLink = ""; // Link ảnh chờ gửi
+            let pendingImageLink = "";
+
+            document.querySelectorAll(".message-time").forEach(el => {
+                const timestamp = parseInt(el.dataset.time);
+                if (isNaN(timestamp))
+                    return;
+
+                const messageDate = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - messageDate;
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                if (diffDays >= 1) {
+                    el.innerText = diffDays + " ngày trước";
+                } else {
+                    const hours = messageDate.getHours().toString().padStart(2, '0');
+                    const minutes = messageDate.getMinutes().toString().padStart(2, '0');
+                    el.innerText = hours + ":" + minutes;
+
+                }
+            });
+
 
             conversationItems.forEach(function (item) {
                 item.addEventListener("click", function () {
@@ -358,34 +391,25 @@
                 }
                 chatBox.innerHTML = "";
                 chatSection.style.display = "none";
-                conversationSection.style.display = "block";
+                location.reload(); // reload danh sách để cập nhật trạng thái đã đọc
             });
 
-// Gửi tin nhắn hoặc ảnh khi bấm nút gửi
             document.getElementById("sendBtn").onclick = sendMessage;
-
-// Gửi tin nhắn hoặc ảnh khi nhấn Enter
             document.getElementById("messageInput").addEventListener("keypress", function (e) {
                 if (e.key === "Enter") {
                     e.preventDefault();
                     sendMessage();
                 }
             });
-
-// Chọn ảnh từ máy
             document.getElementById("uploadImageBtn").onclick = function () {
                 document.getElementById("imageInput").click();
             };
-
-// Xử lý chọn ảnh và upload
             document.getElementById("imageInput").onchange = function (e) {
                 const file = e.target.files[0];
                 if (file && file.type.startsWith("image/")) {
                     uploadImage(file);
                 }
             };
-
-// Dán ảnh từ clipboard
             document.getElementById("messageInput").addEventListener("paste", function (e) {
                 const items = (e.clipboardData || window.clipboardData).items;
                 for (let i = 0; i < items.length; i++) {
@@ -398,7 +422,6 @@
                 }
             });
 
-// Hàm gửi tin nhắn hoặc ảnh nếu có
             function sendMessage() {
                 const msg = document.getElementById("messageInput").value.trim();
                 if (!socket || socket.readyState !== WebSocket.OPEN)
@@ -416,7 +439,6 @@
                 }
             }
 
-// Hàm upload ảnh
             function uploadImage(file) {
                 const formData = new FormData();
                 formData.append("image", file);
@@ -433,7 +455,6 @@
                         .catch(err => console.error("Upload lỗi", err));
             }
 
-// Hiển thị ảnh xem trước
             function showImagePreview(link) {
                 const preview = document.getElementById("imagePreview");
                 preview.innerHTML = "";
@@ -466,10 +487,6 @@
                 preview.appendChild(wrapper);
             }
 
-
-
-
-// Hàm mở cuộc trò chuyện
             function openChat(conversationId, customerName) {
                 chatBox.innerHTML = "";
                 currentConversationId = conversationId;
@@ -487,6 +504,7 @@
                                 data.forEach(msg => {
                                     appendMessage(msg.senderName, msg.content, msg.senderId === staffId ? 'staff' : 'customer');
                                 });
+                                socket.send("READ:" + conversationId);
                             });
                 };
 
@@ -506,7 +524,6 @@
                 };
             }
 
-// Hàm hiển thị tin nhắn
             function appendMessage(sender, message, cssClass) {
                 const div = document.createElement("div");
                 div.className = "chat-message " + cssClass;
@@ -526,14 +543,16 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
 
+            const conversationList = document.querySelector(".list-group");
+            const sortedItems = Array.from(conversationList.children).sort((a, b) => {
+                return new Date(b.dataset.time) - new Date(a.dataset.time);
+            });
+            conversationList.innerHTML = "";
+            sortedItems.forEach(item => conversationList.appendChild(item));
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-        <!-- Icons -->
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-        <!-- Main Js -->
         <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
     </body>
 

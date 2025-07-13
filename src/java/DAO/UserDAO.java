@@ -556,7 +556,7 @@ private String getSafeString(String value) {
         return value != null ? value : "";
     }
 
-    public User loginCheck(String identifier, String password) {
+   public User loginCheck(String identifier, String password) {
         String sql = "SELECT * FROM users WHERE (username = ? OR email = ?) AND password = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -589,7 +589,6 @@ private String getSafeString(String value) {
         }
         return null;
     }
-    
     
       
 
@@ -972,6 +971,7 @@ private String getSafeString(String value) {
 
     }
 
+   
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         UserDAO dao = new UserDAO();

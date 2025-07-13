@@ -142,7 +142,7 @@ public class Login extends HttpServlet {
                 response.sendRedirect("homepage"); // hoặc profile
                 break;
             case 2: // admin
-                response.sendRedirect("admin");
+                response.sendRedirect("admin-dashboard");
                 break;
             case 3: // doctor
                 response.sendRedirect("doctor-schedule");
@@ -151,7 +151,7 @@ public class Login extends HttpServlet {
                 response.sendRedirect("staff-list-pet-and-owner");
                 break;
             case 5: // nurse
-                response.sendRedirect("homepage");
+                response.sendRedirect("nurse-list-appointment-service");
                 break;
             default:
                 response.sendRedirect("homepage");

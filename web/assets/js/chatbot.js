@@ -43,7 +43,7 @@ function sendMessage() {
     if (message === "")
         return;
 
-
+    // Hiển thị tin nhắn người dùng
     const userMsg = document.createElement("div");
     userMsg.style.textAlign = "right";
     const userBubble = document.createElement("span");
@@ -60,18 +60,17 @@ function sendMessage() {
     `;
     userMsg.appendChild(userBubble);
     chatContent.appendChild(userMsg);
-
-    userInput.value = "";
     chatContent.scrollTop = chatContent.scrollHeight;
+    userInput.value = "";
 
-
+    // Tin nhắn chờ từ AI
     const aiMsg = document.createElement("div");
     aiMsg.className = "ai-message";
     aiMsg.innerHTML = `<div style="margin-top:5px; font-style: italic;">Đang trả lời...</div>`;
     chatContent.appendChild(aiMsg);
     chatContent.scrollTop = chatContent.scrollHeight;
 
-
+    // Gửi lên server
     fetch("chat-ai", {
         method: "POST",
         headers: {
@@ -81,17 +80,18 @@ function sendMessage() {
     })
             .then(response => response.text())
             .then(data => {
+                // Tạo phần bubble AI
                 const aiBubble = document.createElement("span");
                 aiBubble.innerHTML = formatAiResponse(data);
                 aiBubble.style.cssText = `
-            background: #f1f1f1; 
-            padding: 8px 12px; 
-            border-radius: 12px; 
-            display: inline-block; 
-            max-width: 80%; 
-            word-wrap: break-word;
-            margin-left: 6px;
-        `;
+                background: #f1f1f1; 
+                padding: 8px 12px; 
+                border-radius: 12px; 
+                display: inline-block; 
+                max-width: 80%; 
+                word-wrap: break-word;
+                margin-left: 6px;
+            `;
 
                 const aiWrapper = document.createElement("div");
                 aiWrapper.style.display = "flex";
@@ -105,84 +105,60 @@ function sendMessage() {
 
                 aiWrapper.appendChild(aiImg);
                 aiWrapper.appendChild(aiBubble);
-
                 aiMsg.innerHTML = "";
                 aiMsg.appendChild(aiWrapper);
                 chatContent.scrollTop = chatContent.scrollHeight;
 
-                if (data.includes("các bác sĩ sau") || data.includes("có tại phòng khám ")) {
-                    aiMsg.innerHTML = "";
-                    fetch("chat-ai-doctor-list")
-                            .then(res => res.json())
-                            .then(doctors => {
-                                const listDiv = document.createElement("div");
-                                listDiv.style.marginTop = "8px";
+                if (data.includes("Danh sách bác sĩ tại phòng khám Pet24h như sau")) {
+                    const confirmText = document.createElement("div");
+                    confirmText.innerHTML = `<div style="margin-top:8px;">Bạn có muốn đặt lịch khám với một bác sĩ không?</div>`;
+                    chatContent.appendChild(confirmText);
 
-                                let html = "<b>Danh sách bác sĩ tại phòng khám:</b><ul>";
-                                doctors.forEach(doc => {
-                                    html += `<li>${doc.fullName || doc.name} - ${doc.specialty || ''}</li>`;
-                                });
-                                html += "</ul>";
-                                listDiv.innerHTML = html;
-                                chatContent.appendChild(listDiv);
-                                chatContent.scrollTop = chatContent.scrollHeight;
+                    const btnGroup = document.createElement("div");
+                    btnGroup.style.marginTop = "6px";
+                    btnGroup.style.display = "flex";
+                    btnGroup.style.gap = "8px";
 
-                                // Gợi ý đặt lịch
-                                const confirm = document.createElement("div");
-                                confirm.innerHTML = `<div style="margin-top:8px;">Bạn có muốn đặt lịch khám với một bác sĩ không?</div>`;
-                                chatContent.appendChild(confirm);
+                    const yesBtn = document.createElement("button");
+                    yesBtn.textContent = "Có";
+                    yesBtn.style.cssText = `
+                    padding: 6px 12px;
+                    border: none;
+                    border-radius: 6px;
+                    background-color: #28a745;
+                    color: white;
+                    cursor: pointer;
+                `;
 
-                                const btnGroup = document.createElement("div");
-                                btnGroup.style.marginTop = "6px";
-                                btnGroup.style.display = "flex";
-                                btnGroup.style.gap = "8px";
+                    const noBtn = document.createElement("button");
+                    noBtn.textContent = "Không";
+                    noBtn.style.cssText = `
+                    padding: 6px 12px;
+                    border: none;
+                    border-radius: 6px;
+                    background-color: #dc3545;
+                    color: white;
+                    cursor: pointer;
+                `;
 
-                                const yesBtn = document.createElement("button");
-                                yesBtn.textContent = "Có";
-                                yesBtn.style.cssText = `
-                padding: 6px 12px;
-                border: none;
-                border-radius: 6px;
-                background-color: #28a745;
-                color: white;
-                cursor: pointer;
-            `;
+                    yesBtn.addEventListener("click", () => {
+                        showDoctorBookingPrompt();
+                        btnGroup.remove();
+                    });
 
-                                const noBtn = document.createElement("button");
-                                noBtn.textContent = "Không";
-                                noBtn.style.cssText = `
-                padding: 6px 12px;
-                border: none;
-                border-radius: 6px;
-                background-color: #dc3545;
-                color: white;
-                cursor: pointer;
-            `;
+                    noBtn.addEventListener("click", () => {
+                        const noMsg = document.createElement("div");
+                        noMsg.innerHTML = `<div style="text-align:right;"><span style="background:#007bff;color:white;padding:8px 12px;border-radius:12px;display:inline-block;">Không</span></div>`;
+                        chatContent.appendChild(noMsg);
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                        btnGroup.remove();
+                    });
 
-                                yesBtn.addEventListener("click", () => {
-                                    showDoctorBookingPrompt();
-                                    btnGroup.remove();
-                                });
-
-                                noBtn.addEventListener("click", () => {
-                                    const noMsg = document.createElement("div");
-                                    noMsg.innerHTML = `<div style="text-align:right;"><span style="background:#007bff;color:white;padding:8px 12px;border-radius:12px;display:inline-block;">Không</span></div>`;
-                                    chatContent.appendChild(noMsg);
-                                    chatContent.scrollTop = chatContent.scrollHeight;
-                                    btnGroup.remove();
-                                });
-
-                                btnGroup.appendChild(yesBtn);
-                                btnGroup.appendChild(noBtn);
-                                chatContent.appendChild(btnGroup);
-                                chatContent.scrollTop = chatContent.scrollHeight;
-                            })
-                            .catch(err => {
-                                console.error("Lỗi khi lấy danh sách bác sĩ:", err);
-                            });
+                    btnGroup.appendChild(yesBtn);
+                    btnGroup.appendChild(noBtn);
+                    chatContent.appendChild(btnGroup);
+                    chatContent.scrollTop = chatContent.scrollHeight;
                 }
-
-
 
                 if (data.includes("Bạn có muốn đặt lịch khám tại phòng khám Pet24h không")) {
                     const btnGroup = document.createElement("div");
@@ -236,6 +212,7 @@ function sendMessage() {
                 aiMsg.innerHTML = `<div style="color:red;">Lỗi: ${err.message}</div>`;
             });
 }
+
 
 function showBookingPrompt() {
     fetch("chat-ai-select-pet")
@@ -358,7 +335,7 @@ function showDoctorBookingPrompt() {
         }),
         fetch("chat-ai-doctor-list").then(res => res.json())
     ])
-            .then(([doctors, pets]) => {
+            .then(([pets, doctors ]) => {
                 const formDiv = document.createElement("div");
                 formDiv.style.marginTop = "8px";
                 formDiv.innerHTML = `

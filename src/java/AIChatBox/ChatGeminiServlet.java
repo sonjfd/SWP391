@@ -5,8 +5,17 @@
 package AIChatBox;
 
 import DAO.AIChatboxDAO;
+import DAO.DoctorDAO;
+import DAO.MedicalRecordDAO;
+import DAO.StaffDAO;
+import DAO.UserDAO;
+import Model.Appointment;
+import Model.AppointmentSymptom;
 
 import Model.ChatHistory;
+import Model.Doctor;
+import Model.MedicalRecord;
+import Model.Pet;
 import Model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,6 +34,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,9 +65,7 @@ public class ChatGeminiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        String sessionId = session.getId();
         User user = (User) session.getAttribute("user");
-        AIChatboxDAO dao = new AIChatboxDAO();
         List<ChatHistory> history = new AIChatboxDAO().getChatHistoryByUserId(user.getId());
 
         response.setContentType("application/json; charset=UTF-8");
@@ -80,15 +88,16 @@ public class ChatGeminiServlet extends HttpServlet {
         String sessionId = session.getId();
         User user = (User) session.getAttribute("user");
         String userId = (user != null) ? user.getId() : null;
+        System.out.println("userId trong buildMessagesJson: " + userId);
+
         if (user != null) {
             dao.insertMessage(null, userId, "user", message);
         } else {
             dao.insertMessage(sessionId, null, "user", message);
         }
-        List<ChatHistory> history = (user != null)
-                ? dao.getChatHistoryByUserId(userId)
-                : dao.getChatHistoryBySession(sessionId);
-        String jsonInput = buildMessagesJson(history);
+        List<ChatHistory> history = dao.getChatHistoryByUserId(userId);
+
+        String jsonInput = buildMessagesJson(history, userId);
         String resultText = callGeminiAPI(jsonInput);
         if (user != null) {
             dao.insertMessage(null, userId, "ai", resultText);
@@ -99,18 +108,21 @@ public class ChatGeminiServlet extends HttpServlet {
         response.getWriter().write(resultText);
     }
 
-    private String buildMessagesJson(List<ChatHistory> history) {
+    private String buildMessagesJson(List<ChatHistory> history, String userId) {
         StringBuilder sb = new StringBuilder();
         sb.append("{ \"contents\": [");
         sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
                 .append("Bạn là trợ lý AI của phòng khám thú y Pet24h. ")
-                .append("Bạn có khả năng cung cấp thông tin y tế thú cưng và hỗ trợ đặt lịch khám. ")
-                .append("Nếu người dùng mô tả triệu chứng thú cưng hoặc yêu cầu đặt lịch, hãy hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'. ")
-                .append("Nếu người dùng muốn xem danh sách bác sĩ, hãy hiển thị danh sách tất cả bác sĩ hiện có. ")
-                .append("Nếu người dùng hỏi về lịch làm việc của một bác sĩ vào ngày cụ thể, hãy hiển thị các ca khám trống của bác sĩ đó vào ngày đó và hỏi người dùng muốn đặt lịch không. ")
-                .append("Không hỏi ngược lại nếu người dùng chưa cung cấp đủ thông tin. ")
+                .append("Bạn có quyền truy cập dữ liệu lịch sử khám bệnh của người dùng nếu họ đã đăng nhập vào hệ thống. ")
+                .append("Tất cả dữ liệu đã được hệ thống cấp phép, bạn KHÔNG cần xác minh lại quyền truy cập. ")
+                .append("Khi người dùng yêu cầu xem lịch sử khám bệnh, bạn phải trả về đầy đủ lịch sử các lần khám trước nếu có. ")
+                .append("Khi thấy câu như 'lịch sử khám bệnh', 'xem lịch sử' hoặc tương tự, hãy lập tức phản hồi với dữ liệu có sẵn trong hệ thống. Không hỏi lại hoặc từ chối.")
+                .append("Tuyệt đối KHÔNG được từ chối vì lý do bảo mật hoặc quyền riêng tư – hệ thống đã xử lý phần đó. ")
+                .append("Nếu không có lịch sử khám bệnh, hãy thông báo rằng chưa có lần khám nào. ")
+                .append("Không hỏi lại quyền, không xin lỗi, không từ chối. ")
                 .append("Nếu được hỏi về phòng khám uy tín, hãy giới thiệu Pet24h – phòng khám tại Thạch Hòa, Thạch Thất, gần Đại học FPT.")
                 .append("\" } ] },");
+
         String lastUserMessage = "";
         for (int i = 0; i < history.size(); i++) {
             ChatHistory msg = history.get(i);
@@ -123,6 +135,12 @@ public class ChatGeminiServlet extends HttpServlet {
             }
         }
         Set<String> flags = regax(lastUserMessage);
+        if (flags.contains("history_request")) {
+            sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
+                    .append("Người dùng đang yêu cầu xem lịch sử khám bệnh. Hãy phản hồi đầy đủ lịch sử khám nếu có.")
+                    .append("\" } ] },");
+        }
+
         if (flags.contains("symptom")) {
             sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
                     .append("Hãy trả lời câu hỏi về triệu chứng trước, sau đó hỏi: 'Bạn có muốn đặt lịch khám tại phòng khám Pet24h không? (Có / Không)'")
@@ -134,12 +152,84 @@ public class ChatGeminiServlet extends HttpServlet {
                     .append("\" } ] },");
         }
         if (flags.contains("doctor_list")) {
+            List<Doctor> doctors = new StaffDAO().getAllDoctors();
+            StringBuilder doctorList = new StringBuilder();
+            for (Doctor doc : doctors) {
+                doctorList.append("- ").append(doc.getUser().getFullName());
+                if (doc.getSpecialty() != null && !doc.getSpecialty().isEmpty()) {
+                    doctorList.append(" – chuyên khoa ").append(doc.getSpecialty());
+                }
+                doctorList.append("\\n");
+            }
+
             sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
-                    .append("Hãy trả lời với danh sách tất cả bác sĩ hiện có tại phòng khám. Không hỏi người dùng có muốn đặt lịch không.")
+                    .append("Danh sách bác sĩ tại phòng khám Pet24h như sau:\\n")
+                    .append(doctorList)
+                    .append("Sau đó, hãy hỏi người dùng: 'Bạn có muốn đặt lịch khám với một bác sĩ không? (Có / Không)'")
                     .append("\" } ] },");
         }
 
-        
+        if (userId != null && flags.contains("history_request")) {
+            sb.append("{ \"role\": \"user\", \"parts\": [ { \"text\": \"")
+                    .append("️ Đây là dữ liệu lịch sử khám bệnh thật từ hệ thống – vui lòng sử dụng đúng, không dựa trên phản hồi cũ.")
+                    .append("\" } ] },");
+            List<MedicalRecord> allHistory = new MedicalRecordDAO().getMedicalRecordsByCustomerId(userId);
+            StringBuilder historyText = new StringBuilder();
+
+            if (allHistory.isEmpty()) {
+                historyText.append("Bạn chưa có lịch sử khám bệnh nào.");
+            } else {
+                for (MedicalRecord record : allHistory) {
+                    Pet pet = record.getPet();
+                    if (pet != null) {
+                        historyText.append("- Thú cưng: ").append(pet.getName()).append("\n");
+                    }
+
+                    Appointment appt = record.getAppointment();
+                    if (appt != null) {
+                        if (appt.getAppointmentDate() != null) {
+                            historyText.append("  Ngày khám: ")
+                                    .append(new SimpleDateFormat("dd/MM/yyyy").format(appt.getAppointmentDate()))
+                                    .append("\n");
+                        }
+
+                        Doctor doctor = record.getDoctor();
+                        if (doctor != null && doctor.getUser() != null) {
+                            historyText.append("  Bác sĩ: ").append(doctor.getUser().getFullName()).append("\n");
+                        } else {
+                            historyText.append("  Bác sĩ: (không rõ)\n");
+                        }
+                    } else {
+                        historyText.append("  Thông tin lịch hẹn không khả dụng.\n");
+                    }
+
+                    List<AppointmentSymptom> symptoms = record.getAppointmentSymptoms();
+                    if (symptoms != null && !symptoms.isEmpty()) {
+                        historyText.append("  Triệu chứng: ");
+                        for (int i = 0; i < symptoms.size(); i++) {
+                            historyText.append(symptoms.get(i).getSymptom());
+                            if (i < symptoms.size() - 1) {
+                                historyText.append(", ");
+                            }
+                        }
+                        historyText.append("\n");
+                    }
+
+                    if (record.getDiagnosis() != null) {
+                        historyText.append("  Chuẩn đoán: ").append(record.getDiagnosis()).append("\n");
+                    }
+
+                    if (record.getTreatment() != null) {
+                        historyText.append("  Điều trị: ").append(record.getTreatment()).append("\n");
+                    }
+
+                    historyText.append("\n");
+                }
+            }
+
+            sb.append(message("user", "Dưới đây là toàn bộ lịch sử khám bệnh về thú cưng của bạn:\n" + historyText)).append(",");
+        }
+
         if (sb.toString().endsWith(",")) {
             sb.setLength(sb.length() - 1);
         }
@@ -149,7 +239,8 @@ public class ChatGeminiServlet extends HttpServlet {
 
     private Set<String> regax(String message) {
         Set<String> result = new HashSet<>();
-        String text = removeDiacritics(message.toLowerCase());
+        String text = " " + removeDiacritics(message.toLowerCase()) + " ";
+
         String[] symptoms = {
             "sot", "non", "oi", "tieu chay", "di ngoai", "met", "lo do", "ue oai",
             "bo an", "chan an", "bieng an", "khong an", "an it", "khong uong nuoc", "khat nuoc",
@@ -165,19 +256,26 @@ public class ChatGeminiServlet extends HttpServlet {
             "run", "co giat", "di khap khieng", "di khong vung", "liet", "yeu chan",
             "not do", "mun", "buou", "u", "hach", "nhiem trung"
         };
+
         for (String symptom : symptoms) {
-            if (text.contains(symptom)) {
+            if (text.contains(" " + symptom + " ")) {
                 result.add("symptom");
                 break;
             }
         }
-        if (text.matches(".*\\b(dat lich|muon dat lich|toi muon dat lich|dat kham|muon kham)\\b.*")) {
-            result.add("book_request");
-        }
+
         if (text.matches(".*\\b(danh sach bac si|xem bac si|bac si nao|co bac si nao)\\b.*")) {
             result.add("doctor_list");
         }
-        
+
+        if (text.matches(".*\\b(lich su kham|lich su benh|da tung kham|lich su thu cung|xem lich su)\\b.*")) {
+            result.add("history_request");
+        }
+
+        if (text.matches(".*\\b(dat lich|muon dat lich|toi muon dat lich|dat kham|muon kham)\\b.*")) {
+            result.add("book_request");
+        }
+
         return result;
     }
 
@@ -252,6 +350,10 @@ public class ChatGeminiServlet extends HttpServlet {
         }
 
         return resultText;
+    }
+
+    private String message(String role, String text) {
+        return String.format("{ \"role\": \"%s\", \"parts\": [ { \"text\": \"%s\" } ] }", role, escapeJson(text));
     }
 
     private String escapeJson(String text) {

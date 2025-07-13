@@ -459,38 +459,61 @@ Author     : Dell
                 </div>
                 <div class="modal-body" style="line-height: 1.7;">
 
-                    <h6>1. Tra cứu thông tin thú cưng</h6>
+                    <p class="mb-3">Trợ lý AI Pet24h giúp bạn đặt lịch khám, tra cứu thông tin sức khỏe thú cưng, theo dõi lịch sử khám và nhận tư vấn thú y 24/7.</p>
+
+                    <h6>1. Tra cứu thông tin chăm sóc thú cưng</h6>
                     <ol>
-                        <li>Nhập các câu hỏi liên quan đến chăm sóc thú cưng như: <em>“Thức ăn tốt cho mèo con”, “Cách xử lý khi chó bị tiêu chảy”, “Tiêm phòng định kỳ cho thú cưng”</em>.</li>
-                        <li>Trợ lý AI sẽ phân tích và cung cấp thông tin tham khảo từ kiến thức thú y tổng hợp.</li>
+                        <li>Gõ các câu hỏi như: <em>“Cách chăm sóc chó sau tiêm”, “Mèo bỏ ăn là bệnh gì?”, “Lịch tiêm phòng cho chó con”</em>.</li>
+                        <li>AI sẽ phản hồi bằng thông tin tổng hợp từ kiến thức thú y đáng tin cậy.</li>
+                        <li>Phù hợp khi bạn cần lời khuyên chăm sóc ban đầu trước khi quyết định đi khám.</li>
                     </ol>
 
-                    <h6>2. Đặt lịch khám theo triệu chứng</h6>
+                    <h6>2. Đặt lịch khám theo triệu chứng </h6>
                     <ol>
-                        <li>Gõ tin nhắn như: <em>“Tôi muốn đặt lịch khám”</em> hoặc mô tả triệu chứng như: <em>“Chó bị nôn và bỏ ăn”</em>.</li>
-                        <li>AI sẽ hỏi bạn chọn thú cưng và ngày khám mong muốn.</li>
-                        <li>Hệ thống sẽ tìm bác sĩ phù hợp có ca làm việc và slot trống để tự động đặt lịch.</li>
-                        <li>Nếu không còn slot trống hoặc bác sĩ không làm việc trong ngày đó, hệ thống sẽ thông báo để bạn chọn ngày khác.</li>
+                        <li>Nhập mô tả triệu chứng, ví dụ: <em>“Chó bị tiêu chảy, bỏ ăn, mệt mỏi”</em>.</li>
+                        <li>AI sẽ hỏi bạn muốn đặt lịch khám không.</li>
+                        <li>Sau khi bạn đồng ý, AI sẽ hỏi tên thú cưng và ngày mong muốn.</li>
+                        <li>Hệ thống tự động chọn bác sĩ đang làm việc và còn trống lịch vào ngày đó.</li>
+                        <li>Bạn sẽ nhận xác nhận lịch hẹn ngay sau đó.</li>
                     </ol>
 
-                    <h6>3. Đặt lịch khám với bác sĩ cụ thể</h6>
+                    <h6>3. Đặt lịch với bác sĩ cụ thể </h6>
                     <ol>
-                        <li>Gõ: <em>“Danh sách bác sĩ”</em>.</li>
-                        <li>Trợ lý AI sẽ hiển thị danh sách bác sĩ hiện đang làm việc tại Pet24h.</li>
-                        <li>Bạn chọn thú cưng, bác sĩ và ngày khám.</li>
-                        <li>Hệ thống sẽ kiểm tra ca làm việc và slot của bác sĩ trong ngày đã chọn:</li>
+                        <li>Nhập: <em>“Danh sách bác sĩ”</em> hoặc <em>“Xem bác sĩ”</em>.</li>
+                        <li>AI sẽ hiển thị danh sách bác sĩ hiện tại kèm chuyên môn (nếu có).</li>
+                        <li>Bạn chọn thú cưng, bác sĩ và ngày muốn khám.</li>
+                        <li>Hệ thống sẽ kiểm tra lịch làm việc và slot trống của bác sĩ đó trong ngày bạn chọn.</li>
+                        <li>
+                            Kết quả:
+                            <ul>
+                                <li><strong>✔ Có slot trống:</strong> Hệ thống sẽ đặt lịch.</li>
+                                <li><strong>✖ Full slot / không làm việc:</strong> AI sẽ thông báo và gợi ý chọn ngày khác.</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h6>4. Xem lịch sử khám bệnh</h6>
+                    <ol>
+                        <li>Gõ: <em>“Xem lịch sử khám bệnh”</em> hoặc <em>“Lịch sử thú cưng”</em>.</li>
+                        <li>Nếu bạn đã từng khám tại Pet24h và đang đăng nhập, AI sẽ liệt kê toàn bộ hồ sơ khám bao gồm:</li>
                         <ul>
-                            <li>Nếu có ca và còn slot trống: hệ thống sẽ đặt lịch thành công.</li>
-                            <li>Nếu bác sĩ không làm việc hoặc đã full slot: hệ thống sẽ báo và yêu cầu chọn ngày khác.</li>
+                            <li>Thú cưng nào đã khám</li>
+                            <li>Ngày khám, bác sĩ phụ trách</li>
+                            <li>Triệu chứng, chẩn đoán và điều trị</li>
                         </ul>
+                        <li>Nếu chưa có lịch sử, AI sẽ thông báo bạn chưa từng khám.</li>
                     </ol>
 
-                    <h6>Lưu ý:</h6>
+                    <h6>Lưu ý quan trọng:</h6>
                     <ul>
-                        <li>Bạn cần đăng nhập để sử dụng chức năng đặt lịch.</li>
-                        <li>Không thể chọn ngày khám trong quá khứ.</li>
-                        <li>Nếu bạn chưa có thú cưng, vui lòng thêm thú cưng trước khi đặt lịch.</li>
+                        <li>Bạn cần <strong>đăng nhập</strong> để đặt lịch hoặc xem lịch sử khám.</li>
+                        <li>Không thể chọn <strong>ngày khám trong quá khứ</strong>.</li>
+                        <li>Nếu bạn <strong>chưa thêm thú cưng</strong>, vui lòng cập nhật hồ sơ trước khi đặt lịch.</li>
+                        <li>AI có thể tự động xử lý theo triệu chứng hoặc yêu cầu cụ thể – bạn không cần dùng cú pháp cứng nhắc.</li>
                     </ul>
+
+                    <p class="mt-4"><strong>Chúc bạn có trải nghiệm dễ dàng cùng trợ lý AI của Pet24h!</strong></p>
+
                 </div>
             </div>
         </div>

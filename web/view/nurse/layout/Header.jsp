@@ -98,9 +98,7 @@
                                         <a class="dropdown-item text-dark" href="nurse-list-appointment-service">
                                             <span class="mb-0 d-inline-block me-1"><i class="uil uil-dashboard align-middle h6"></i></span> Bảng điều khiển
                                         </a>
-                                        <a class="dropdown-item text-dark" href="nurse-profile-setting">
-                                            <span class="mb-0 d-inline-block me-1"><i class="uil uil-setting align-middle h6"></i></span> Trang cá nhân
-                                        </a>
+                                       
                                         <div class="dropdown-divider border-top"></div>
                                         <a class="dropdown-item text-dark" href="logout">
                                             <span class="mb-0 d-inline-block me-1"><i class="uil uil-sign-out-alt align-middle h6"></i></span> Đăng xuất

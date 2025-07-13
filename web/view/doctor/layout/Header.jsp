@@ -34,9 +34,9 @@
                 <div class="sidebar-content" data-simplebar style="height: calc(100% - 60px);">
                     <div class="sidebar-brand">
                         <!-- Bootstrap Button with Icon -->
-                        <a href="homepage" class=" d-flex align-items-center gap-2 px-3 py-2">
+                        <a href="doctor-schedule" class=" d-flex align-items-center gap-2 px-3 py-2">
                             <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Home Icon" style="width: 20px; height: 20px;">
-                            <span>Trang Chủ</span>
+                            <span>Bảng điều khiển</span>
                         </a>
 
                     </div>
@@ -105,7 +105,7 @@
                                             </c:choose>
                                             <div class="flex-1 ms-2">
                                                 <span class="d-block mb-1">${sessionScope.user.fullName}</span>
-                                                <small class="text-muted">${sessionScope.user.role.name}</small>
+                                                <small class="text-muted">Bác sĩ</small>
                                             </div>
                                         </a>
                                         <a class="dropdown-item text-dark" href="doctor-schedule">
