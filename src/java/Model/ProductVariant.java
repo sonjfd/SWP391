@@ -7,7 +7,7 @@ public class ProductVariant {
     // --- Trường chính từ bảng product_variants ---
     private int productVariantId;
     private int productId;
-    
+
     private int weightId;
     private int flavorId;
     private double price;
@@ -22,11 +22,10 @@ public class ProductVariant {
     private double weight;
     private String flavorName;
     private String categoryName;
-    
-   
+  
 
-   
-    public ProductVariant() {}
+    public ProductVariant() {
+    }
 
     public ProductVariant(int productVariantId, int productId, int weightId, int flavorId, double price, int stockQuantity, boolean status, String image, Date createdAt, Date updatedAt, String productName, double weight, String flavorName, String categoryName) {
         this.productVariantId = productVariantId;
@@ -45,8 +44,6 @@ public class ProductVariant {
         this.categoryName = categoryName;
     }
 
-   
-    
     public int getProductVariantId() {
         return productVariantId;
     }
@@ -63,7 +60,7 @@ public class ProductVariant {
         this.productId = productId;
     }
 
-   
+ 
 
     public int getWeightId() {
         return weightId;
@@ -88,8 +85,6 @@ public class ProductVariant {
     public void setPrice(double price) {
         this.price = price;
     }
-
-    
 
     public int getStockQuantity() {
         return stockQuantity;
@@ -163,8 +158,6 @@ public class ProductVariant {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
-    
-    
 
     // --- Hiển thị tên trạng thái ---
     public String getStatusName() {
@@ -176,9 +169,4 @@ public class ProductVariant {
         return "ProductVariant{" + "productVariantId=" + productVariantId + ", productId=" + productId + ", weightId=" + weightId + ", flavorId=" + flavorId + ", price=" + price + ", stockQuantity=" + stockQuantity + ", status=" + status + ", image=" + image + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", productName=" + productName + ", weight=" + weight + ", flavorName=" + flavorName + ", categoryName=" + categoryName + '}';
     }
 
-   
-    
-    
-
-    
 }

@@ -210,6 +210,14 @@
                 box-sizing: border-box;
             }
 
+            .chat-header {
+                padding: 10px 0;
+                border-bottom: 1px solid #ddd;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+            }
+
+
             #chatSection {
                 flex: 1;
                 display: flex;
@@ -318,9 +326,15 @@
                 </div>
 
                 <div id="chatSection" style="display:none;">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <button class="btn btn-outline-secondary" id="backBtn"><i class="fas fa-arrow-left"></i> Quay lại</button>
-                        <h5 id="chatWith" style="margin-right: 40%"> Khách hàng ...</h5>
+                    <div class="chat-header d-flex align-items-center mb-3">
+                        <div style="flex-shrink: 0;">
+                            <button class="btn btn-outline-secondary me-3" id="backBtn">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </button>
+                        </div>
+                        <div class="flex-grow-1 text-center">
+                            <h5 id="chatWith" class="mb-0">Khách hàng ...</h5>
+                        </div>
                     </div>
 
                     <div id="chatBox" class="d-flex flex-column mb-2"></div>

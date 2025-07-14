@@ -282,37 +282,42 @@
 
                     <div class="col-md-9">
                         <div class="row"> 
-                        <c:forEach items="${productVariants}" var="v">
-                            <div class="col-md-4 col-sm-6 mb-4">
-                                <div class="card h-100 shadow-sm">
-                                    <img class="card-img-top img-fluid" 
-                                         src="${v.image}" 
-                                         alt="${v.productName}" 
-                                         style="height: 200px; object-fit: cover;">
-                                    <div class="card-body d-flex flex-column justify-content-between">
-                                        <h5 class="card-title ">
-                                            ${v.productName} ${v.weight}kg ${v.flavorName}
-                                        </h5>
-                                        <p class="card-text text-muted" style="font-size: 0.9rem;">
-                                            Danh mục: ${v.categoryName}
-                                        </p>
-                                        <div class="mb-2">
-                                            <span class="d-block"><strong>Giá:</strong> 
-                                                <fmt:formatNumber value="${v.price}" />VNĐ
-                                            </span>
-                                            <span class="d-block"><strong>Còn lại:</strong> ${v.stockQuantity} sản phẩm</span>
-                                            <span class="d-block"><strong>Trọng lượng:</strong> ${v.weight} kg</span>
-                                            <span class="d-block"><strong>Hương vị:</strong> ${v.flavorName}</span>
-                                        </div>
-                                        <a href="product-details?productid=${v.productId}&weightId=${v.weightId}&flavorId=${v.flavorId}"
-                                           class="btn btn-outline-primary btn-sm mt-auto w-100">
-                                            Xem chi tiết
-                                        </a>
 
+
+                        <c:forEach items="${productVariants}" var="v">
+                             
+                                <div class="col-md-4 col-sm-6 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <img class="card-img-top img-fluid" 
+                                             src="${v.image}" 
+                                             alt="${v.productName}" 
+                                             style="height: 200px; object-fit: cover;">
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <h5 class="card-title ">
+                                                ${v.productName} ${v.weight}kg ${v.flavorName}
+                                            </h5>
+                                            <p class="card-text text-muted" style="font-size: 0.9rem;">
+                                                Danh mục: ${v.categoryName}
+                                            </p>
+                                            <div class="mb-2">
+                                                <span class="d-block"><strong>Giá:</strong> 
+                                                    <fmt:formatNumber value="${v.price}" />VNĐ
+                                                </span>
+                                                <span class="d-block"><strong>Còn lại:</strong> ${v.stockQuantity} sản phẩm</span>
+                                                <span class="d-block"><strong>Trọng lượng:</strong> ${v.weight} g</span>
+                                                <span class="d-block"><strong>Hương vị:</strong> ${v.flavorName}</span>
+                                            </div>
+                                            <a href="product-details?productid=${v.productId}&weightId=${v.weightId}&flavorId=${v.flavorId}"
+                                               class="btn btn-outline-primary btn-sm mt-auto w-100">
+                                                Xem chi tiết
+                                            </a>
+
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            
                         </c:forEach>
+
                     </div>
                 </div>
 

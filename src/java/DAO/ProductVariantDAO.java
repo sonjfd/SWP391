@@ -21,12 +21,34 @@ public class ProductVariantDAO extends DBContext {
         pv.setStatus(rs.getBoolean("status"));
         pv.setCreatedAt(rs.getTimestamp("created_at"));
         pv.setUpdatedAt(rs.getTimestamp("updated_at"));
+
         return pv;
     }
 
     public List<ProductVariant> getAllVariants() {
         List<ProductVariant> list = new ArrayList<>();
-        String sql = "SELECT pv.product_variant_id, p.product_name, c.category_name, w.weight, f.flavor, pv.price, pv.stock_quantity, pv.image, pv.status, pv.created_at, pv.updated_at FROM product_variants pv JOIN products p ON pv.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id JOIN product_variant_weights w ON pv.weight_id = w.weight_id JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id";
+        String sql = """
+                   SELECT 
+                       pv.product_variant_id, 
+                       p.product_name, 
+                       c.category_name, 
+                       w.weight, 
+                       f.flavor, 
+                       pv.price, 
+                       pv.stock_quantity, 
+                       pv.image, 
+                       pv.status, 
+                       pv.created_at, 
+                       pv.updated_at
+                   FROM product_variants pv
+                   JOIN products p ON pv.product_id = p.product_id
+                   JOIN categories c ON p.category_id = c.category_id
+                   JOIN product_variant_weights w ON pv.weight_id = w.weight_id
+                   JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id
+                   WHERE pv.status = 1
+                     AND p.status = 1
+                     AND c.status = 1
+                   """;
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(extractFromResultSet(rs));
@@ -39,8 +61,16 @@ public class ProductVariantDAO extends DBContext {
 
     public List<ProductVariant> search(String name, Boolean status, int page, int pageSize) {
         List<ProductVariant> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT pv.product_variant_id, p.product_name, c.category_name, w.weight, f.flavor, pv.price, pv.stock_quantity, pv.image, pv.status, pv.created_at, pv.updated_at FROM product_variants pv JOIN products p ON pv.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id JOIN product_variant_weights w ON pv.weight_id = w.weight_id JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id WHERE 1=1");
-
+        StringBuilder sql = new StringBuilder("""
+        SELECT pv.product_variant_id, p.product_name, c.category_name, w.weight, f.flavor,
+               pv.price, pv.stock_quantity, pv.image, pv.status, pv.created_at, pv.updated_at
+        FROM product_variants pv
+        JOIN products p ON pv.product_id = p.product_id
+        JOIN categories c ON p.category_id = c.category_id
+        JOIN product_variant_weights w ON pv.weight_id = w.weight_id
+        JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id
+        WHERE p.status = 1 AND c.status = 1
+    """);
         if (name != null && !name.isEmpty()) {
             sql.append(" AND p.product_name LIKE ?");
         }
@@ -71,8 +101,15 @@ public class ProductVariantDAO extends DBContext {
     }
 
     public int countSearch(String name, Boolean status) {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM product_variants pv JOIN products p ON pv.product_id = p.product_id JOIN categories c ON p.category_id = c.category_id JOIN product_variant_weights w ON pv.weight_id = w.weight_id JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id WHERE 1=1");
-
+        StringBuilder sql = new StringBuilder("""
+        SELECT COUNT(*)
+        FROM product_variants pv
+        JOIN products p ON pv.product_id = p.product_id
+        JOIN categories c ON p.category_id = c.category_id
+        JOIN product_variant_weights w ON pv.weight_id = w.weight_id
+        JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id
+        WHERE p.status = 1 AND c.status = 1
+    """);
         if (name != null && !name.isEmpty()) {
             sql.append(" AND p.product_name LIKE ?");
         }
@@ -282,7 +319,8 @@ public class ProductVariantDAO extends DBContext {
                 + " JOIN categories c ON p.category_id = c.category_id\n"
                 + " JOIN product_variant_weights w ON pv.weight_id = w.weight_id\n"
                 + " JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id\n"
-                + " WHERE pv.status = 1";
+                + " WHERE pv.status = 1 AND p.status = 1 AND c.status = 1";
+
     }
 
     private void appendCategoryFilter(StringBuilder sql, List<Object> params, Integer categoryId) {
@@ -400,7 +438,7 @@ public class ProductVariantDAO extends DBContext {
         return list;
     }
 
-    public ProductVariant getVariantByProductIdWeightFlavor(int productId,int weightId, int flavorId) {
+    public ProductVariant getVariantByProductIdWeightFlavor(int productId, int weightId, int flavorId) {
         String sql = """
                  SELECT 
                      pv.*, 
@@ -441,7 +479,7 @@ public class ProductVariantDAO extends DBContext {
                     variant.setStockQuantity(rs.getInt("stock_quantity"));
                     variant.setStatus(rs.getBoolean("status"));
                     variant.setImage(rs.getString("image"));
-                  
+
                     variant.setProductName(rs.getString("product_name"));
                     variant.setCategoryName(rs.getString("category_name"));
                     variant.setWeight(rs.getDouble("weight"));
@@ -456,90 +494,83 @@ public class ProductVariantDAO extends DBContext {
 
         return null;
     }
-    
+
     public List<ProductVariantFlavor> getFlavorsByProductId(int productId) {
-    List<ProductVariantFlavor> flavors = new ArrayList<>();
-    String sql = "SELECT DISTINCT f.flavor_id, f.flavor " +
-                 "FROM product_variants v " +
-                 "JOIN product_variant_flavors f ON v.flavor_id = f.flavor_id " +
-                 "WHERE v.product_id = ?";
-    try (Connection conn = DBContext.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
+        List<ProductVariantFlavor> flavors = new ArrayList<>();
+        String sql = "SELECT DISTINCT f.flavor_id, f.flavor "
+                + "FROM product_variants v "
+                + "JOIN product_variant_flavors f ON v.flavor_id = f.flavor_id "
+                + "WHERE v.product_id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setInt(1, productId);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            ProductVariantFlavor flavor = new ProductVariantFlavor();
-            flavor.setFlavorId(rs.getInt("flavor_id"));
-            flavor.setFlavor(rs.getString("flavor"));
-            flavors.add(flavor);
+            ps.setInt(1, productId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariantFlavor flavor = new ProductVariantFlavor();
+                flavor.setFlavorId(rs.getInt("flavor_id"));
+                flavor.setFlavor(rs.getString("flavor"));
+                flavors.add(flavor);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return flavors;
-}
-
-    
-    
-
-    
-  public List<ProductVariantWeight> getWeightsByProductIdAndFlavor(int productId, int flavorId) {
-    List<ProductVariantWeight> weights = new ArrayList<>();
-    String sql = "SELECT DISTINCT w.weight_id, w.weight " +
-                 "FROM product_variants v " +
-                 "JOIN product_variant_weights w ON v.weight_id = w.weight_id " +
-                 "WHERE v.product_id = ? AND v.flavor_id = ?";
-
-    try (Connection conn = DBContext.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-
-        ps.setInt(1, productId);
-        ps.setInt(2, flavorId);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            ProductVariantWeight weight = new ProductVariantWeight();
-            weight.setWeightId(rs.getInt("weight_id"));
-            weight.setWeight(rs.getDouble("weight")); // vì là double
-            weights.add(weight);
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
+        return flavors;
     }
 
-    return weights;
-}
+    public List<ProductVariantWeight> getWeightsByProductIdAndFlavor(int productId, int flavorId) {
+        List<ProductVariantWeight> weights = new ArrayList<>();
+        String sql = "SELECT DISTINCT w.weight_id, w.weight "
+                + "FROM product_variants v "
+                + "JOIN product_variant_weights w ON v.weight_id = w.weight_id "
+                + "WHERE v.product_id = ? AND v.flavor_id = ?";
 
-  public ProductVariant getFirstVariantByProductId(int productId) {
-    String sql = "SELECT TOP 1 * FROM product_variant WHERE product_id = ?";
-    try (Connection conn = DBContext.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, productId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-              ProductVariant variant = new ProductVariant();
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-                    variant.setProductVariantId(rs.getInt("product_variant_id"));
-                    variant.setProductId(rs.getInt("product_id"));
-                    variant.setWeightId(rs.getInt("weight_id"));
-                    variant.setFlavorId(rs.getInt("flavor_id"));
-                    variant.setPrice(rs.getDouble("price"));
-                    variant.setStockQuantity(rs.getInt("stock_quantity"));
-                    variant.setStatus(rs.getBoolean("status"));
-                    variant.setImage(rs.getString("image"));
-                  
-                    variant.setProductName(rs.getString("product_name"));
-                    variant.setCategoryName(rs.getString("category_name"));
-                    variant.setWeight(rs.getDouble("weight"));
-                    variant.setFlavorName(rs.getString("flavor"));
+            ps.setInt(1, productId);
+            ps.setInt(2, flavorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariantWeight weight = new ProductVariantWeight();
+                weight.setWeightId(rs.getInt("weight_id"));
+                weight.setWeight(rs.getDouble("weight")); // vì là double
+                weights.add(weight);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+
+        return weights;
     }
-    return null;
-}
-  
+
+    public ProductVariant getFirstVariantByProductId(int productId) {
+        String sql = "SELECT TOP 1 * FROM product_variant WHERE product_id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                ProductVariant variant = new ProductVariant();
+
+                variant.setProductVariantId(rs.getInt("product_variant_id"));
+                variant.setProductId(rs.getInt("product_id"));
+                variant.setWeightId(rs.getInt("weight_id"));
+                variant.setFlavorId(rs.getInt("flavor_id"));
+                variant.setPrice(rs.getDouble("price"));
+                variant.setStockQuantity(rs.getInt("stock_quantity"));
+                variant.setStatus(rs.getBoolean("status"));
+                variant.setImage(rs.getString("image"));
+
+                variant.setProductName(rs.getString("product_name"));
+                variant.setCategoryName(rs.getString("category_name"));
+                variant.setWeight(rs.getDouble("weight"));
+                variant.setFlavorName(rs.getString("flavor"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // ➕ 1. Lấy đường dẫn ảnh cũ (để xoá khi upload mới)
     public String getImagePathById(int variantId) {
         String sql = "SELECT image FROM product_variants WHERE product_variant_id = ?";
@@ -568,28 +599,8 @@ public class ProductVariantDAO extends DBContext {
         return false;
     }
 
-
-
-
-
     public static void main(String[] args) {
-        // Giả sử productId là 1 để kiểm tra
-        int productId = 1;
-
-        // Tạo đối tượng ProductVariantService để gọi các phương thức
-                ProductVariantDAO dao=new ProductVariantDAO();
-        // Test hàm getFlavorsByProductId
-        List<ProductVariantFlavor> flavors = dao.getFlavorsByProductId(productId);
-        System.out.println("Flavors for product ID " + productId + ":");
-        for (ProductVariantFlavor flavor : flavors) {
-            System.out.println(flavor);
-        }
-
-        // Test hàm getWeightsByProductId
-        List<ProductVariantWeight> weights = dao.getWeightsByProductIdAndFlavor(productId,1);
-        System.out.println("\nWeights for product ID " + productId + ":");
-        for (ProductVariantWeight weight : weights) {
-            System.out.println(weight);
-        }
+        ProductVariantDAO dao = new ProductVariantDAO();
+        System.out.println(dao.getAllVariants());
     }
 }

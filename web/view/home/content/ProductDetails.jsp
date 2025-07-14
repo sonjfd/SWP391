@@ -53,7 +53,7 @@
                     <h2 class="product-title mb-3" id="productName">${selectedVariant.productName}</h2>
                     <div class="mb-3">
                         <span class="price-current">
-                            <fmt:formatNumber value="${selectedVariant.price}" type="number" groupingUsed="true"/>₫
+                            <fmt:formatNumber value="${selectedVariant.price}" type="number" groupingUsed="true"/> VNĐ
                         </span>
                         <c:choose>
                             <c:when test="${selectedVariant.stockQuantity == 0}">

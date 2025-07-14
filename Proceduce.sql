@@ -172,6 +172,34 @@ END;
 GO
 
 
+---trigger auto giảm stock quantity---
+CREATE TRIGGER trg_UpdateStockOnInvoicePaid
+ON sales_invoices
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Chỉ xử lý nếu payment_status đổi thành 'paid'
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        WHERE i.payment_status = 'paid'
+        AND (SELECT payment_status FROM deleted WHERE invoice_id = i.invoice_id) <> 'paid'
+    )
+    BEGIN
+        -- Trừ stock_quantity theo từng product_variant_id trong hóa đơn đã thanh toán
+        UPDATE pv
+        SET pv.stock_quantity = pv.stock_quantity - sii.quantity
+        FROM product_variants pv
+        INNER JOIN sales_invoice_items sii ON pv.product_variant_id = sii.product_variant_id
+        INNER JOIN inserted i ON i.invoice_id = sii.invoice_id
+        WHERE i.payment_status = 'paid'
+    END
+END
+
+
+
 CREATE TRIGGER trg_UpdateLastMessageTime
 ON messages
 AFTER INSERT

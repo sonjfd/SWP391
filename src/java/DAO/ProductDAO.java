@@ -18,13 +18,13 @@ public class ProductDAO extends DBContext {
                    c.description AS category_description, 
                    c.status AS category_status
             FROM products p
+
             JOIN categories c ON p.category_id = c.category_id
-            WHERE p.status = 1
+            WHERE p.status = 1 AND c.status = 1
+        
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Category category = new Category();
                 category.setCategoryId(rs.getInt("category_id"));
@@ -55,8 +55,7 @@ public class ProductDAO extends DBContext {
             VALUES (?, ?, ?, 1, GETDATE(), GETDATE())
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, product.getCategory().getCategoryId());
             ps.setString(2, product.getProductName());
             ps.setString(3, product.getDescription());
@@ -75,8 +74,7 @@ public class ProductDAO extends DBContext {
             WHERE product_id = ?
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, product.getCategory().getCategoryId());
             ps.setString(2, product.getProductName());
             ps.setString(3, product.getDescription());
@@ -93,8 +91,7 @@ public class ProductDAO extends DBContext {
     public boolean softDeleteProduct(int id) {
         String sql = "UPDATE products SET status = 0, updated_at = GETDATE() WHERE product_id = ?";
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
 
@@ -116,8 +113,7 @@ public class ProductDAO extends DBContext {
             WHERE p.product_id = ?
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -147,8 +143,7 @@ public class ProductDAO extends DBContext {
 
     public int countProductsByName(String keyword) {
         String sql = "SELECT COUNT(*) FROM products WHERE product_name LIKE ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -174,8 +169,7 @@ public class ProductDAO extends DBContext {
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             ps.setInt(2, (page - 1) * pageSize);
             ps.setInt(3, pageSize);
@@ -207,9 +201,7 @@ public class ProductDAO extends DBContext {
 
     public int countAllProducts() {
         String sql = "SELECT COUNT(*) FROM products WHERE status = 1";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -227,13 +219,12 @@ public class ProductDAO extends DBContext {
                c.category_name, c.description AS category_description, c.status AS category_status
         FROM products p
         JOIN categories c ON p.category_id = c.category_id
-        WHERE p.status = 1
+        WHERE p.status = 1 AND c.status = 1
         ORDER BY p.product_id
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
         """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, (page - 1) * pageSize);
             ps.setInt(2, pageSize);
 
@@ -264,34 +255,31 @@ public class ProductDAO extends DBContext {
 
     // --- MỚI: Kiểm tra trùng tên sản phẩm khi thêm mới ---
     public boolean isDuplicateProductName(String productName) {
-    String sql = "SELECT 1 FROM products WHERE LOWER(product_name) = ?";
-    try (Connection conn = getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, productName.trim().toLowerCase());
-        try (ResultSet rs = ps.executeQuery()) {
-            return rs.next(); // true nếu tồn tại
+        String sql = "SELECT 1 FROM products WHERE LOWER(product_name) = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productName.trim().toLowerCase());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true nếu tồn tại
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true; // giả định có trùng nếu lỗi DB
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return true; // giả định có trùng nếu lỗi DB
     }
-}
-
 
     // --- MỚI: Kiểm tra trùng tên sản phẩm khi sửa (ngoại trừ id đang sửa) ---
-   public boolean isDuplicateProductNameExcludeId(String productName, int excludeId) {
-    String sql = "SELECT 1 FROM products WHERE LOWER(product_name) = LOWER(?) AND product_id != ?";
-    try (Connection conn = getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, productName.trim().toLowerCase());
-        ps.setInt(2, excludeId);
-        try (ResultSet rs = ps.executeQuery()) {
-            return rs.next(); // true nếu tồn tại
+    public boolean isDuplicateProductNameExcludeId(String productName, int excludeId) {
+        String sql = "SELECT 1 FROM products WHERE LOWER(product_name) = LOWER(?) AND product_id != ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productName.trim().toLowerCase());
+            ps.setInt(2, excludeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true nếu tồn tại
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true; // giả sử trùng nếu có lỗi
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return true; // giả sử trùng nếu có lỗi
     }
-}
 
 }
