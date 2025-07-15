@@ -27,6 +27,23 @@ public class ProductVariantFlavorDAO {
         }
         return list;
     }
+    
+    public List<ProductVariantFlavor> getAllActive() {
+    List<ProductVariantFlavor> list = new ArrayList<>();
+    String sql = "SELECT * FROM product_variant_flavors WHERE status = 1";
+
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) list.add(extract(rs));
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
 
     // ✅ Lấy theo ID
     public ProductVariantFlavor getById(int flavorId) {
@@ -232,5 +249,10 @@ public class ProductVariantFlavorDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public static void main(String[] args) {
+        ProductVariantFlavorDAO dao= new ProductVariantFlavorDAO();
+        System.out.println(dao.getAllActive());
     }
 }

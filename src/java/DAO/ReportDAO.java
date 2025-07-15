@@ -84,11 +84,11 @@ public class ReportDAO {
     }
 
     private void getFillRate(Connection conn, String startDate, String endDate, DashboardSummary summary) throws SQLException {
-        String sql = "SELECT (COUNT(a.id) * 100.0 / NULLIF(COUNT(ds.schedule_id), 0)) AS fill_rate " +
-                     "FROM doctor_schedule ds LEFT JOIN appointments a ON ds.doctor_id = a.doctor_id " +
-                     "AND CAST(a.appointment_time AS DATE) = ds.work_date " +
-                     "AND a.start_time = (SELECT start_time FROM shift WHERE shift_id = ds.shift_id) " +
-                     "WHERE ds.work_date BETWEEN ? AND ?";
+        String sql = "SELECT (COUNT(a.id) * 100.0 / NULLIF(COUNT(ds.schedule_id), 0)) AS fill_rate "
+                + "FROM doctor_schedule ds LEFT JOIN appointments a ON ds.doctor_id = a.doctor_id "
+                + "AND CAST(a.appointment_time AS DATE) = ds.work_date "
+                + "AND a.start_time = (SELECT start_time FROM shift WHERE shift_id = ds.shift_id) "
+                + "WHERE ds.work_date BETWEEN ? AND ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, startDate);
             pstmt.setString(2, endDate);
@@ -145,28 +145,80 @@ public class ReportDAO {
         }
     }
 
-    private void getServiceRevenue(Connection conn, String startDate, String endDate, String periodType, DashboardSummary summary) throws SQLException {
-        String sql = "SELECT SUM(i.total_amount) AS revenue FROM invoices i JOIN appointments a ON i.appointment_id = a.id " +
-                     "WHERE i.payment_status = 'paid' AND a.created_at BETWEEN ? AND ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, startDate);
-            pstmt.setString(2, endDate + " 23:59:59");
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                summary.setServiceRevenue(rs.wasNull() ? 0.0 : rs.getDouble("revenue"));
-            }
-        }
+   public void getServiceRevenue(Connection conn, String startDate, String endDate, String periodType, DashboardSummary summary) throws SQLException {
+    double currentAppointmentRevenue = 0.0;
+    double previousAppointmentRevenue = 0.0;
+    double currentInvoiceRevenue = 0.0;
+    double previousInvoiceRevenue = 0.0;
 
-        String[] previousDates = calculatePreviousPeriod(startDate, endDate, periodType);
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, previousDates[0]);
-            pstmt.setString(2, previousDates[1] + " 23:59:59");
-            ResultSet rs = pstmt.executeQuery();
+    // SQL tính tổng appointments.price
+    String appointmentSql = """
+        SELECT SUM(price) AS revenue
+        FROM appointments
+        WHERE created_at BETWEEN ? AND ?
+    """;
+
+    // SQL tính tổng invoices.total_amount
+    String invoiceSql = """
+        SELECT SUM(total_amount) AS revenue
+        FROM invoices
+        WHERE created_at BETWEEN ? AND ?
+    """;
+
+    // ==== DOANH THU HIỆN TẠI ====
+    try (PreparedStatement pstmt = conn.prepareStatement(appointmentSql)) {
+        pstmt.setString(1, startDate);
+        pstmt.setString(2, endDate + " 23:59:59");
+        try (ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
-                summary.setPreviousServiceRevenue(rs.wasNull() ? 0.0 : rs.getDouble("revenue"));
+                currentAppointmentRevenue = rs.getDouble("revenue");
             }
         }
     }
+
+    try (PreparedStatement pstmt = conn.prepareStatement(invoiceSql)) {
+        pstmt.setString(1, startDate);
+        pstmt.setString(2, endDate + " 23:59:59");
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                currentInvoiceRevenue = rs.getDouble("revenue");
+            }
+        }
+    }
+
+    // ==== DOANH THU KỲ TRƯỚC ====
+    String[] previousDates = calculatePreviousPeriod(startDate, endDate, periodType);
+
+    try (PreparedStatement pstmt = conn.prepareStatement(appointmentSql)) {
+        pstmt.setString(1, previousDates[0]);
+        pstmt.setString(2, previousDates[1] + " 23:59:59");
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                previousAppointmentRevenue = rs.getDouble("revenue");
+            }
+        }
+    }
+
+    try (PreparedStatement pstmt = conn.prepareStatement(invoiceSql)) {
+        pstmt.setString(1, previousDates[0]);
+        pstmt.setString(2, previousDates[1] + " 23:59:59");
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                previousInvoiceRevenue = rs.getDouble("revenue");
+            }
+        }
+    }
+
+    // ==== GÁN VÀO SUMMARY ====
+    summary.setServiceRevenue(currentAppointmentRevenue);
+    summary.setPreviousServiceRevenue(previousAppointmentRevenue);
+    summary.setTotalRevenue(currentInvoiceRevenue);
+
+    // 👉 Nếu muốn theo dõi invoices kỳ trước, thêm dòng này (và field nếu chưa có):
+    // summary.setPreviousTotalRevenue(previousInvoiceRevenue);
+}
+
+
 
     private void getDoctorCount(Connection conn, DashboardSummary summary) throws SQLException {
         String sql = "SELECT COUNT(*) AS count FROM users WHERE role_id = 3";
@@ -189,8 +241,8 @@ public class ReportDAO {
     }
 
     private void getAverageDoctorRating(Connection conn, String startDate, String endDate, DashboardSummary summary) throws SQLException {
-        String sql = "SELECT AVG(CAST(r.satisfaction_level AS FLOAT)) AS avg_rating FROM ratings r JOIN appointments a ON r.appointment_id = a.id " +
-                     "WHERE a.created_at BETWEEN ? AND ?";
+        String sql = "SELECT AVG(CAST(r.satisfaction_level AS FLOAT)) AS avg_rating FROM ratings r JOIN appointments a ON r.appointment_id = a.id "
+                + "WHERE a.created_at BETWEEN ? AND ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, startDate);
             pstmt.setString(2, endDate + " 23:59:59");
@@ -202,8 +254,8 @@ public class ReportDAO {
     }
 
     private void getPositiveRatingRate(Connection conn, String startDate, String endDate, DashboardSummary summary) throws SQLException {
-        String sql = "SELECT (COUNT(CASE WHEN r.satisfaction_level >= 4 THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0)) AS positive_rate " +
-                     "FROM ratings r JOIN appointments a ON r.appointment_id = a.id WHERE a.created_at BETWEEN ? AND ?";
+        String sql = "SELECT (COUNT(CASE WHEN r.satisfaction_level >= 4 THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0)) AS positive_rate "
+                + "FROM ratings r JOIN appointments a ON r.appointment_id = a.id WHERE a.created_at BETWEEN ? AND ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, startDate);
             pstmt.setString(2, endDate + " 23:59:59");
@@ -225,12 +277,12 @@ public class ReportDAO {
     }
 
     private void getFinancialMetrics(Connection conn, String startDate, String endDate, DashboardSummary summary) throws SQLException {
-        String sql = "SELECT SUM(i.total_amount) AS total_revenue, " +
-                     "SUM(CASE WHEN i.payment_status = 'paid' THEN i.total_amount ELSE 0 END) AS paid_revenue, " +
-                     "SUM(CASE WHEN i.payment_status = 'pending' THEN i.total_amount ELSE 0 END) AS unpaid_revenue, " +
-                     "SUM(CASE WHEN i.payment_method = 'cash' AND i.payment_status = 'paid' THEN i.total_amount ELSE 0 END) AS cash_revenue, " +
-                     "SUM(CASE WHEN i.payment_method = 'online' AND i.payment_status = 'paid' THEN i.total_amount ELSE 0 END) AS online_revenue " +
-                     "FROM invoices i JOIN appointments a ON i.appointment_id = a.id WHERE a.created_at BETWEEN ? AND ?";
+        String sql = "SELECT SUM(i.total_amount) AS total_revenue, "
+                + "SUM(CASE WHEN i.payment_status = 'paid' THEN i.total_amount ELSE 0 END) AS paid_revenue, "
+                + "SUM(CASE WHEN i.payment_status = 'pending' THEN i.total_amount ELSE 0 END) AS unpaid_revenue, "
+                + "SUM(CASE WHEN i.payment_method = 'cash' AND i.payment_status = 'paid' THEN i.total_amount ELSE 0 END) AS cash_revenue, "
+                + "SUM(CASE WHEN i.payment_method = 'online' AND i.payment_status = 'paid' THEN i.total_amount ELSE 0 END) AS online_revenue "
+                + "FROM invoices i JOIN appointments a ON i.appointment_id = a.id WHERE a.created_at BETWEEN ? AND ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, startDate);
             pstmt.setString(2, endDate + " 23:59:59");
@@ -249,14 +301,14 @@ public class ReportDAO {
         List<RevenueTrend> revenueTrends = new ArrayList<>();
         String sql;
         if (periodType.equals("day")) {
-            sql = "SELECT CAST(a.created_at AS DATE) AS period, SUM(i.total_amount) AS value FROM invoices i JOIN appointments a ON i.appointment_id = a.id " +
-                  "WHERE i.payment_status = 'paid' AND a.created_at BETWEEN ? AND ? GROUP BY CAST(a.created_at AS DATE) ORDER BY period";
+            sql = "SELECT CAST(a.created_at AS DATE) AS period, SUM(i.total_amount) AS value FROM invoices i JOIN appointments a ON i.appointment_id = a.id "
+                    + "WHERE i.payment_status = 'paid' AND a.created_at BETWEEN ? AND ? GROUP BY CAST(a.created_at AS DATE) ORDER BY period";
         } else if (periodType.equals("month")) {
-            sql = "SELECT FORMAT(a.created_at, 'yyyy-MM') AS period, SUM(i.total_amount) AS value FROM invoices i JOIN appointments a ON i.appointment_id = a.id " +
-                  "WHERE i.payment_status = 'paid' AND a.created_at BETWEEN ? AND ? GROUP BY FORMAT(a.created_at, 'yyyy-MM') ORDER BY period";
+            sql = "SELECT FORMAT(a.created_at, 'yyyy-MM') AS period, SUM(i.total_amount) AS value FROM invoices i JOIN appointments a ON i.appointment_id = a.id "
+                    + "WHERE i.payment_status = 'paid' AND a.created_at BETWEEN ? AND ? GROUP BY FORMAT(a.created_at, 'yyyy-MM') ORDER BY period";
         } else {
-            sql = "SELECT YEAR(a.created_at) AS period, SUM(i.total_amount) AS value FROM invoices i JOIN appointments a ON i.appointment_id = a.id " +
-                  "WHERE i.payment_status = 'paid' AND a.created_at BETWEEN ? AND ? GROUP BY YEAR(a.created_at) ORDER BY period";
+            sql = "SELECT YEAR(a.created_at) AS period, SUM(i.total_amount) AS value FROM invoices i JOIN appointments a ON i.appointment_id = a.id "
+                    + "WHERE i.payment_status = 'paid' AND a.created_at BETWEEN ? AND ? GROUP BY YEAR(a.created_at) ORDER BY period";
         }
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {

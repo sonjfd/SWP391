@@ -33,31 +33,35 @@ public class ProductVariantServlet extends HttpServlet {
     private final ProductVariantFlavorDAO flavorDAO = new ProductVariantFlavorDAO();
     private final int PAGE_SIZE = 5;
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+  @Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
 
-        String action = request.getParameter("action");
+    String action = request.getParameter("action");
 
-        if (action == null || action.equals("list")) {
-            handleList(request, response);
+    if (action == null || action.equals("list")) {
+        handleList(request, response);
 
-        } else if (action.equals("add")) {
-            loadFormData(request);
-            request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);
+    } else if (action.equals("add")) {
+        loadFormData(request);
+        request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);
 
-        } else if (action.equals("delete")) {
-            try {
-                int id = Integer.parseInt(request.getParameter("id"));
-                variantDAO.delete(id);
-                request.getSession().setAttribute("message", "Xóa biến thể thành công.");
-            } catch (Exception e) {
-                e.printStackTrace();
-                request.getSession().setAttribute("error", "Xóa thất bại: " + e.getMessage());
-            }
-            response.sendRedirect("admin-productVariant?action=list");
+    } else if (action.equals("toggleStatus")) {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            ProductVariant variant = variantDAO.getById(id);
+            boolean newStatus = !variant.isStatus(); // đảo trạng thái
+            variantDAO.updateStatus(id, newStatus);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("error", "Cập nhật trạng thái thất bại: " + e.getMessage());
         }
+
+        response.sendRedirect("admin-productVariant?action=list");
     }
+}
+
 
     private void handleList(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

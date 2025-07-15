@@ -1,9 +1,9 @@
 package DoctorController;
 
-
 import DAO.MedicalRecordDAO;
 import Model.Doctor;
 import Model.MedicalRecord;
+import Model.MedicalRecordFile;
 import Model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 
 @WebServlet("/api/pet-medical-records")
 public class PetMedicalRecordsAPI extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -33,14 +34,13 @@ public class PetMedicalRecordsAPI extends HttpServlet {
 
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        
 
         try {
             JsonArray jsonRecords = new JsonArray();
             for (MedicalRecord record : records) {
                 JsonObject obj = new JsonObject();
                 // Thêm thuộc tính của MedicalRecord vào đây, ví dụ:
-                
+
                 obj.addProperty("diagnosis", record.getDiagnosis());
                 obj.addProperty("treatment", record.getTreatment()); // Hoặc format ngày nếu cần
                 if (record.getReExamDate() != null) {
@@ -48,7 +48,16 @@ public class PetMedicalRecordsAPI extends HttpServlet {
                 } else {
                     obj.addProperty("reexamdate", "-");  // Or any other default value
                 }
-                
+                // Thêm file đính kèm vào record
+                JsonArray filesArray = new JsonArray();
+                List<MedicalRecordFile> files = record.getFiles(); // Giả sử getFiles() trả về danh sách file
+                for (MedicalRecordFile file : files) {
+                    JsonObject fileObj = new JsonObject();
+                    fileObj.addProperty("fileName", file.getFileName());
+                    fileObj.addProperty("fileUrl", file.getFileUrl());
+                    filesArray.add(fileObj);
+                }
+                obj.add("files", filesArray);
                 obj.addProperty("createddate", record.getCreatedAt().toString());
                 // Hoặc format ngày nếu cần
                 // Thêm các thuộc tính khác nếu muốn...

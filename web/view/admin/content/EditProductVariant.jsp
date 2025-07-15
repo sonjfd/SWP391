@@ -1,17 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.List" %>
-<%@ page import="Model.Product" %>
-<%@ page import="Model.ProductVariantWeight" %>
-<%@ page import="Model.ProductVariantFlavor" %>
-<%@ page import="Model.ProductVariant" %>
-
-<%
-    List<Product> products = (List<Product>) request.getAttribute("products");
-    List<ProductVariantWeight> weights = (List<ProductVariantWeight>) request.getAttribute("weights");
-    List<ProductVariantFlavor> flavors = (List<ProductVariantFlavor>) request.getAttribute("flavors");
-    ProductVariant variant = (ProductVariant) request.getAttribute("variant");
-    String error = (String) request.getAttribute("error");
-%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
 <html>
@@ -24,24 +12,24 @@
 
 <h2>Chỉnh sửa Biến Thể Sản Phẩm</h2>
 
-<% if (error != null) { %>
-    <div class="alert alert-danger"><%= error %></div>
-<% } %>
+<c:if test="${not empty error}">
+    <div class="alert alert-danger">${error}</div>
+</c:if>
 
 <form action="${pageContext.request.contextPath}/admin-editProductVariant" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
 
-    <input type="hidden" name="variant_id" value="<%= variant.getProductVariantId() %>"/>
+    <input type="hidden" name="variant_id" value="${variant.productVariantId}"/>
 
     <!-- Sản phẩm -->
     <div class="mb-3">
         <label for="product_id" class="form-label">Sản phẩm <span class="text-danger">*</span></label>
         <select class="form-select" name="product_id" id="product_id" required>
             <option value="">-- Chọn sản phẩm --</option>
-            <% for (Product p : products) { %>
-                <option value="<%= p.getProductId() %>" <%= (p.getProductId() == variant.getProductId()) ? "selected" : "" %>>
-                    <%= p.getProductName() %>
+            <c:forEach var="p" items="${products}">
+                <option value="${p.productId}" ${p.productId == variant.productId ? 'selected' : ''}>
+                    ${p.productName}
                 </option>
-            <% } %>
+            </c:forEach>
         </select>
     </div>
 
@@ -50,11 +38,13 @@
         <label for="weight_id" class="form-label">Khối lượng <span class="text-danger">*</span></label>
         <select class="form-select" name="weight_id" id="weight_id" required>
             <option value="">-- Chọn khối lượng --</option>
-            <% for (ProductVariantWeight w : weights) { %>
-                <option value="<%= w.getWeightId() %>" <%= (w.getWeightId() == variant.getWeightId()) ? "selected" : "" %>>
-                    <%= w.getWeight() %> g
-                </option>
-            <% } %>
+            <c:forEach var="w" items="${weights}">
+                <c:if test="${w.status}">
+                    <option value="${w.weightId}" ${w.weightId == variant.weightId ? 'selected' : ''}>
+                        ${w.weight} g
+                    </option>
+                </c:if>
+            </c:forEach>
         </select>
     </div>
 
@@ -63,11 +53,13 @@
         <label for="flavor_id" class="form-label">Hương vị <span class="text-danger">*</span></label>
         <select class="form-select" name="flavor_id" id="flavor_id" required>
             <option value="">-- Chọn hương vị --</option>
-            <% for (ProductVariantFlavor f : flavors) { %>
-                <option value="<%= f.getFlavorId() %>" <%= (f.getFlavorId() == variant.getFlavorId()) ? "selected" : "" %>>
-                    <%= f.getFlavor() %>
-                </option>
-            <% } %>
+            <c:forEach var="f" items="${flavors}">
+                <c:if test="${f.status}">
+                    <option value="${f.flavorId}" ${f.flavorId == variant.flavorId ? 'selected' : ''}>
+                        ${f.flavor}
+                    </option>
+                </c:if>
+            </c:forEach>
         </select>
     </div>
 
@@ -75,29 +67,32 @@
     <div class="mb-3">
         <label for="price" class="form-label">Giá (VNĐ) <span class="text-danger">*</span></label>
         <input type="number" class="form-control" name="price" id="price" required step="0.01" min="0"
-               value="<%= variant.getPrice() %>">
+               value="${variant.price}">
     </div>
 
     <!-- Tồn kho -->
     <div class="mb-3">
         <label for="stock_quantity" class="form-label">Số lượng trong kho <span class="text-danger">*</span></label>
         <input type="number" class="form-control" name="stock_quantity" id="stock_quantity" required min="0"
-               value="<%= variant.getStockQuantity() %>">
+               value="${variant.stockQuantity}">
     </div>
 
     <!-- Ảnh hiện tại -->
     <div class="mb-3">
-        <label class="form-label">Ảnh hiện tại <span class="text-danger">*</span></label><br>
-        <% if (variant.getImage() != null && !variant.getImage().isEmpty()) { %>
-            <img src="<%= variant.getImage() %>" alt="Ảnh sản phẩm" style="height: 100px;">
-        <% } else { %>
-            <p>Chưa có ảnh.</p>
-        <% } %>
+        <label class="form-label">Ảnh hiện tại</label><br>
+        <c:choose>
+            <c:when test="${not empty variant.image}">
+                <img src="${variant.image}" alt="Ảnh sản phẩm" style="height: 100px;">
+            </c:when>
+            <c:otherwise>
+                <p>Chưa có ảnh.</p>
+            </c:otherwise>
+        </c:choose>
     </div>
 
-    <!-- Upload ảnh mới -->
+    <!-- Ảnh mới -->
     <div class="mb-3">
-        <label for="imageFile" class="form-label">Chọn ảnh mới (nếu muốn thay) <span class="text-danger">*</span></label>
+        <label for="imageFile" class="form-label">Chọn ảnh mới (nếu muốn thay)</label>
         <input type="file" class="form-control" name="imageFile" id="imageFile" accept="image/*">
     </div>
 
@@ -105,12 +100,12 @@
     <div class="mb-3">
         <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
         <select class="form-select" name="status" id="status" required>
-            <option value="1" <%= variant.isStatus() ? "selected" : "" %>>Đang bán</option>
-            <option value="0" <%= !variant.isStatus() ? "selected" : "" %>>Ngừng bán</option>
+            <option value="1" ${variant.status ? 'selected' : ''}>Đang bán</option>
+            <option value="0" ${!variant.status ? 'selected' : ''}>Ngừng bán</option>
         </select>
     </div>
 
-    <!-- Nút thao tác -->
+    <!-- Nút -->
     <button type="submit" class="btn btn-success">Cập nhật</button>
     <a href="${pageContext.request.contextPath}/admin-productVariant" class="btn btn-secondary ms-2">Hủy</a>
 </form>

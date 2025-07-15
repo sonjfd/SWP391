@@ -531,22 +531,45 @@ window.location.href = './doctor-clinical-diagnosis?appointmentId=' + appointmen
                 const appointment = data.appointments;
                 const modalBody = document.getElementById('appointmentDetails');
                 
-                modalBody.innerHTML = '<p><strong>Tên Pet:</strong> ' + appointment[0].petName + '</p>' +
-                                      '<p><strong>Pet Code:</strong> ' + appointment[0].petCode + '</p>' +
-                                      '<p><strong>Giới tính Pet :</strong> ' + appointment[0].petGender + '</p>' +
-                                      '<p><strong>Giống:</strong> ' + appointment[0].petBreed + '</p>' +
-                                      '<p><strong>Mô tả:</strong> ' + appointment[0].petDescription + '</p>' +
+               // Hàm chuyển trạng thái sang tiếng Việt
+function getVietnameseStatus(status) {
+    switch (status) {
+        case 'booked': return 'Đã đặt';
+        case 'completed': return 'Hoàn thành';
+        case 'cancel_requested': return 'Yêu cầu hủy';
+        case 'canceled': return 'Đã hủy';
+        case 'pending': return 'Chờ xử lý';
+        default: return status;
+    }
+}
 
-                                      '<p><strong>Owner:</strong> ' + appointment[0].ownerName + '</p>' +
-                                      '<p><strong>Phone:</strong> ' + appointment[0].ownerPhone + '</p>' +
-                                      '<p><strong>Email:</strong> ' + appointment[0].ownerEmail + '</p>' +
-                                      '<p><strong>Address:</strong> ' + appointment[0].ownerAddress + '</p>' +
+function getVietnameseCheckinStatus(status) {
+    switch (status) {
+        case 'checkin': return 'Đã đến';
+        case 'noshow': return 'Chưa đến';
+        default: return status;
+    }
+}
 
-                                      '<p><strong>Appointment Date:</strong> ' + appointment[0].appointmentDate + '</p>' +
-                                      '<p><strong>Start Time:</strong> ' + appointment[0].startTime + '</p>' +
-                                      '<p><strong>End Time:</strong> ' + appointment[0].endTime + '</p>' +
-                                      '<p><strong>Note:</strong> ' + appointment[0].appointmentNote + '</p>' +
-                                      '<p><strong>Status:</strong> ' + appointment[0].appointmentStatus + '</p>';
+modalBody.innerHTML =
+  '<p><strong>Tên thú cưng:</strong> ' + appointment[0].petName + '</p>' +
+  '<p><strong>Mã thú cưng:</strong> ' + appointment[0].petCode + '</p>' +
+  '<p><strong>Giới tính:</strong> ' + appointment[0].petGender + '</p>' +
+  '<p><strong>Giống loài:</strong> ' + appointment[0].petBreed + '</p>' +
+  '<p><strong>Mô tả:</strong> ' + appointment[0].petDescription + '</p>' +
+
+  '<p><strong>Chủ nuôi:</strong> ' + appointment[0].ownerName + '</p>' +
+  '<p><strong>Số điện thoại:</strong> ' + appointment[0].ownerPhone + '</p>' +
+  '<p><strong>Email:</strong> ' + appointment[0].ownerEmail + '</p>' +
+  '<p><strong>Địa chỉ:</strong> ' + appointment[0].ownerAddress + '</p>' +
+
+  '<p><strong>Ngày hẹn:</strong> ' + appointment[0].appointmentDate + '</p>' +
+  '<p><strong>Giờ bắt đầu:</strong> ' + appointment[0].startTime + '</p>' +
+  '<p><strong>Giờ kết thúc:</strong> ' + appointment[0].endTime + '</p>' +
+  '<p><strong>Ghi chú:</strong> ' + appointment[0].appointmentNote + '</p>' +
+  '<p><strong>Trạng thái cuộc hẹn:</strong> ' + getVietnameseStatus(appointment[0].appointmentStatus) + '</p>' +
+  '<p><strong>Trạng thái check-in:</strong> ' + getVietnameseCheckinStatus(appointment[0].appointmentCheckin) + '</p>';
+
 
                 // Mở modal
                 const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
@@ -571,12 +594,29 @@ window.location.href = './doctor-clinical-diagnosis?appointmentId=' + appointmen
                 return;
             }
 
-            medicalHistory.forEach(function(record) {
-                medicalHistoryDiv.innerHTML += '<p><strong>Chẩn đoán:</strong> ' + record.diagnosis + '</p>' +
-                                              '<p><strong>Điều trị:</strong> ' + record.treatment + '</p>' +
-                                              '<p><strong>Ngày tái khám:</strong> ' + record.reexamdate + '</p>' +
-                                              '<p><strong>Ngày tạo:</strong> ' + record.createddate + '</p>' +
-                                              '<hr>';
+            // Hiển thị lịch sử y tế
+medicalHistoryDiv.innerHTML = '';
+medicalHistory.forEach(function(record, index) {
+    let fileListHTML = '';
+    if (record.files && record.files.length > 0) {
+        fileListHTML += '<p><strong>File đính kèm:</strong></p><ul>';
+        record.files.forEach(function(file) {
+            fileListHTML += '<li><a href="' + file.fileUrl + '" target="_blank">' + file.fileName + '</a></li>';
+        });
+        fileListHTML += '</ul>';
+    }
+
+    medicalHistoryDiv.innerHTML +=
+        '<div style="margin-bottom: 15px;">' +
+        '<p><strong>Lần khám #' + (index + 1) + '</strong></p>' +
+        '<p><strong>Chẩn đoán:</strong> ' + record.diagnosis + '</p>' +
+        '<p><strong>Điều trị:</strong> ' + record.treatment + '</p>' +
+        '<p><strong>Ngày tái khám:</strong> ' + record.reexamdate + '</p>' +
+        '<p><strong>Ngày tạo:</strong> ' + record.createddate + '</p>' +
+        fileListHTML +
+        '<hr>' +
+        '</div>';
+
             });
         })
         .catch(function(error) {

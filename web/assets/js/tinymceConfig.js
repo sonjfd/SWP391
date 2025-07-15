@@ -1,5 +1,11 @@
 tinymce.init({
     selector: 'textarea#default',
+    setup: function (editor) {
+        editor.on('blur', function () {
+            editor.save();
+            validateContent();
+        });
+    },
     width: '100%',
     height: 300,
     plugins: [

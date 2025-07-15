@@ -114,10 +114,24 @@
                                         <td><fmt:formatDate value="${v.createdAt}" pattern="yyyy-MM-dd" /></td>
                                         <td><fmt:formatDate value="${v.updatedAt}" pattern="yyyy-MM-dd" /></td>
                                         <td>
-                                            <a href="admin-editProductVariant?id=${v.productVariantId}" class="btn btn-warning btn-sm">Sửa</a>
-                                            <a href="admin-productVariant?action=delete&id=${v.productVariantId}"
-                                               class="btn btn-sm btn-danger"
-                                               onclick="return confirm('Bạn có chắc chắn muốn xoá không?')">Xoá</a>
+                                            <a href="admin-editProductVariant?id=${v.productVariantId}" class="btn btn-success btn-sm">Sửa</a>
+                                            <c:choose>
+                                                <c:when test="${v.status}">
+                                                    <a href="admin-productVariant?action=toggleStatus&id=${v.productVariantId}"
+                                                       class="btn btn-sm btn-danger"
+                                                       onclick="return confirm('Bạn có chắc chắn muốn ngừng bán biến thể này không?')">
+                                                        Ngừng bán
+                                                    </a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a href="admin-productVariant?action=toggleStatus&id=${v.productVariantId}"
+                                                       class="btn btn-sm btn-warning"
+                                                       onclick="return confirm('Bạn có muốn bán lại biến thể này không?')">
+                                                        Bán lại
+                                                    </a>
+                                                </c:otherwise>
+                                            </c:choose>
+
                                         </td>
                                     </tr>
                                 </c:forEach>

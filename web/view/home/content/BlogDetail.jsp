@@ -34,7 +34,10 @@
         <div class="container my-5">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
-
+                    <!-- Nút quay lại -->
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary mb-4">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
                     <!-- Tiêu đề và thông tin -->
                     <h2 class="fw-bold mb-3">${blog.title}</h2>
                     <p class="text-muted small">
@@ -61,30 +64,30 @@
                             </c:forEach>
                         </div>
                     </c:if>
-                    
 
 
-                    
-
-                        
 
 
-                    </div>
+
+
+
+
                 </div>
             </div>
         </div>
+    </div>
 
-        <%@ include file="../layout/Footer.jsp" %>
-        <!-- javascript -->
-        <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-        <!-- SLIDER -->
-        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
-        <!-- Counter -->
-        <script src="${pageContext.request.contextPath}/assets/js/counter.init.js"></script>
-        <!-- Icons -->
-        <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
-        <!-- Main Js -->
-        <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
-    </body>
+    <%@ include file="../layout/Footer.jsp" %>
+    <!-- javascript -->
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
+    <!-- SLIDER -->
+    <script src="${pageContext.request.contextPath}/assets/js/tiny-slider.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/tiny-slider-init.js"></script>
+    <!-- Counter -->
+    <script src="${pageContext.request.contextPath}/assets/js/counter.init.js"></script>
+    <!-- Icons -->
+    <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
+    <!-- Main Js -->
+    <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
+</body>
 </html>

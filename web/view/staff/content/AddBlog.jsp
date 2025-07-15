@@ -31,7 +31,6 @@
             <div class="col-md-12">
                 <label for="image" class="form-label">🖼 Ảnh đại diện</label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/*" required onblur="validateImage()">
-                <img id="imagePreview" src="#" alt="Preview ảnh" class="img-fluid mt-2" style="max-height: 250px; display: none; border: 1px solid #ddd; padding: 5px; border-radius: 5px;">
                 <small id="imageError" class="text-danger" style="display:none;">Vui lòng chọn ảnh.</small>
             </div>
 
@@ -68,23 +67,6 @@
 </div>
 
 <script>
-    
-    document.getElementById("image").addEventListener("change", function (event) {
-        const preview = document.getElementById("imagePreview");
-        const file = event.target.files[0];
-
-        if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                preview.style.display = "block";
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.src = "#";
-            preview.style.display = "none";
-        }
-    });
     // Escape HTML for title input to prevent XSS
     function escapeTitle() {
         const titleInput = document.getElementById('title');
@@ -147,6 +129,7 @@
 
     // Validate form before submission
     function validateForm(e) {
+        tinymce.triggerSave();
         // Run all individual field validations
         validateTitle();
         validateImage();

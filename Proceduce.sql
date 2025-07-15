@@ -124,7 +124,7 @@ END;
 
 
 
-CREATE TRIGGER trg_CheckoutCart
+CREATE OR ALTER TRIGGER trg_CheckoutCart
 ON cart_items
 AFTER DELETE
 AS
@@ -134,7 +134,7 @@ BEGIN
     DECLARE @cart_id INT;
     DECLARE @user_id UNIQUEIDENTIFIER;
     DECLARE @invoice_id UNIQUEIDENTIFIER;
-    DECLARE @total_amount DECIMAL(18,2);
+    DECLARE @total_amount DECIMAL(18,2);  -- Đảm bảo kiểu rộng
 
     -- Lấy cart_id từ bản ghi vừa xóa
     SELECT TOP 1 @cart_id = d.cart_id FROM DELETED d;
@@ -145,8 +145,8 @@ BEGIN
         -- Lấy user_id từ cart
         SELECT @user_id = user_id FROM cart WHERE cart_id = @cart_id;
 
-        -- Tính tổng tiền từ các item vừa xóa
-        SELECT @total_amount = SUM(d.quantity * pv.price)
+        -- Tính tổng tiền từ các item vừa xóa, tránh null
+        SELECT @total_amount = ISNULL(SUM(CAST(d.quantity AS DECIMAL(18,2)) * CAST(pv.price AS DECIMAL(18,2))), 0)
         FROM DELETED d
         JOIN product_variants pv ON d.product_variant_id = pv.product_variant_id;
 
@@ -161,7 +161,7 @@ BEGIN
             @invoice_id,
             d.product_variant_id,
             d.quantity,
-            pv.price
+            CAST(pv.price AS DECIMAL(18,2))  -- Ép kiểu rõ ràng để tránh tràn
         FROM DELETED d
         JOIN product_variants pv ON d.product_variant_id = pv.product_variant_id;
 
@@ -170,6 +170,7 @@ BEGIN
     END
 END;
 GO
+
 
 
 ---trigger auto giảm stock quantity---

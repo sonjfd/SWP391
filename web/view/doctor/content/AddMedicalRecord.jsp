@@ -334,7 +334,31 @@ tbody.appendChild(tr);
     var form = document.getElementById('medicalRecordForm');
     form.addEventListener('submit', function(e) {
         e.preventDefault(); // Ngăn submit mặc định
+        const files = document.getElementById('files').files;
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    const maxTotalSize = 50 * 1024 * 1024; // 50MB
+    let totalSize = 0;
 
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      // Kiểm tra từng file
+      if (file.size > maxFileSize) {
+        alert('File' +file.name+ 'vượt quá dung lượng tối đa 10MB.');
+        e.preventDefault();
+        return;
+      }
+
+      totalSize += file.size;
+    }
+
+    // Kiểm tra tổng dung lượng
+    if (totalSize > maxTotalSize) {
+      alert('Tổng dung lượng tất cả các file vượt quá 50MB.');
+      e.preventDefault();
+      return;
+    }
+  
     let valid = true;
 
     // Gọi lại onblur để validate từng input

@@ -252,6 +252,9 @@
                                             actionHtml += '<span title="Hủy dịch vụ" class="action-icon cancel-service-btn text-danger" ' +
                                                     'data-id="' + sv.id + '" style="cursor:pointer">' +
                                                     '<i class="bi bi-x-circle"></i></span>';
+                                              actionHtml += '<span title="Xóa vĩnh viễn" class="action-icon delete-service-btn text-danger" ' +
+        'data-id="' + sv.id + '" style="cursor:pointer">' +
+        '<i class="bi bi-trash"></i></span>';
                                         }
 
 // Chỉ cho nhận kết quả nếu đã hoàn tất
@@ -390,6 +393,27 @@
                                 .catch(() => alert('Có lỗi xảy ra khi gửi yêu cầu hủy.'));
                     }
                 });
+                document.addEventListener('click', function (event) {
+    const btn = event.target.closest('.delete-service-btn');
+    if (btn) {
+        const appointmentServiceId = btn.getAttribute('data-id');
+        if (confirm("⚠️ XÓA VĨNH VIỄN dịch vụ này? Dữ liệu sẽ bị mất hoàn toàn!")) {
+            fetch('./doctor-deleteappointmentservice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'id=' + encodeURIComponent(appointmentServiceId)
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.success ? "🗑️ Đã xóa thành công!" : "❌ Xóa thất bại!");
+                if (data.success) loadListAppointmentService();
+            });
+        }
+    }
+});
+
 
                 document.getElementById('serviceForm').addEventListener('submit', function (e) {
                     e.preventDefault();

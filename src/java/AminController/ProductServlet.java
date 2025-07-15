@@ -65,9 +65,16 @@ public class ProductServlet extends HttpServlet {
             if ("delete".equalsIgnoreCase(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 if (productDAO.softDeleteProduct(id)) {
-                    session.setAttribute("message", "Xoá sản phẩm thành công.");
+                    session.setAttribute("message", "Đã ẩn sản phẩm thành công.");
                 } else {
-                    session.setAttribute("error", "Xoá sản phẩm thất bại.");
+                    session.setAttribute("error", "Ẩn sản phẩm thất bại.");
+                }
+            } else if ("restore".equalsIgnoreCase(action)) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                if (productDAO.restoreProduct(id)) {
+                    session.setAttribute("message", "Đã hiển thị lại sản phẩm thành công.");
+                } else {
+                    session.setAttribute("error", "Hiển thị lại sản phẩm thất bại.");
                 }
             }
 

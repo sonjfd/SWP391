@@ -25,66 +25,63 @@
 
 <div class="container-fluid bg-light py-4">
     <div class="layout-specing">
-    <h4>Chỉnh sửa bài viết Blog</h4>
-    <form action="staff-edit-blog" method="post" enctype="multipart/form-data" onsubmit="return validateForm(event)">
-        <input type="hidden" name="id" value="${blog.id}" />
+        <h4 class="mb-4">✏️ Chỉnh sửa bài viết</h4>
 
-        <div class="mb-3">
-            <label class="form-label">Tiêu đề</label>
-            <input type="text" class="form-control" name="title" value="${blog.title}" id="title" maxlength="100" required onblur="validateTitle()">
-            <small id="titleError" class="text-danger" style="display:none;">Tiêu đề không được để trống và không quá 100 ký tự.</small>
-        </div>
+        <form action="staff-edit-blog" method="post" enctype="multipart/form-data" class="row g-4" onsubmit="return validateForm(event)">
+            <input type="hidden" name="id" value="${blog.id}" />
+            
+            <div class="col-md-6">
+                <label for="title" class="form-label">📌 Tiêu đề</label>
+                <input type="text" class="form-control" id="title" name="title" value="${blog.title}" maxlength="100" required onblur="validateTitle()">
+                <small id="titleError" class="text-danger" style="display:none;">Tiêu đề không được để trống và không quá 100 ký tự.</small>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Hình ảnh (bỏ trống nếu không đổi)</label><br/>
-            <img id="currentImage" src="${blog.image}" alt="Ảnh hiện tại" width="150" style="border: 1px solid #ddd; padding: 5px; border-radius: 5px;"><br><br>
-            <input type="file" class="form-control" id="image" name="image" accept="image/*" onblur="validateImage()">
-            <small id="imageError" class="text-danger" style="display:none;">Vui lòng chọn ảnh nếu bạn muốn thay đổi.</small>
-        </div>
+            <div class="col-md-12">
+                <label for="image" class="form-label">🖼 Ảnh đại diện (bỏ trống nếu không đổi)</label><br/>
+                <img src="${blog.image}" alt="Ảnh hiện tại" width="150" class="mb-2"><br>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" onblur="validateImage()">
+                <small id="imageError" class="text-danger" style="display:none;">Vui lòng chọn ảnh nếu bạn muốn thay đổi.</small>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nội dung</label>
-            <textarea class="form-control" name="content" rows="8" id="content" onblur="validateContent()">${blog.content}</textarea>
-            <small id="contentError" class="text-danger" style="display:none;">Nội dung không được để trống.</small>
-        </div>
+            <div class="col-md-12">
+                <label for="content" class="form-label">📄 Nội dung</label>
+                <textarea class="form-control" id="default" name="content" onblur="validateContent()">${blog.content}</textarea>
+                <small id="contentError" class="text-danger" style="display:none;">Nội dung không được để trống.</small>
+            </div>
 
-        <div class="mb-3">
-            <label>Gắn thẻ:</label><br/>
-            <c:forEach var="tag" items="${tagList}">
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="tags" value="${tag.id}" id="tag-${tag.id}" onblur="validateTags()"
-                        <c:if test="${blog.tagsAsList.contains(tag.id)}">checked</c:if>>
-                    <label class="form-check-label" for="tag-${tag.id}">${tag.name}</label>
+            <div class="col-md-12">
+                <label class="form-label">🏷️ Chọn thẻ liên quan</label>
+                <div class="row">
+                    <c:forEach var="tag" items="${tagList}">
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tags" value="${tag.id}" id="tag-${tag.id}" onblur="validateTags()"
+                                    <c:if test="${blog.tagsAsList.contains(tag.id)}">checked</c:if>>
+                                <label class="form-check-label" for="tag-${tag.id}">
+                                    ${tag.name}
+                                </label>
+                            </div>
+                        </div>
+                    </c:forEach>
                 </div>
-            </c:forEach>
-            <small id="tagsError" class="text-danger" style="display:none;">Vui lòng chọn ít nhất một thẻ.</small>
-        </div>
+                <small id="tagsError" class="text-danger" style="display:none;">Vui lòng chọn ít nhất một thẻ.</small>
+            </div>
 
-        <!-- Buttons for save as draft or publish -->
-        <button type="submit" name="status" value="draft" class="btn btn-warning me-2" onclick="setStatus('draft')">💾 Lưu nháp</button>
-        <button type="submit" name="status" value="published" class="btn btn-success" onclick="setStatus('published')">💾 Lưu và đăng</button>
-        
-        <a href="staff-list-blog" class="btn btn-secondary">Hủy</a>
-    </form>
-</div>
+            <div class="col-12 d-flex justify-content-end">
+                <button type="submit" name="status" value="draft" class="btn btn-warning me-2">💾 Lưu nháp</button>
+                <button type="submit" name="status" value="published" class="btn btn-success">💾 Lưu và đăng</button>
+                <a href="staff-list-blog" class="btn btn-outline-secondary">↩️ Quay lại</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-    
-    
-    document.getElementById("image").addEventListener("change", function (event) {
-        const preview = document.getElementById("currentImage");
-        const file = event.target.files[0];
-
-        if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
+    // Escape HTML for title input to prevent XSS
+    function escapeTitle() {
+        const titleInput = document.getElementById('title');
+        titleInput.value = titleInput.value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 
     // Validate title input
     function validateTitle() {
@@ -97,20 +94,21 @@
         }
     }
 
-    // Validate image input (optional)
+    // Validate image input (optional for edit)
     function validateImage() {
-        const image = document.getElementsByName('image')[0].files.length;
+        // For edit page, image is optional so no validation needed
         const imageError = document.getElementById('imageError');
-        if (image === 0 && document.getElementById('image').value !== '') {
-            imageError.style.display = 'block';
-        } else {
-            imageError.style.display = 'none';
-        }
+        imageError.style.display = 'none';
     }
 
     // Validate content textarea
     function validateContent() {
-        const content = document.getElementById('content').value;
+        // Sync nội dung từ TinyMCE về textarea trước khi validate
+        if (tinymce.get('default')) {
+            tinymce.get('default').save();
+        }
+        
+        const content = document.getElementById('default').value;
         const contentError = document.getElementById('contentError');
         if (content.trim() === '') {
             contentError.style.display = 'block';
@@ -140,16 +138,13 @@
         }
     }
 
-    // Set the status for draft or published
-    function setStatus(status) {
-        const statusInput = document.querySelector("input[name='status'][value='" + status + "']");
-        if (statusInput) {
-            statusInput.value = status;
-        }
-    }
-
     // Validate form before submission
     function validateForm(e) {
+        // Sync tất cả TinyMCE editors trước khi validate
+        if (typeof tinymce !== 'undefined') {
+            tinymce.triggerSave();
+        }
+        
         // Run all individual field validations
         validateTitle();
         validateImage();
@@ -164,7 +159,10 @@
         return true;  // Allow form submission if all fields are valid
     }
 </script>
-<!-- simplebar -->
+
+        <script src="${pageContext.request.contextPath}/tinymce/tinymce.min.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/tinymceConfig.js"></script>
+        <!-- simplebar -->
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>
         <!-- Chart -->
         <script src="${pageContext.request.contextPath}/assets/js/apexcharts.min.js"></script>
@@ -173,5 +171,5 @@
         <script src="${pageContext.request.contextPath}/assets/js/feather.min.js"></script>
         <!-- Main Js -->
         <script src="${pageContext.request.contextPath}/assets/js/app.js"></script>
-</body>
+    </body>
 </html>

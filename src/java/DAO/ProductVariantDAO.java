@@ -167,10 +167,11 @@ public class ProductVariantDAO extends DBContext {
         }
     }
 
-    public void delete(int id) {
-        String sql = "DELETE FROM product_variants WHERE product_variant_id = ?";
+    public void updateStatus(int id, boolean status) {
+        String sql = "UPDATE product_variants SET status = ? WHERE product_variant_id = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setBoolean(1, status);
+            ps.setInt(2, id);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -289,7 +290,7 @@ public class ProductVariantDAO extends DBContext {
                 + " JOIN categories c ON p.category_id = c.category_id\n"
                 + " JOIN product_variant_weights w ON pv.weight_id = w.weight_id\n"
                 + " JOIN product_variant_flavors f ON pv.flavor_id = f.flavor_id\n"
-                + " WHERE pv.status = 1");
+                + " WHERE pv.status = 1 and p.status = 1 AND c.status = 1");
         List<Object> params = new ArrayList<>();
 
         appendCategoryFilter(sql, params, categoryId);

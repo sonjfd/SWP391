@@ -28,6 +28,7 @@ public class AddProductVariantServlet extends HttpServlet {
     private final ProductVariantWeightDAO weightDAO = new ProductVariantWeightDAO();
     private final ProductVariantFlavorDAO flavorDAO = new ProductVariantFlavorDAO();
 
+    // GET: Hiển thị form thêm biến thể
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -35,6 +36,7 @@ public class AddProductVariantServlet extends HttpServlet {
         request.getRequestDispatcher("view/admin/content/AddProductVariant.jsp").forward(request, response);
     }
 
+    // POST: Xử lý form submit
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -43,6 +45,7 @@ public class AddProductVariantServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
+            // Lấy dữ liệu từ form
             int productId = Integer.parseInt(request.getParameter("product_id"));
             int weightId = Integer.parseInt(request.getParameter("weight_id"));
             int flavorId = Integer.parseInt(request.getParameter("flavor_id"));
@@ -50,15 +53,16 @@ public class AddProductVariantServlet extends HttpServlet {
             int stockQuantity = Integer.parseInt(request.getParameter("stock_quantity"));
             boolean status = "1".equals(request.getParameter("status"));
 
+            // Xử lý ảnh
             Part imagePart = request.getPart("imageFile");
             String imagePath = null;
 
-            // Tạo thư mục lưu ảnh nếu chưa có
             String uploadDirPath = "C:/MyUploads/avatars";
             File uploadDir = new File(uploadDirPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
 
-            // Nếu có file ảnh
             if (imagePart != null && imagePart.getSize() > 0) {
                 String fileExt = imagePart.getSubmittedFileName()
                         .substring(imagePart.getSubmittedFileName().lastIndexOf("."));
@@ -66,7 +70,6 @@ public class AddProductVariantServlet extends HttpServlet {
                 File savedFile = new File(uploadDir, randomFileName);
                 imagePart.write(savedFile.getAbsolutePath());
 
-                // Đường dẫn lưu DB
                 imagePath = request.getContextPath() + "/image-loader/" + randomFileName;
             }
 
@@ -75,7 +78,7 @@ public class AddProductVariantServlet extends HttpServlet {
                 throw new Exception("Biến thể đã tồn tại với cùng sản phẩm, khối lượng và hương vị.");
             }
 
-            // Tạo đối tượng ProductVariant
+            // Tạo đối tượng và thêm vào DB
             ProductVariant variant = new ProductVariant();
             variant.setProductId(productId);
             variant.setWeightId(weightId);
@@ -85,15 +88,15 @@ public class AddProductVariantServlet extends HttpServlet {
             variant.setStatus(status);
             variant.setImage(imagePath);
 
-            // Thêm vào DB
             variantDAO.add(variant);
             response.sendRedirect("admin-productVariant?action=list");
 
         } catch (Exception e) {
             e.printStackTrace();
+
             request.setAttribute("error", "Lỗi: " + e.getMessage());
 
-            // Giữ lại dữ liệu người dùng đã nhập
+            // Gửi lại dữ liệu đã nhập nếu có lỗi
             request.setAttribute("product_id", request.getParameter("product_id"));
             request.setAttribute("weight_id", request.getParameter("weight_id"));
             request.setAttribute("flavor_id", request.getParameter("flavor_id"));
@@ -106,10 +109,17 @@ public class AddProductVariantServlet extends HttpServlet {
         }
     }
 
+    // Load dữ liệu dropdown (sản phẩm, trọng lượng, hương vị)
     private void loadFormData(HttpServletRequest request) {
-        List<Product> products = productDAO.getAllActiveProducts();
-        List<ProductVariantWeight> weights = weightDAO.getAllWeights();
-        List<ProductVariantFlavor> flavors = flavorDAO.getAll();
+        List<Product> products = productDAO.getAllActiveProducts1();
+        List<ProductVariantWeight> weights = weightDAO.getAllActiveWeights();
+        List<ProductVariantFlavor> flavors = flavorDAO.getAllActive(); // lọc status = 1
+
+        // Debug console: kiểm tra flavor có bị dư status = 0 không
+        System.out.println("====== FLAVORS LOADED ======");
+        for (ProductVariantFlavor f : flavors) {
+            System.out.println(f.getFlavorId() + " - " + f.getFlavor() + " - status: " + f.isStatus());
+        }
 
         request.setAttribute("products", products);
         request.setAttribute("weights", weights);

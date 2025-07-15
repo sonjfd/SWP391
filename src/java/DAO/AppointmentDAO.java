@@ -41,7 +41,7 @@ public class AppointmentDAO {
        JOIN species s ON b.species_id = s.id
        JOIN doctors d ON a.doctor_id = d.user_id
        JOIN users docu ON d.user_id = docu.id
-   	order by created_at desc
+         ORDER BY a.appointment_time DESC, a.created_at DESC
 """;
 
         List<Appointment> list = new ArrayList<>();
@@ -428,8 +428,8 @@ public class AppointmentDAO {
             }
 
         } catch (SQLException | ClassNotFoundException e) {
-            
-            e.printStackTrace();  
+
+            e.printStackTrace();
         }
 
         return appointments;
@@ -772,7 +772,7 @@ public class AppointmentDAO {
         String sql = "UPDATE appointments SET checkin_status = 'checkin' WHERE id = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, appointmentId);
-            
+
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -881,10 +881,8 @@ public class AppointmentDAO {
         }
         return list;
     }
-        // CỦA ĐẠI
-    
+    // CỦA ĐẠI
 
-    
     //Lấy tổng cuộc họp theo ca của ngày của bác si
     public int getTotalAppointments(String doctorId, Date workDate, int shiftId) {
         int total = 0;
@@ -913,13 +911,7 @@ public class AppointmentDAO {
         return total;
     }
 
-    
-
-    
-   
-    
-
-    public List<Appointment> getAppointmentDetailsByDoctorAndAppointment( String appointmentId) {
+    public List<Appointment> getAppointmentDetailsByDoctorAndAppointment(String appointmentId) {
         List<Appointment> list = new ArrayList<>();
         String sql = """
         SELECT
@@ -975,7 +967,6 @@ public class AppointmentDAO {
                 pet.setDescription(rs.getString("p_desc"));
                 pet.setUser(user);
                 pet.setId(rs.getString("pet_id"));
-                
 
                 // Tạo đối tượng Appointment và gắn thông tin
                 Appointment appt = new Appointment();
@@ -1058,7 +1049,7 @@ public class AppointmentDAO {
                 appt.setId(rs.getString("a_id"));
                 User doctor = new User();
                 doctor.setId(doctorId);
-                Doctor d =new Doctor();
+                Doctor d = new Doctor();
                 d.setUser(doctor);
                 appt.setDoctor(d);
                 appt.setUser(user);
@@ -1078,7 +1069,7 @@ public class AppointmentDAO {
         }
         return list;
     }
-    
+
     public boolean updateStatus(String appointmentId, String status) {
         String sql = "UPDATE appointments SET status = ? WHERE id = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -1136,8 +1127,8 @@ public class AppointmentDAO {
         return false;
     }
 
-public void autoCancelAppointments() {
-    String sql = """
+    public void autoCancelAppointments() {
+        String sql = """
         UPDATE appointments
         SET status = 'canceled'
         WHERE DATEADD(SECOND, DATEDIFF(SECOND, 0, end_time), CAST(appointment_time AS DATETIME)) < GETDATE()
@@ -1145,16 +1136,14 @@ public void autoCancelAppointments() {
           AND checkin_status = 'noshow'
     """;
 
-    try (Connection conn = DBContext.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.executeUpdate();
-    } catch (Exception e) {
-        e.printStackTrace();
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-}
 
-
-public List<Appointment> getAppointmentByCustomer(String customerId, String petName, String status, Date fromDate, Date toDate, int page, int pageSize) {
+    public List<Appointment> getAppointmentByCustomer(String customerId, String petName, String status, Date fromDate, Date toDate, int page, int pageSize) {
         List<Appointment> list = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("""
@@ -1293,8 +1282,7 @@ public List<Appointment> getAppointmentByCustomer(String customerId, String petN
         return list;
     }
 
-
-public int countAppointmentByCustomer(String customerId, String petName, String status, Date fromDate, Date toDate) {
+    public int countAppointmentByCustomer(String customerId, String petName, String status, Date fromDate, Date toDate) {
         int count = 0;
 
         StringBuilder sql = new StringBuilder("""

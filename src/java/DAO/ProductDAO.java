@@ -12,15 +12,14 @@ public class ProductDAO extends DBContext {
     public List<Product> getAllActiveProducts() {
         List<Product> list = new ArrayList<>();
         String sql = """
-            SELECT p.product_id, p.category_id, p.product_name, p.description, 
-                   p.created_at, p.updated_at,
-                   c.category_name, 
-                   c.description AS category_description, 
-                   c.status AS category_status
-            FROM products p
-
-            JOIN categories c ON p.category_id = c.category_id
-            WHERE p.status = 1 AND c.status = 1
+               SELECT p.product_id, p.category_id, p.product_name, p.description, 
+                       p.created_at, p.updated_at, p.status,
+                       c.category_name, 
+                       c.description AS category_description, 
+                       c.status AS category_status
+                FROM products p
+                JOIN categories c ON p.category_id = c.category_id
+                WHERE  c.status = 1
         
         """;
 
@@ -38,6 +37,7 @@ public class ProductDAO extends DBContext {
                 product.setDescription(rs.getString("description"));
                 product.setCreatedAt(rs.getTimestamp("created_at"));
                 product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                product.setStatus(rs.getBoolean("status"));
                 product.setCategory(category);
 
                 list.add(product);
@@ -48,6 +48,49 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+    
+    
+    
+    public List<Product> getAllActiveProducts1() {
+    List<Product> list = new ArrayList<>();
+    String sql = """
+        SELECT p.product_id, p.category_id, p.product_name, p.description, 
+               p.created_at, p.updated_at,
+               c.category_name, 
+               c.description AS category_description, 
+               c.status AS category_status,
+               p.status
+        FROM products p
+        JOIN categories c ON p.category_id = c.category_id
+        WHERE p.status = 1 AND c.status = 1
+    """;
+
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            Category category = new Category();
+            category.setCategoryId(rs.getInt("category_id"));
+            category.setCategoryName(rs.getString("category_name"));
+            category.setDescription(rs.getString("category_description"));
+            category.setStatus(rs.getBoolean("category_status"));
+
+            Product product = new Product();
+            product.setProductId(rs.getInt("product_id"));
+            product.setProductName(rs.getString("product_name"));
+            product.setDescription(rs.getString("description"));
+            product.setCreatedAt(rs.getTimestamp("created_at"));
+            product.setUpdatedAt(rs.getTimestamp("updated_at"));
+            product.setStatus(rs.getBoolean("status")); // đừng quên dòng này
+            product.setCategory(category);
+
+            list.add(product);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
 
     public boolean insertProduct(Product product) {
         String sql = """
@@ -101,16 +144,29 @@ public class ProductDAO extends DBContext {
         return false;
     }
 
+    public boolean restoreProduct(int id) {
+        String sql = "UPDATE products SET status = 1, updated_at = GETDATE() WHERE product_id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public Product getProductById(int id) {
         String sql = """
-            SELECT p.product_id, p.category_id, p.product_name, p.description, 
-                   p.created_at, p.updated_at,
-                   c.category_name, 
-                   c.description AS category_description, 
-                   c.status AS category_status
-            FROM products p
-            JOIN categories c ON p.category_id = c.category_id
-            WHERE p.product_id = ?
+           SELECT p.product_id, p.category_id, p.product_name, p.description, 
+                          p.created_at, p.updated_at, p.status,
+                          c.category_name, 
+                          c.description AS category_description, 
+                          c.status AS category_status
+                   FROM products p
+                   JOIN categories c ON p.category_id = c.category_id
+                   WHERE p.product_id = ?
         """;
 
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -129,6 +185,7 @@ public class ProductDAO extends DBContext {
                     product.setDescription(rs.getString("description"));
                     product.setCreatedAt(rs.getTimestamp("created_at"));
                     product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    product.setStatus(rs.getBoolean("status"));
                     product.setCategory(category);
 
                     return product;
@@ -159,15 +216,15 @@ public class ProductDAO extends DBContext {
     public List<Product> searchProductsByName(String keyword, int page, int pageSize) {
         List<Product> list = new ArrayList<>();
         String sql = """
-        SELECT p.product_id, p.category_id, p.product_name, p.description,
-               p.created_at, p.updated_at,
-               c.category_name, c.description AS category_description, c.status AS category_status
-        FROM products p
-        JOIN categories c ON p.category_id = c.category_id
-        WHERE p.product_name LIKE ?
-        ORDER BY p.product_id
-        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+    SELECT p.product_id, p.category_id, p.product_name, p.description,
+           p.created_at, p.updated_at, p.status,                         
+           c.category_name, c.description AS category_description, c.status AS category_status
+    FROM products p
+    JOIN categories c ON p.category_id = c.category_id
+    WHERE p.product_name LIKE ?
+    ORDER BY p.product_id
+    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
 
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
@@ -188,6 +245,7 @@ public class ProductDAO extends DBContext {
                     product.setDescription(rs.getString("description"));
                     product.setCreatedAt(rs.getTimestamp("created_at"));
                     product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    product.setStatus(rs.getBoolean("status")); // ✅ Thêm dòng này
                     product.setCategory(category);
 
                     list.add(product);
@@ -214,15 +272,15 @@ public class ProductDAO extends DBContext {
     public List<Product> getProductsByPage(int page, int pageSize) {
         List<Product> list = new ArrayList<>();
         String sql = """
-        SELECT p.product_id, p.category_id, p.product_name, p.description,
-               p.created_at, p.updated_at,
-               c.category_name, c.description AS category_description, c.status AS category_status
-        FROM products p
-        JOIN categories c ON p.category_id = c.category_id
-        WHERE p.status = 1 AND c.status = 1
-        ORDER BY p.product_id
-        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """;
+    SELECT p.product_id, p.category_id, p.product_name, p.description,
+           p.created_at, p.updated_at, p.status,                         -- ✅ thêm status
+           c.category_name, c.description AS category_description, c.status AS category_status
+    FROM products p
+    JOIN categories c ON p.category_id = c.category_id
+    WHERE  c.status = 1
+    ORDER BY p.product_id
+    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
 
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, (page - 1) * pageSize);
@@ -242,6 +300,7 @@ public class ProductDAO extends DBContext {
                     product.setDescription(rs.getString("description"));
                     product.setCreatedAt(rs.getTimestamp("created_at"));
                     product.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    product.setStatus(rs.getBoolean("status"));  // ✅ thêm dòng này
                     product.setCategory(category);
 
                     list.add(product);

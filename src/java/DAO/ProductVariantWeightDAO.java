@@ -30,6 +30,29 @@ public class ProductVariantWeightDAO {
         }
         return list;
     }
+    
+public List<ProductVariantWeight> getAllActiveWeights() {
+    List<ProductVariantWeight> list = new ArrayList<>();
+    String sql = "SELECT * FROM product_variant_weights WHERE status = 1";
+
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            ProductVariantWeight w = new ProductVariantWeight();
+            w.setWeightId(rs.getInt("weight_id"));
+            w.setWeight(rs.getDouble("weight"));
+            w.setStatus(rs.getBoolean("status"));
+            list.add(w);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
 
     // ✅ Lấy theo ID
     public ProductVariantWeight getById(int id) {

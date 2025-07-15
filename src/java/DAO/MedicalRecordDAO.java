@@ -65,6 +65,7 @@ public class MedicalRecordDAO {
                 doctor.setSpecialty(rs.getString("specialty"));
                 mr.setDoctor(doctor);
                 list.add(mr);
+                mr.setFiles(getFilesByMedicalRecordId(mr.getId()));
             }
         } catch (Exception e) {
             e.printStackTrace();
