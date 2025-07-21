@@ -12,9 +12,9 @@
     <head>
         <meta charset="utf-8" />
 
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Đăng ký</title>
 
-        <title>Hệ Thống Khám Thú Cưng</title>
+      
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
@@ -106,8 +106,9 @@
                                                 <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                                                    <input type="Text" class="form-control" placeholder="Nhập địa chỉ ..." name="address" required="">
+                                                    <input  type="Text" class="form-control" placeholder="Nhập địa chỉ ..." name="address" required="" id="address">
                                                 </div>
+                                                <small id="addressError" class="error" style="color:red; display:none;"></small>
                                             </div>
                                         </div>
 
@@ -176,6 +177,7 @@
         <!-- Hero End -->
 
         <script>
+           
             // Regex kiểm tra email hợp lệ
             function isValidEmail(email) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -188,7 +190,7 @@
                 if (hasScript)
                     return false;
 
-                return username.length >= 3;
+                return username.length >= 3 || username.length <=20;
             }
 
             // Regex kiểm tra số điện thoại: 10 số bắt đầu bằng 0 hoặc +84
@@ -213,7 +215,7 @@
                     return false;
                 }
                 if (!isValidUsername(username)) {
-                    showError('userName', 'Tên đăng nhập phải có ít nhất 3 ký tự!');
+                    showError('userName', 'Tên đăng nhập phải có ít nhất 3 ký tự và không vượt quá 20 ký tự!');
                     return false;
                 }
                 showError('userName', '');
@@ -327,6 +329,18 @@
                 showError('phone', '');
                 return true;
             }
+            
+            //Kiểm tra địa chỉ
+            function validateAddress(){
+                const address = document.getElementById('address').value.trim();
+                
+                if(!address){
+                    showError('address', 'Địa chỉ không được để trống! ');
+                    return false;
+                }
+                showError('address', '');
+                return true;
+            }
             // sửa ở chỗ này!!!
             function togglePassword() {
                 const passwordField = document.getElementById("password");
@@ -365,7 +379,8 @@
                         && validatePassword()
                         && validateRePassword()
                         && validateFullName()
-                        && validatePhone();
+                        && validatePhone()
+                &&validateAddress();
             }
 
             // Gắn sự kiện blur khi trang tải
@@ -376,7 +391,9 @@
                     {id: 'password', validate: validatePassword},
                     {id: 'repassword', validate: validateRePassword},
                     {id: 'fullName', validate: validateFullName},
-                    {id: 'phone', validate: validatePhone}
+                    {id: 'phone', validate: validatePhone},
+                                        {id: 'address', validate: validateAddress}
+
                 ];
 
                 inputs.forEach(({ id, validate }) => {
@@ -395,7 +412,8 @@
                                 !validatePassword() ||
                                 !validateRePassword() ||
                                 !validateFullName() ||
-                                !validatePhone()
+                                !validatePhone()||
+                                !validateAddress()
                                 ) {
                             e.preventDefault(); // chặn submit nếu có lỗi
                         }

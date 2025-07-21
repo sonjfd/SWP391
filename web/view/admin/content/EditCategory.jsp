@@ -13,7 +13,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Chỉnh sửa danh mục</title>
+    <title>Pet24h - Chỉnh sửa danh mục</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -89,9 +89,7 @@
                 nameError.textContent = "Tên danh mục không được để trống!";
             } else if (nameValue.length > 50) {
                 nameError.textContent = "Tên danh mục không được vượt quá 50 ký tự!";
-            } else if (!nameRegex.test(nameValue)) {
-                nameError.textContent = "Chỉ cho phép chữ cái, số, khoảng trắng và dấu gạch ngang!";
-            }
+            } 
         });
 
         descInput.addEventListener("blur", function () {
@@ -121,11 +119,7 @@
                 nameError.textContent = "Tên danh mục không được vượt quá 50 ký tự!";
                 nameInput.focus();
                 valid = false;
-            } else if (!nameRegex.test(nameValue)) {
-                nameError.textContent = "Chỉ cho phép chữ cái, số, khoảng trắng và dấu gạch ngang!";
-                nameInput.focus();
-                valid = false;
-            }
+            } 
 
             if (descValue === "") {
                 descError.textContent = "Mô tả không được để trống!";

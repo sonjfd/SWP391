@@ -7,7 +7,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Đơn vị trọng lượng biến thể</title>
+        <title>Pet24h - Đơn vị trọng lượng biến thể</title>
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
     </head>

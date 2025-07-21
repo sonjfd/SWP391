@@ -14,7 +14,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Thêm sản phẩm</title>
+    <title>Pet24h - Thêm sản phẩm</title>
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>

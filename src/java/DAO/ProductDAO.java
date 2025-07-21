@@ -201,7 +201,7 @@ public class ProductDAO extends DBContext {
     public int countProductsByName(String keyword) {
         String sql = "SELECT COUNT(*) FROM products WHERE product_name LIKE ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "%" + keyword + "%");
+            ps.setString(1, "%" + keyword.trim().toLowerCase() + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -227,7 +227,7 @@ public class ProductDAO extends DBContext {
     """;
 
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "%" + keyword + "%");
+            ps.setString(1, "%" + keyword.trim().toLowerCase() + "%");
             ps.setInt(2, (page - 1) * pageSize);
             ps.setInt(3, pageSize);
 

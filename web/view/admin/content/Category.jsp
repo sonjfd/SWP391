@@ -5,7 +5,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Quản lí danh mục</title>
+        <title>Pet24h - Quản lí danh mục</title>
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
     </head>

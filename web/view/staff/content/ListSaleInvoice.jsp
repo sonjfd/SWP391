@@ -17,7 +17,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Trang Nhân Viên</title>
+        <title>Danh sách hoá đơn bán hàng</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -26,7 +26,6 @@
         <meta name="website" content="${pageContext.request.contextPath}/index.html" />
         <meta name="Version" content="v1.2.0" />
         <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
         <!-- Bootstrap -->
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <!-- simplebar -->
@@ -144,7 +143,8 @@
 
             <form method="get" action="staff-list-invoices" class="row g-2 mb-3" style="margin-top: 10px">
                 <div class="col-auto">
-                    <input type="date" class="form-control" name="searchDate" value="${searchDate}">
+                    <input type="date" id="searchDate" class="form-control" name="searchDate" value="${searchDate}">
+
                 </div>
                 <div class="col-auto">
                     <select class="form-select" name="paymentStatus">

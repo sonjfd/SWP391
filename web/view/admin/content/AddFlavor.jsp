@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Thêm hương vị</title>
+    <title>Pet24h - Thêm hương vị</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <script>
@@ -57,7 +57,7 @@
                 name="flavor"
                 required
                 maxlength="50"
-                value="${flavor != null ? flavor : ''}"
+                value="${flavor.flavor}"
             />
         </div>
 

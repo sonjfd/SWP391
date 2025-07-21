@@ -196,19 +196,13 @@
                         showError('name', 'Tên thuốc phải từ 2 đến 255 ký tự.');
                         return false;
                     }
-                    if (!vietnameseNameRegex.test(value)) {
-                        showError('name', 'Tên thuốc chỉ chứa chữ, số và khoảng trắng.');
-                        return false;
-                    }
+                    
                 } else if (elementId === 'description') {
                     if (value.length > 4000) {
                         showError('description', 'Mô tả không được vượt quá 4000 ký tự.');
                         return false;
                     }
-                    if (value && !vietnameseNameRegex.test(value)) {
-                        showError('description', 'Mô tả chỉ chứa chữ, số và khoảng trắng.');
-                        return false;
-                    }
+                    
                 }
                 return true;
             }

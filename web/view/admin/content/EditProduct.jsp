@@ -29,7 +29,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Chỉnh sửa sản phẩm</title>
+    <title>Pet24h - Chỉnh sửa sản phẩm</title>
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>

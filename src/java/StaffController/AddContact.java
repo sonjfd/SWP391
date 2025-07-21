@@ -18,6 +18,9 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Dell
  */
+
+@WebServlet("/addcontact")
+
 public class AddContact extends HttpServlet {
 
     /**

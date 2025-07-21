@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Thêm danh mục</title>
+    <title>Pet24h - Thêm danh mục</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -76,8 +76,6 @@
                     nameError.textContent = "Tên danh mục không được để trống!";
                 } else if (nameValue.length > 50) {
                     nameError.textContent = "Tên danh mục không được vượt quá 50 ký tự!";
-                } else if (!nameRegex.test(nameValue)) {
-                    nameError.textContent = "Chỉ cho phép chữ cái, số, khoảng trắng và dấu gạch ngang!";
                 }
             });
 
@@ -106,10 +104,6 @@
                     valid = false;
                 } else if (nameValue.length > 50) {
                     nameError.textContent = "Tên danh mục không được vượt quá 50 ký tự!";
-                    nameInput.focus();
-                    valid = false;
-                } else if (!nameRegex.test(nameValue)) {
-                    nameError.textContent = "Chỉ cho phép chữ cái, số, khoảng trắng và dấu gạch ngang!";
                     nameInput.focus();
                     valid = false;
                 }

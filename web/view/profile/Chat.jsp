@@ -17,7 +17,7 @@ User currentUser = (User) request.getAttribute("currentUser");
         <title>Chat với Nhân viên hỗ trợ</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -26,7 +26,7 @@ User currentUser = (User) request.getAttribute("currentUser");
         <meta name="website" content="https://shreethemes.in" />
         <meta name="Version" content="v1.2.0" />
         <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
+
         <!-- Bootstrap -->
 
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -210,14 +210,19 @@ User currentUser = (User) request.getAttribute("currentUser");
                 ws = new WebSocket("ws://localhost:8080/SWP391/chat/" + encodeURIComponent(conversationId) + "/" + encodeURIComponent(userId) + "/" + encodeURIComponent(fullName));
 
                 ws.onopen = function () {
-                    fetch("staff-get-messages?conversationId=" + encodeURIComponent(conversationId))
-                            .then(res => res.json())
+                    fetch("customer-chat?conversationId=" + encodeURIComponent(conversationId) + "&ajax=true")
+                            .then(res => {
+                                if (!res.ok)
+                                    throw new Error("Lỗi HTTP: " + res.status);
+                                return res.json();
+                            })
                             .then(data => {
                                 messagesDiv.innerHTML = "";
                                 data.forEach(msg => renderMessage(msg.senderName, msg.content, msg.senderId === userId));
                             })
                             .catch(err => console.error("❌ Lỗi tải tin nhắn cũ:", err));
                 };
+
 
                 ws.onmessage = function (event) {
                     const parts = event.data.split(": ");

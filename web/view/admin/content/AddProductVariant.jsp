@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Thêm Biến Thể Sản Phẩm</title>
+        <title>Pet24h - Thêm Biến Thể Sản Phẩm</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body class="container mt-5">

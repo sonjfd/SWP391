@@ -915,7 +915,7 @@ public class AppointmentDAO {
         List<Appointment> list = new ArrayList<>();
         String sql = """
         SELECT
-            a.status as a_status, notes, a.appointment_time as app_time, start_time, end_time,       
+            a.status as a_status, notes, a.appointment_time as app_time, start_time, end_time,a.checkin_status,       
             u.full_name AS owner_name, u.avatar as u_avatar,
             u.phone AS owner_phone,
             u.email AS owner_email,
@@ -977,6 +977,7 @@ public class AppointmentDAO {
                 appt.setEndTime(rs.getTime("end_time").toLocalTime());
                 appt.setAppointmentDate(rs.getDate("app_time"));
                 appt.setStatus(rs.getString("a_status"));
+                appt.setChekinStatus(rs.getString("checkin_status"));
                 User doc = new User(rs.getString("doctor_id"));
                 Doctor doctor = new Doctor();
                 doctor.setUser(doc);

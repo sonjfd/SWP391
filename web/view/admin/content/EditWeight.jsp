@@ -21,7 +21,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Chỉnh sửa trọng lượng</title>
+    <title>Pet24 - Chỉnh sửa trọng lượng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
         function validateForm() {

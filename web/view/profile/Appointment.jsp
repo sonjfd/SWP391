@@ -16,7 +16,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Danh sách lịch hẹn-Pet24h</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -25,7 +25,6 @@
         <meta name="website" content="https://shreethemes.in" />
         <meta name="Version" content="v1.2.0" />
         <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
         <!-- Bootstrap -->
 
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -426,10 +425,10 @@
                                 </select>
 
                                 <label for="fromDate">Từ:</label>
-                                <input type="date" name="datefrom" value="${fromDate}">
+                                <input type="date" id="fromDate" name="datefrom" value="${fromDate}">
 
                                 <label for="toDate">Đến:</label>
-                                <input type="date" name="dateto" value="${toDate}">
+                                <input type="date" id="toDate" name="dateto" value="${toDate}">
 
                                 <button type="submit" class="btn-filter">Lọc</button>
                             </div>
@@ -847,6 +846,24 @@
 
 
         </script>
+        <script>
+            document.querySelector('form').addEventListener('submit', function (e) {
+                const from = document.getElementById('fromDate').value;
+                const to = document.getElementById('toDate').value;
+
+                // Nếu cả hai đều có giá trị
+                if (from && to) {
+                    const fromDate = new Date(from);
+                    const toDate = new Date(to);
+
+                    if (fromDate > toDate) {
+                        e.preventDefault(); // Ngăn submit form
+                        alert("❌ Ngày bắt đầu không được lớn hơn ngày kết thúc!");
+                    }
+                }
+            });
+        </script>
+
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <!-- Icons -->

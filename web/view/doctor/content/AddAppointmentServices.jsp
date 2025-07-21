@@ -249,9 +249,7 @@
 
 // Chỉ cho hủy khi đang chờ thực hiện
                                         if (sv.status === 'pending') {
-                                            actionHtml += '<span title="Hủy dịch vụ" class="action-icon cancel-service-btn text-danger" ' +
-                                                    'data-id="' + sv.id + '" style="cursor:pointer">' +
-                                                    '<i class="bi bi-x-circle"></i></span>';
+                                            
                                               actionHtml += '<span title="Xóa vĩnh viễn" class="action-icon delete-service-btn text-danger" ' +
         'data-id="' + sv.id + '" style="cursor:pointer">' +
         '<i class="bi bi-trash"></i></span>';

@@ -15,7 +15,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Danh sách Lịch sử y tế-Pet24h</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -24,7 +24,6 @@
         <meta name="website" content="https://shreethemes.in" />
         <meta name="Version" content="v1.2.0" />
         <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
         <!-- Bootstrap -->
 
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -344,12 +343,11 @@
                             <form method="get" action="customer-viewmedicalhistory" class="d-flex align-items-center flex-wrap gap-2">
                                 <input type="text" name="search" value="${petName}" class="form-control" placeholder="Tìm theo tên pet" style="width: 200px;">
 
-                                <label class="form-label mb-0">Tái khám từ:</label>
-                                <input type="date" name="datefrom" value="${fromDate}" class="form-control" style="width: 160px;">
+                                <label for="fromDate">Ngày tái khám từ:</label>
+                                <input type="date" id="fromDate" name="datefrom" value="${fromDate}">
 
-                                <label class="form-label mb-0">Đến:</label>
-                                <input type="date" name="dateto" value="${toDate}" class="form-control" style="width: 160px;">
-
+                                <label for="toDate">Đến:</label>
+                                <input type="date" id="toDate" name="dateto" value="${toDate}">
                                 <button type="submit" class="btn btn-primary">Lọc</button>
                             </form>
                         </div>
@@ -465,7 +463,23 @@
             </section><!--end section-->
 
         </div>
+        <script>
+            document.querySelector('form').addEventListener('submit', function (e) {
+                const from = document.getElementById('fromDate').value;
+                const to = document.getElementById('toDate').value;
 
+                // Nếu cả hai đều có giá trị
+                if (from && to) {
+                    const fromDate = new Date(from);
+                    const toDate = new Date(to);
+
+                    if (fromDate > toDate) {
+                        e.preventDefault(); // Ngăn submit form
+                        alert("❌ Ngày bắt đầu không được lớn hơn ngày kết thúc!");
+                    }
+                }
+            });
+        </script>
 
 
 

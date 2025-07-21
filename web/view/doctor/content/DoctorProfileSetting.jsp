@@ -12,7 +12,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Pet24h - Trang cá nhân của bác sĩ</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
          <!-- Bootstrap -->
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -297,71 +297,127 @@ function escapeHtml(e, input) {
 }
 
 // --------- Validate fields -----------
+
 const form = document.getElementById('doctorProfileForm');
-const nameInput = document.querySelector('input[name="fullName"]');
-const phoneInput = document.querySelector('input[name="phone"]');
-const emailInput = document.querySelector('input[name="email"]');
-const descriptionInput = document.querySelector('textarea[name="biography"]');
-
-function createErrorElem(input) {
-    let err = input.nextElementSibling;
-    if (!err || !err.classList.contains('error-message')) {
-        err = document.createElement('div');
-        err.classList.add('error-message');
-        input.parentNode.insertBefore(err, input.nextSibling);
+    const nameInput = document.querySelector('input[name="fullName"]');
+    const address = document.querySelector('input[name="address"]');
+    const specialty = document.querySelector('input[name="specialty"]');
+    const qualifications = document.querySelector('input[name="qualifications"]');
+    const certificates = document.querySelector('input[name="certificates"]');
+    const yearsOfExperience = document.querySelector('input[name="yearsOfExperience"]');
+    const phoneInput = document.querySelector('input[name="phone"]');
+    const emailInput = document.querySelector('input[name="email"]');
+    const biography = document.querySelector('textarea[name="biography"]');
+console.log(phoneInput);
+    function createErrorElem(input) {
+        let err = input.nextElementSibling;
+        if (!err || !err.classList.contains('error-message')) {
+            err = document.createElement('div');
+            err.classList.add('error-message');
+            input.parentNode.insertBefore(err, input.nextSibling);
+        }
+        return err;
     }
-    return err;
-}
 
-function validateName() {
-    const val = nameInput.value.trim();
-    const errElem = createErrorElem(nameInput);
-    if (val === '') {
-        errElem.textContent = 'Họ và tên không được để trống.';
-        return false;
-    } else {
-        errElem.textContent = '';
-        return true;
+    function validateNotEmpty(input, message) {
+        const val = input.value.trim();
+        const errElem = createErrorElem(input);
+        if (val === '') {
+            errElem.textContent = message;
+            return false;
+        } else {
+            errElem.textContent = '';
+            return true;
+        }
     }
-}
 
-function validatePhone() {
-    const val = phoneInput.value.trim();
-    const phonePattern = /^0\d{9}$/;
-    const errElem = createErrorElem(phoneInput);
-    if (!phonePattern.test(val)) {
-        errElem.textContent = 'Số điện thoại phải bắt đầu bằng số 0 và có đúng 10 số.';
-        return false;
-    } else {
-        errElem.textContent = '';
-        return true;
+    function validateName() {
+        return validateNotEmpty(nameInput, 'Họ và tên không được để trống.');
     }
-}
 
-function validateEmail() {
-    const val = emailInput.value.trim();
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const errElem = createErrorElem(emailInput);
-    if (!emailPattern.test(val)) {
-        errElem.textContent = 'Email phải là địa chỉ Gmail hợp lệ, ví dụ: ten@gmail.com.';
-        return false;
-    } else {
-        errElem.textContent = '';
-        return true;
+    function validatePhone() {
+        const val = phoneInput.value.trim();
+        const phonePattern = /^0\d{9}$/;
+        const errElem = createErrorElem(phoneInput);
+        
+        if (val === '' && !phonePattern.test(val)) {
+            errElem.textContent = 'Số điện thoại phải bắt đầu bằng số 0 và có đúng 10 số.';
+            return false;
+        } else {
+            errElem.textContent = '';
+            return true;
+        }
     }
-}
 
-function validateDescription() {
-    const val = descriptionInput.value.trim();
-    const errElem = createErrorElem(descriptionInput);
-    if (val === '') {
-        errElem.textContent = 'Vui lòng nhập miêu tả.';
-        return false;
-    } else {
-        errElem.textContent = '';
-        return true;
+    function validateEmail() {
+        const val = emailInput.value.trim();
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const errElem = createErrorElem(emailInput);
+        if (val !== '' && !emailPattern.test(val)) {
+            errElem.textContent = 'Email không hợp lệ.';
+            return false;
+        } else {
+            errElem.textContent = '';
+            return true;
+        }
     }
-}
+
+    function validateYearsOfExperience() {
+        const val = yearsOfExperience.value;
+        const errElem = createErrorElem(yearsOfExperience);
+        if (val < 0 || val > 99 || val === '') {
+            errElem.textContent = 'Số năm kinh nghiệm phải nằm trong khoảng 0 - 99.';
+            return false;
+        } else {
+            errElem.textContent = '';
+            return true;
+        }
+    }
+
+    function validateBiography() {
+        return validateNotEmpty(biography, 'Vui lòng nhập giới thiệu.');
+    }
+
+    // Gán validate on blur
+    nameInput.addEventListener('blur', validateName);
+    phoneInput.addEventListener('blur', validatePhone);
+    emailInput.addEventListener('blur', validateEmail);
+    address.addEventListener('blur', () => validateNotEmpty(address, 'Vui lòng nhập địa chỉ.'));
+    specialty.addEventListener('blur', () => validateNotEmpty(specialty, 'Vui lòng nhập chuyên khoa.'));
+    qualifications.addEventListener('blur', () => validateNotEmpty(qualifications, 'Vui lòng nhập bằng cấp.'));
+    certificates.addEventListener('blur', () => validateNotEmpty(certificates, 'Vui lòng nhập chứng chỉ.'));
+    yearsOfExperience.addEventListener('blur', validateYearsOfExperience);
+    biography.addEventListener('blur', validateBiography);
+
+    // Validate toàn bộ khi submit + escape HTML
+    form.addEventListener('submit', function (e) {
+        const escapeInputs = [
+            nameInput, address, specialty, qualifications, certificates, biography
+        ];
+        escapeInputs.forEach(function(input) {
+            if (input) {
+                const div = document.createElement("div");
+                div.innerText = input.value;
+                input.value = div.innerHTML;
+            }
+        });
+
+        const valid =
+    validateName() &&
+    validatePhone() &&
+    validateEmail() &&
+    validateNotEmpty(address, 'Vui lòng nhập địa chỉ.') &&
+    validateNotEmpty(specialty, 'Vui lòng nhập chuyên khoa.') &&
+    validateNotEmpty(qualifications, 'Vui lòng nhập bằng cấp.') &&
+    validateNotEmpty(certificates, 'Vui lòng nhập chứng chỉ.') &&
+    validateYearsOfExperience() &&
+    validateBiography();
+
+
+        if (!valid) {
+            e.preventDefault(); // chặn submit nếu có lỗi
+        }
+    });
 function checkPasswordStrength() {
                 let password = document.getElementById("newPassword").value;
 
@@ -460,40 +516,9 @@ function checkPasswordStrength() {
             }
 
 
-// --------- Validate khi blur ----------
-nameInput.addEventListener('blur', validateName);
-phoneInput.addEventListener('blur', validatePhone);
-emailInput.addEventListener('blur', validateEmail);
-descriptionInput.addEventListener('blur', validateDescription);
 
-// --------- Escape HTML khi submit + Validate toàn bộ ----------
-form.addEventListener('submit', function (e) {
-    // Escape các trường text
-    const escapeInputs = [
-        document.querySelector('input[name="fullName"]'),
-        document.querySelector('input[name="address"]'),
-        document.querySelector('input[name="specialty"]'),
-        document.querySelector('input[name="qualifications"]'),
-        document.querySelector('input[name="certificates"]'),
-        document.querySelector('textarea[name="biography"]')
-    ];
-    escapeInputs.forEach(function(input) {
-        if (input) {
-            const div = document.createElement("div");
-            div.innerText = input.value;
-            input.value = div.innerHTML;
-        }
-    });
 
-    // Validate các trường chính
-    const validName = validateName();
-    const validPhone = validatePhone();
-    const validEmail = validateEmail();
-    const validDescription = validateDescription();
-    if (!validName || !validPhone || !validEmail || !validDescription) {
-        e.preventDefault(); // Dừng submit nếu có lỗi
-    }
-});
+
 
 document.getElementById("avatarInput").addEventListener("change", function () {
                 var fileInput = this;

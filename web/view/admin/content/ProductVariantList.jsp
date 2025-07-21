@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Biến thể sản phẩm</title>
+        <title>Pet24h - Biến thể sản phẩm</title>
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
         <style>

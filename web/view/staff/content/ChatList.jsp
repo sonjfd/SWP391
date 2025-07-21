@@ -14,7 +14,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Doctor Appointment Booking System</title>
+        <title>Danh sách trò chuyện-Pet24h</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -22,7 +22,6 @@
         <meta name="email" content="support@shreethemes.in" />
         <meta name="website" content="https://shreethemes.in" />
         <meta name="Version" content="v1.2.0" />
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
         <!-- Bootstrap -->
 
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -291,7 +290,7 @@
         <section class="bg-dashboard">
             <div class="container-fluid chat-wrapper">
                 <div class="chat-list-section" id="conversationSection">
-                    <h4 class="mb-3">Danh sách cuộc trò chuyện</h4>
+                    <h4 class="mb-3" style="margin-top: 50px">Danh sách trò chuyện</h4>
                     <form method="get" action="staff-conversations">
                         <input type="text" name="keyword" class="form-control mb-3" placeholder="Tìm khách hàng..." 
                                value="${param.keyword != null ? fn:escapeXml(param.keyword) : ''}">
@@ -325,13 +324,9 @@
 
                 </div>
 
-                <div id="chatSection" style="display:none;">
+                <div id="chatSection" style="display:none; margin-top: 60px">
                     <div class="chat-header d-flex align-items-center mb-3">
-                        <div style="flex-shrink: 0;">
-                            <button class="btn btn-outline-secondary me-3" id="backBtn">
-                                <i class="fas fa-arrow-left"></i> Quay lại
-                            </button>
-                        </div>
+                        
                         <div class="flex-grow-1 text-center">
                             <h5 id="chatWith" class="mb-0">Khách hàng ...</h5>
                         </div>
@@ -347,6 +342,11 @@
                             <button id="uploadImageBtn" class="btn btn-outline-secondary"><i class="fas fa-image"></i></button>
                             <button id="sendBtn" class="btn btn-success">
                                 <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-outline-secondary me-3" id="backBtn">
+                                <i class="fas fa-arrow-left"></i> Quay lại
                             </button>
                         </div>
                     </div>
@@ -393,6 +393,8 @@
                     const name = item.getAttribute("data-name");
 
                     document.getElementById("chatWith").innerText = "Khách hàng " + name;
+                    document.getElementById("backBtn").style.display = "inline-block";
+
                     conversationSection.style.display = "none";
                     chatSection.style.display = "block";
                     openChat(id, name);
