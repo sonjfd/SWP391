@@ -1,93 +1,160 @@
-<%-- 
-    Document   : CreateSpecie
-    Created on : Jun 10, 2025
-    Author     : Dell
---%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Tạo loài mới - Doctris</title>
+        <title>Pet24h - Tạo loài mới</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+        
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
         <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" />
         <style>
-            .form-group {
-                margin-bottom: 15px;
+            body {
+                margin: 0;
+                font-family: 'Segoe UI', sans-serif;
+                background: url('${pageContext.request.contextPath}/assets/images/background.jpg') no-repeat center center fixed;
+                background-size: cover;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
             }
+
+            .main-wrapper {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                min-height: calc(100vh - 70px); /* Trừ chiều cao header (giả sử 70px) */
+            }
+
+            .form-container {
+                width: 100%;
+                max-width: 600px;
+                background: rgba(255, 255, 255, 0.96);
+                padding: 30px;
+                border: 2px solid #ccc;
+                border-radius: 12px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(6px);
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
             label {
-                font-weight: 600;
-                color: #333;
+                font-weight: bold;
                 margin-bottom: 5px;
                 display: block;
+                color: #333;
             }
-            input[type="text"], input[type="file"] {
+
+            input[type="text"],
+            input[type="file"] {
                 width: 100%;
-                padding: 8px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                font-size: 14px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                font-size: 15px;
+                box-sizing: border-box;
             }
-            button {
-                padding: 8px 16px;
-                background-color: #33CCFF;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-weight: 600;
+
+            input:focus {
+                border-color: #4CAF50;
+                outline: none;
             }
-            button:hover {
-                background-color: #29b3e6;
+
+            input.is-invalid {
+                border-color: #d32f2f;
             }
+
             .error-text {
-                color: #dc3545;
-                font-size: 12px;
-                margin-top: 3px;
+                color: #d32f2f;
+                font-size: 0.9em;
+                margin-top: 5px;
                 display: none;
             }
+
             .error-text.show {
                 display: block;
             }
-            .is-invalid {
-                border-color: #dc3545;
-            }
-            .btn-back {
-                display: inline-block;
-                margin-left: 10px;
-                padding: 8px 16px;
-                background-color: #f44336;
-                color: white;
-                border-radius: 4px;
-                text-decoration: none;
+
+            .btn-custom {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 6px;
+                font-size: 16px;
                 font-weight: 600;
+                cursor: pointer;
+                color: white;
+                display: inline-block;
+                text-align: center;
+                transition: background-color 0.3s ease;
             }
+
+            .btn-submit {
+                background-color: #4CAF50;
+            }
+
+            .btn-submit:hover {
+                background-color: #43a047;
+            }
+
+            .btn-back {
+                background-color: #f44336;
+                text-decoration: none;
+            }
+
             .btn-back:hover {
                 background-color: #d32f2f;
             }
+
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+                gap: 15px;
+                margin-top: 25px;
+            }
+
+            h5 {
+                text-align: center;
+                font-weight: 600;
+                margin-bottom: 25px;
+            }
+
+            .alert.alert-danger {
+                color: #d32f2f;
+                margin-bottom: 15px;
+                padding: 10px;
+                border: 1px solid #d32f2f;
+                border-radius: 6px;
+            }
+
             #imagePreview {
-                display: none;
                 margin-top: 10px;
                 max-width: 200px;
                 border: 1px solid #ccc;
                 padding: 5px;
-                border-radius: 4px;
+                border-radius: 6px;
+                display: none;
             }
         </style>
     </head>
     <body>
         <%@include file="../layout/Header.jsp" %>
 
-        <div class="container-fluid">
-            <div class="layout-specing">
-                <h5 class="mb-3">Tạo loài mới</h5>
+        <div class="main-wrapper">
+            <div class="form-container">
+                <h5>Tạo loài mới</h5>
+                <c:if test="${not empty message}">
+                    <div class="alert alert-danger">${message}</div>
+                </c:if>
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                         <form id="createSpecieForm" method="post" action="admin-create-specie" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>Tên loài <span style="color: red;">*</span></label>
@@ -98,19 +165,18 @@
                             <div class="form-group">
                                 <label>Ảnh đại diện loài <span style="color: red;">*</span></label>
                                 <input type="file" name="image" accept=".jpg,.jpeg,.png" required onchange="previewImage(event)" />
-                                <!-- Preview Image -->
                                 <img id="imagePreview" src="#" alt="Image Preview" />
                             </div>
 
-                            <button type="submit">Tạo loài</button>
-                            <a href="admin-list-specie" class="btn-back">Quay lại</a>
+                            <div class="button-group">
+                                <button type="submit" class="btn-custom btn-submit">Tạo loài</button>
+                                <a href="admin-list-specie" class="btn-custom btn-back">Quay lại</a>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
-        <%@include file="../layout/Footer.jsp" %>
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script>

@@ -14,7 +14,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.sql.Time;
 /**
  *
  * @author Dell
@@ -162,6 +162,74 @@ public class ShiftDAO {
         e.printStackTrace();
         return true; // Nếu lỗi, coi như đang dùng để tránh xóa
     }
+}
+    public boolean isDuplicateName(String name) {
+    String sql = "SELECT COUNT(*) FROM shift WHERE name = ?";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, name);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+    public boolean isOverlappingShift(LocalTime newStart, LocalTime newEnd) {
+    String sql = "SELECT start_time, end_time FROM shift";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            LocalTime existingStart = rs.getTime("start_time").toLocalTime();
+            LocalTime existingEnd = rs.getTime("end_time").toLocalTime();
+
+            // Nếu có chồng lấn khoảng thời gian
+            if (newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart)) {
+                return true;
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+    public boolean isDuplicateNameExcludeId(String name, int id) {
+    String sql = "SELECT COUNT(*) FROM shift WHERE name = ? AND shift_id <> ?";
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, name);
+        ps.setInt(2, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+    
+    public boolean isOverlappingShiftExcludeId(LocalTime newStart, LocalTime newEnd, int id) {
+    String sql = "SELECT start_time, end_time FROM shift WHERE shift_id <> ?";
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            LocalTime existingStart = rs.getTime("start_time").toLocalTime();
+            LocalTime existingEnd = rs.getTime("end_time").toLocalTime();
+            if (newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart)) {
+                return true;
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
 }
     
    public static void main(String[] args) {

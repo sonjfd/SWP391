@@ -194,7 +194,7 @@ public class UpdateSlider extends HttpServlet {
             request.setAttribute("slides", slides);
 
             // Đặt thông báo
-            request.setAttribute("message", success ? "Slide updated successfully!" : "Slide updated successfully");
+            request.setAttribute("message", success ? "Cập nhật thất bại!" : "Cập nhật thành công");
 
             // Forward về ListSlider.jsp
             request.getRequestDispatcher("view/admin/content/ListSlider.jsp").forward(request, response);

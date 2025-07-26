@@ -84,8 +84,9 @@ public class CreateDepartment extends HttpServlet {
                 return;
             }
             departmentDAO.addDepartment(name, description);
+            request.getSession().setAttribute("message", "Tạo phòng ban thành công!");
             response.sendRedirect(request.getContextPath() + "/admin-list-department");
-            request.setAttribute("message", "Tạo phòng ban thành công!");
+            
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("message", "Lỗi cơ sở dữ liệu");

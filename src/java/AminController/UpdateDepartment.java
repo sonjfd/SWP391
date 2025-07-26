@@ -98,6 +98,7 @@ public class UpdateDepartment extends HttpServlet {
                 return;
             }
             departmentDAO.updateDepartment(id, name, description);
+            request.getSession().setAttribute("message", "Cập nhật phòng ban thành công");
             response.sendRedirect(request.getContextPath() + "/admin-list-department");
             
         } catch (SQLException e) {

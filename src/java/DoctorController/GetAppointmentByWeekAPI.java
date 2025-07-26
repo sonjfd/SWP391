@@ -29,113 +29,109 @@ public class GetAppointmentByWeekAPI extends HttpServlet {
     private AppointmentDAO appointmentDAO = new AppointmentDAO();
     private ShiftDAO shiftDAO = new ShiftDAO();
 
+
+    
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
 
-        String doctorId = request.getParameter("doctorId");
-        String year = request.getParameter("year");
-        String week = request.getParameter("week");
+    String doctorId = request.getParameter("doctorId");
+    String yearParam = request.getParameter("year");
+    String weekParam = request.getParameter("week");
 
-        if (year == null || year.isEmpty()) {
-            year = String.valueOf(LocalDate.now().getYear());
-        }
+    // Xử lý giá trị năm và tuần nếu thiếu
+    LocalDate now = LocalDate.now();
+    int year = (yearParam == null || yearParam.isEmpty()) ? now.getYear() : Integer.parseInt(yearParam);
+    int week = (weekParam == null || weekParam.isEmpty())
+            ? now.get(WeekFields.ISO.weekOfYear())
+            : Integer.parseInt(weekParam);
 
-        if (week == null || week.isEmpty()) {
-            week = String.valueOf(LocalDate.now().get(WeekFields.ISO.weekOfYear()));
-        }
+    // Lấy ngày thứ Hai đầu tuần theo chuẩn ISO
+    LocalDate startOfWeek = LocalDate.now()
+            .withYear(year)
+            .with(WeekFields.ISO.weekOfYear(), week)
+            .with(WeekFields.ISO.dayOfWeek(), 1); // 1 = Monday
+    LocalDate endOfWeek = startOfWeek.plusDays(6); // Chủ nhật
 
-        int weekNumber = Integer.parseInt(week);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, Integer.parseInt(year));
-        calendar.set(Calendar.WEEK_OF_YEAR, weekNumber);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); // Lấy ngày thứ hai trong tuần
+    // Convert sang java.util.Date để gọi DAO
+    Date startOfWeekDate = Date.from(startOfWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    Date endOfWeekDate = Date.from(endOfWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-        // Tính toán ngày thứ Hai của tuần hiện tại
-        Date startOfWeek = calendar.getTime();
-        calendar.add(Calendar.DAY_OF_WEEK, 6); // Lấy ngày Chủ Nhật
-        Date endOfWeek = calendar.getTime();
+    // Lấy danh sách các cuộc hẹn trong tuần của bác sĩ
+    List<Appointment> appointments = appointmentDAO.getAppointmentsByWeek(doctorId, startOfWeekDate, endOfWeekDate);
 
-        // Lấy danh sách các cuộc hẹn của bác sĩ trong tuần
-        List<Appointment> appointments = appointmentDAO.getAppointmentsByWeek(doctorId, startOfWeek, endOfWeek);
+    // Lấy tất cả các ca làm việc
+    List<Shift> shifts = shiftDAO.getAllShifts();
 
-        // Lấy tất cả các ca làm việc (shifts)
-        List<Shift> shifts = shiftDAO.getAllShifts();
-
-        // Tạo danh sách các slot thời gian 30 phút cho mỗi ca
-        List<String> timeSlots = new ArrayList<>();
-        for (Shift shift : shifts) {
-            LocalTime startTime = shift.getStart_time();
-            LocalTime endTime = shift.getEnd_time();
-            while (startTime.isBefore(endTime)) {
-                timeSlots.add(startTime.toString() + " - " + startTime.plusMinutes(30).toString());
-                startTime = startTime.plusMinutes(30);
-            }
-        }
-
-        // Tạo danh sách các ngày trong tuần từ thứ hai đến chủ nhật
-        List<String> weekDates = new ArrayList<>();
-for (int i = 0; i < 7; i++) {
-    LocalDate day = LocalDate.from(startOfWeek.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()).plusDays(i);
-    weekDates.add(day.toString()); // yyyy-MM-dd
-}
-
-
-        // Trả về kết quả dưới dạng JSON
-        response.setContentType("application/json;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-
-        try {
-            JsonObject jsonResult = new JsonObject();
-            JsonArray jsonAppointments = new JsonArray();
-
-            // Lặp qua danh sách cuộc hẹn để thêm vào JSON
-            for (Appointment appt : appointments) {
-                JsonObject appointmentObj = new JsonObject();
-                appointmentObj.addProperty("petName", appt.getPet().getName());
-                appointmentObj.addProperty("petGender", appt.getPet().getGender());
-                appointmentObj.addProperty("petCode", appt.getPet().getPet_code());
-                if (appt.getPet().getBirthDate() != null) {
-                    appointmentObj.addProperty("petBirth", appt.getPet().getBirthDate().toString());
-                } else {
-                    appointmentObj.addProperty("petBirth", "-");
-                }
-                appointmentObj.addProperty("petId", appt.getPet().getId());
-                appointmentObj.addProperty("doctorId", appt.getDoctor().getUser().getId());
-                
-                appointmentObj.addProperty("petAvatar", appt.getPet().getAvatar());
-                appointmentObj.addProperty("petDescription", appt.getPet().getDescription());
-                appointmentObj.addProperty("petBreed", appt.getPet().getBreed().getName());
-                appointmentObj.addProperty("ownerName", appt.getPet().getUser().getFullName());
-                appointmentObj.addProperty("ownerAddress", appt.getPet().getUser().getAddress());
-                appointmentObj.addProperty("ownerPhone", appt.getPet().getUser().getPhoneNumber());
-                appointmentObj.addProperty("ownerEmail", appt.getPet().getUser().getEmail());
-                appointmentObj.addProperty("ownerAvatar", appt.getPet().getUser().getAvatar());
-                appointmentObj.addProperty("appointmentNote", appt.getNote());
-                appointmentObj.addProperty("appointmentCheckin", appt.getChekinStatus());
-                appointmentObj.addProperty("appointmentStatus", appt.getStatus());
-                appointmentObj.addProperty("appointmentDate", appt.getAppointmentDate().toString());
-                appointmentObj.addProperty("startTime", appt.getStartTime().toString());
-                appointmentObj.addProperty("endTime", appt.getEndTime().toString());
-                appointmentObj.addProperty("id", appt.getId());
-                jsonAppointments.add(appointmentObj);
-            }
-
-            // Thêm các danh sách vào JSON response
-            jsonResult.add("appointments", jsonAppointments);
-            jsonResult.add("timeSlots", new Gson().toJsonTree(timeSlots));
-            jsonResult.add("weekDates", new Gson().toJsonTree(weekDates));
-
-            out.print(jsonResult.toString());
-            out.flush();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            JsonObject error = new JsonObject();
-            error.addProperty("error", "Có lỗi xảy ra");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(error.toString());
-            out.flush();
+    // Tạo danh sách các slot thời gian 30 phút
+    List<String> timeSlots = new ArrayList<>();
+    for (Shift shift : shifts) {
+        LocalTime startTime = shift.getStart_time();
+        LocalTime endTime = shift.getEnd_time();
+        while (startTime.isBefore(endTime)) {
+            timeSlots.add(startTime.toString() + " - " + startTime.plusMinutes(30).toString());
+            startTime = startTime.plusMinutes(30);
         }
     }
+
+    // Tạo danh sách 7 ngày trong tuần (thứ hai đến chủ nhật)
+    List<String> weekDates = new ArrayList<>();
+    for (int i = 0; i < 7; i++) {
+        weekDates.add(startOfWeek.plusDays(i).toString()); // yyyy-MM-dd
+    }
+
+    // Trả về JSON
+    response.setContentType("application/json;charset=UTF-8");
+    PrintWriter out = response.getWriter();
+
+    try {
+        JsonObject jsonResult = new JsonObject();
+        JsonArray jsonAppointments = new JsonArray();
+
+        for (Appointment appt : appointments) {
+            JsonObject appointmentObj = new JsonObject();
+            appointmentObj.addProperty("petName", appt.getPet().getName());
+            appointmentObj.addProperty("petGender", appt.getPet().getGender());
+            appointmentObj.addProperty("petCode", appt.getPet().getPet_code());
+            appointmentObj.addProperty("petBirth", 
+                appt.getPet().getBirthDate() != null ? appt.getPet().getBirthDate().toString() : "-");
+            appointmentObj.addProperty("petId", appt.getPet().getId());
+            appointmentObj.addProperty("doctorId", appt.getDoctor().getUser().getId());
+
+            appointmentObj.addProperty("petAvatar", appt.getPet().getAvatar());
+            appointmentObj.addProperty("petDescription", appt.getPet().getDescription());
+            appointmentObj.addProperty("petBreed", appt.getPet().getBreed().getName());
+            appointmentObj.addProperty("ownerName", appt.getPet().getUser().getFullName());
+            appointmentObj.addProperty("ownerAddress", appt.getPet().getUser().getAddress());
+            appointmentObj.addProperty("ownerPhone", appt.getPet().getUser().getPhoneNumber());
+            appointmentObj.addProperty("ownerEmail", appt.getPet().getUser().getEmail());
+            appointmentObj.addProperty("ownerAvatar", appt.getPet().getUser().getAvatar());
+            appointmentObj.addProperty("appointmentNote", appt.getNote());
+            appointmentObj.addProperty("appointmentCheckin", appt.getChekinStatus());
+            appointmentObj.addProperty("appointmentStatus", appt.getStatus());
+            appointmentObj.addProperty("appointmentDate", appt.getAppointmentDate().toString());
+            appointmentObj.addProperty("startTime", appt.getStartTime().toString());
+            appointmentObj.addProperty("endTime", appt.getEndTime().toString());
+            appointmentObj.addProperty("id", appt.getId());
+
+            jsonAppointments.add(appointmentObj);
+        }
+
+        jsonResult.add("appointments", jsonAppointments);
+        jsonResult.add("timeSlots", new Gson().toJsonTree(timeSlots));
+        jsonResult.add("weekDates", new Gson().toJsonTree(weekDates));
+
+        out.print(jsonResult.toString());
+        out.flush();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JsonObject error = new JsonObject();
+        error.addProperty("error", "Có lỗi xảy ra");
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        out.print(error.toString());
+        out.flush();
+    }
+}
+
 }

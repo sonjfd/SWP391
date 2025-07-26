@@ -85,19 +85,35 @@ public class UpdateShift extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         try {
             int id = Integer.parseInt(request.getParameter("id"));
             String name = request.getParameter("name").trim();
             LocalTime startTime = LocalTime.parse(request.getParameter("start_time"));
             LocalTime endTime = LocalTime.parse(request.getParameter("end_time"));
 
-            Shift shift = new Shift();
-            shift.setId(id);
-            shift.setName(name);
-            shift.setStart_time(startTime);
-            shift.setEnd_time(endTime);
-
             ShiftDAO shiftDAO = new ShiftDAO();
+
+            // Kiểm tra trùng tên (loại trừ chính nó)
+            if (shiftDAO.isDuplicateNameExcludeId(name, id)) {
+                request.setAttribute("error", "Tên ca làm việc đã tồn tại!");
+                Shift shift = new Shift(id, name, startTime, endTime);
+                request.setAttribute("shift", shift);
+                request.getRequestDispatcher("view/admin/content/UpdateShift.jsp").forward(request, response);
+                return;
+            }
+
+            // Kiểm tra trùng giờ (loại trừ chính nó)
+            if (shiftDAO.isOverlappingShiftExcludeId(startTime, endTime, id)) {
+                request.setAttribute("error", "Thời gian ca làm việc bị trùng với ca khác!");
+                Shift shift = new Shift(id, name, startTime, endTime);
+                request.setAttribute("shift", shift);
+                request.getRequestDispatcher("view/admin/content/UpdateShift.jsp").forward(request, response);
+                return;
+            }
+
+            // Nếu hợp lệ thì cập nhật
+            Shift shift = new Shift(id, name, startTime, endTime);
             if (shiftDAO.updateShift(shift)) {
                 request.getSession().setAttribute("message", "Cập nhật ca thành công!");
                 response.sendRedirect("admin-list-shift");
@@ -106,17 +122,20 @@ public class UpdateShift extends HttpServlet {
                 request.setAttribute("shift", shift);
                 request.getRequestDispatcher("view/admin/content/UpdateShift.jsp").forward(request, response);
             }
+
         } catch (Exception e) {
             Shift shift = new Shift();
             try {
                 shift.setId(Integer.parseInt(request.getParameter("id")));
-            } catch (Exception ex) {}
+            } catch (Exception ignored) {
+            }
             shift.setName(request.getParameter("name"));
             request.setAttribute("error", "Dữ liệu không hợp lệ!");
             request.setAttribute("shift", shift);
             request.getRequestDispatcher("view/admin/content/UpdateShift.jsp").forward(request, response);
         }
     }
+    
 
     /** 
      * Returns a short description of the servlet.

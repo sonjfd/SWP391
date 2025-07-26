@@ -67,9 +67,9 @@ public class Dashboard extends HttpServlet {
             throws ServletException, IOException {
         reportDAO = new ReportDAO();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate today = LocalDate.now(); // 2025-07-14
-        LocalDate defaultStart = today.minusDays(7); // 2025-07-07
-        LocalDate defaultEnd = today; // 2025-07-14
+        LocalDate today = LocalDate.now(); 
+        LocalDate defaultStart = today.minusDays(30); 
+        LocalDate defaultEnd = today; 
 
         // Lấy tham số từ form hoặc dùng mặc định
         String startDateParam = request.getParameter("startDate");

@@ -8,7 +8,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Cập nhật ca</title>
+    <title>Pet24h - Cập nhật ca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" />
@@ -89,8 +89,8 @@
             
             <div class="form-container">
                 <c:if test="${not empty error}">
-                    <div class="error">${error}</div>
-                </c:if>
+    <div class="alert alert-danger">${error}</div>
+</c:if>
                 
                 <form id="updateShiftForm" action="${pageContext.request.contextPath}/admin-update-shift" method="POST">
                     <input type="hidden" name="id" value="${shift.id}">
@@ -116,7 +116,7 @@
         </div>
     </div>
 
-    <jsp:include page="../layout/Footer.jsp" />
+    
 
     <script>
         const form = document.getElementById('updateShiftForm');

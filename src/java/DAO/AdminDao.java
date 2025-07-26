@@ -28,33 +28,29 @@ import java.util.UUID;
  */
 public class AdminDao {
 
-    public boolean createAccount(User user, Doctor doctor, Nurse nurse, Integer departmentId) {
+    public boolean createAccount(User user, Nurse nurse, Integer departmentId) {
         try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO users (id, username, email, password, full_name, phone, address, avatar, status, role_id, created_at, updated_at) "
-                + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                "INSERT INTO users (id, username, email, password, full_name, phone, address, status, role_id, created_at, updated_at) "
+                + "VALUES (NEWID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             stmt.setString(1, user.getUserName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword()); // Nên mã hóa password
             stmt.setString(4, user.getFullName());
             stmt.setString(5, user.getPhoneNumber());
             stmt.setString(6, user.getAddress());
-            stmt.setString(7, user.getAvatar());
-            stmt.setInt(8, user.getStatus());
-            stmt.setInt(9, user.getRole().getId());
-            stmt.setTimestamp(10, new java.sql.Timestamp(user.getCreateDate().getTime()));
-            stmt.setTimestamp(11, new java.sql.Timestamp(user.getUpdateDate().getTime()));
+            
+            stmt.setInt(7, user.getStatus());
+            stmt.setInt(8, user.getRole().getId());
+            stmt.setTimestamp(9, new java.sql.Timestamp(user.getCreateDate().getTime()));
+            stmt.setTimestamp(10, new java.sql.Timestamp(user.getUpdateDate().getTime()));
             stmt.executeUpdate();
 
-            if (user.getRole().getId() == 3 && doctor != null) {
+            if (user.getRole().getId() == 3 ) {
                 try (PreparedStatement doctorStmt = conn.prepareStatement(
-                        "INSERT INTO doctors (user_id, specialty, certificates, qualifications, years_of_experience, biography) "
-                        + "VALUES ((SELECT id FROM users WHERE username = ?), ?, ?, ?, ?, ?)")) {
+                        "INSERT INTO doctors (user_id) "
+                        + "VALUES ((SELECT id FROM users WHERE username = ?))")) {
                     doctorStmt.setString(1, user.getUserName());
-                    doctorStmt.setString(2, doctor.getSpecialty());
-                    doctorStmt.setString(3, doctor.getCertificates());
-                    doctorStmt.setString(4, doctor.getQualifications());
-                    doctorStmt.setInt(5, doctor.getYearsOfExperience());
-                    doctorStmt.setString(6, doctor.getBiography());
+                    
                     doctorStmt.executeUpdate();
                 }
             }
@@ -80,7 +76,7 @@ public class AdminDao {
         List<User> users = new ArrayList<>();
         try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(
                 "SELECT u.id, u.username, u.email, u.full_name, u.phone, u.address, u.avatar, u.status, u.role_id, u.created_at, u.updated_at, r.name "
-                + "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,3,4,5)")) {
+                + "FROM users u JOIN roles r ON u.role_id = r.id WHERE u.role_id IN (1,3,4,5) order by created_at desc")) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -390,13 +386,9 @@ public List<Department> getAllDepartments() {
         admin.setUpdateDate(now);
 
         AdminDao dao=new AdminDao();
-        boolean success = dao.createAccount(admin, null, null, null);
+       
 
-        if (success) {
-            System.out.println("✅ Tạo tài khoản admin thành công.");
-        } else {
-            System.out.println("❌ Tạo tài khoản admin thất bại.");
-        }
+        
     }
 
       

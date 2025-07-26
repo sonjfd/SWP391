@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Dashboard</title>
+    <title>Pet24h - Admin Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Font Awesome for icons -->
@@ -208,14 +208,7 @@
                 <h2 class="text-xl font-bold mb-4">So sánh doanh thu theo kỳ</h2>
                 <canvas id="revenueComparisonChart"></canvas>
             </div>
-            <div class="card chart-container">
-                <h2 class="text-xl font-bold mb-4">Xu hướng doanh thu</h2>
-                <canvas id="revenueTrendChart"></canvas>
-            </div>
-            <div class="card chart-container">
-                <h2 class="text-xl font-bold mb-4">Xu hướng khách hàng mới</h2>
-                <canvas id="customerTrendChart"></canvas>
-            </div>
+            
             <div class="card chart-container">
                 <h2 class="text-xl font-bold mb-4">Xu hướng thú cưng mới</h2>
                 <canvas id="petTrendChart"></canvas>
@@ -278,73 +271,10 @@
                 }
             });
 
-            // Revenue Trend Chart (Line)
-            new Chart(document.getElementById('revenueTrendChart'), {
-                type: 'line',
-                data: {
-                    labels: [<c:forEach items="${summary.revenueTrends}" var="trend">'${trend.period}',</c:forEach>],
-                    datasets: [{
-                        label: 'Doanh thu (VNĐ)',
-                        data: [<c:forEach items="${summary.revenueTrends}" var="trend">${trend.value},</c:forEach>],
-                        borderColor: '#36A2EB',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }, {
-                        label: 'Kỳ trước (VNĐ)',
-                        data: [<c:forEach items="${summary.revenueTrends}" var="trend">${trend.previousValue},</c:forEach>],
-                        borderColor: '#FF6384',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Doanh thu (VNĐ)' } },
-                        x: { title: { display: true, text: '${periodType == "day" ? "Ngày" : periodType == "month" ? "Tháng" : "Năm"}' } }
-                    },
-                    plugins: {
-                        legend: { position: 'top' },
-                        title: { display: true, text: 'Xu hướng doanh thu' }
-                    }
-                }
-            });
+         
+          
 
-            // Customer Trend Chart (Line)
-            new Chart(document.getElementById('customerTrendChart'), {
-                type: 'line',
-                data: {
-                    labels: [<c:forEach items="${summary.customerTrends}" var="trend">'${trend.period}',</c:forEach>],
-                    datasets: [{
-                        label: 'Khách hàng mới',
-                        data: [<c:forEach items="${summary.customerTrends}" var="trend">${trend.value},</c:forEach>],
-                        borderColor: '#36A2EB',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }, {
-                        label: 'Kỳ trước',
-                        data: [<c:forEach items="${summary.customerTrends}" var="trend">${trend.previousValue},</c:forEach>],
-                        borderColor: '#FF6384',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Số khách hàng' } },
-                        x: { title: { display: true, text: '${periodType == "day" ? "Ngày" : periodType == "month" ? "Tháng" : "Năm"}' } }
-                    },
-                    plugins: {
-                        legend: { position: 'top' },
-                        title: { display: true, text: 'Xu hướng khách hàng mới' }
-                    }
-                }
-            });
+          
 
             // Pet Trend Chart (Line)
             new Chart(document.getElementById('petTrendChart'), {

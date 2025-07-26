@@ -12,7 +12,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Doctris - Doctor Appointment Booking System</title>
+    <title>Pet24h - Quản lý slider</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
     <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -21,7 +21,7 @@
     <meta name="website" content="${pageContext.request.contextPath}/index.html" />
     <meta name="Version" content="v1.2.0" />
     <!-- favicon -->
-    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
+  
     <!-- Bootstrap -->
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- simplebar -->
@@ -239,8 +239,8 @@
                 
             </div>
                 <c:if test="${not empty message}">
-                        ${message}
-                    </c:if>
+    <div class="alert alert-success">${message}</div>
+</c:if>
             
             <table id="slideTable">
                 <thead>

@@ -187,7 +187,7 @@ public class UpdateClinicInfo extends HttpServlet {
         boolean success = adminDAO.updateClinicInfo(clinic);
 
         if (success) {
-            request.setAttribute("message", "Clinic updated successfully!");
+            request.getSession().setAttribute("message", "Cập nhật thông tin phòng khám thành công");
             request.setAttribute("messageType", "success");
             response.sendRedirect("admin-list-clinic-info");
         } else {

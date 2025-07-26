@@ -147,6 +147,7 @@ public class UpdateAccount extends HttpServlet {
 
         boolean success = dao.updateAccount(user, departmentId);
         if (success) {
+            request.getSession().setAttribute("message", "Cập nhật tài khoản thành công");
             response.sendRedirect("admin-list-account");
         } else {
             request.setAttribute("message", "Cập nhật thất bại");

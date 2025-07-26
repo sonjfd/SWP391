@@ -173,7 +173,7 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Email</label>
-                                            <input name="email" type="email" class="form-control" id="email" value="${user.email}" placeholder="Email" >
+                                            <input name="email" type="email" class="form-control" id="email" value="${user.email}" placeholder="Email" readonly >
                                             <div class="error-message"></div>
                                             <p type="text" style="color: red">${requestScope.wrongemail}</p>
 

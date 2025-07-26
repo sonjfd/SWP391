@@ -8,6 +8,8 @@
 <!DOCTYPE html>
 <html lang="vi">
     <head>
+                <title>Danh Sách sản phẩm</title>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -16,7 +18,6 @@
         <meta name="website" content="${pageContext.request.contextPath}/index.html" />
         <meta name="Version" content="v1.2.0" />
         <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
         <!-- Bootstrap -->
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <!-- Icons -->

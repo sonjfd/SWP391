@@ -1010,6 +1010,7 @@ public class AppointmentDAO {
         JOIN species s ON b.species_id = s.id
         WHERE a.doctor_id = ? 
         AND a.appointment_time BETWEEN ? AND ?
+        AND a.status ='booked' or a.status ='completed'
         ORDER BY a.appointment_time
         """;
 

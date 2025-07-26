@@ -258,7 +258,7 @@
                         if (!confirm('Bạn chắc chắn muốn đánh dấu là hoàn thành?'))
                             return;
                         const id = btn.getAttribute('data-id');
-                        fetch('./doctor-update-status-appointment-service', {
+                        fetch('./nurse-update-status-appointment-service', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                             body: 'id=' + encodeURIComponent(id) + '&status=completed'

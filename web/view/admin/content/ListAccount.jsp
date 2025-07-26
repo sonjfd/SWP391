@@ -9,7 +9,7 @@
 <html lang="vi">
     <head>
         <meta charset="utf-8" />
-        <title>Doctris - Quản lý tài khoản nhân viên/bác sĩ</title>
+        <title>Pet24h - Quản lý tài khoản</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -18,7 +18,7 @@
         <meta name="website" content="${pageContext.request.contextPath}/index.html" />
         <meta name="Version" content="v1.2.0" />
         <!-- favicon -->
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
+
         <!-- Bootstrap -->
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <!-- simplebar -->
@@ -255,9 +255,7 @@
                 <div class="toolbar-left">
                     <a href="admin-create-account" class="create-btn">Tạo tài khoản mới</a>
                 </div>
-                <c:if test="${not empty message}">
-                    ${message}
-                </c:if>
+
                 <div class="toolbar-right">
                     <form method="post" action="admin-search-account" class="search-form">
                         <input type="text" name="search" value="${search}" placeholder="Tìm kiếm theo tên">
@@ -287,6 +285,15 @@
                         <a href="admin-list-account" class="reset-btn" >Tất cả tài khoản</a>
                     </div>
                 </div>
+                <%
+String msg = (String) session.getAttribute("message");
+if (msg != null) {
+                %>
+                <div class="alert alert-success"><%= msg %></div>
+                <%
+                        session.removeAttribute("message");
+                    }
+                %>
             </div>
 
             <table id="accountTable">
@@ -317,9 +324,21 @@
                             <form method="post" action="admin-update-status" style="display:inline;">
                                 <input type="hidden" name="id" value="${user.id}">
                                 <input type="hidden" name="status" value="${user.status == 1 ? 2 : 1}">
-                                <button type="submit" class="action-btn ${user.status == 1 ? 'ban-btn' : 'unban-btn'}">
-                                    ${user.status == 1 ? 'Ban' : 'Mở khóa'}
-                                </button>
+                                <c:choose>
+                                    <c:when test="${user.status == 0}">
+                                        <span class="status-label inactive">Chưa kích hoạt</span>
+                                    </c:when>
+                                    <c:when test="${user.status == 1 || user.status == 2}">
+                                        <form method="post" action="admin-update-status" style="display:inline;">
+                                            <input type="hidden" name="id" value="${user.id}">
+                                            <input type="hidden" name="status" value="${user.status == 1 ? 2 : 1}">
+                                            <button type="submit" class="action-btn ${user.status == 1 ? 'ban-btn' : 'unban-btn'}">
+                                                ${user.status == 1 ? 'Ban' : 'Mở khóa'}
+                                            </button>
+                                        </form>
+                                    </c:when>
+                                </c:choose>
+
                             </form>
 
 

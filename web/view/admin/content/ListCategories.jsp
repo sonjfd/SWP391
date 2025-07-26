@@ -5,9 +5,9 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Pet24h - Quản lý giống - Doctris</title>
+        <title>Pet24h - Quản lý giống</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+        
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
         <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">

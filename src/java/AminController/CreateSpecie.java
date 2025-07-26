@@ -44,6 +44,14 @@ public class CreateSpecie extends HttpServlet {
         String imageUrl = null;
 
         try {
+            
+            if (specieDAO.isDuplicateSpecieName(name)) {
+            List<Specie> specieList = specieDAO.getAllSpecies();
+            request.setAttribute("specieList", specieList);
+            request.setAttribute("message", "Tên loài '" + name + "' đã tồn tại. Vui lòng chọn tên khác.");
+            request.getRequestDispatcher("view/admin/content/CreateSpecie.jsp").forward(request, response);
+            return;
+        }
             // Kiểm tra và tạo thư mục nếu chưa có
             File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {

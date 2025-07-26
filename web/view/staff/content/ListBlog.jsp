@@ -13,6 +13,9 @@
         <link href="${pageContext.request.contextPath}/assets/css/remixicon.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/tiny-slider.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet"/>
+      <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css"  rel="stylesheet">
+
+
         <style>
             /* Tổng thể bảng */
             .table {

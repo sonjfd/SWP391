@@ -69,6 +69,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                                         <i data-feather="phone" class="fea icon-sm text-foot align-middle"></i>
                                         <a href="tel:${cl.phone}" class="text-foot ms-2">${cl.phone}</a>
                                     </li>
+                                    <li class="d-flex align-items-center mb-2">
+                                        <i data-feather="clock" class="fea icon-sm text-foot align-middle"></i>
+                                        <span  class="text-foot ms-2">${cl.workingHours}</span>
+                                    </li>
 
                                     <li class="mb-2">
                                         <div class="d-flex align-items-center mb-1">

@@ -4,9 +4,9 @@
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>Doctris - Cập nhật tài khoản</title>
+    <title>Pet24h - Cập nhật tài khoản</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
+    
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
 

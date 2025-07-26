@@ -214,7 +214,7 @@ public class ReportDAO {
     summary.setPreviousServiceRevenue(previousAppointmentRevenue);
     summary.setTotalRevenue(currentInvoiceRevenue);
 
-    // 👉 Nếu muốn theo dõi invoices kỳ trước, thêm dòng này (và field nếu chưa có):
+    // Nếu muốn theo dõi invoices kỳ trước, thêm dòng này (và field nếu chưa có):
     // summary.setPreviousTotalRevenue(previousInvoiceRevenue);
 }
 

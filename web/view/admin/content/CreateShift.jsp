@@ -8,7 +8,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Tạo ca mới</title>
+    <title>Pet24h - Tạo ca mới</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" type="text/css" />
@@ -89,8 +89,8 @@
             
             <div class="form-container">
                 <c:if test="${not empty error}">
-                    <div class="error">${error}</div>
-                </c:if>
+    <div class="alert alert-danger">${error}</div>
+</c:if>
                 
                 <form id="createShiftForm" action="${pageContext.request.contextPath}/admin-create-shift" method="POST">
                     <div class="form-group">

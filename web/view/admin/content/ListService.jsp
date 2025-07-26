@@ -9,9 +9,9 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Danh sách dịch vụ</title>
+        <title>Pet24h - Danh sách dịch vụ</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+       
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
@@ -145,7 +145,7 @@
 
                 <div class="form-container">
                     <div class="toolbar">
-                        <a href="${pageContext.request.contextPath}/admin-create-service">Tạo mới</a>
+                        <a href="admin-create-service">Tạo mới</a>
                         <div class="filter-group">
                             <select id="statusFilter">
                                 <option value="">Tất cả trạng thái</option>
@@ -160,10 +160,10 @@
                         </div>
                     </div>
 
-                    <c:if test="${not empty message}">
-                        <div class="${message.contains('thành công') ? 'message' : 'error-message'}">${message}</div>
-                    </c:if>
-
+                   <c:if test="${not empty sessionScope.message}">
+    <div class="alert alert-success">${sessionScope.message}</div>
+    <c:remove var="message" scope="session" />
+</c:if>
                     <table id="serviceTable">
                         <thead>
                             <tr>

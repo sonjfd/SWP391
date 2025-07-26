@@ -9,9 +9,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Quản lý loài - Doctris</title>
+    <title>Pet24h - Quản lý loài</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+    
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
     <link href="https://unicons.iconscout.com/release/v3.0.6/css/line.css" rel="stylesheet">
@@ -150,8 +150,8 @@ th, td {
             </div>
             
             <c:if test="${not empty message}">
-                ${message}
-            </c:if>
+    <div class="alert alert-success">${message}</div>
+</c:if>
             
             <table>
                 <thead>

@@ -49,8 +49,21 @@ public class UpdateSpecie extends HttpServlet {
             String currentImage = request.getParameter("currentImage"); // giá trị giữ ảnh cũ nếu không upload mới
 
             Part imagePart = request.getPart("image");
-
             String imageUrl = currentImage;
+
+            Specie currentSpecie = dao.getSpecieById(id);
+if (currentSpecie == null) {
+    request.setAttribute("message", "Không tìm thấy loài để cập nhật!");
+    request.getRequestDispatcher("view/admin/content/ListSpecie.jsp").forward(request, response);
+    return;
+}
+
+if (!name.equalsIgnoreCase(currentSpecie.getName()) && dao.isDuplicateNameExceptId(name, id)) {
+    request.setAttribute("specie", currentSpecie); // Để điền lại form
+    request.setAttribute("message", "Tên loài đã tồn tại!");
+    request.getRequestDispatcher("view/admin/content/UpdateSpecie.jsp").forward(request, response);
+    return;
+}
 
             // Nếu người dùng upload ảnh mới
             if (imagePart != null && imagePart.getSize() > 0) {

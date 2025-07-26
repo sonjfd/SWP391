@@ -132,7 +132,38 @@ public class SpecieDAO {
     }
     return false;
 }
-    
+    public boolean isDuplicateSpecieName(String name) {
+    String sql = "SELECT COUNT(*) FROM species WHERE LOWER(name) = LOWER(?)";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, name);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            int count = rs.getInt(1);
+            return count > 0; // true nếu trùng
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false; // không trùng hoặc lỗi
+}
+    public boolean isDuplicateNameExceptId(String name, int id) {
+    String sql = "SELECT COUNT(*) FROM Species WHERE name = ? AND id != ?";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, name);
+        ps.setInt(2, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
      
      public static void main(String[] args) {
         // Tạo đối tượng DAO

@@ -162,16 +162,21 @@ public class CreateAccount extends HttpServlet {
         user.setPassword(hashedPass); // TODO: Mã hóa password
         user.setFullName(fullName);
         user.setPhoneNumber(phoneNumber);
-        user.setStatus(1); // Mặc định active
+        
+        if(roleId==3){
+            user.setStatus(0); // Mặc định active
+        }else{
+            user.setStatus(1); // Mặc định active
+        }
         Role role = new Role(roleId, roleId == 3 ? "doctor" : roleId == 5 ? "nurse" : "staff");
         user.setRole(role);
         user.setCreateDate(new Date());
         user.setUpdateDate(new Date());
 
         // Gọi AdminDao để tạo tài khoản
-        boolean success = accountDAO.createAccount(user, null, nurse, departmentId);
+        boolean success = accountDAO.createAccount(user, nurse, departmentId);
         if (success) {
-            request.setAttribute("message", "Tạo tài khoản thành công!");
+            request.getSession().setAttribute("message", "Tạo tài khoản thành công!");
 
             response.sendRedirect("admin-list-account");
         } else {

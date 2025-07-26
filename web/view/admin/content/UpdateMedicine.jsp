@@ -4,9 +4,9 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Cập nhật thuốc - Doctris</title>
+        <title>Pet24h - Cập nhật thuốc</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+       
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" />
         <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet">

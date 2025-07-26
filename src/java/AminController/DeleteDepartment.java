@@ -79,6 +79,7 @@ public class DeleteDepartment extends HttpServlet {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
             departmentDAO.deleteDepartment(id);
+            request.getSession().setAttribute("message", "Xóa phòng ban thành công!");
             response.sendRedirect(request.getContextPath() + "/admin-list-department");
 
         } catch (SQLException e) {

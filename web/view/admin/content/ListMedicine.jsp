@@ -9,7 +9,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Quản lý thuốc - Doctris</title>
+        <title>Pet24h - Quản lý thuốc</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Premium Bootstrap 4 Landing Page Template" />
         <meta name="keywords" content="Appointment, Booking, System, Dashboard, Health" />
@@ -17,7 +17,7 @@
         <meta name="email" content="support@shreethemes.in" />
         <meta name="website" content="${pageContext.request.contextPath}/index.html" />
         <meta name="Version" content="v1.2.0" />
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+        
         <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/assets/css/select2.min.css" rel="stylesheet" />
@@ -155,9 +155,9 @@
 
                     </div>
 
-                    <c:if test="${not empty message}">
-                        <div class="${message.contains('successfully') ? 'message' : 'error-message'}">${message}</div>
-                    </c:if>
+                     <c:if test="${not empty message}">
+    <div class="alert alert-success">${message}</div>
+</c:if>
 
                     <table id="medicineTable">
                         <thead>
@@ -203,7 +203,7 @@
             </div>
         </div>
 
-        <jsp:include page="../layout/Footer.jsp" />
+        
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/simplebar.min.js"></script>

@@ -4,9 +4,8 @@
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>Doctris - Tạo tài khoản</title>
+    <title> Tạo tài khoản</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico.png">
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="${pageContext.request.contextPath}/assets/css/style.min.css" rel="stylesheet" />
 
@@ -230,7 +229,7 @@
             document.getElementById('email'),
             /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/,
             'emailError',
-            'Email không hợp lệ.'
+            'Email phải là địa chỉ Gmail hợp lệ, ví dụ: ten@gmail.com'
         );
         isValid &= validateField(
             document.getElementById('password'),
@@ -248,7 +247,7 @@
             document.getElementById('phoneNumber'),
             /^(0|\+84)\d{9}$/,
             'phoneNumberError',
-            'Số điện thoại phải bắt đầu bằng 0 hoặc +84, đủ 10 số.'
+            'Số điện thoại phải bắt đầu bằng 0 hoặc đủ 10 số.'
         );
 
         const roleId = document.getElementById('role_id').value;
@@ -281,13 +280,13 @@
             } else if (field.id === 'userName') {
                 validateField(field, /^[a-zA-Z0-9_]{3,}$/, 'userNameError', 'Tên đăng nhập phải từ 3 ký tự, chỉ chứa chữ, số, gạch dưới.');
             } else if (field.id === 'email') {
-                validateField(field, /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/, 'emailError', 'Email không hợp lệ.');
+                validateField(field, /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/, 'emailError', 'Email phải là địa chỉ Gmail hợp lệ, ví dụ: ten@gmail.com');
             } else if (field.id === 'password') {
                 validateField(field, /.{6,}/, 'passwordError', 'Mật khẩu phải từ 6 ký tự.');
             } else if (field.id === 'fullName') {
                 validateField(field, /^[\p{L}\s]{3,}$/u, 'fullNameError', 'Họ và tên phải từ 3 ký tự, chỉ chứa chữ tiếng Việt và khoảng trắng.');
             } else if (field.id === 'phoneNumber') {
-                validateField(field, /^(0|\+84)\d{9}$/, 'phoneNumberError', 'Số điện thoại phải bắt đầu bằng 0 hoặc +84, đủ 10 số.');
+                validateField(field, /^(0|\+84)\d{9}$/, 'phoneNumberError', 'Số điện thoại phải bắt đầu bằng 0 hoặc đủ 10 số.');
             } else if (field.id === 'department_id' && document.getElementById('role_id').value === '5') {
                 validateField(field, null, 'departmentError', 'Vui lòng chọn phòng ban cho Y tá.');
             }

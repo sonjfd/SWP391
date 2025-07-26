@@ -188,6 +188,41 @@ public class BreedDAO {
         }
         return specieList;
     }
+    public boolean checkDuplicateBreedName(String name) {
+    String sql = "SELECT COUNT(*) FROM breeds WHERE name = ?";
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, name);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0; // true nếu tên đã tồn tại
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+    public boolean checkDuplicateBreedName(String name, int speciesId) {
+    String query = "SELECT COUNT(*) FROM breeds WHERE name = ? AND species_id = ?";
+    
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(query)) {
+        
+        ps.setString(1, name);
+        ps.setInt(2, speciesId);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            int count = rs.getInt(1);
+            return count > 0; // true nếu đã tồn tại
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
 
     
     

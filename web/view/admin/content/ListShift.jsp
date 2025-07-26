@@ -9,9 +9,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Quản lý ca làm việc</title>
+    <title>Pet24h - Quản lý ca làm việc</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+    
     <link href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="${pageContext.request.contextPath}/assets/css/simplebar.css" rel="stylesheet" type="text/css" />
     <link href="${pageContext.request.contextPath}/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
@@ -151,8 +151,8 @@
                 </div>
                 
                 <c:if test="${not empty message}">
-                    <div class="${message.contains('successfully') ? 'message' : 'error-message'}">${message}</div>
-                </c:if>
+    <div class="alert alert-success">${message}</div>
+</c:if>
                 
                 <table id="shiftTable">
                     <thead>

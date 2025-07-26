@@ -16,6 +16,14 @@ public class Breed {
     public Breed() {
     }
 
+    public Breed(int id, String name,Specie specie ) {
+        this.id = id;
+        this.name = name;
+        this.specie = specie;
+    }
+    
+    
+
     public Breed(int id, Specie specie, String name) {
         this.id = id;
         this.specie = specie;

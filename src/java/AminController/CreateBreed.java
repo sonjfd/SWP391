@@ -83,6 +83,14 @@ public class CreateBreed extends HttpServlet {
     throws ServletException, IOException {
         BreedDAO breedDAO = new BreedDAO();
         try {
+            String name = request.getParameter("name").trim();
+        if (breedDAO.checkDuplicateBreedName(name)) {
+            List<Specie> specieList = breedDAO.getAllSpecies();
+            request.setAttribute("specieList", specieList);
+            request.setAttribute("message", "Tên giống loài đã tồn tại trong loài này!");
+            request.getRequestDispatcher("view/admin/content/CreateBreed.jsp").forward(request, response);
+            return;
+        }
             Breed breed = new Breed();
             breed.setName(request.getParameter("name"));
             Specie specie = new Specie();
